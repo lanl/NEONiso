@@ -1,4 +1,4 @@
-#' Download NEON datasets from the API.
+#' download_NEON_data
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
@@ -32,7 +32,9 @@
 #' @examples 
 #' # get EC data from all sites from January 2018
 #' download_NEON_data(data.product="DP4.00200.001",site.req="all",site.month="2018-01")
-
+#' 
+#' @export
+#' 
 download_NEON_data <- function(data.product,site.req="all",site.month="all") {
 
   # Define some initial parameters -------------------------------------------------

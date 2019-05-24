@@ -2,7 +2,7 @@
 % Please edit documentation in R/download_NEON_data.R
 \name{download_NEON_data}
 \alias{download_NEON_data}
-\title{Download NEON datasets from the API.}
+\title{download_NEON_data}
 \usage{
 download_NEON_data(data.product, site.req = "all", site.month = "all")
 }
@@ -23,7 +23,7 @@ Requested data will be downloaded to the current working directory.
 A future release will allow more flexibility in download directory.
 }
 \description{
-Download NEON datasets from the API.
+download_NEON_data
 }
 \details{
 Additional notes about different data products used here.
@@ -44,6 +44,7 @@ please submit a commit modifying this code or open an issue on the SPATIAL-Lab/N
 \examples{
 # get EC data from all sites from January 2018
 download_NEON_data(data.product="DP4.00200.001",site.req="all",site.month="2018-01")
+
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
