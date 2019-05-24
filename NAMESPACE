@@ -3,5 +3,6 @@
 export(calibrate_ambient_carbon_isotopes)
 export(calibrate_ambient_water_isotopes)
 export(create_h5_groups_for_calibrated_isotopes)
+export(download_NEON_data)
 export(process_carbon_calibration_data)
 export(process_water_calibration_data)
