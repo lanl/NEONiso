@@ -2,11 +2,38 @@
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param data.product  NEON code of data product you'd like to retrieve
-#' @param site.req     Four-letter code of site that you'd like to retrieve data from.
-#' @param site.month    Which site month would you like to download?
+#' @param data.product  NEON code of data product you'd like to retrieve.
+#'                      For example, the eddy covariance bundle is DP4.00200.001.
+#'                      (In this release, only DP4.00200.001 *should* work. Updates to fix soon.)
+#' @param site.req     Four-letter code of site you're requesting data from.
+#'                     This can also be "all," which will download data from all
+#'                     terrestrial sites.
+#' @param site.month   Month of data to retrieve, in yyyy-mm format. Can also
+#'                     use "all," which will retrieve all available data for site.req.
+#'
+#' @return Requested data will be downloaded to the current working directory. 
+#' A future release will allow more flexibility in download directory.
+#' 
+#' @details Additional notes about different data products used here.
+#' 
+#' 1) Eddy covariance data (DP4.00200.001) are stored on the NEON servers as 
+#' monthly "basic" file or daily "extended" files. Currently, this script will
+#' download the "basic" files and metadata files only. Extended files also include
+#' footprint calculations, and can be added in a future release if needed (however,
+#' this will require substantially more space to store). 
+#' 
+#' 2) Meteorological variables are stored on NEON servers as separate CSV files based on:
+#' a) position with respect to the tower (e.g., height on tower, or distance from tower) and
+#' b) time resolution - I think usually this is 30 minute or 1 minute time resolution for most
+#' products, but this has not been confirmed. Currently, for space/time considerations, 
+#' this script will download *only* the 30 minute files. If 1 minute files are required later,
+#' please submit a commit modifying this code or open an issue on the SPATIAL-Lab/NEONiso repository page.
+#' 
+#' @examples 
+#' # get EC data from all sites from January 2018
+#' download_NEON_data(data.product="DP4.00200.001",site.req="all",site.month="2018-01")
 
-download_NEON_data <- function(data.product="DP4.00200.001",site.req="all",site.month="all") {
+download_NEON_data <- function(data.product,site.req="all",site.month="all") {
 
   # Define some initial parameters -------------------------------------------------
 
@@ -81,9 +108,18 @@ download_NEON_data <- function(data.product="DP4.00200.001",site.req="all",site.
       fnames <- sapply(sitemonth.urls.parsed$data$files,'[[',2) # extract 2nd element of each list index
       furls <- sapply(sitemonth.urls.parsed$data$files,'[[',4)
 
-      # get the basic zipfile?
-      fnames.basic <- (grepl("basic",fnames) & grepl("h5",fnames)) |
-        grepl("xml",fnames) | grepl("txt",fnames)
+      # subset the file list - for EC data, there are monthly basic files and
+      # daily extended files. by default, download only basic.
+      # likewise, for met data - download *only* 30 minute data.
+      
+      if (data.product == "DP4.00200.001") {
+        fnames.subset <- (grepl("basic",fnames) & grepl("h5",fnames)) |
+                          grepl("xml",fnames) | grepl("txt",fnames)
+      } else {
+        fnames.subset <- (grepl("expanded",fnames) & grepl("30min",fnames)) |
+          grepl("xml",fnames) | grepl("txt",fnames) | grepl("variables",fnames)
+      }
+
 
       #--------------------------------------------------------
       # check to see if folder exists for site month, create if it doesn't.
@@ -94,8 +130,8 @@ download_NEON_data <- function(data.product="DP4.00200.001",site.req="all",site.
 
       if (site.month.exists == TRUE & site.month.created == TRUE) {
         # check to see if each file already exists?
-        dl.names <- fnames[fnames.basic]
-        dl.urls <- furls[fnames.basic]
+        dl.names <- fnames[fnames.subset]
+        dl.urls <- furls[fnames.subset]
 
         # check to see if file name exists, download if not.
         for (k in 1:length(dl.names)) {
@@ -109,8 +145,8 @@ download_NEON_data <- function(data.product="DP4.00200.001",site.req="all",site.
       } else if (site.month.exists == TRUE & site.month.created == FALSE) {
 
         # check to see if each file already exists?
-        dl.names <- fnames[fnames.basic]
-        dl.urls <- furls[fnames.basic]
+        dl.names <- fnames[fnames.subset]
+        dl.urls <- furls[fnames.subset]
 
         # check to see if file name exists, download if not.
         for (k in 1:length(dl.names)) {
@@ -124,8 +160,8 @@ download_NEON_data <- function(data.product="DP4.00200.001",site.req="all",site.
 
       } else {
         # just download all the files...
-        dl.names <- fnames[fnames.basic]
-        dl.urls <- furls[fnames.basic]
+        dl.names <- fnames[fnames.subset]
+        dl.urls <- furls[fnames.subset]
 
         for (k in 1:length(dl.names)) {
           GET(url=dl.urls[k],
