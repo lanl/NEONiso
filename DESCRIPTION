@@ -8,7 +8,9 @@ Depends: tidyverse,
     xts,
     downloader,
     httr,
-    jsonlite    
+    jsonlite,
+    rhdf5,
+    lubridate
 Description: This package provides functions for downloading,
     calibrating, and analyzing NEON data, with a particular focus
     on the atmospheric isotope and eddy covariance data.
