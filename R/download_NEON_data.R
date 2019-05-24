@@ -6,7 +6,7 @@
 #' @param site.req     Four-letter code of site that you'd like to retrieve data from.
 #' @param site.month    Which site month would you like to download?
 
-download_NEON_data <- function(data.product,site.req="all",site.month="all") {
+download_NEON_data <- function(data.product="DP4.00200.001",site.req="all",site.month="all") {
 
   # Define some initial parameters -------------------------------------------------
 
@@ -44,14 +44,18 @@ download_NEON_data <- function(data.product,site.req="all",site.month="all") {
   # currently runs through entire loop, don't need to if not downlading all
   # sites though.
   for (i in 1:nsites) {
-
+    
     # get name site we're working on.
     site.name <- available$data$siteCodes[[i]]$siteCode
 
+    print(site.name)
+    
     # check to see if site is a terrestrial site, and site is requested.
     if (site.req != "all" & !(site.name %in% core.sites | site.name %in% reloc.sites)) {
       # skip to next iteration of loop since it's not a terrestrial site.
       next
+    } else if (site.name != "all" & site.name != site.req) {
+      next # skip to next site if not requested site.
     } else if (site.name == "WOOD") { # something currently messed up w/ this site, so skip. RPF 190502.
       next
     }
