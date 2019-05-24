@@ -134,10 +134,5 @@ download_NEON_data <- function(data.product="DP4.00200.001",site.req="all",site.
         }
       }
     }
-
   }
-
-
 }
-# load data management functions.
-#source("functions/NEON_data_mgmt.R")
