@@ -1,0 +1,252 @@
+#' process_water_calibration_data
+#' 
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#'
+#' @param fname 
+#' @param site 
+#' @param time.diff.betweeen.standards 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+process_water_calibration_data <- function(fname,site,time.diff.betweeen.standards=1800){
+  
+  # list required packages.
+  require(rhdf5)
+  require(dplyr)
+  
+  # print status.
+  print("Processing water calibration data...")
+  
+  
+  # load file, get calibration data.
+  wiso <- h5read(fname,paste0('/',site,'/dp01/data/isoH2o'))
+  
+  # extract standards data.
+  high <- wiso$h2oHigh_03m
+  med <- wiso$h2oMed_03m
+  low <- wiso$h2oLow_03m
+  
+  # attempt to pull relevent data out to a single dataframe.
+  high_rs <- data.frame(d18O_meas_mean=high$dlta18OH2o$mean,
+                        d18O_meas_var=high$dlta18OH2o$vari,
+                        d18O_meas_n=high$dlta18OH2o$numSamp,
+                        d18O_meas_btime=high$dlta18OH2o$timeBgn,
+                        d18O_meas_etime=high$dlta18OH2o$timeEnd,
+                        d18O_ref_mean=high$dlta18OH2oRefe$mean,
+                        d18O_ref_var=high$dlta18OH2oRefe$vari,
+                        d18O_ref_n=high$dlta18OH2oRefe$numSamp,
+                        d18O_ref_btime=high$dlta18OH2oRefe$timeBgn,
+                        d18O_ref_etime=high$dlta18OH2oRefe$timeEnd,
+                        d2H_meas_mean=high$dlta2HH2o$mean,
+                        d2H_meas_var=high$dlta2HH2o$vari,
+                        d2H_meas_n=high$dlta2HH2o$numSamp,
+                        d2H_meas_btime=high$dlta2HH2o$timeBgn,
+                        d2H_meas_etime=high$dlta2HH2o$timeEnd,
+                        d2H_ref_mean=high$dlta2HH2oRefe$mean,
+                        d2H_ref_var=high$dlta2HH2oRefe$vari,
+                        d2H_ref_n=high$dlta2HH2oRefe$numSamp,
+                        d2H_ref_btime=high$dlta2HH2oRefe$timeBgn,
+                        d2H_ref_etime=high$dlta2HH2oRefe$timeEnd)
+  
+  high_rs <- high_rs %>%
+    mutate(std_name="high")
+  
+  med_rs <- data.frame(d18O_meas_mean=med$dlta18OH2o$mean,
+                       d18O_meas_var=med$dlta18OH2o$vari,
+                       d18O_meas_n=med$dlta18OH2o$numSamp,
+                       d18O_meas_btime=med$dlta18OH2o$timeBgn,
+                       d18O_meas_etime=med$dlta18OH2o$timeEnd,
+                       d18O_ref_mean=med$dlta18OH2oRefe$mean,
+                       d18O_ref_var=med$dlta18OH2oRefe$vari,
+                       d18O_ref_n=med$dlta18OH2oRefe$numSamp,
+                       d18O_ref_btime=med$dlta18OH2oRefe$timeBgn,
+                       d18O_ref_etime=med$dlta18OH2oRefe$timeEnd,
+                       d2H_meas_mean=med$dlta2HH2o$mean,
+                       d2H_meas_var=med$dlta2HH2o$vari,
+                       d2H_meas_n=med$dlta2HH2o$numSamp,
+                       d2H_meas_btime=med$dlta2HH2o$timeBgn,
+                       d2H_meas_etime=med$dlta2HH2o$timeEnd,
+                       d2H_ref_mean=med$dlta2HH2oRefe$mean,
+                       d2H_ref_var=med$dlta2HH2oRefe$vari,
+                       d2H_ref_n=med$dlta2HH2oRefe$numSamp,
+                       d2H_ref_btime=med$dlta2HH2oRefe$timeBgn,
+                       d2H_ref_etime=med$dlta2HH2oRefe$timeEnd)
+  
+  med_rs <- med_rs %>%
+    mutate(std_name="med")
+  
+  low_rs <- data.frame(d18O_meas_mean=low$dlta18OH2o$mean,
+                       d18O_meas_var=low$dlta18OH2o$vari,
+                       d18O_meas_n=low$dlta18OH2o$numSamp,
+                       d18O_meas_btime=low$dlta18OH2o$timeBgn,
+                       d18O_meas_etime=low$dlta18OH2o$timeEnd,
+                       d18O_ref_mean=low$dlta18OH2oRefe$mean,
+                       d18O_ref_var=low$dlta18OH2oRefe$vari,
+                       d18O_ref_n=low$dlta18OH2oRefe$numSamp,
+                       d18O_ref_btime=low$dlta18OH2oRefe$timeBgn,
+                       d18O_ref_etime=low$dlta18OH2oRefe$timeEnd,
+                       d2H_meas_mean=low$dlta2HH2o$mean,
+                       d2H_meas_var=low$dlta2HH2o$vari,
+                       d2H_meas_n=low$dlta2HH2o$numSamp,
+                       d2H_meas_btime=low$dlta2HH2o$timeBgn,
+                       d2H_meas_etime=low$dlta2HH2o$timeEnd,
+                       d2H_ref_mean=low$dlta2HH2oRefe$mean,
+                       d2H_ref_var=low$dlta2HH2oRefe$vari,
+                       d2H_ref_n=low$dlta2HH2oRefe$numSamp,
+                       d2H_ref_btime=low$dlta2HH2oRefe$timeBgn,
+                       d2H_ref_etime=low$dlta2HH2oRefe$timeEnd)
+  
+  low_rs <- low_rs %>%
+    mutate(std_name="low")
+  
+  # bind together, and cleanup.
+  stds <- do.call(rbind,list(high_rs,med_rs,low_rs))
+  rm(high_rs,med_rs,low_rs,high,med,low)
+  
+  # replace NaNs with NA
+  # rpf note on 181121 - what does this line actually do? Seems tautological.
+  # rpf note 181126 - is.na() also returns NaN as NA, so this does actually do what first
+  # comment indicates.
+  stds[ is.na(stds) ] <- NA
+  
+  #-----------------------------------------------------------
+  # CALIBRATE WATER ISOTOPE VALUES
+  
+  # change class of time variables from charatcter to posixct.
+  stds$d18O_meas_btime <- as.POSIXct(stds$d18O_meas_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+  stds$d18O_meas_etime <- as.POSIXct(stds$d18O_meas_etime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+  
+  stds$d18O_ref_btime <- as.POSIXct(stds$d18O_ref_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+  stds$d18O_ref_etime <- as.POSIXct(stds$d18O_ref_etime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+  
+  stds$d2H_meas_btime <- as.POSIXct(stds$d2H_meas_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+  stds$d2H_meas_etime <- as.POSIXct(stds$d2H_meas_etime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+  
+  stds$d2H_ref_btime <- as.POSIXct(stds$d2H_ref_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+  stds$d2H_ref_etime <- as.POSIXct(stds$d2H_ref_etime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+  
+  # reorder data frame
+  stds <- stds[order(stds$d18O_meas_btime),]
+  
+  # assign a vector corresponding to calibration period.
+  stds$cal_period <- stds$d18O_meas_n
+  
+  period_id <- 1
+  tdiffs <- c(diff(stds$d18O_meas_btime),0)
+  for (i in 1:nrow(stds)) {
+    stds$cal_period[i] <- period_id
+    
+    if (tdiffs[i] >= time.diff.betweeen.standards) {period_id = period_id + 1}
+  }
+  
+  # okay, now run calibrations...
+  #------------------------------
+  
+  # create output variables.
+  oxy_cal_slopes <- vector()
+  oxy_cal_ints   <- vector()
+  oxy_cal_rsq    <- vector()
+  
+  hyd_cal_slopes <- vector()
+  hyd_cal_ints   <- vector()
+  hyd_cal_rsq    <- vector()
+  
+  for (i in 2:max(stds$cal_period)) {
+    # check to see if data exist.
+    cal.subset <- stds[which(stds$cal_period==i | stds$cal_period==(i-1)),]
+    
+    # check to see if sum of is.na() on oxygen data = nrow of oxygen data
+    if (sum(is.na(cal.subset$d18O_meas_mean)) < nrow(cal.subset) &
+        sum(is.na(cal.subset$d18O_ref_mean)) < nrow(cal.subset)) {
+      tmp <- lm(d18O_ref_mean ~ d18O_meas_mean,data=cal.subset)
+      
+      oxy_cal_slopes[i-1] <- coef(tmp)[[2]]
+      oxy_cal_ints[i-1] <- coef(tmp)[[1]]
+      oxy_cal_rsq[i-1] <- summary(tmp)$r.squared  
+      
+    } else { # all are missing
+      oxy_cal_slopes[i-1] <- NA
+      oxy_cal_ints[i-1] <- NA
+      oxy_cal_rsq[i-1] <- NA 
+    }
+    
+    # HYDROGEN
+    
+    # check to see if sum of is.na() on oxygen data = nrow of oxygen data
+    if (sum(is.na(cal.subset$d2H_meas_mean)) < nrow(cal.subset) &
+        sum(is.na(cal.subset$d2H_ref_mean)) < nrow(cal.subset)) {
+      tmp <- lm(d2H_ref_mean ~ d2H_meas_mean,data=cal.subset)
+      
+      hyd_cal_slopes[i-1] <- coef(tmp)[[2]]
+      hyd_cal_ints[i-1] <- coef(tmp)[[1]]
+      hyd_cal_rsq[i-1] <- summary(tmp)$r.squared  
+      
+    } else { # all are missing
+      hyd_cal_slopes[i-1] <- NA
+      hyd_cal_ints[i-1] <- NA
+      hyd_cal_rsq[i-1] <- NA 
+    }
+  }
+  
+  # make dataframe of calibration data.
+  # TODO: add hydrogen data in here...
+  times <- stds %>%
+    select(d18O_meas_btime,d18O_meas_etime,d18O_ref_btime,d18O_ref_etime,
+           d2H_meas_btime,d2H_meas_etime,d2H_ref_btime,d2H_ref_etime,cal_period) %>%
+    group_by(cal_period) %>%
+    summarize(etime = max(c(d18O_meas_etime,d18O_ref_etime,d2H_meas_etime,d2H_ref_etime)))
+  
+  # loop through times, assign beginning, ending value. max etime should be just fine.
+  starttimes <- vector()
+  endtimes <- vector()
+  
+  for (i in 1:length(oxy_cal_slopes)) {
+    starttimes[i] <- times$etime[i]
+    endtimes[i] <- times$etime[i+1]
+  }
+  
+  # output dataframe giving valid time range, slopes, intercepts, rsquared.
+  out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
+                    end=as.POSIXct(endtimes,tz="UTC",origin="1970-01-01"),
+                    o.slope=oxy_cal_slopes,o.intercept=oxy_cal_ints,o.r2=oxy_cal_rsq,
+                    h.slope=hyd_cal_slopes,h.intercept=hyd_cal_ints,h.r2=hyd_cal_rsq)
+  
+  var_for_h5 <- out
+  
+  var_for_h5$start <- as.character(paste0(year(out$start),"-",
+                                          ifelse(month(out$start)<10,paste0("0",month(out$start)),month(out$start)),"-",
+                                          ifelse(day(out$start)<10,paste0("0",day(out$start)),day(out$start)),"T",
+                                          ifelse(hour(out$start)<10,paste0("0",hour(out$start)),hour(out$start)),":",
+                                          ifelse(minute(out$start)<10,paste0("0",minute(out$start)),minute(out$start)),":",
+                                          ifelse(second(out$start)<10,paste0("0",second(out$start)),second(out$start)),"Z"))
+  
+  var_for_h5$end <- as.character(paste0(year(out$end),"-",
+                                        ifelse(month(out$end)<10,paste0("0",month(out$end)),month(out$end)),"-",
+                                        ifelse(day(out$end)<10,paste0("0",day(out$end)),day(out$end)),"T",
+                                        ifelse(hour(out$end)<10,paste0("0",hour(out$end)),hour(out$end)),":",
+                                        ifelse(minute(out$end)<10,paste0("0",minute(out$end)),minute(out$end)),":",
+                                        ifelse(second(out$end)<10,paste0("0",second(out$end)),second(out$end)),"Z"))
+  
+  var_for_h5$valid_period_start <- var_for_h5$start
+  var_for_h5$valid_period_end   <- var_for_h5$end
+  
+  # remove old vars.
+  var_for_h5$start <- var_for_h5$end <- NULL
+  
+  # okay try to write out to h5 file.
+  fid <- H5Fopen(fname)
+  
+  h2o.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01iso/data/isoH2o'))
+  
+  # write out dataset.
+  h5writeDataset.data.frame(obj = var_for_h5,h5loc=h2o.cal.outloc,name="calRegressions",DataFrameAsCompound = TRUE)
+  
+  # close the group and the file
+  H5Gclose(h2o.cal.outloc)
+  H5Fclose(fid)
+  
+  # return the var.
+  return(out) # out has time variables as POSIXct, not in the same format as NEON data files.
+}
