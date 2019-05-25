@@ -22,13 +22,6 @@ knitr::opts_chunk$set(
 ```
 
 ```{r download_example, echo=TRUE, results=FALSE, eval=FALSE}
-
-# only need to run these lines once, unless you'd like to update
-# the package to the newest version on github.
-library(devtools)
-install_github("rfiorella/NEONiso",
-               auth_token="841102cfd94910fc46ce7db581143f8b4c5be502")
-
 # only using suppressMessages here for readability, generally useful
 # messages here though about what functions are masked by loaded packages.
 suppressMessages(library(NEONiso)) 
