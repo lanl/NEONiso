@@ -77,7 +77,7 @@ download_NEON_data <- function(data.product,site.req="all",site.month="all") {
     # get name site we're working on.
     site.name <- available$data$siteCodes[[i]]$siteCode
 
-    print(site.name)
+    #print(site.name)
     
     # check to see if site is a terrestrial site, and site is requested.
     if (site.req != "all" & !(site.name %in% core.sites | site.name %in% reloc.sites)) {
