@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r download_example, echo=TRUE, results=FALSE}
+```{r download_example, echo=TRUE, results=FALSE, eval=FALSE}
 
 # only need to run these lines once, unless you'd like to update
 # the package to the newest version on github.
