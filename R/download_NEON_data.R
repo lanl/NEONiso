@@ -90,7 +90,7 @@ download_NEON_data <- function(data.product,site.req="all",site.month="all") {
     }
 
     # generate a list of site months that are available for this site.
-    site.months <- unlist(available$data$siteCodes[[i]]$availableMonths)
+    available.months <- unlist(available$data$siteCodes[[i]]$availableMonths)
 
     # check to see if there's a data folder for this site, create it if it doesn't exist.
     ifelse(!dir.exists(paste0(site.name)),
@@ -98,8 +98,13 @@ download_NEON_data <- function(data.product,site.req="all",site.month="all") {
             FALSE)
 
     # loop through months requested for this site
-    for (j in 1:length(site.months)) {
+    for (j in 1:length(available.months)) {
 
+      # check to see if this month was requested.
+      if (site.month != "all" & site.month != available.months[j]) {
+        next # skip to next iteration if not requested.
+      }
+      
       # requery api w/ given site code and month.
       sitemonth.urls.json <- GET(unlist(available$data$siteCodes[[i]]$availableDataUrls[j]))
 
@@ -125,9 +130,9 @@ download_NEON_data <- function(data.product,site.req="all",site.month="all") {
 
       #--------------------------------------------------------
       # check to see if folder exists for site month, create if it doesn't.
-      site.month.exists <- dir.exists(paste0(site.name,"/",site.months[j]))
-      site.month.created <- ifelse(!dir.exists(paste0(site.name,"/",site.months[j])),
-                                   dir.create(paste0(site.name,"/",site.months[j])),
+      site.month.exists <- dir.exists(paste0(site.name,"/",available.months[j]))
+      site.month.created <- ifelse(!dir.exists(paste0(site.name,"/",available.months[j])),
+                                   dir.create(paste0(site.name,"/",available.months[j])),
                                    FALSE)
 
       if (site.month.exists == TRUE & site.month.created == TRUE) {
@@ -137,9 +142,9 @@ download_NEON_data <- function(data.product,site.req="all",site.month="all") {
 
         # check to see if file name exists, download if not.
         for (k in 1:length(dl.names)) {
-          if (!file.exists(paste0(site.name,"/",site.months[j],"/",dl.names[k]))) {
+          if (!file.exists(paste0(site.name,"/",available.months[j],"/",dl.names[k]))) {
             GET(url=dl.urls[k],
-                write_disk(paste0(site.name,"/",site.months[j],"/",dl.names[k]),overwrite=TRUE))
+                write_disk(paste0(site.name,"/",available.months[j],"/",dl.names[k]),overwrite=TRUE))
           } else {
             print(paste("File ",dl.names[k]," exists - skipping to next file."))
           }
@@ -152,9 +157,9 @@ download_NEON_data <- function(data.product,site.req="all",site.month="all") {
 
         # check to see if file name exists, download if not.
         for (k in 1:length(dl.names)) {
-          if (!file.exists(paste0(site.name,"/",site.months[j],"/",dl.names[k]))) {
+          if (!file.exists(paste0(site.name,"/",available.months[j],"/",dl.names[k]))) {
             GET(url=dl.urls[k],
-                write_disk(paste0(site.name,"/",site.months[j],"/",dl.names[k]),overwrite=TRUE))
+                write_disk(paste0(site.name,"/",available.months[j],"/",dl.names[k]),overwrite=TRUE))
           } else {
             print(paste("File ",dl.names[k]," exists - skipping to next file."))
           }
@@ -168,7 +173,7 @@ download_NEON_data <- function(data.product,site.req="all",site.month="all") {
         for (k in 1:length(dl.names)) {
           GET(url=dl.urls[k],
               progress(),
-              write_disk(paste0(site.name,"/",site.months[j],"/",dl.names[k]),overwrite=TRUE))
+              write_disk(paste0(site.name,"/",available.months[j],"/",dl.names[k]),overwrite=TRUE))
         }
       }
     }
