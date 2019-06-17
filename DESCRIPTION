@@ -9,7 +9,6 @@ Depends: tidyverse,
     downloader,
     httr,
     jsonlite,
-    rhdf5,
     lubridate
 Description: This package provides functions for downloading,
     calibrating, and analyzing NEON data, with a particular focus
