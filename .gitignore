@@ -5,3 +5,6 @@
 #inst/doc
 doc
 Meta
+
+# remove spotlight files.
+.DS_Store
