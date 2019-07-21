@@ -222,8 +222,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
 
   lapply(names(ciso_subset),
          function(x){calibrate_ambient_carbon_Bowling2003(amb.data.list=ciso_subset[[x]],
-                                        caldf=out,outname=x,file=outname,site=site,
-                                        method=1)}) # method 1= Bowling et al. 2003.
+                                        caldf=out,outname=x,file=outname,site=site)})
   
   h5closeAll()
 }
