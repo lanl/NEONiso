@@ -7,7 +7,7 @@
 #' @param time.diff.between.standards Time (in seconds) required between consecutive standard measurements.
 #' @param force.cal.to.beginning Extend first calibration to the beginning of the file? (Default true)
 #' @param force.cal.to.end Extend last calibration to the end of the file? (Detault true)
-#' @param site Four letter NEON site code for code being processed.
+#' @param site Four letter NEON site code for site being processed.
 #'
 #' @return Returns nothing to the workspace, but creates a new output file.
 #' @export
@@ -131,6 +131,11 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
     
     # Target for improvement: might be a less "blind" way of selecting one observation per day.
   }
+  
+  #-------------------------------------------------------------------------------------
+  # try to determine if all data points are valid. most obvious check here that 
+  # should remove the most heinous values: are measured [CO2] w/in some tolerance
+  # of expected [CO2]? This will help scrub out bad data from empty tanks, etc.
   
   #-------------------------------------------------------------------------------------
   # calculate gain and offset values (eq. 2 and 3 of Bowling et al. 2003)

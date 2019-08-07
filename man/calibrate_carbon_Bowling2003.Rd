@@ -13,7 +13,7 @@ calibrate_carbon_Bowling2003(inname, outname, site,
 
 \item{outname}{Name of the output file.}
 
-\item{site}{Four letter NEON site code for code being processed.}
+\item{site}{Four letter NEON site code for site being processed.}
 
 \item{time.diff.between.standards}{Time (in seconds) required between consecutive standard measurements.}
 

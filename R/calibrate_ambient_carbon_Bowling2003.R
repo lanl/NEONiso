@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' 
-calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,site,file,method,forceToEnd=TRUE,forceToBeginning=TRUE) {
+calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,site,file,forceToEnd=TRUE,forceToBeginning=TRUE) {
   
   # required libraries
   require(rhdf5)

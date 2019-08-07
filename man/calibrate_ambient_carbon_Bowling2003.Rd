@@ -5,7 +5,7 @@
 \title{calibrate_ambient_carbon_Bowling2003}
 \usage{
 calibrate_ambient_carbon_Bowling2003(amb.data.list, caldf, outname, site,
-  file, method, forceToEnd = TRUE, forceToBeginning = TRUE)
+  file, forceToEnd = TRUE, forceToBeginning = TRUE)
 }
 \arguments{
 \item{amb.data.list}{}
