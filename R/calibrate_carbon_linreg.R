@@ -157,6 +157,18 @@ calibrate_carbon_linreg <- function(inname,outname,site,time.diff.betweeen.stand
   h5createGroup(outname,paste0('/',site,'/dp01iso/data/isoCo2'))
   
   fid <- H5Fopen(outname)
+  
+  # copy attributes from source file and write to output file.
+  tmp <- h5readAttributes(inname,paste0('/',site))
+  
+  attrloc <- H5Gopen(fid,paste0('/',site))
+  
+  for (i in 1:length(tmp)) { # probably a more rapid way to do this in the future...lapply?
+    h5writeAttribute(h5obj=attrloc,attr=tmp[[i]],name=names(tmp)[i])
+  }
+  
+  H5Gclose(attrloc)
+  
   co2.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01iso/data/isoCo2'))
   
   # write out dataset.

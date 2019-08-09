@@ -137,6 +137,20 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   # should remove the most heinous values: are measured [CO2] w/in some tolerance
   # of expected [CO2]? This will help scrub out bad data from empty tanks, etc.
   
+  conc_thres <- 10 # threshold in ppm.
+  
+  # need to make a list of how many good calibration points there are for each calibration period.
+  val.df <- data.frame(low=ifelse(abs(low_rs$CO2_meas_conc - low_rs$CO2_ref_conc) < conc_thres,
+                                  1, 0), # 1 if true, 0 if false
+                       med=ifelse(abs(med_rs$CO2_meas_conc - med_rs$CO2_ref_conc) < conc_thres,
+                                  1,0),
+                       high=ifelse(abs(high_rs$CO2_meas_conc - high_rs$CO2_ref_conc) < conc_thres,
+                                   1,0))
+  
+  # add row sum.
+  val.df$tot <- rowSums(val.df)
+  
+  print(val.df)
   #-------------------------------------------------------------------------------------
   # calculate gain and offset values (eq. 2 and 3 of Bowling et al. 2003)
   # use high and low values, and validate w/ medium standards.
@@ -206,10 +220,24 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   h5createGroup(outname,paste0('/',site,'/dp01iso/data/isoCo2'))
   
   fid <- H5Fopen(outname)
+
+  # copy attributes from source file and write to output file.
+  tmp <- h5readAttributes(inname,paste0('/',site))
+  
+  attrloc <- H5Gopen(fid,paste0('/',site))
+  
+  for (i in 1:length(tmp)) { # probably a more rapid way to do this in the future...lapply?
+    h5writeAttribute(h5obj=attrloc,attr=tmp[[i]],name=names(tmp)[i])
+  }
+  
+  H5Gclose(attrloc)
+  
   co2.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01iso/data/isoCo2'))
   
   # write out dataset.
-  h5writeDataset.data.frame(obj = var_for_h5,h5loc=co2.cal.outloc,name="calGainsOffsets",DataFrameAsCompound = TRUE)
+  h5writeDataset.data.frame(obj = var_for_h5,h5loc=co2.cal.outloc,
+                            name="calGainsOffsets",
+                            DataFrameAsCompound = TRUE)
   
   # close the group and the file
   H5Gclose(co2.cal.outloc)
