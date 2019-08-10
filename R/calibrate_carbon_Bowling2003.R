@@ -141,7 +141,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   
   # need to make a list of how many good calibration points there are for each calibration period.
   val.df <- data.frame(low=ifelse(abs(low_rs$CO2_meas_conc - low_rs$CO2_ref_conc) < conc_thres,
-                                  1, 0), # 1 if true, 0 if false
+                                  1,0), # 1 if true, 0 if false
                        med=ifelse(abs(med_rs$CO2_meas_conc - med_rs$CO2_ref_conc) < conc_thres,
                                   1,0),
                        high=ifelse(abs(high_rs$CO2_meas_conc - high_rs$CO2_ref_conc) < conc_thres,
@@ -151,15 +151,68 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   val.df$tot <- rowSums(val.df)
   
   print(val.df)
+  
+  # there's almost definitely a faster way to implement this, but coding as a loop for now.
+  #-----------------------------------------------------------------------
+  # preallocate variables.
+  gain12C <- gain13C <- vector(length = nrow(high_rs))
+  offset12C <- offset13C <- vector(length = nrow(high_rs))
+  
+  for (i in 1:nrow(val.df)) {
+    if (!is.na(val.df$tot[i]) & val.df$tot[i] == 3) { # e.g., all calibration points are good.
+      # all points are good, so calibrate gain and offset w/ high and low points.
+      gain12C[i] <- (high_rs$conc12CCO2_ref[i] - low_rs$conc12CCO2_ref[i])/(high_rs$conc12CCO2_obs[i] - low_rs$conc12CCO2_obs[i])
+      gain13C[i] <- (high_rs$conc13CCO2_ref[i] - low_rs$conc13CCO2_ref[i])/(high_rs$conc13CCO2_obs[i] - low_rs$conc13CCO2_obs[i])
+      
+      offset12C[i] <- high_rs$conc12CCO2_ref[i] - gain12C[i]*high_rs$conc12CCO2_obs[i]
+      offset13C[i] <- high_rs$conc13CCO2_ref[i] - gain13C[i]*high_rs$conc13CCO2_obs[i]
+    } else if (!is.na(val.df$tot[i]) & val.df$tot[i] == 2) { # 1 calibration point doesn't pass test(s)
+      # need to determine which two points are good, which can be done w/ 2 logical tests.
+      
+      if (!is.na(val.df$tot[i]) & val.df$low[i] == 1) { # low point is good, need to determine if med or high point is
+                                # other valid point.
+        if (!is.na(val.df$tot[i]) & val.df$med[i] == 1) { # low and medium point are valid.
+          
+          gain12C[i] <- (med_rs$conc12CCO2_ref[i] - low_rs$conc12CCO2_ref[i])/(med_rs$conc12CCO2_obs[i] - low_rs$conc12CCO2_obs[i])
+          gain13C[i] <- (med_rs$conc13CCO2_ref[i] - low_rs$conc13CCO2_ref[i])/(med_rs$conc13CCO2_obs[i] - low_rs$conc13CCO2_obs[i])
+          
+          offset12C[i] <- med_rs$conc12CCO2_ref[i] - gain12C[i]*med_rs$conc12CCO2_obs[i]
+          offset13C[i] <- med_rs$conc13CCO2_ref[i] - gain13C[i]*med_rs$conc13CCO2_obs[i] 
+        
+        } else { # low and high only are good.
+        
+          gain12C[i] <- (high_rs$conc12CCO2_ref[i] - low_rs$conc12CCO2_ref[i])/(high_rs$conc12CCO2_obs[i] - low_rs$conc12CCO2_obs[i])
+          gain13C[i] <- (high_rs$conc13CCO2_ref[i] - low_rs$conc13CCO2_ref[i])/(high_rs$conc13CCO2_obs[i] - low_rs$conc13CCO2_obs[i])
+          
+          offset12C[i] <- high_rs$conc12CCO2_ref[i] - gain12C[i]*high_rs$conc12CCO2_obs[i]
+          offset13C[i] <- high_rs$conc13CCO2_ref[i] - gain13C[i]*high_rs$conc13CCO2_obs[i]
+        }
+      } else { # MUST be medium and high points that are good.
+        
+        gain12C[i] <- (high_rs$conc12CCO2_ref[i] - med_rs$conc12CCO2_ref[i])/(high_rs$conc12CCO2_obs[i] - med_rs$conc12CCO2_obs[i])
+        gain13C[i] <- (high_rs$conc13CCO2_ref[i] - med_rs$conc13CCO2_ref[i])/(high_rs$conc13CCO2_obs[i] - med_rs$conc13CCO2_obs[i])
+        
+        offset12C[i] <- high_rs$conc12CCO2_ref[i] - gain12C[i]*high_rs$conc12CCO2_obs[i]
+        offset13C[i] <- high_rs$conc13CCO2_ref[i] - gain13C[i]*high_rs$conc13CCO2_obs[i]  
+      } # if low == 1
+    } else if (is.na(val.df$tot[i]) | val.df$tot[i] < 2) {
+      # can't really do anything here if less than 2 valid points, 
+      # set as missing, and fill w/ last known good calibration later?
+      
+      gain12C[i] <- gain13C[i] <- offset12C[i] <- offset13C[i] <- NA
+      
+    }# if tot >= 2
+  } # for
+  
   #-------------------------------------------------------------------------------------
-  # calculate gain and offset values (eq. 2 and 3 of Bowling et al. 2003)
-  # use high and low values, and validate w/ medium standards.
-  
-  gain12C <- (high_rs$conc12CCO2_ref - low_rs$conc12CCO2_ref)/(high_rs$conc12CCO2_obs - low_rs$conc12CCO2_obs)
-  gain13C <- (high_rs$conc13CCO2_ref - low_rs$conc13CCO2_ref)/(high_rs$conc13CCO2_obs - low_rs$conc13CCO2_obs)
-  
-  offset12C <- high_rs$conc12CCO2_ref - gain12C*high_rs$conc12CCO2_obs
-  offset13C <- high_rs$conc13CCO2_ref - gain13C*high_rs$conc13CCO2_obs
+  # # calculate gain and offset values (eq. 2 and 3 of Bowling et al. 2003)
+  # # use high and low values, and validate w/ medium standards.
+  # 
+  # gain12C <- (high_rs$conc12CCO2_ref - low_rs$conc12CCO2_ref)/(high_rs$conc12CCO2_obs - low_rs$conc12CCO2_obs)
+  # gain13C <- (high_rs$conc13CCO2_ref - low_rs$conc13CCO2_ref)/(high_rs$conc13CCO2_obs - low_rs$conc13CCO2_obs)
+  # 
+  # offset12C <- high_rs$conc12CCO2_ref - gain12C*high_rs$conc12CCO2_obs
+  # offset13C <- high_rs$conc13CCO2_ref - gain13C*high_rs$conc13CCO2_obs
   
   #-----------------------------------------------------------------
   # perform validation

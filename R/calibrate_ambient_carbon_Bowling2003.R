@@ -1,23 +1,24 @@
 #' calibrate_ambient_carbon_Bowling2003
 #'
 #' @param amb.data.list 
-#' @param caldf 
+#' @param caldf Calibration data frame containing gain and offset values for 12C and 13C isotopologues.
 #' @param outname 
-#' @param site 
+#' @param site Four-letter NEON code corersponding to site being processed.
 #' @param file 
-#' @param method 
-#' @param force.to.end 
-#' @param force.to.beginning 
+#' @param force.to.end Extend last good calibration to end of dataset??
+#' @param force.to.beginning Enforce a valid calibration at the beginning of the record by carrying first good calibration back to beginning of record? (Default = TRUE)
 #'
-#' @return
+#' @return Nothing to environment; returns calibrated ambient observations to the calibrate_carbon_Bowling2003 function. This function is not designed to be called on its own.
 #' @export
 #'
 #' @examples
 #' 
-calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,site,file,forceToEnd=TRUE,forceToBeginning=TRUE) {
+calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,site,file,forceToEnd=TRUE,forceToBeginning=TRUE,
+                                                 carryLastGoodCal=TRUE) {
   
   # required libraries
   require(rhdf5)
+  require(zoo)
   
   # Method 1 refers to the Bowling et al. 2003 calibratino technique.
   # should be able to get a calGainsOffsets object from the H5 file.
@@ -33,6 +34,11 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
   
   # determine which cal period each ambient data belongs to.
   var.inds.in.calperiod <- list()
+  
+  # require NAs to be removed.
+  if (carryLastGoodCal == TRUE) {
+    caldf <- na.locf(caldf,na.rm=FALSE)
+  }
   
   for (i in 1:nrow(caldf)) {
     int <- interval(caldf$start[i],caldf$end[i])
