@@ -7,9 +7,9 @@
 #' @param outname 
 #' @param site 
 #' @param file 
-#' @param method 
 #' @param force.to.end 
 #' @param force.to.beginning 
+#' @param r2.thres 
 #'
 #' @return
 #' @export
@@ -17,7 +17,7 @@
 #' @examples
 #' 
 #' 
-calibrate_ambient_carbon_linreg <- function(amb.data.list,caldf,outname,site,file,force.to.end=TRUE,force.to.beginning=TRUE) {
+calibrate_ambient_carbon_linreg <- function(amb.data.list,caldf,outname,site,file,force.to.end=TRUE,force.to.beginning=TRUE,r2.thres=0.9) {
 
     print("Processing carbon ambient data...")
     
@@ -44,12 +44,30 @@ calibrate_ambient_carbon_linreg <- function(amb.data.list,caldf,outname,site,fil
     for (i in 1:nrow(caldf)) {
       int <- interval(caldf$start[i],caldf$end[i])
       var.inds.in.calperiod[[i]] <- which(amb.end.times %within% int)
+      
+      # check to see if calibration point is "valid" - 
+      # at present - "valid" means r2 > r2.thres.
+      # rpf - 190809.
+      
+      if (!is.na(caldf$r2[i]) & caldf$r2[i] < r2.thres) {
+        if (i > 1) {
+          caldf$slope[i] <- caldf$slope[i-1]
+          caldf$intercept[i] <- caldf$intercept[i-1]
+          caldf$r2[i] <- caldf$r2[i-1]
+        } else {
+          first.good.val <- min(which(caldf$r2 > r2.thres))
+          caldf$slope[i] <- caldf$slope[first.good.val]
+          caldf$intercept[i] <- caldf$intercept[first.good.val]
+          caldf$r2[i] <- caldf$r2[first.good.val]
+        }
+      }
     }
     
     # calibrate data at this height.
     ambdf$mean_cal <- ambdf$mean
     ambdf$max_cal  <- ambdf$max
     ambdf$min_cal  <- ambdf$min
+    
     for (i in 1:length(var.inds.in.calperiod)) {
       ambdf$mean_cal[var.inds.in.calperiod[[i]]] <- ambdf$mean[var.inds.in.calperiod[[i]]]*caldf$slope[i] + caldf$intercept[i]
       ambdf$min_cal[var.inds.in.calperiod[[i]]] <- ambdf$min[var.inds.in.calperiod[[i]]]*caldf$slope[i] + caldf$intercept[i]
