@@ -55,7 +55,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
   
   mean12C <- max12C <- min12C <- amb.delta$mean # create placeholders for 12CO2 vectors
   mean13C <- max13C <- min13C <- amb.delta$mean # create placeholders for 13CO2 vectors
-  amb.delta$mean_cal <- amb.delta$max_cal <- amb.delta$min_cal <- amb.delta$qflag <- amb.delta$mean # placeholders for calibrated delta vals.
+  amb.delta$mean_cal <- amb.delta$max_cal <- amb.delta$min_cal <- amb.delta$qflag2 <- amb.delta$qflag1 <- amb.delta$mean # placeholders for calibrated delta vals.
   
   for (i in 1:length(var.inds.in.calperiod)) {
     # calculate calibrated 12CO2 concentrations
