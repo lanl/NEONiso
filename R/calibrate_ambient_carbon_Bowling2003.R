@@ -2,7 +2,7 @@
 #'
 #' @param amb.data.list 
 #' @param caldf Calibration data frame containing gain and offset values for 12C and 13C isotopologues.
-#' @param outname 
+#' @param outname Output file name.
 #' @param site Four-letter NEON code corersponding to site being processed.
 #' @param file 
 #' @param force.to.end Extend last good calibration to end of dataset??
@@ -69,7 +69,8 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
     max13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
     
     # copy over quality flag to indicate where the calibration seems to be good.
-    amb.delta$qflag[var.inds.in.calperiod[[i]]] <- caldf$calVal.flag[var.inds.in.calperiod[[i]]]
+    amb.delta$qflag1[var.inds.in.calperiod[[i]]] <- caldf$calVal.flag1[var.inds.in.calperiod[[i]]]
+    amb.delta$qflag2[var.inds.in.calperiod[[i]]] <- caldf$calVal.flag2[var.inds.in.calperiod[[i]]]
   }
   
   # output calibrated delta values.

@@ -203,17 +203,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
       
     }# if tot >= 2
   } # for
-  
-  #-------------------------------------------------------------------------------------
-  # # calculate gain and offset values (eq. 2 and 3 of Bowling et al. 2003)
-  # # use high and low values, and validate w/ medium standards.
-  # 
-  # gain12C <- (high_rs$conc12CCO2_ref - low_rs$conc12CCO2_ref)/(high_rs$conc12CCO2_obs - low_rs$conc12CCO2_obs)
-  # gain13C <- (high_rs$conc13CCO2_ref - low_rs$conc13CCO2_ref)/(high_rs$conc13CCO2_obs - low_rs$conc13CCO2_obs)
-  # 
-  # offset12C <- high_rs$conc12CCO2_ref - gain12C*high_rs$conc12CCO2_obs
-  # offset13C <- high_rs$conc13CCO2_ref - gain13C*high_rs$conc13CCO2_obs
-  
+
   #-----------------------------------------------------------------
   # perform validation
   
@@ -224,10 +214,13 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   diff.13C <- est.med.13C - med_rs$conc13CCO2_ref
   diff.delta <- 1000*(est.med.13C/est.med.12C/R_vpdb - 1) - 1000*(med_rs$conc13CCO2_ref/med_rs$conc12CCO2_ref/R_vpdb-1)
   
-  calVal.flag <- ifelse(abs(diff.delta) < 0.5, # weak constraint...ppm values look quite good, but if 0.1 always fails...
+  calVal.flag1 <- ifelse(abs(diff.delta) < 0.5, # weak constraint...ppm values look quite good, but if 0.1 always fails...
                             1, # set to 1 if passes calibration validation
                             0) # set to 0 if fails calibratino validation
   
+  calVal.flag2 <- ifelse(val.df$tot > 1,
+                         1, # set to pass if 2+ valid points.
+                         0) # otherwise, set to fail.
   #--------------------------------------------------------------------
   # create output data frame...
   #--------------------------------------------------------------------
@@ -252,7 +245,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
                     end=as.POSIXct(endtimes,tz="UTC",origin="1970-01-01"),
                     gain12C,gain13C,offset12C,offset13C,
                     diff.12C,diff.13C,diff.delta,
-                    calVal.flag)
+                    calVal.flag1,calVal.flag2)
   
   var_for_h5 <- out
   
