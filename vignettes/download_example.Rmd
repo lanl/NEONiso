@@ -1,0 +1,63 @@
+---
+title: "An example of using download_NEON_data to retrieve data from the NEON API"
+author: "Rich Fiorella"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{download_example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+### Downloading data from the NEON API using the NEONiso package
+
+Here's a quick example that provides code to download eddy covariance and
+meteorological data for the Konza Prairie NEON site for January 2018.
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r download_example, echo=TRUE, results=FALSE, eval=FALSE}
+# only using suppressMessages here for readability, generally useful
+# messages here though about what functions are masked by loaded packages.
+suppressMessages(library(NEONiso)) 
+
+#------------------------------------------------------------------
+# download data...
+
+# download eddy covariance package
+download_NEON_data("DP4.00200.001",site.req="KONZ",site.month="2018-01") 
+
+# wind speed
+download_NEON_data("DP1.00001.001",site.req="KONZ",site.month="2018-01")
+
+# air temperature
+download_NEON_data("DP1.00003.001",site.req="KONZ",site.month="2018-01")
+
+# barometric pressure
+download_NEON_data("DP1.00004.001",site.req="KONZ",site.month="2018-01")
+
+# precipitation amount
+download_NEON_data("DP1.00006.001",site.req="KONZ",site.month="2018-01")
+
+# net radiation
+download_NEON_data("DP1.00023.001",site.req="KONZ",site.month="2018-01")
+
+# photosynthetically active radiation
+download_NEON_data("DP1.00024.001",site.req="KONZ",site.month="2018-01")
+
+# precipitation isotopes
+download_NEON_data("DP1.00038.001",site.req="KONZ",site.month="2018-01")
+
+# soil heat flux
+download_NEON_data("DP1.00040.001",site.req="KONZ",site.month="2018-01") 
+
+# soil temperature
+download_NEON_data("DP1.00041.001",site.req="KONZ",site.month="2018-01") 
+
+# relative humidity
+download_NEON_data("DP1.00098.001",site.req="KONZ",site.month="2018-01")
