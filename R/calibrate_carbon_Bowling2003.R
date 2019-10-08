@@ -137,7 +137,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   # should remove the most heinous values: are measured [CO2] w/in some tolerance
   # of expected [CO2]? This will help scrub out bad data from empty tanks, etc.
   
-  conc_thres <- 10 # threshold in ppm.
+  conc_thres <- 25 # threshold in ppm.
   
   # need to make a list of how many good calibration points there are for each calibration period.
   val.df <- data.frame(low=ifelse(abs(low_rs$CO2_meas_conc - low_rs$CO2_ref_conc) < conc_thres,
