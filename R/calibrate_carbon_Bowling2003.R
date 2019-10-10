@@ -169,9 +169,9 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
     } else if (!is.na(val.df$tot[i]) & val.df$tot[i] == 2) { # 1 calibration point doesn't pass test(s)
       # need to determine which two points are good, which can be done w/ 2 logical tests.
       
-      if (!is.na(val.df$tot[i]) & val.df$low[i] == 1) { # low point is good, need to determine if med or high point is
+      if (!is.na(val.df$tot[i]) & !is.na(val.df$low[i]) & val.df$low[i] == 1) { # low point is good, need to determine if med or high point is
                                 # other valid point.
-        if (!is.na(val.df$tot[i]) & val.df$med[i] == 1) { # low and medium point are valid.
+        if (!is.na(val.df$tot[i]) & !is.na(val.df$med[i]) & val.df$med[i] == 1) { # low and medium point are valid.
           
           gain12C[i] <- (med_rs$conc12CCO2_ref[i] - low_rs$conc12CCO2_ref[i])/(med_rs$conc12CCO2_obs[i] - low_rs$conc12CCO2_obs[i])
           gain13C[i] <- (med_rs$conc13CCO2_ref[i] - low_rs$conc13CCO2_ref[i])/(med_rs$conc13CCO2_obs[i] - low_rs$conc13CCO2_obs[i])
