@@ -148,7 +148,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
                                    1,0))
   
   # add row sum.
-  val.df$tot <- rowSums(val.df)
+  val.df$tot <- rowSums(val.df,na.rm=TRUE) # make sure to remove NAs
   
   print(val.df)
   
