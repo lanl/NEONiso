@@ -109,24 +109,22 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
     # if above logical evaluates as true, this means that the standards 
     # have a different number of observations.
     
-    print(!(identical(nrow(high_rs),nrow(med_rs)) & identical(nrow(high_rs),nrow(low_rs))))
-    
     high_rs <- high_rs %>%
       mutate(dom = day(d13C_meas_btime)) %>% # get day of month
       group_by(dom) %>%
-      slice(1) %>%
+      slice(1) 
       ungroup()
     
     med_rs <- med_rs %>%
       mutate(dom = day(d13C_meas_btime)) %>% # get day of month
       group_by(dom) %>%
-      slice(1) %>%
+      slice(1) %>% 
       ungroup()
     
     low_rs <- low_rs %>%
       mutate(dom = day(d13C_meas_btime)) %>% # get day of month
       group_by(dom) %>%
-      slice(1) %>%
+      slice(1) %>% # ensure only one point is taken if there are any ties?
       ungroup()
     
     # Target for improvement: might be a less "blind" way of selecting one observation per day.
@@ -137,7 +135,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   # should remove the most heinous values: are measured [CO2] w/in some tolerance
   # of expected [CO2]? This will help scrub out bad data from empty tanks, etc.
   
-  conc_thres <- 25 # threshold in ppm.
+  conc_thres <- 10 # threshold in ppm.
   
   # need to make a list of how many good calibration points there are for each calibration period.
   val.df <- data.frame(low=ifelse(abs(low_rs$CO2_meas_conc - low_rs$CO2_ref_conc) < conc_thres,
@@ -261,9 +259,9 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   # okay try to write out to h5 file.
   h5createFile(outname)
   h5createGroup(outname,paste0('/',site))
-  h5createGroup(outname,paste0('/',site,'/dp01iso'))
-  h5createGroup(outname,paste0('/',site,'/dp01iso/data'))
-  h5createGroup(outname,paste0('/',site,'/dp01iso/data/isoCo2'))
+  h5createGroup(outname,paste0('/',site,'/dp01'))
+  h5createGroup(outname,paste0('/',site,'/dp01/data'))
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2'))
   
   fid <- H5Fopen(outname)
 
@@ -278,7 +276,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   
   H5Gclose(attrloc)
   
-  co2.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01iso/data/isoCo2'))
+  co2.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2'))
   
   # write out dataset.
   h5writeDataset.data.frame(obj = var_for_h5,h5loc=co2.cal.outloc,
