@@ -49,7 +49,8 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   #---------------------------------------------------------
   # "high" standard
   high_rs <- data.frame(d13C_meas_mean=high$dlta13CCo2$mean,d13C_meas_var=high$dlta13CCo2$vari,
-                        CO2_meas_conc=high$rtioMoleDryCo2$mean,d13C_meas_n=high$dlta13CCo2$numSamp,
+                        CO2_meas_conc=high$rtioMoleDryCo2$mean,CO2_meas_var=high$rtioMoleDryCo2$vari,
+                        d13C_meas_n=high$dlta13CCo2$numSamp,
                         d13C_meas_btime=high$dlta13CCo2$timeBgn,d13C_meas_etime=high$dlta13CCo2$timeEnd,
                         d13C_ref_mean=high$dlta13CCo2Refe$mean,d13C_ref_var=high$dlta13CCo2Refe$vari,
                         d13C_ref_n=high$dlta13CCo2Refe$numSamp,d13C_ref_btime=high$dlta13CCo2Refe$timeBgn,
@@ -66,7 +67,8 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   
   # "medium" standard
   med_rs <- data.frame(d13C_meas_mean=med$dlta13CCo2$mean,d13C_meas_var=med$dlta13CCo2$vari,
-                       CO2_meas_conc=med$rtioMoleDryCo2$mean,d13C_meas_n=med$dlta13CCo2$numSamp,
+                       CO2_meas_conc=med$rtioMoleDryCo2$mean,CO2_meas_var=med$rtioMoleDryCo2$vari,
+                       d13C_meas_n=med$dlta13CCo2$numSamp,
                        d13C_meas_btime=med$dlta13CCo2$timeBgn,d13C_meas_etime=med$dlta13CCo2$timeEnd,
                        d13C_ref_mean=med$dlta13CCo2Refe$mean,d13C_ref_var=med$dlta13CCo2Refe$vari,
                        d13C_ref_n=med$dlta13CCo2Refe$numSamp,d13C_ref_btime=med$dlta13CCo2Refe$timeBgn,
@@ -84,7 +86,8 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   
   # "low" standard
   low_rs <- data.frame(d13C_meas_mean=low$dlta13CCo2$mean,d13C_meas_var=low$dlta13CCo2$vari,
-                       CO2_meas_conc=low$rtioMoleDryCo2$mean,d13C_meas_n=low$dlta13CCo2$numSamp,
+                       CO2_meas_conc=low$rtioMoleDryCo2$mean,CO2_meas_var=low$rtioMoleDryCo2$vari,
+                       d13C_meas_n=low$dlta13CCo2$numSamp,
                        d13C_meas_btime=low$dlta13CCo2$timeBgn,d13C_meas_etime=low$dlta13CCo2$timeEnd,
                        d13C_ref_mean=low$dlta13CCo2Refe$mean,d13C_ref_var=low$dlta13CCo2Refe$vari,
                        d13C_ref_n=low$dlta13CCo2Refe$numSamp,d13C_ref_btime=low$dlta13CCo2Refe$timeBgn,
@@ -105,30 +108,54 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   # Ensure there are the same number of standard measurements for each standard.
   #--------------------------------------------------------------
   
-  if (!(identical(nrow(high_rs),nrow(med_rs)) & identical(nrow(high_rs),nrow(low_rs)))) {
-    # if above logical evaluates as true, this means that the standards 
-    # have a different number of observations.
+    # 191024 rpf - prior versions of this have just sliced out the first observation per day.
+    # however, the most common cause of multiple standards to be analyzed per day is a 
+    # malfunctioning valve in the manifold that causes the same standard gas to register as multiple
+    # peaks. each peak is shorter, higher variance, and doesn't allow even the CO2 concentration
+    # to stabilize. until further notice, i suggest removing these standards altogether.
+    # code below has been modified to achieve this.
     
     high_rs <- high_rs %>%
       mutate(dom = day(d13C_meas_btime)) %>% # get day of month
       group_by(dom) %>%
-      slice(1) 
+      filter(d13C_meas_n > 250) %>% # check to make sure peak sufficiently long, then slice off single.
+      slice(1) %>%
       ungroup()
     
     med_rs <- med_rs %>%
       mutate(dom = day(d13C_meas_btime)) %>% # get day of month
       group_by(dom) %>%
-      slice(1) %>% 
+      filter(d13C_meas_n > 250) %>% # check to make sure peak sufficiently long, then slice off single.
+      slice(1) %>%
       ungroup()
     
     low_rs <- low_rs %>%
       mutate(dom = day(d13C_meas_btime)) %>% # get day of month
       group_by(dom) %>%
-      slice(1) %>% # ensure only one point is taken if there are any ties?
+      filter(d13C_meas_n > 250) %>% # check to make sure peak sufficiently long, then slice off single.
+      slice(1) %>%
       ungroup()
-    
-    # Target for improvement: might be a less "blind" way of selecting one observation per day.
-  }
+
+  # filter to only common days?
+  common_days <- Reduce(intersect,list(low_rs$dom,med_rs$dom,high_rs$dom))
+  
+  low_rs <- low_rs %>%
+    filter(dom %in% common_days)
+  
+  med_rs <- med_rs %>%
+    filter(dom %in% common_days)
+  
+  high_rs <- high_rs %>%
+    filter(dom %in% common_days)
+      
+  # if (!(identical(nrow(high_rs),nrow(med_rs)) & identical(nrow(high_rs),nrow(low_rs)))) {
+  #   # if above logical evaluates as true, this means that the standards 
+  #   # have a different number of observations.
+  #   high_rs <- high_rs %>%
+  #     mutate(dom = day(d13C_meas_btime)) %>% # get day of month
+  #     group_by(dom) %>%
+  #     slice(1) %>% # require group count to be 1 per note above.
+  #     ungroup()
   
   #-------------------------------------------------------------------------------------
   # try to determine if all data points are valid. most obvious check here that 
@@ -136,20 +163,31 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   # of expected [CO2]? This will help scrub out bad data from empty tanks, etc.
   
   conc_thres <- 10 # threshold in ppm.
+  conc_var_thres <- 2 # threshold for co2 variance in ppm.
   
   # need to make a list of how many good calibration points there are for each calibration period.
-  val.df <- data.frame(low=ifelse(abs(low_rs$CO2_meas_conc - low_rs$CO2_ref_conc) < conc_thres,
+  val.df <- data.frame(low=ifelse(abs(low_rs$CO2_meas_conc - low_rs$CO2_ref_conc) < conc_thres &
+                                 low_rs$CO2_meas_var < conc_var_thres &
+                                 !is.na(low_rs$d13C_meas_mean) & !is.na(low_rs$d13C_ref_mean),
                                   1,0), # 1 if true, 0 if false
-                       med=ifelse(abs(med_rs$CO2_meas_conc - med_rs$CO2_ref_conc) < conc_thres,
+                       med=ifelse(abs(med_rs$CO2_meas_conc - med_rs$CO2_ref_conc) < conc_thres &
+                                    med_rs$CO2_meas_var < conc_var_thres &
+                                    !is.na(med_rs$d13C_meas_mean) & !is.na(med_rs$d13C_ref_mean),
                                   1,0),
-                       high=ifelse(abs(high_rs$CO2_meas_conc - high_rs$CO2_ref_conc) < conc_thres,
+                       high=ifelse(abs(high_rs$CO2_meas_conc - high_rs$CO2_ref_conc) < conc_thres &
+                                     high_rs$CO2_meas_var < conc_var_thres &
+                                     !is.na(high_rs$d13C_meas_mean) & !is.na(high_rs$d13C_ref_mean),
                                    1,0))
   
   # add row sum.
+  if (nrow(val.df) == 0) {
+    val.df <- data.frame(low=NA,med=NA,high=NA)
+  }
+  
   val.df$tot <- rowSums(val.df,na.rm=TRUE) # make sure to remove NAs
   
   print(val.df)
-  
+
   # there's almost definitely a faster way to implement this, but coding as a loop for now.
   #-----------------------------------------------------------------------
   # preallocate variables.
@@ -215,11 +253,12 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   calVal.flag1 <- ifelse(abs(diff.delta) < 0.5, # weak constraint...ppm values look quite good, but if 0.1 always fails...
                             1, # set to 1 if passes calibration validation
                             0) # set to 0 if fails calibratino validation
-  
-  calVal.flag2 <- ifelse(val.df$tot > 1,
-                         1, # set to pass if 2+ valid points.
-                         0) # otherwise, set to fail.
-  #--------------------------------------------------------------------
+
+  calVal.flag2 <- val.df$tot  
+  # calVal.flag2 <- ifelse(val.df$tot > 1,
+  #                        1, # set to pass if 2+ valid points.
+  #                        0) # otherwise, set to fail.
+  # #--------------------------------------------------------------------
   # create output data frame...
   #--------------------------------------------------------------------
   # get start and end times from high standard. apply each calibration
@@ -239,11 +278,20 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   }
   
   # output dataframe giving valid time range, slopes, intercepts, rsquared.
-  out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
-                    end=as.POSIXct(endtimes,tz="UTC",origin="1970-01-01"),
-                    gain12C,gain13C,offset12C,offset13C,
-                    diff.12C,diff.13C,diff.delta,
-                    calVal.flag1,calVal.flag2)
+  if (nrow(val.df) == 1 & is.na(val.df$low) & is.na(val.df$med) & is.na(val.df$high)) {
+    out <- data.frame(start=NA,
+                      end=NA,
+                      gain12C=NA,gain13C=NA,offset12C=NA,offset13C=NA,
+                      diff.12C=NA,diff.13C=NA,diff.delta=NA,
+                      calVal.flag1=NA,calVal.flag2=NA)
+  } else {
+    out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
+                      end=as.POSIXct(endtimes,tz="UTC",origin="1970-01-01"),
+                      gain12C,gain13C,offset12C,offset13C,
+                      diff.12C,diff.13C,diff.delta,
+                      calVal.flag1,calVal.flag2)
+  }
+
   
   var_for_h5 <- out
   
