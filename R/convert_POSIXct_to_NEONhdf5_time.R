@@ -1,8 +1,8 @@
 #' convert_POSIXct_to_NEONhdf5_time
 #'
-#' @param intime 
+#' @param intime Time to convert from NEON HDF5 files. Should be a character string.
 #'
-#' @return
+#' @return Returns POSIXct version of NEON time variable.
 #' @export
 #'
 #' @examples
