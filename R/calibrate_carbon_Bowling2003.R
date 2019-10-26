@@ -118,21 +118,21 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
     high_rs <- high_rs %>%
       mutate(dom = day(d13C_meas_btime)) %>% # get day of month
       group_by(dom) %>%
-      filter(d13C_meas_n > 250) %>% # check to make sure peak sufficiently long, then slice off single.
+      filter(d13C_meas_n > 250 | is.na(d13C_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
       slice(1) %>%
       ungroup()
     
     med_rs <- med_rs %>%
       mutate(dom = day(d13C_meas_btime)) %>% # get day of month
       group_by(dom) %>%
-      filter(d13C_meas_n > 250) %>% # check to make sure peak sufficiently long, then slice off single.
+      filter(d13C_meas_n > 250 | is.na(d13C_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
       slice(1) %>%
       ungroup()
     
     low_rs <- low_rs %>%
       mutate(dom = day(d13C_meas_btime)) %>% # get day of month
       group_by(dom) %>%
-      filter(d13C_meas_n > 250) %>% # check to make sure peak sufficiently long, then slice off single.
+      filter(d13C_meas_n > 250 | is.na(d13C_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
       slice(1) %>%
       ungroup()
 
