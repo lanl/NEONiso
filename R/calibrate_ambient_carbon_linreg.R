@@ -17,7 +17,7 @@
 #' @examples
 #' 
 #' 
-calibrate_ambient_carbon_linreg <- function(amb.data.list,caldf,outname,site,file,force.to.end=TRUE,force.to.beginning=TRUE,r2.thres=0.9) {
+calibrate_ambient_carbon_linreg <- function(amb.data.list,caldf,outname,site,file,force.to.end=TRUE,force.to.beginning=TRUE,r2.thres=0.95) {
 
     print("Processing carbon ambient data...")
     
