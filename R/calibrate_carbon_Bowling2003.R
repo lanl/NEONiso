@@ -92,7 +92,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
                        d13C_ref_btime=med$dlta13CCo2Refe$timeBgn,
                        d13C_ref_etime=med$dlta13CCo2Refe$timeEnd,
                        CO2_ref_mean=med$rtioMoleDryCo2Refe$mean,
-                       CO2_ref_var=high$rtioMoleDryCo2Refe$vari)
+                       CO2_ref_var=med$rtioMoleDryCo2Refe$vari)
   
   # calculate 12CO2 and 13CO2 concentrations for medium standard
   # for reference and observed isotope ratios
@@ -123,7 +123,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
                        d13C_ref_btime=low$dlta13CCo2Refe$timeBgn,
                        d13C_ref_etime=low$dlta13CCo2Refe$timeEnd,
                        CO2_ref_mean=low$rtioMoleDryCo2Refe$mean,
-                       CO2_ref_var=high$rtioMoleDryCo2Refe$vari)
+                       CO2_ref_var=low$rtioMoleDryCo2Refe$vari)
   
   # calculate 12CO2 and 13CO2 concentrations for low standard
   # for reference and observed isotope ratios
