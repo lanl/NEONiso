@@ -389,13 +389,15 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
                       end=NA,
                       gain12C=NA,gain13C=NA,offset12C=NA,offset13C=NA,
                       diff.12C=NA,diff.13C=NA,diff.delta=NA,
-                      calVal.flag1=NA,calVal.flag2=NA)
+                      calVal.flag1=NA,calVal.flag2=NA,
+                      vari.o12C=NA,vari.o13C=NA,vari.g13C=NA,vari.g12C=NA)
   } else {
     out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(endtimes,tz="UTC",origin="1970-01-01"),
                       gain12C,gain13C,offset12C,offset13C,
                       diff.12C,diff.13C,diff.delta,
-                      calVal.flag1,calVal.flag2)
+                      calVal.flag1,calVal.flag2,
+                      vari.g12C,vari.g13C,vari.o12C,vari.o13C)
   }
 
   
