@@ -53,24 +53,24 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
                         d13C_obs_n=high$dlta13CCo2$numSamp,
                         d13C_obs_btime=high$dlta13CCo2$timeBgn,
                         d13C_obs_etime=high$dlta13CCo2$timeEnd,
-                        CO2_obs_conc=high$rtioMoleDryCo2$mean,
+                        CO2_obs_mean=high$rtioMoleDryCo2$mean,
                         CO2_obs_var=high$rtioMoleDryCo2$vari,
                         d13C_ref_mean=high$dlta13CCo2Refe$mean,
                         d13C_ref_var=high$dlta13CCo2Refe$vari,
                         d13C_ref_n=high$dlta13CCo2Refe$numSamp,
                         d13C_ref_btime=high$dlta13CCo2Refe$timeBgn,
                         d13C_ref_etime=high$dlta13CCo2Refe$timeEnd,
-                        CO2_ref_conc=high$rtioMoleDryCo2Refe$mean,
+                        CO2_ref_mean=high$rtioMoleDryCo2Refe$mean,
                         CO2_ref_var=high$rtioMoleDryCo2Refe$vari)
   
   # calculate 12CO2 and 13CO2 concentrations for high standard
   # for reference and observed isotope ratios
   high_rs <- high_rs %>%
     mutate(std_name="high") %>%
-    mutate(conc12CCO2_ref = CO2_ref_conc*(1-f)/(1+R_vpdb*(1+d13C_ref_mean/1000))) %>%
-    mutate(conc13CCO2_ref = CO2_ref_conc*(1-f)-conc12CCO2_ref) %>%
-    mutate(conc12CCO2_obs = CO2_obs_conc*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
-    mutate(conc13CCO2_obs = CO2_obs_conc*(1-f)-conc12CCO2_obs) %>%
+    mutate(conc12CCO2_ref = CO2_ref_mean*(1-f)/(1+R_vpdb*(1+d13C_ref_mean/1000))) %>%
+    mutate(conc13CCO2_ref = CO2_ref_mean*(1-f)-conc12CCO2_ref) %>%
+    mutate(conc12CCO2_obs = CO2_obs_mean*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
+    mutate(conc13CCO2_obs = CO2_obs_mean*(1-f)-conc12CCO2_obs) %>%
     mutate(vari12CCO2_ref = 0.5) %>% # placeholder! need to figure out better solution.
     mutate(vari13CCO2_ref = 0.5) %>% # placeholder! need to figure out better solution.
     mutate(vari12CCO2_obs = ((1-f)/(1+R_vpdb*(d13C_obs_mean/1000+1)))^2*CO2_obs_var + 
@@ -84,24 +84,24 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
                        d13C_obs_n=med$dlta13CCo2$numSamp,
                        d13C_obs_btime=med$dlta13CCo2$timeBgn,
                        d13C_obs_etime=med$dlta13CCo2$timeEnd,
-                       CO2_obs_conc=med$rtioMoleDryCo2$mean,
+                       CO2_obs_mean=med$rtioMoleDryCo2$mean,
                        CO2_obs_var=med$rtioMoleDryCo2$vari,
                        d13C_ref_mean=med$dlta13CCo2Refe$mean,
                        d13C_ref_var=med$dlta13CCo2Refe$vari,
                        d13C_ref_n=med$dlta13CCo2Refe$numSamp,
                        d13C_ref_btime=med$dlta13CCo2Refe$timeBgn,
                        d13C_ref_etime=med$dlta13CCo2Refe$timeEnd,
-                       CO2_ref_conc=med$rtioMoleDryCo2Refe$mean,
+                       CO2_ref_mean=med$rtioMoleDryCo2Refe$mean,
                        CO2_ref_var=high$rtioMoleDryCo2Refe$vari)
   
   # calculate 12CO2 and 13CO2 concentrations for medium standard
   # for reference and observed isotope ratios
   med_rs <- med_rs %>%
     mutate(std_name="med") %>%
-    mutate(conc12CCO2_ref = CO2_ref_conc*(1-f)/(1+R_vpdb*(1+d13C_ref_mean/1000))) %>%
-    mutate(conc13CCO2_ref = CO2_ref_conc*(1-f)-conc12CCO2_ref) %>%
-    mutate(conc12CCO2_obs = CO2_obs_conc*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
-    mutate(conc13CCO2_obs = CO2_obs_conc*(1-f)-conc12CCO2_obs) %>%
+    mutate(conc12CCO2_ref = CO2_ref_mean*(1-f)/(1+R_vpdb*(1+d13C_ref_mean/1000))) %>%
+    mutate(conc13CCO2_ref = CO2_ref_mean*(1-f)-conc12CCO2_ref) %>%
+    mutate(conc12CCO2_obs = CO2_obs_mean*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
+    mutate(conc13CCO2_obs = CO2_obs_mean*(1-f)-conc12CCO2_obs) %>%
     mutate(vari12CCO2_ref = 0.5) %>% # placeholder! need to figure out better solution.
     mutate(vari13CCO2_ref = 0.5) %>% # placeholder! need to figure out better solution.
     mutate(vari12CCO2_obs = ((1-f)/(1+R_vpdb*(d13C_obs_mean/1000+1)))^2*CO2_obs_var + 
@@ -115,24 +115,24 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
                        d13C_obs_n=low$dlta13CCo2$numSamp,
                        d13C_obs_btime=low$dlta13CCo2$timeBgn,
                        d13C_obs_etime=low$dlta13CCo2$timeEnd,
-                       CO2_obs_conc=low$rtioMoleDryCo2$mean,
+                       CO2_obs_mean=low$rtioMoleDryCo2$mean,
                        CO2_obs_var=low$rtioMoleDryCo2$vari,
                        d13C_ref_mean=low$dlta13CCo2Refe$mean,
                        d13C_ref_var=low$dlta13CCo2Refe$vari,
                        d13C_ref_n=low$dlta13CCo2Refe$numSamp,
                        d13C_ref_btime=low$dlta13CCo2Refe$timeBgn,
                        d13C_ref_etime=low$dlta13CCo2Refe$timeEnd,
-                       CO2_ref_conc=low$rtioMoleDryCo2Refe$mean,
+                       CO2_ref_mean=low$rtioMoleDryCo2Refe$mean,
                        CO2_ref_var=high$rtioMoleDryCo2Refe$vari)
   
   # calculate 12CO2 and 13CO2 concentrations for low standard
   # for reference and observed isotope ratios
   low_rs <- low_rs %>%
     mutate(std_name="low") %>%
-    mutate(conc12CCO2_ref = CO2_ref_conc*(1-f)/(1+R_vpdb*(1+d13C_ref_mean/1000))) %>%
-    mutate(conc13CCO2_ref = CO2_ref_conc*(1-f)-conc12CCO2_ref) %>%
-    mutate(conc12CCO2_obs = CO2_obs_conc*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
-    mutate(conc13CCO2_obs = CO2_obs_conc*(1-f)-conc12CCO2_obs) %>%
+    mutate(conc12CCO2_ref = CO2_ref_mean*(1-f)/(1+R_vpdb*(1+d13C_ref_mean/1000))) %>%
+    mutate(conc13CCO2_ref = CO2_ref_mean*(1-f)-conc12CCO2_ref) %>%
+    mutate(conc12CCO2_obs = CO2_obs_mean*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
+    mutate(conc13CCO2_obs = CO2_obs_mean*(1-f)-conc12CCO2_obs) %>%
     mutate(vari12CCO2_ref = 0.5) %>% # placeholder! need to figure out better solution.
     mutate(vari13CCO2_ref = 0.5) %>% # placeholder! need to figure out better solution.
     mutate(vari12CCO2_obs = ((1-f)/(1+R_vpdb*(d13C_obs_mean/1000+1)))^2*CO2_obs_var + 
@@ -204,15 +204,15 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   conc_var_thres <- 2 # threshold for co2 variance in ppm.
   
   # need to make a list of how many good calibration points there are for each calibration period.
-  val.df <- data.frame(low=ifelse(abs(low_rs$CO2_meas_conc - low_rs$CO2_ref_conc) < conc_thres &
+  val.df <- data.frame(low=ifelse(abs(low_rs$CO2_meas_mean - low_rs$CO2_ref_mean) < conc_thres &
                                  low_rs$CO2_meas_var < conc_var_thres &
                                  !is.na(low_rs$d13C_meas_mean) & !is.na(low_rs$d13C_ref_mean),
                                   1,0), # 1 if true, 0 if false
-                       med=ifelse(abs(med_rs$CO2_meas_conc - med_rs$CO2_ref_conc) < conc_thres &
+                       med=ifelse(abs(med_rs$CO2_meas_mean - med_rs$CO2_ref_mean) < conc_thres &
                                     med_rs$CO2_meas_var < conc_var_thres &
                                     !is.na(med_rs$d13C_meas_mean) & !is.na(med_rs$d13C_ref_mean),
                                   1,0),
-                       high=ifelse(abs(high_rs$CO2_meas_conc - high_rs$CO2_ref_conc) < conc_thres &
+                       high=ifelse(abs(high_rs$CO2_meas_mean - high_rs$CO2_ref_mean) < conc_thres &
                                      high_rs$CO2_meas_var < conc_var_thres &
                                      !is.na(high_rs$d13C_meas_mean) & !is.na(high_rs$d13C_ref_mean),
                                   1,0))
