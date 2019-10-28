@@ -76,7 +76,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
     mutate(vari12CCO2_obs = ((1-f)/(1+R_vpdb*(d13C_obs_mean/1000+1)))^2*CO2_obs_var + 
                               ((1-f)*CO2_obs_mean/(1+R_vpdb*(d13C_obs_mean/1000+1))^2)^2*(R_vpdb/1000)^2*d13C_obs_var) %>%
     mutate(vari13CCO2_obs = (1-f)^2*CO2_obs_var + vari12CCO2_obs) %>%
-    mutate(d13C_meas_btime=as.POSIXct(d13C_meas_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")) # for assigning times later.
+    mutate(d13C_obs_btime=as.POSIXct(d13C_obs_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")) # for assigning times later.
   
   # "medium" standard
   med_rs <- data.frame(d13C_obs_mean=med$dlta13CCo2$mean,
@@ -107,7 +107,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
     mutate(vari12CCO2_obs = ((1-f)/(1+R_vpdb*(d13C_obs_mean/1000+1)))^2*CO2_obs_var + 
              ((1-f)*CO2_obs_mean/(1+R_vpdb*(d13C_obs_mean/1000+1))^2)^2*(R_vpdb/1000)^2*d13C_obs_var) %>%
     mutate(vari13CCO2_obs = (1-f)^2*CO2_obs_var + vari12CCO2_obs) %>%
-    mutate(d13C_meas_btime=as.POSIXct(d13C_meas_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")) # for assigning times later.
+    mutate(d13C_obs_btime=as.POSIXct(d13C_obs_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")) # for assigning times later.
   
   # "low" standard
   low_rs <- data.frame(d13C_obs_mean=low$dlta13CCo2$mean,
@@ -138,7 +138,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
     mutate(vari12CCO2_obs = ((1-f)/(1+R_vpdb*(d13C_obs_mean/1000+1)))^2*CO2_obs_var + 
              ((1-f)*CO2_obs_mean/(1+R_vpdb*(d13C_obs_mean/1000+1))^2)^2*(R_vpdb/1000)^2*d13C_obs_var) %>%
     mutate(vari13CCO2_obs = (1-f)^2*CO2_obs_var + vari12CCO2_obs) %>%
-    mutate(d13C_meas_btime=as.POSIXct(d13C_meas_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")) # for assigning times later.
+    mutate(d13C_obs_btime=as.POSIXct(d13C_obs_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")) # for assigning times later.
   
   # need to add propogation of uncertainty sometime! - RPF
   
@@ -154,23 +154,23 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
     # code below has been modified to achieve this.
     
     high_rs <- high_rs %>%
-      mutate(dom = day(d13C_meas_btime)) %>% # get day of month
+      mutate(dom = day(d13C_obs_btime)) %>% # get day of month
       group_by(dom) %>%
-      filter(d13C_meas_n > 250 | is.na(d13C_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+      filter(d13C_obs_n > 250 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
       slice(1) %>%
       ungroup()
     
     med_rs <- med_rs %>%
-      mutate(dom = day(d13C_meas_btime)) %>% # get day of month
+      mutate(dom = day(d13C_obs_btime)) %>% # get day of month
       group_by(dom) %>%
-      filter(d13C_meas_n > 250 | is.na(d13C_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+      filter(d13C_obs_n > 250 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
       slice(1) %>%
       ungroup()
     
     low_rs <- low_rs %>%
-      mutate(dom = day(d13C_meas_btime)) %>% # get day of month
+      mutate(dom = day(d13C_obs_btime)) %>% # get day of month
       group_by(dom) %>%
-      filter(d13C_meas_n > 250 | is.na(d13C_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+      filter(d13C_obs_n > 250 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
       slice(1) %>%
       ungroup()
 
@@ -190,7 +190,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   #   # if above logical evaluates as true, this means that the standards 
   #   # have a different number of observations.
   #   high_rs <- high_rs %>%
-  #     mutate(dom = day(d13C_meas_btime)) %>% # get day of month
+  #     mutate(dom = day(d13C_obs_btime)) %>% # get day of month
   #     group_by(dom) %>%
   #     slice(1) %>% # require group count to be 1 per note above.
   #     ungroup()
@@ -204,17 +204,17 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   conc_var_thres <- 2 # threshold for co2 variance in ppm.
   
   # need to make a list of how many good calibration points there are for each calibration period.
-  val.df <- data.frame(low=ifelse(abs(low_rs$CO2_meas_mean - low_rs$CO2_ref_mean) < conc_thres &
-                                 low_rs$CO2_meas_var < conc_var_thres &
-                                 !is.na(low_rs$d13C_meas_mean) & !is.na(low_rs$d13C_ref_mean),
+  val.df <- data.frame(low=ifelse(abs(low_rs$CO2_obs_mean - low_rs$CO2_ref_mean) < conc_thres &
+                                 low_rs$CO2_obs_var < conc_var_thres &
+                                 !is.na(low_rs$d13C_obs_mean) & !is.na(low_rs$d13C_ref_mean),
                                   1,0), # 1 if true, 0 if false
-                       med=ifelse(abs(med_rs$CO2_meas_mean - med_rs$CO2_ref_mean) < conc_thres &
-                                    med_rs$CO2_meas_var < conc_var_thres &
-                                    !is.na(med_rs$d13C_meas_mean) & !is.na(med_rs$d13C_ref_mean),
+                       med=ifelse(abs(med_rs$CO2_obs_mean - med_rs$CO2_ref_mean) < conc_thres &
+                                    med_rs$CO2_obs_var < conc_var_thres &
+                                    !is.na(med_rs$d13C_obs_mean) & !is.na(med_rs$d13C_ref_mean),
                                   1,0),
-                       high=ifelse(abs(high_rs$CO2_meas_mean - high_rs$CO2_ref_mean) < conc_thres &
-                                     high_rs$CO2_meas_var < conc_var_thres &
-                                     !is.na(high_rs$d13C_meas_mean) & !is.na(high_rs$d13C_ref_mean),
+                       high=ifelse(abs(high_rs$CO2_obs_mean - high_rs$CO2_ref_mean) < conc_thres &
+                                     high_rs$CO2_obs_var < conc_var_thres &
+                                     !is.na(high_rs$d13C_obs_mean) & !is.na(high_rs$d13C_ref_mean),
                                   1,0))
   
   # add row sum.
@@ -376,11 +376,11 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   # specify beignning,end of calibratino periods.
   for (i in 1:nrow(high_rs)) {
     starttimes[i] <- ifelse(i !=1, 
-                            high_rs$d13C_meas_btime[i],
-                            floor_date(high_rs$d13C_meas_btime[i],unit="month")) # round to beginning of month if at the first row
+                            high_rs$d13C_obs_btime[i],
+                            floor_date(high_rs$d13C_obs_btime[i],unit="month")) # round to beginning of month if at the first row
     endtimes[i] <- ifelse(i != nrow(high_rs), 
-                          high_rs$d13C_meas_btime[i+1], 
-                          ceiling_date(high_rs$d13C_meas_btime[i],unit="month")) # round to end of month if at last row
+                          high_rs$d13C_obs_btime[i+1], 
+                          ceiling_date(high_rs$d13C_obs_btime[i],unit="month")) # round to end of month if at last row
   }
   
   # output dataframe giving valid time range, slopes, intercepts, rsquared.
