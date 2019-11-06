@@ -384,7 +384,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   }
   
   # output dataframe giving valid time range, slopes, intercepts, rsquared.
-  if (nrow(val.df) == 1 & is.na(val.df$low) & is.na(val.df$med) & is.na(val.df$high)) {
+  if (nrow(val.df) == 1 && is.na(val.df$low) && is.na(val.df$med) && is.na(val.df$high)) {
     out <- data.frame(start=NA,
                       end=NA,
                       gain12C=NA,gain13C=NA,offset12C=NA,offset13C=NA,
