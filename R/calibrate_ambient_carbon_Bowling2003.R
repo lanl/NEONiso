@@ -94,7 +94,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
   amb.delta$mean13CCO2 <- mean13C
   amb.delta$vari12CCO2 <- vari12C
   amb.delta$vari13CCO2 <- vari13C
-  amb.delta$vari_cal <- 1000^2*(mean13C/mean12C)^2*(vari12C/amb.12CO2$mean^2 + vari13C/amb.13CO2$mean^2)
+  amb.delta$vari_cal <- 1000^2*(mean13C/mean12C)^2*(vari12C/(sqrt(312)*amb.12CO2$mean^2) + vari13C/(sqrt(312)*amb.13CO2$mean^2))
   
   #amb.delta$min_cal <- 1000*(min13C/min12C/R_vpdb - 1)
   #amb.delta$max_cal <- 1000*(max13C/max12C/R_vpdb - 1)

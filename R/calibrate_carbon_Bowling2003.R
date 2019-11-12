@@ -72,7 +72,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
     mutate(conc12CCO2_obs = CO2_obs_mean*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
     mutate(conc13CCO2_obs = CO2_obs_mean*(1-f)-conc12CCO2_obs) %>%
     mutate(vari12CCO2_ref = 0.1) %>% # placeholder! need to figure out better solution.
-    mutate(vari13CCO2_ref = 0.1) %>% # placeholder! need to figure out better solution.
+    mutate(vari13CCO2_ref = 0.01) %>% # placeholder! need to figure out better solution.
     mutate(vari12CCO2_obs = ((1-f)/(1+R_vpdb*(d13C_obs_mean/1000+1)))^2*CO2_obs_var + 
                               ((1-f)*CO2_obs_mean/(1+R_vpdb*(d13C_obs_mean/1000+1))^2)^2*(R_vpdb/1000)^2*d13C_obs_var) %>%
     mutate(vari13CCO2_obs = (1-f)^2*CO2_obs_var + vari12CCO2_obs) %>%
@@ -106,7 +106,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
     mutate(conc12CCO2_obs = CO2_obs_mean*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
     mutate(conc13CCO2_obs = CO2_obs_mean*(1-f)-conc12CCO2_obs) %>%
     mutate(vari12CCO2_ref = 0.1) %>% # placeholder! need to figure out better solution.
-    mutate(vari13CCO2_ref = 0.1) %>% # placeholder! need to figure out better solution.
+    mutate(vari13CCO2_ref = 0.01) %>% # placeholder! need to figure out better solution.
     mutate(vari12CCO2_obs = ((1-f)/(1+R_vpdb*(d13C_obs_mean/1000+1)))^2*CO2_obs_var + 
              ((1-f)*CO2_obs_mean/(1+R_vpdb*(d13C_obs_mean/1000+1))^2)^2*(R_vpdb/1000)^2*d13C_obs_var) %>%
     mutate(vari13CCO2_obs = (1-f)^2*CO2_obs_var + vari12CCO2_obs) %>%
@@ -140,7 +140,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
     mutate(conc12CCO2_obs = CO2_obs_mean*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
     mutate(conc13CCO2_obs = CO2_obs_mean*(1-f)-conc12CCO2_obs) %>%
     mutate(vari12CCO2_ref = 0.1) %>% # placeholder! need to figure out better solution.
-    mutate(vari13CCO2_ref = 0.1) %>% # placeholder! need to figure out better solution.
+    mutate(vari13CCO2_ref = 0.01) %>% # placeholder! need to figure out better solution.
     mutate(vari12CCO2_obs = ((1-f)/(1+R_vpdb*(d13C_obs_mean/1000+1)))^2*CO2_obs_var + 
              ((1-f)*CO2_obs_mean/(1+R_vpdb*(d13C_obs_mean/1000+1))^2)^2*(R_vpdb/1000)^2*d13C_obs_var) %>%
     mutate(vari13CCO2_obs = (1-f)^2*CO2_obs_var + vari12CCO2_obs) %>%
@@ -149,6 +149,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
     mutate(se12CCO2_obs = sqrt(vari12CCO2_obs/(1-0.5^2))/sqrt(d13C_obs_n)) %>%
     mutate(d13C_obs_btime=as.POSIXct(d13C_obs_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")) # for assigning times later. 
   
+  # combine data frames, calculate derived variables, and then 
   
   #--------------------------------------------------------------
   # Ensure there are the same number of standard measurements for each standard.
