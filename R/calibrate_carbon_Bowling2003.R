@@ -55,6 +55,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
                         d13C_obs_etime=high$dlta13CCo2$timeEnd,
                         CO2_obs_mean=high$rtioMoleDryCo2$mean,
                         CO2_obs_var=high$rtioMoleDryCo2$vari,
+                        CO2_obs_n=high$rtioMoleDryCo2$numSamp,
                         d13C_ref_mean=high$dlta13CCo2Refe$mean,
                         d13C_ref_var=high$dlta13CCo2Refe$vari,
                         d13C_ref_n=high$dlta13CCo2Refe$numSamp,
@@ -66,20 +67,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   # calculate 12CO2 and 13CO2 concentrations for high standard
   # for reference and observed isotope ratios
   high_rs <- high_rs %>%
-    mutate(std_name="high") %>%
-    mutate(conc12CCO2_ref = CO2_ref_mean*(1-f)/(1+R_vpdb*(1+d13C_ref_mean/1000))) %>%
-    mutate(conc13CCO2_ref = CO2_ref_mean*(1-f)-conc12CCO2_ref) %>%
-    mutate(conc12CCO2_obs = CO2_obs_mean*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
-    mutate(conc13CCO2_obs = CO2_obs_mean*(1-f)-conc12CCO2_obs) %>%
-    mutate(vari12CCO2_ref = 0.1) %>% # placeholder! need to figure out better solution.
-    mutate(vari13CCO2_ref = 0.01) %>% # placeholder! need to figure out better solution.
-    mutate(vari12CCO2_obs = ((1-f)/(1+R_vpdb*(d13C_obs_mean/1000+1)))^2*CO2_obs_var + 
-                              ((1-f)*CO2_obs_mean/(1+R_vpdb*(d13C_obs_mean/1000+1))^2)^2*(R_vpdb/1000)^2*d13C_obs_var) %>%
-    mutate(vari13CCO2_obs = (1-f)^2*CO2_obs_var + vari12CCO2_obs) %>%
-    # scale variances for autocorrelation
-    mutate(se13CCO2_obs = sqrt(vari13CCO2_obs/(1-0.5^2))/sqrt(d13C_obs_n)) %>%
-    mutate(se12CCO2_obs = sqrt(vari12CCO2_obs/(1-0.5^2))/sqrt(d13C_obs_n)) %>%
-    mutate(d13C_obs_btime=as.POSIXct(d13C_obs_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")) # for assigning times later.
+    mutate(std_name="high")
   
   # "medium" standard
   med_rs <- data.frame(d13C_obs_mean=med$dlta13CCo2$mean,
@@ -89,6 +77,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
                        d13C_obs_etime=med$dlta13CCo2$timeEnd,
                        CO2_obs_mean=med$rtioMoleDryCo2$mean,
                        CO2_obs_var=med$rtioMoleDryCo2$vari,
+                       CO2_obs_n=med$rtioMoleDryCo2$numSamp,
                        d13C_ref_mean=med$dlta13CCo2Refe$mean,
                        d13C_ref_var=med$dlta13CCo2Refe$vari,
                        d13C_ref_n=med$dlta13CCo2Refe$numSamp,
@@ -100,20 +89,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   # calculate 12CO2 and 13CO2 concentrations for medium standard
   # for reference and observed isotope ratios
   med_rs <- med_rs %>%
-    mutate(std_name="med") %>%
-    mutate(conc12CCO2_ref = CO2_ref_mean*(1-f)/(1+R_vpdb*(1+d13C_ref_mean/1000))) %>%
-    mutate(conc13CCO2_ref = CO2_ref_mean*(1-f)-conc12CCO2_ref) %>%
-    mutate(conc12CCO2_obs = CO2_obs_mean*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
-    mutate(conc13CCO2_obs = CO2_obs_mean*(1-f)-conc12CCO2_obs) %>%
-    mutate(vari12CCO2_ref = 0.1) %>% # placeholder! need to figure out better solution.
-    mutate(vari13CCO2_ref = 0.01) %>% # placeholder! need to figure out better solution.
-    mutate(vari12CCO2_obs = ((1-f)/(1+R_vpdb*(d13C_obs_mean/1000+1)))^2*CO2_obs_var + 
-             ((1-f)*CO2_obs_mean/(1+R_vpdb*(d13C_obs_mean/1000+1))^2)^2*(R_vpdb/1000)^2*d13C_obs_var) %>%
-    mutate(vari13CCO2_obs = (1-f)^2*CO2_obs_var + vari12CCO2_obs) %>%
-    # scale variances for autocorrelation
-    mutate(se13CCO2_obs = sqrt(vari13CCO2_obs/(1-0.5^2))/sqrt(d13C_obs_n)) %>%
-    mutate(se12CCO2_obs = sqrt(vari12CCO2_obs/(1-0.5^2))/sqrt(d13C_obs_n)) %>%
-    mutate(d13C_obs_btime=as.POSIXct(d13C_obs_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")) # for assigning times later.
+    mutate(std_name="med")
   
   # "low" standard
   low_rs <- data.frame(d13C_obs_mean=low$dlta13CCo2$mean,
@@ -123,6 +99,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
                        d13C_obs_etime=low$dlta13CCo2$timeEnd,
                        CO2_obs_mean=low$rtioMoleDryCo2$mean,
                        CO2_obs_var=low$rtioMoleDryCo2$vari,
+                       CO2_obs_n=low$rtioMoleDryCo2$numSamp,
                        d13C_ref_mean=low$dlta13CCo2Refe$mean,
                        d13C_ref_var=low$dlta13CCo2Refe$vari,
                        d13C_ref_n=low$dlta13CCo2Refe$numSamp,
@@ -134,23 +111,43 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   # calculate 12CO2 and 13CO2 concentrations for low standard
   # for reference and observed isotope ratios
   low_rs <- low_rs %>%
-    mutate(std_name="low") %>%
+    mutate(std_name="low")
+  
+  # combine data frames, calculate derived variables, and then separate back out.
+  standards <- do.call(rbind,list(low_rs,med_rs,high_rs))
+  
+  rm(high_rs,med_rs,low_rs)
+  
+  standards <- standards %>%
+    mutate(d13C_obs_btime=as.POSIXct(d13C_obs_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")) %>% # for assigning times later. 
+    #------------------------------------------------------------
+    # calculate mole fraction of 12CO2 and 13CO2 for the reference gases and observed values.
     mutate(conc12CCO2_ref = CO2_ref_mean*(1-f)/(1+R_vpdb*(1+d13C_ref_mean/1000))) %>%
     mutate(conc13CCO2_ref = CO2_ref_mean*(1-f)-conc12CCO2_ref) %>%
     mutate(conc12CCO2_obs = CO2_obs_mean*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
     mutate(conc13CCO2_obs = CO2_obs_mean*(1-f)-conc12CCO2_obs) %>%
+    
+    #------------------------------------------------------------
+    # calculate variance on 12CO2 and 12CO2 for the reference gases and observed values.
+    # NB: 191112 - RPF - as of now, reference gas uncertainties are hard-coded! they are 
+    # supposed to be available in the dp0p data folder, but the values there seem to have
+    # an issue with them. I've raised this w/ NEON.
+    
+    #--- adjust variances for autocorrelation, repeated measurements.
+    mutate(var_adj_d13C_obs = d13C_obs_var/((1-0.5^2)*d13C_obs_n)) %>% # adjust for autocorrelation, divide by n
+    mutate(var_adj_CO2_obs  = CO2_obs_var/((1-0.5^2)*CO2_obs_n)) %>%
     mutate(vari12CCO2_ref = 0.1) %>% # placeholder! need to figure out better solution.
     mutate(vari13CCO2_ref = 0.01) %>% # placeholder! need to figure out better solution.
-    mutate(vari12CCO2_obs = ((1-f)/(1+R_vpdb*(d13C_obs_mean/1000+1)))^2*CO2_obs_var + 
-             ((1-f)*CO2_obs_mean/(1+R_vpdb*(d13C_obs_mean/1000+1))^2)^2*(R_vpdb/1000)^2*d13C_obs_var) %>%
-    mutate(vari13CCO2_obs = (1-f)^2*CO2_obs_var + vari12CCO2_obs) %>%
-    # scale variances for autocorrelation
-    mutate(se13CCO2_obs = sqrt(vari13CCO2_obs/(1-0.5^2))/sqrt(d13C_obs_n)) %>%
-    mutate(se12CCO2_obs = sqrt(vari12CCO2_obs/(1-0.5^2))/sqrt(d13C_obs_n)) %>%
-    mutate(d13C_obs_btime=as.POSIXct(d13C_obs_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")) # for assigning times later. 
-  
-  # combine data frames, calculate derived variables, and then 
-  
+    mutate(vari12CCO2_obs = ((1-f)/(1+R_vpdb*(d13C_obs_mean/1000+1)))^2*var_adj_CO2_obs + 
+             ((1-f)*CO2_obs_mean*R_vpdb/(1+R_vpdb*(d13C_obs_mean/1000+1))^2)^2*var_adj_d13C_obs) %>%
+    mutate(vari13CCO2_obs = (1-f)^2*var_adj_CO2_obs + vari12CCO2_obs)
+    
+  # split back out into 3 data frames for each standard.
+  low_rs <- dplyr::filter(standards,std_name=="low")
+  med_rs <- dplyr::filter(standards,std_name=="med")
+  high_rs <- dplyr::filter(standards,std_name=="high")
+    
+  rm(standards)
   #--------------------------------------------------------------
   # Ensure there are the same number of standard measurements for each standard.
   #--------------------------------------------------------------
@@ -194,7 +191,9 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   
   high_rs <- high_rs %>%
     filter(dom %in% common_days)
-      
+  
+  #------------------------------------------------------------
+  # OLD CODE - LEFT HERE FOR REFERENCE
   # if (!(identical(nrow(high_rs),nrow(med_rs)) & identical(nrow(high_rs),nrow(low_rs)))) {
   #   # if above logical evaluates as true, this means that the standards 
   #   # have a different number of observations.
@@ -233,7 +232,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   
   val.df$tot <- rowSums(val.df,na.rm=TRUE) # make sure to remove NAs
   
-  print(val.df)
+  #print(val.df)
 
   # there's almost definitely a faster way to implement this, but coding as a loop for now.
   #-----------------------------------------------------------------------
@@ -256,17 +255,17 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
       # calculate uncertainties - standard propogation of uncertainty formula.
       vari.g12C[i] <- (high_rs$vari12CCO2_ref[i] + low_rs$vari12CCO2_ref[i])/ # already variance, so already sigma^2
                           (high_rs$conc12CCO2_obs[i] - low_rs$conc12CCO2_obs[i])^2 +
-                      (high_rs$se12CCO2_obs[i] + low_rs$se12CCO2_obs[i])* # already variance, so already sigma^2
+                      (high_rs$vari12CCO2_obs[i] + low_rs$vari12CCO2_obs[i])* # already variance, so already sigma^2
                           ((high_rs$conc12CCO2_ref[i] - low_rs$conc12CCO2_ref[i])/(high_rs$conc12CCO2_obs[i] - low_rs$conc12CCO2_obs[i])^2)^2
       
       vari.g13C[i] <- (high_rs$vari13CCO2_ref[i] + low_rs$vari13CCO2_ref[i])/ # already variance, so already sigma^2
                           (high_rs$conc13CCO2_obs[i] - low_rs$conc13CCO2_obs[i])^2 +
-                      (high_rs$se13CCO2_obs[i] + low_rs$se13CCO2_obs[i])* # already variance, so already sigma^2
+                      (high_rs$vari13CCO2_obs[i] + low_rs$vari13CCO2_obs[i])* # already variance, so already sigma^2
                           ((high_rs$conc13CCO2_ref[i] - low_rs$conc13CCO2_ref[i])/(high_rs$conc13CCO2_obs[i] - low_rs$conc13CCO2_obs[i])^2)^2
       
-      vari.o12C[i] <- high_rs$vari12CCO2_ref[i] + high_rs$conc12CCO2_obs[i]^2*vari.g12C[i] + gain12C[i]^2*high_rs$se12CCO2_obs[i]
+      vari.o12C[i] <- high_rs$vari12CCO2_ref[i] + high_rs$conc12CCO2_obs[i]^2*vari.g12C[i] + gain12C[i]^2*high_rs$vari12CCO2_obs[i]
       
-      vari.o13C[i] <- high_rs$vari13CCO2_ref[i] + high_rs$conc13CCO2_obs[i]^2*vari.g13C[i] + gain13C[i]^2*high_rs$se13CCO2_obs[i]
+      vari.o13C[i] <- high_rs$vari13CCO2_ref[i] + high_rs$conc13CCO2_obs[i]^2*vari.g13C[i] + gain13C[i]^2*high_rs$vari13CCO2_obs[i]
       
     } else if (!is.na(val.df$tot[i]) & val.df$tot[i] == 2) { # 1 calibration point doesn't pass test(s)
       # need to determine which two points are good, which can be done w/ 2 logical tests.
@@ -284,17 +283,17 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
           # calculate uncertainties - standard propogation of uncertainty formula.
           vari.g12C[i] <- (med_rs$vari12CCO2_ref[i] + low_rs$vari12CCO2_ref[i])/ # already variance, so already sigma^2
                               (med_rs$conc12CCO2_obs[i] - low_rs$conc12CCO2_obs[i])^2 +
-                          (med_rs$se12CCO2_obs[i] + low_rs$se12CCO2_obs[i])* # already variance, so already sigma^2
+                          (med_rs$vari12CCO2_obs[i] + low_rs$vari12CCO2_obs[i])* # already variance, so already sigma^2
                               ((med_rs$conc12CCO2_ref[i] - low_rs$conc12CCO2_ref[i])/(med_rs$conc12CCO2_obs[i] - low_rs$conc12CCO2_obs[i])^2)^2
           
           vari.g13C[i] <- (med_rs$vari13CCO2_ref[i] + low_rs$vari13CCO2_ref[i])/ # already variance, so already sigma^2
                               (med_rs$conc13CCO2_obs[i] - low_rs$conc13CCO2_obs[i])^2 +
-                          (med_rs$se13CCO2_obs[i] + low_rs$se13CCO2_obs[i])* # already variance, so already sigma^2
+                          (med_rs$vari13CCO2_obs[i] + low_rs$vari13CCO2_obs[i])* # already variance, so already sigma^2
                               ((med_rs$conc13CCO2_ref[i] - low_rs$conc13CCO2_ref[i])/(med_rs$conc13CCO2_obs[i] - low_rs$conc13CCO2_obs[i])^2)^2
           
-          vari.o12C[i] <- med_rs$vari12CCO2_ref[i] + med_rs$conc12CCO2_obs[i]^2*vari.g12C[i] + gain12C[i]^2*med_rs$se12CCO2_obs[i]
+          vari.o12C[i] <- med_rs$vari12CCO2_ref[i] + med_rs$conc12CCO2_obs[i]^2*vari.g12C[i] + gain12C[i]^2*med_rs$vari12CCO2_obs[i]
           
-          vari.o13C[i] <- med_rs$vari13CCO2_ref[i] + med_rs$conc13CCO2_obs[i]^2*vari.g13C[i] + gain13C[i]^2*med_rs$se13CCO2_obs[i]
+          vari.o13C[i] <- med_rs$vari13CCO2_ref[i] + med_rs$conc13CCO2_obs[i]^2*vari.g13C[i] + gain13C[i]^2*med_rs$vari13CCO2_obs[i]
           
         } else { # low and high only are good.
         
@@ -307,17 +306,17 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
           # calculate uncertainties - standard propogation of uncertainty formula.
           vari.g12C[i] <- (high_rs$vari12CCO2_ref[i] + low_rs$vari12CCO2_ref[i])/ # already variance, so already sigma^2
                               (high_rs$conc12CCO2_obs[i] - low_rs$conc12CCO2_obs[i])^2 +
-                          (high_rs$se12CCO2_obs[i] + low_rs$se12CCO2_obs[i])* # already variance, so already sigma^2
+                          (high_rs$vari12CCO2_obs[i] + low_rs$vari12CCO2_obs[i])* # already variance, so already sigma^2
                               ((high_rs$conc12CCO2_ref[i] - low_rs$conc12CCO2_ref[i])/(high_rs$conc12CCO2_obs[i] - low_rs$conc12CCO2_obs[i])^2)^2
           
           vari.g13C[i] <- (high_rs$vari13CCO2_ref[i] + low_rs$vari13CCO2_ref[i])/ # already variance, so already sigma^2
                               (high_rs$conc13CCO2_obs[i] - low_rs$conc13CCO2_obs[i])^2 +
-                          (high_rs$se13CCO2_obs[i] + low_rs$se13CCO2_obs[i])* # already variance, so already sigma^2
+                          (high_rs$vari13CCO2_obs[i] + low_rs$vari13CCO2_obs[i])* # already variance, so already sigma^2
                               ((high_rs$conc13CCO2_ref[i] - low_rs$conc13CCO2_ref[i])/(high_rs$conc13CCO2_obs[i] - low_rs$conc13CCO2_obs[i])^2)^2
           
-          vari.o12C[i] <- high_rs$vari12CCO2_ref[i] + high_rs$conc12CCO2_obs[i]^2*vari.g12C[i] + gain12C[i]^2*high_rs$se12CCO2_obs[i]
+          vari.o12C[i] <- high_rs$vari12CCO2_ref[i] + high_rs$conc12CCO2_obs[i]^2*vari.g12C[i] + gain12C[i]^2*high_rs$vari12CCO2_obs[i]
           
-          vari.o13C[i] <- high_rs$vari13CCO2_ref[i] + high_rs$conc13CCO2_obs[i]^2*vari.g13C[i] + gain13C[i]^2*high_rs$se13CCO2_obs[i]
+          vari.o13C[i] <- high_rs$vari13CCO2_ref[i] + high_rs$conc13CCO2_obs[i]^2*vari.g13C[i] + gain13C[i]^2*high_rs$vari13CCO2_obs[i]
           
         }
       } else { # MUST be medium and high points that are good.
@@ -331,17 +330,17 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
         # calculate uncertainties - standard propogation of uncertainty formula.
         vari.g12C[i] <- (high_rs$vari12CCO2_ref[i] + med_rs$vari12CCO2_ref[i])/ # already variance, so already sigma^2
                             (high_rs$conc12CCO2_obs[i] - med_rs$conc12CCO2_obs[i])^2 +
-                        (high_rs$se12CCO2_obs[i] + med_rs$se12CCO2_obs[i])* # already variance, so already sigma^2
+                        (high_rs$vari12CCO2_obs[i] + med_rs$vari12CCO2_obs[i])* # already variance, so already sigma^2
                             ((high_rs$conc12CCO2_ref[i] - med_rs$conc12CCO2_ref[i])/(high_rs$conc12CCO2_obs[i] - med_rs$conc12CCO2_obs[i])^2)^2
         
         vari.g13C[i] <- (high_rs$vari13CCO2_ref[i] + med_rs$vari13CCO2_ref[i])/ # already variance, so already sigma^2
                             (high_rs$conc13CCO2_obs[i] - med_rs$conc13CCO2_obs[i])^2 +
-                        (high_rs$se13CCO2_obs[i] + med_rs$se13CCO2_obs[i])* # already variance, so already sigma^2
+                        (high_rs$vari13CCO2_obs[i] + med_rs$vari13CCO2_obs[i])* # already variance, so already sigma^2
                             ((high_rs$conc13CCO2_ref[i] - med_rs$conc13CCO2_ref[i])/(high_rs$conc13CCO2_obs[i] - med_rs$conc13CCO2_obs[i])^2)^2
         
-        vari.o12C[i] <- high_rs$vari12CCO2_ref[i] + high_rs$conc12CCO2_obs[i]^2*vari.g12C[i] + gain12C[i]^2*high_rs$se12CCO2_obs[i]
+        vari.o12C[i] <- high_rs$vari12CCO2_ref[i] + high_rs$conc12CCO2_obs[i]^2*vari.g12C[i] + gain12C[i]^2*high_rs$vari12CCO2_obs[i]
         
-        vari.o13C[i] <- high_rs$vari13CCO2_ref[i] + high_rs$conc13CCO2_obs[i]^2*vari.g13C[i] + gain13C[i]^2*high_rs$se13CCO2_obs[i]
+        vari.o13C[i] <- high_rs$vari13CCO2_ref[i] + high_rs$conc13CCO2_obs[i]^2*vari.g13C[i] + gain13C[i]^2*high_rs$vari13CCO2_obs[i]
         
       } # if low == 1
       

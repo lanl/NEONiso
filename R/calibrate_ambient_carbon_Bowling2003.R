@@ -42,8 +42,14 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
   amb.12CO2$mean <- amb.CO2$mean*(1-f)/(1+R_vpdb*(1+amb.delta$mean/1000))
   amb.13CO2$mean <- amb.CO2$mean*(1-f) - amb.12CO2$mean
   
-  #amb.12CO2 <- amb.data.list$rtioMoleDry12CCo2
-  #amb.13CO2 <- amb.data.list$rtioMoleDry13CCo2
+  # get variances.
+  amb.delta$var_adj <- amb.delta$vari/(1-0.5^2)/amb.delta$numSamp # divide by n since we're still in variance terms.
+  amb.CO2$var_adj   <- amb.CO2$vari/(1-0.5^2)/amb.CO2$numSamp
+  
+  amb.12CO2$vari <- ((1-f)/(1+R_vpdb*(amb.delta$mean/1000+1)))^2*amb.CO2$var_adj + 
+    ((1-f)*amb.CO2$mean/(1+R_vpdb*(amb.delta$mean/1000+1))^2)^2*(R_vpdb/1000)^2*amb.delta$var_adj
+  
+  amb.13CO2$vari <- (1-f)^2*amb.CO2$var_adj + amb.12CO2$vari
   
   # ensure that time variables are in POSIXct.
   amb.start.times <- as.POSIXct(amb.delta$timeBgn,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
@@ -73,15 +79,13 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
   for (i in 1:length(var.inds.in.calperiod)) {
     # calculate calibrated 12CO2 concentrations
     mean12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i]*amb.12CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
-    vari12C[var.inds.in.calperiod[[i]]] <- caldf$vari.g12C[i]*amb.12CO2$mean[var.inds.in.calperiod[[i]]]^2 + caldf$vari.o12C[i]
-    #min12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i]*amb.12CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
-    #max12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i]*amb.12CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
+    #vari12C[var.inds.in.calperiod[[i]]] <- caldf$vari.g12C[i]*amb.12CO2$mean[var.inds.in.calperiod[[i]]]^2 +
+    #      caldf$gain12C[i]^2*amb.12CO2$vari[var.inds.in.calperiod[[i]]] + caldf$vari.o12C[i]
     
     # calculate calibrated 13CO2 concentrations
     mean13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
-    vari13C[var.inds.in.calperiod[[i]]] <- caldf$vari.g13C[i]*amb.13CO2$mean[var.inds.in.calperiod[[i]]]^2 + caldf$vari.o13C[i]
-    #min13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
-    #max13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
+    #vari13C[var.inds.in.calperiod[[i]]] <- caldf$vari.g13C[i]*amb.13CO2$mean[var.inds.in.calperiod[[i]]]^2 +
+    #      caldf$gain13C[i]^2*amb.13CO2$vari[var.inds.in.calperiod[[i]]] + caldf$vari.o13C[i]
     
     # copy over quality flag to indicate where the calibration seems to be good.
     amb.delta$qflag1[var.inds.in.calperiod[[i]]] <- caldf$calVal.flag1[var.inds.in.calperiod[[i]]]
@@ -90,11 +94,11 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
   
   # output calibrated delta values.
   amb.delta$mean_cal <- 1000*(mean13C/mean12C/R_vpdb - 1)
-  amb.delta$mean12CCO2 <- mean12C
-  amb.delta$mean13CCO2 <- mean13C
-  amb.delta$vari12CCO2 <- vari12C
-  amb.delta$vari13CCO2 <- vari13C
-  amb.delta$vari_cal <- 1000^2*(mean13C/mean12C)^2*(vari12C/(sqrt(312)*amb.12CO2$mean^2) + vari13C/(sqrt(312)*amb.13CO2$mean^2))
+  #amb.delta$mean12CCO2 <- mean12C
+  #amb.delta$mean13CCO2 <- mean13C
+  #amb.delta$vari12CCO2 <- vari12C
+  #amb.delta$vari13CCO2 <- vari13C
+  #amb.delta$vari_cal <- amb.delta$mean_cal^2*(vari12C/mean12C^2+vari13C/mean13C^2)
   
   #amb.delta$min_cal <- 1000*(min13C/min12C/R_vpdb - 1)
   #amb.delta$max_cal <- 1000*(max13C/max12C/R_vpdb - 1)
