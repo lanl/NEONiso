@@ -382,7 +382,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   starttimes <- vector()
   endtimes <- vector()
   
-  # specify beignning,end of calibratino periods.
+  # specify beignning,end of calibration periods.
   for (i in 1:nrow(high_rs)) {
     starttimes[i] <- ifelse(i !=1, 
                             high_rs$d13C_obs_btime[i],
@@ -394,8 +394,8 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   
   # output dataframe giving valid time range, slopes, intercepts, rsquared.
   if (nrow(val.df) == 1 && is.na(val.df$low) && is.na(val.df$med) && is.na(val.df$high)) {
-    out <- data.frame(start=NA,
-                      end=NA,
+    out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
+                      end=as.POSIXct(endtimes,tz="UTC",origin="1970-01-01"),
                       gain12C=NA,gain13C=NA,offset12C=NA,offset13C=NA,
                       diff.12C=NA,diff.13C=NA,diff.delta=NA,
                       calVal.flag1=NA,calVal.flag2=NA,
