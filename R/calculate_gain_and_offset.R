@@ -35,6 +35,6 @@ calculate_gain_and_offset <- function(std1,std2) {
     gain13C^2*std1$vari13CCO2_obs
   
   # return a list of gain and uncertainty values.
-  return(list(data.frame(gain12C,vari.g12C,gain13C,vari.g13C,offset12C,vari.o12C,offset13C,vari.o13C)))
+  return(data.frame(gain12C,vari.g12C,gain13C,vari.g13C,offset12C,vari.o12C,offset13C,vari.o13C))
   
 }
