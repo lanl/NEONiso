@@ -206,8 +206,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   # loop through times, assign beginning, ending value. max etime should be just fine.
   starttimes <- vector()
   endtimes <- vector()
-
-  # specify beignning,end of calibratino periods.
+  # specify beignning,end of calibration periods
   for (i in 1:nrow(high_rs)) {
     starttimes[i] <- ifelse(i !=1, 
                             high_rs$d13C_obs_btime[i],
