@@ -88,8 +88,8 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
     #      caldf$gain13C[i]^2*amb.13CO2$vari[var.inds.in.calperiod[[i]]] + caldf$vari.o13C[i]
     
     # copy over quality flag to indicate where the calibration seems to be good.
-    amb.delta$qflag1[var.inds.in.calperiod[[i]]] <- caldf$calVal.flag1[var.inds.in.calperiod[[i]]]
-    amb.delta$qflag2[var.inds.in.calperiod[[i]]] <- caldf$calVal.flag2[var.inds.in.calperiod[[i]]]
+    #amb.delta$qflag1[var.inds.in.calperiod[[i]]] <- caldf$calVal.flag1[var.inds.in.calperiod[[i]]]
+    #amb.delta$qflag2[var.inds.in.calperiod[[i]]] <- caldf$calVal.flag2[var.inds.in.calperiod[[i]]]
   }
   
   # output calibrated delta values.
@@ -119,6 +119,8 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
                               name=x,
                               DataFrameAsCompound = TRUE)})
   
+  H5Gclose(co2.data.outloc)
+  H5Fclose(fid)
   # close all open handles.
   h5closeAll()
   
