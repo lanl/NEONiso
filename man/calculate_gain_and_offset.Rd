@@ -2,15 +2,21 @@
 % Please edit documentation in R/calculate_gain_and_offset.R
 \name{calculate_gain_and_offset}
 \alias{calculate_gain_and_offset}
-\title{Title}
+\title{calculate_gain_and_offset.R}
 \usage{
 calculate_gain_and_offset(std1, std2)
 }
 \arguments{
-\item{std1}{}
+\item{std1}{First standard used in Bowling et al. gain and offset calibration.}
 
-\item{std2}{}
+\item{std2}{Second standard used in Bowling et al. gain and offset calibration.}
+}
+\value{
+Data frame of gain and offset values, along with variance estimates, for 12CO2 and 13CO2.
 }
 \description{
-Title
+calculate_gain_and_offset.R
+}
+\author{
+Rich Fiorella \email{rich.fiorella@utah.edu}
 }

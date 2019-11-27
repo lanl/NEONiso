@@ -1,9 +1,11 @@
-#' Title
+#' calculate_gain_and_offset.R
 #'
-#' @param std1 
-#' @param std2 
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' 
+#' @param std1 First standard used in Bowling et al. gain and offset calibration.
+#' @param std2 Second standard used in Bowling et al. gain and offset calibration.
 #'
-#' @return
+#' @return Data frame of gain and offset values, along with variance estimates, for 12CO2 and 13CO2.
 #' @export
 #'
 #' @examples

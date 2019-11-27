@@ -2,15 +2,20 @@
 % Please edit documentation in R/extract_carbon_calibration_data.R
 \name{extract_carbon_calibration_data}
 \alias{extract_carbon_calibration_data}
-\title{Title}
+\title{extract_carbon_calibration_data.R}
 \usage{
-extract_carbon_calibration_data(isoCo2.list, standard)
+extract_carbon_calibration_data(data.list, ucrt.list, standard)
 }
 \arguments{
-\item{isoCo2.list}{}
+\item{data.list}{List containing data, from the /*/dp01/data/ group in NEON HDF5 file.}
 
-\item{standard}{}
+\item{ucrt.list}{List containing uncertainty data, from the /*/dp01/ucrt/ group in NEON HDF5 file.}
+
+\item{standard}{String indicating whether to grab data from the high, medium, or low standard.}
+}
+\value{
+Returns data frame of required variables from /data/ and /ucrt/ groups.
 }
 \description{
-Title
+extract_carbon_calibration_data.R
 }
