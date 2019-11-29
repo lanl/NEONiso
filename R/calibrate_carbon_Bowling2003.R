@@ -269,24 +269,45 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
   
   low.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
+  
+  # check to see if there are any data; if not, fill w/ row of NAs.
+  if (nrow(low_rs) < 1) {
+    low_rs[1,] <- rep(NA,ncol(low_rs))
+  }
+  
+  
   h5writeDataset.data.frame(obj = low_rs,h5loc=low.outloc,
                             name="dlta13CCo2",
                             DataFrameAsCompound = TRUE)
+
   H5Gclose(low.outloc)
   
+  #------------------------------------------------------------
   #medium
   h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
   
   med.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
+  
+  if (nrow(med_rs) < 1) {
+    med_rs[1,] <- rep(NA,ncol(med_rs))
+  }
+  
   h5writeDataset.data.frame(obj = med_rs,h5loc=med.outloc,
                             name="dlta13CCo2",
                             DataFrameAsCompound = TRUE)
+  
   H5Gclose(med.outloc)
   
+  #------------------------------------------------------------
   #low
   h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
   
   high.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
+  
+  if (nrow(high_rs) < 1) {
+    high_rs[1,] <- rep(NA,ncol(med_rs))
+  }
+  
   h5writeDataset.data.frame(obj = high_rs,h5loc=high.outloc,
                             name="dlta13CCo2",
                             DataFrameAsCompound = TRUE)
