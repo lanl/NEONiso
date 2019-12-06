@@ -10,7 +10,7 @@
 #'
 #' @examples
 calculate_gain_and_offset <- function(std1,std2) {
-  
+
   # calculate gain
   gain12C <- (std1$conc12CCO2_ref - std2$conc12CCO2_ref)/(std1$conc12CCO2_obs - std2$conc12CCO2_obs)
   gain13C <- (std1$conc13CCO2_ref - std2$conc13CCO2_ref)/(std1$conc13CCO2_obs - std2$conc13CCO2_obs)
