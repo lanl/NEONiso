@@ -42,10 +42,6 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   high_rs <- extract_carbon_calibration_data(ciso,ucrt,"high")
   med_rs  <- extract_carbon_calibration_data(ciso,ucrt,"med")
   low_rs  <- extract_carbon_calibration_data(ciso,ucrt,"low")
-  
-  print(high_rs)
-  print(med_rs)
-  print(low_rs)
     
   # combine data frames, calculate derived variables, and then separate back out.
   standards <- do.call(rbind,list(low_rs,med_rs,high_rs))
@@ -91,26 +87,23 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
       mutate(dom = day(d13C_obs_btime)) %>% # get day of month
       group_by(dom) %>%
       filter(d13C_obs_n > 250 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
-      #slice(1) %>%
+      slice(1) %>%
       ungroup()
     
     med_rs <- med_rs %>%
       mutate(dom = day(d13C_obs_btime)) %>% # get day of month
       group_by(dom) %>%
       filter(d13C_obs_n > 250 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
-      #slice(1) %>%
+      slice(1) %>%
       ungroup()
     
     low_rs <- low_rs %>%
       mutate(dom = day(d13C_obs_btime)) %>% # get day of month
       group_by(dom) %>%
       filter(d13C_obs_n > 250 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
-      #slice(1) %>%
+      slice(1) %>%
       ungroup()
 
-    print(low_rs)
-    print(high_rs)
-    
   # filter to only common days?
   common_days <- Reduce(intersect,list(low_rs$dom,med_rs$dom,high_rs$dom))
   
@@ -163,29 +156,20 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   #-----------------------------------------------------------------------
   # preallocate variables.
   cal.vals <- list()
-  print(val.df)
   
   for (i in 1:nrow(val.df)) {
     if (!is.na(val.df$tot[i]) & val.df$tot[i] == 3) { # e.g., all calibration points are good.
-      print(high_rs[i,])
       cal.vals[[i]] <- calculate_gain_and_offset(high_rs[i,],low_rs[i,])
     } else if (!is.na(val.df$tot[i]) & val.df$tot[i] == 2) { # 1 calibration point doesn't pass test(s)
       # need to determine which two points are good, which can be done w/ 2 logical tests.
       if (!is.na(val.df$tot[i]) & !is.na(val.df$low[i]) & val.df$low[i] == 1) { # low point is good, need to determine if med or high point is
                                                                                 # other valid point.
         if (!is.na(val.df$tot[i]) & !is.na(val.df$med[i]) & val.df$med[i] == 1) { # low and medium point are valid.
-          
-          print(med_rs[i,])
-          
           cal.vals[[i]] <- calculate_gain_and_offset(med_rs[i,],low_rs[i,])
         } else { # low and high only are good.
-          
-          print(high_rs[i,])
           cal.vals[[i]] <- calculate_gain_and_offset(high_rs[i,],low_rs[i,])
         }
       } else { # MUST be medium and high points that are good.
-        
-        print(high_rs[i,])
         cal.vals[[i]] <- calculate_gain_and_offset(high_rs[i,],med_rs[i,])
       } # if low == 1
     } else if (is.na(val.df$tot[i]) | val.df$tot[i] < 2) {
