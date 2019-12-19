@@ -20,13 +20,36 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
   require(rhdf5)
   require(zoo)
   
+  #-----------------------------------------------------------
+  # specify a few parameters for the Bowling method.
+  
+  f <- 0.00474  # fraction of CO2 isotopomers that aren't 12CO2 or 13CO2
+  # note: f technically varies, but this has little impact
+  # on calibration per Griffis et al. 2004.
+  
+  R_vpdb <- 0.0111797 # 13C/12C ratio for VPD standard.
+  
   # Method 1 refers to the Bowling et al. 2003 calibratino technique.
   # should be able to get a calGainsOffsets object from the H5 file.
   
   # only working on the d13C of the amb.data.list, so extract just this...
   amb.delta <- amb.data.list$dlta13CCo2
-  amb.12CO2 <- amb.data.list$rtioMoleDry12CCo2
-  amb.13CO2 <- amb.data.list$rtioMoleDry13CCo2
+  amb.CO2   <- amb.data.list$rtioMoleDryCo2
+  # instead of using the [12CO2] and [13CO2] values, calculate from the isotope
+  # ratio instead.
+  amb.12CO2 <- amb.13CO2 <- amb.CO2 # this is bad practice, but okay to start w/.
+  
+  amb.12CO2$mean <- amb.CO2$mean*(1-f)/(1+R_vpdb*(1+amb.delta$mean/1000))
+  amb.13CO2$mean <- amb.CO2$mean*(1-f) - amb.12CO2$mean
+  
+  # get variances.
+  amb.delta$var_adj <- amb.delta$vari/(1-0.5^2)/amb.delta$numSamp # divide by n since we're still in variance terms.
+  amb.CO2$var_adj   <- amb.CO2$vari/(1-0.5^2)/amb.CO2$numSamp
+  
+  amb.12CO2$vari <- ((1-f)/(1+R_vpdb*(amb.delta$mean/1000+1)))^2*amb.CO2$var_adj + 
+    ((1-f)*amb.CO2$mean/(1+R_vpdb*(amb.delta$mean/1000+1))^2)^2*(R_vpdb/1000)^2*amb.delta$var_adj
+  
+  amb.13CO2$vari <- (1-f)^2*amb.CO2$var_adj + amb.12CO2$vari
   
   # ensure that time variables are in POSIXct.
   amb.start.times <- as.POSIXct(amb.delta$timeBgn,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
@@ -49,34 +72,36 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
   #-------------------------------------
   # extract 12CO2 and 13CO2 concentrations from the ambient data
   
-  # set parameters.
-  f <- 0.000474 # fraction of CO2 that is not 12CO2 or 13CO2
-  R_vpdb <- 0.0111797 # 13C/12C ratio in VPDB
-  
-  mean12C <- max12C <- min12C <- amb.delta$mean # create placeholders for 12CO2 vectors
-  mean13C <- max13C <- min13C <- amb.delta$mean # create placeholders for 13CO2 vectors
-  amb.delta$mean_cal <- amb.delta$max_cal <- amb.delta$min_cal <- amb.delta$qflag2 <- amb.delta$qflag1 <- amb.delta$mean # placeholders for calibrated delta vals.
+  mean12C <- vari12C <- amb.delta$mean # create placeholders for 12CO2 vectors
+  mean13C <- vari13C <- amb.delta$mean # create placeholders for 13CO2 vectors
+  amb.delta$mean_cal <- amb.delta$qflag2 <- amb.delta$qflag1 <- amb.delta$mean # placeholders for calibrated delta vals.
   
   for (i in 1:length(var.inds.in.calperiod)) {
     # calculate calibrated 12CO2 concentrations
     mean12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i]*amb.12CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
-    min12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i]*amb.12CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
-    max12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i]*amb.12CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
+    #vari12C[var.inds.in.calperiod[[i]]] <- caldf$vari.g12C[i]*amb.12CO2$mean[var.inds.in.calperiod[[i]]]^2 +
+    #      caldf$gain12C[i]^2*amb.12CO2$vari[var.inds.in.calperiod[[i]]] + caldf$vari.o12C[i]
     
     # calculate calibrated 13CO2 concentrations
     mean13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
-    min13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
-    max13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
+    #vari13C[var.inds.in.calperiod[[i]]] <- caldf$vari.g13C[i]*amb.13CO2$mean[var.inds.in.calperiod[[i]]]^2 +
+    #      caldf$gain13C[i]^2*amb.13CO2$vari[var.inds.in.calperiod[[i]]] + caldf$vari.o13C[i]
     
     # copy over quality flag to indicate where the calibration seems to be good.
-    amb.delta$qflag1[var.inds.in.calperiod[[i]]] <- caldf$calVal.flag1[var.inds.in.calperiod[[i]]]
-    amb.delta$qflag2[var.inds.in.calperiod[[i]]] <- caldf$calVal.flag2[var.inds.in.calperiod[[i]]]
+    #amb.delta$qflag1[var.inds.in.calperiod[[i]]] <- caldf$calVal.flag1[var.inds.in.calperiod[[i]]]
+    #amb.delta$qflag2[var.inds.in.calperiod[[i]]] <- caldf$calVal.flag2[var.inds.in.calperiod[[i]]]
   }
   
   # output calibrated delta values.
   amb.delta$mean_cal <- 1000*(mean13C/mean12C/R_vpdb - 1)
-  amb.delta$min_cal <- 1000*(min13C/min12C/R_vpdb - 1)
-  amb.delta$max_cal <- 1000*(max13C/max12C/R_vpdb - 1)
+  #amb.delta$mean12CCO2 <- mean12C
+  #amb.delta$mean13CCO2 <- mean13C
+  #amb.delta$vari12CCO2 <- vari12C
+  #amb.delta$vari13CCO2 <- vari13C
+  #amb.delta$vari_cal <- amb.delta$mean_cal^2*(vari12C/mean12C^2+vari13C/mean13C^2)
+  
+  #amb.delta$min_cal <- 1000*(min13C/min12C/R_vpdb - 1)
+  #amb.delta$max_cal <- 1000*(max13C/max12C/R_vpdb - 1)
   
   # replace ambdf in amb.data.list, return amb.data.list
   amb.data.list$dlta13CCo2 <- amb.delta
@@ -85,7 +110,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
   fid <- H5Fopen(file)
   
   #print(outname)
-  co2.data.outloc <- H5Gcreate(fid,paste0('/',site,'/dp01iso/data/isoCo2/',outname))
+  co2.data.outloc <- H5Gcreate(fid,paste0('/',site,'/dp01/data/isoCo2/',outname))
   
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(amb.data.list),function(x) {
@@ -94,6 +119,8 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
                               name=x,
                               DataFrameAsCompound = TRUE)})
   
+  H5Gclose(co2.data.outloc)
+  H5Fclose(fid)
   # close all open handles.
   h5closeAll()
   

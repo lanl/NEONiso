@@ -7,7 +7,10 @@
 convert_POSIXct_to_NEONhdf5_time(intime)
 }
 \arguments{
-\item{intime}{}
+\item{intime}{Time to convert from NEON HDF5 files. Should be a character string.}
+}
+\value{
+Returns POSIXct version of NEON time variable.
 }
 \description{
 convert_POSIXct_to_NEONhdf5_time

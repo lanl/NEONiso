@@ -4,8 +4,16 @@
 \alias{calibrate_ambient_carbon_linreg}
 \title{calibrate_ambient_carbon_isotopes}
 \usage{
-calibrate_ambient_carbon_linreg(amb.data.list, caldf, outname, site, file,
-  force.to.end = TRUE, force.to.beginning = TRUE)
+calibrate_ambient_carbon_linreg(
+  amb.data.list,
+  caldf,
+  outname,
+  site,
+  file,
+  force.to.end = TRUE,
+  force.to.beginning = TRUE,
+  r2.thres = 0.95
+)
 }
 \arguments{
 \item{amb.data.list}{}
@@ -22,7 +30,10 @@ calibrate_ambient_carbon_linreg(amb.data.list, caldf, outname, site, file,
 
 \item{force.to.beginning}{}
 
-\item{method}{}
+\item{r2.thres}{}
+}
+\value{
+
 }
 \description{
 calibrate_ambient_carbon_isotopes

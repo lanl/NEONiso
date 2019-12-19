@@ -4,25 +4,34 @@
 \alias{calibrate_ambient_carbon_Bowling2003}
 \title{calibrate_ambient_carbon_Bowling2003}
 \usage{
-calibrate_ambient_carbon_Bowling2003(amb.data.list, caldf, outname, site,
-  file, forceToEnd = TRUE, forceToBeginning = TRUE)
+calibrate_ambient_carbon_Bowling2003(
+  amb.data.list,
+  caldf,
+  outname,
+  site,
+  file,
+  forceToEnd = TRUE,
+  forceToBeginning = TRUE,
+  carryLastGoodCal = TRUE
+)
 }
 \arguments{
 \item{amb.data.list}{}
 
-\item{caldf}{}
+\item{caldf}{Calibration data frame containing gain and offset values for 12C and 13C isotopologues.}
 
-\item{outname}{}
+\item{outname}{Output file name.}
 
-\item{site}{}
+\item{site}{Four-letter NEON code corersponding to site being processed.}
 
 \item{file}{}
 
-\item{method}{}
+\item{force.to.end}{Extend last good calibration to end of dataset??}
 
-\item{force.to.end}{}
-
-\item{force.to.beginning}{}
+\item{force.to.beginning}{Enforce a valid calibration at the beginning of the record by carrying first good calibration back to beginning of record? (Default = TRUE)}
+}
+\value{
+Nothing to environment; returns calibrated ambient observations to the calibrate_carbon_Bowling2003 function. This function is not designed to be called on its own.
 }
 \description{
 calibrate_ambient_carbon_Bowling2003

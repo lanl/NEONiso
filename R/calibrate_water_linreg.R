@@ -1,16 +1,20 @@
-#' process_water_calibration_data
+#' calibrate_water_linreg
 #' 
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param fname 
-#' @param site 
-#' @param time.diff.betweeen.standards 
+#' @param site Four-letter NEON code for site being processed.
+#' @param time.diff.betweeen.standards Time (in seconds) required between consecutive standard measurements.
+#' @param inname Name of the input file.
+#' @param outname Name of the output file.
+#' @param force.cal.to.beginning Extend first calibration to the beginning of the file? (Default true)
+#' @param force.cal.to.end Extend last calibration to the end of the file? (Detault true)
 #'
 #' @return
 #' @export
 #'
 #' @examples
-process_water_calibration_data <- function(fname,site,time.diff.betweeen.standards=1800){
+calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standards=1800,
+                                           force.cal.to.beginning=TRUE,force.cal.to.end=TRUE){
   
   # list required packages.
   require(rhdf5)
@@ -19,9 +23,8 @@ process_water_calibration_data <- function(fname,site,time.diff.betweeen.standar
   # print status.
   print("Processing water calibration data...")
   
-  
   # load file, get calibration data.
-  wiso <- h5read(fname,paste0('/',site,'/dp01/data/isoH2o'))
+  wiso <- h5read(inname,paste0('/',site,'/dp01/data/isoH2o'))
   
   # extract standards data.
   high <- wiso$h2oHigh_03m
@@ -236,9 +239,16 @@ process_water_calibration_data <- function(fname,site,time.diff.betweeen.standar
   var_for_h5$start <- var_for_h5$end <- NULL
   
   # okay try to write out to h5 file.
-  fid <- H5Fopen(fname)
+  h5createFile(outname)
+  h5createGroup(outname,paste0('/',site))
+  h5createGroup(outname,paste0('/',site,'/dp01'))
+  h5createGroup(outname,paste0('/',site,'/dp01/data'))
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o'))
   
-  h2o.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01iso/data/isoH2o'))
+  # okay try to write out to h5 file.
+  fid <- H5Fopen(outname)
+  
+  h2o.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o'))
   
   # write out dataset.
   h5writeDataset.data.frame(obj = var_for_h5,h5loc=h2o.cal.outloc,name="calRegressions",DataFrameAsCompound = TRUE)
@@ -247,6 +257,17 @@ process_water_calibration_data <- function(fname,site,time.diff.betweeen.standar
   H5Gclose(h2o.cal.outloc)
   H5Fclose(fid)
   
-  # return the var.
-  return(out) # out has time variables as POSIXct, not in the same format as NEON data files.
+  # calibrate data for each height.
+  #-------------------------------------
+  # extract ambient measurements from ciso
+  wiso_logical <- grepl(pattern="000",x=names(wiso))
+  wiso_subset <- wiso[wiso_logical]
+  
+  lapply(names(wiso_subset),
+         function(x){calibrate_ambient_water_linreg(amb.data.list=wiso_subset[[x]],
+                                                     caldf=out,outname=x,file=outname,site=site)})
+  
+  h5closeAll()
+  
+  
 }

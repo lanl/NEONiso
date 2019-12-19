@@ -1,6 +1,8 @@
 #' terrestrial_core_sites
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' 
+#' @export
 
 terrestrial_core_sites <- function() {
 
