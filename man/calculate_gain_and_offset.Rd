@@ -11,6 +11,9 @@ calculate_gain_and_offset(std1, std2)
 
 \item{std2}{}
 }
+\value{
+
+}
 \description{
 Title
 }
