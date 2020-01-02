@@ -14,6 +14,9 @@ calculate_gain_and_offset(std1, std2)
 \value{
 Data frame of gain and offset values, along with variance estimates, for 12CO2 and 13CO2.
 }
+\value{
+
+}
 \description{
 calculate_gain_and_offset.R
 }

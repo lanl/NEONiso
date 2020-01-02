@@ -14,7 +14,7 @@
 #' @export
 #'
 #' @examples
-calibrate_ambient_water_isotopes <- function(amb.data.list,caldf,outname,site,file,force.to.end=TRUE,force.to.beginning=TRUE) {
+calibrate_ambient_water_linreg <- function(amb.data.list,caldf,outname,site,file,force.to.end=TRUE,force.to.beginning=TRUE) {
   
   # required libraries
   require(rhdf5)
@@ -74,7 +74,7 @@ calibrate_ambient_water_isotopes <- function(amb.data.list,caldf,outname,site,fi
   fid <- H5Fopen(file)
   
   print(outname)
-  h2o.data.outloc <- H5Gcreate(fid,paste0('/',site,'/dp01iso/data/isoH2o/',outname))
+  h2o.data.outloc <- H5Gcreate(fid,paste0('/',site,'/dp01/data/isoH2o/',outname))
   
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(amb.data.list),function(x) {
