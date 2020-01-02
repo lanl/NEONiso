@@ -257,6 +257,64 @@ calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standa
   H5Gclose(h2o.cal.outloc)
   H5Fclose(fid)
   
+  #-----------------------------------------
+  # write out high/mid/low rs.
+  
+  #low
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o/co2Low_09m'))
+  
+  low.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o/co2Low_09m'))
+  
+  # check to see if there are any data; if not, fill w/ row of NAs.
+  if (nrow(low_rs) < 1) {
+    low_rs[1,] <- rep(NA,ncol(low_rs))
+  }
+  
+  
+  h5writeDataset.data.frame(obj = low_rs,h5loc=low.outloc,
+                            name="wisoStds",
+                            DataFrameAsCompound = TRUE)
+  
+  H5Gclose(low.outloc)
+  
+  #------------------------------------------------------------
+  #medium
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o/co2Med_09m'))
+  
+  med.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o/co2Med_09m'))
+  
+  if (nrow(med_rs) < 1) {
+    med_rs[1,] <- rep(NA,ncol(med_rs))
+  }
+  
+  h5writeDataset.data.frame(obj = med_rs,h5loc=med.outloc,
+                            name="wisoStds",
+                            DataFrameAsCompound = TRUE)
+  
+  H5Gclose(med.outloc)
+  
+  #------------------------------------------------------------
+  #high
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o/co2High_09m'))
+  
+  high.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o/co2High_09m'))
+  
+  if (nrow(high_rs) < 1) {
+    high_rs[1,] <- rep(NA,ncol(med_rs))
+  }
+  
+  h5writeDataset.data.frame(obj = high_rs,h5loc=high.outloc,
+                            name="wisoStds",
+                            DataFrameAsCompound = TRUE)
+  H5Gclose(high.outloc)
+  
+  # close the group and the file
+  H5Fclose(fid)
+  Sys.sleep(0.5)
+  
+  h5closeAll()  
+  
+  #===========================================================
   # calibrate data for each height.
   #-------------------------------------
   # extract ambient measurements from ciso
@@ -269,5 +327,29 @@ calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standa
   
   h5closeAll()
   
+  
+  print("Copying qfqm...")
+  # copy over ucrt and qfqm groups as well.
+  h5createGroup(outname,paste0('/',site,'/dp01/qfqm/'))
+  h5createGroup(outname,paste0('/',site,'/dp01/qfqm/isoH2o'))
+  qfqm <- h5read(inname,paste0('/',site,'/dp01/qfqm/isoH2o'))
+  
+  lapply(names(qfqm),function(x) {
+    copy_qfqm_group(data.list=qfqm[[x]],
+                    outname=x,file=outname,site=site,species="H2O")})
+  
+  h5closeAll()
+  
+  print("Copying ucrt...")
+  # now ucrt.
+  h5createGroup(outname,paste0('/',site,'/dp01/ucrt/'))
+  h5createGroup(outname,paste0('/',site,'/dp01/ucrt/isoH2o'))
+  ucrt <- h5read(inname,paste0('/',site,'/dp01/ucrt/isoH2o'))
+  
+  lapply(names(ucrt),function(x) {
+    copy_ucrt_group(data.list=ucrt[[x]],
+                    outname=x,file=outname,site=site,species="H2O")})
+  
+  h5closeAll()
   
 }

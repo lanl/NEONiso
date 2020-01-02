@@ -340,7 +340,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
 
   lapply(names(qfqm),function(x) {
     copy_qfqm_group(data.list=qfqm[[x]],
-                    outname=x,file=outname,site=site)})
+                    outname=x,file=outname,site=site,species="CO2")})
 
   h5closeAll()
 
@@ -352,7 +352,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
 
   lapply(names(ucrt),function(x) {
     copy_ucrt_group(data.list=ucrt[[x]],
-                    outname=x,file=outname,site=site)})
+                    outname=x,file=outname,site=site,species="CO2")})
 
 
 
