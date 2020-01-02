@@ -35,21 +35,13 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
   # only working on the d13C of the amb.data.list, so extract just this...
   amb.delta <- amb.data.list$dlta13CCo2
   amb.CO2   <- amb.data.list$rtioMoleDryCo2
+  
   # instead of using the [12CO2] and [13CO2] values, calculate from the isotope
   # ratio instead.
   amb.12CO2 <- amb.13CO2 <- amb.CO2 # this is bad practice, but okay to start w/.
   
   amb.12CO2$mean <- amb.CO2$mean*(1-f)/(1+R_vpdb*(1+amb.delta$mean/1000))
   amb.13CO2$mean <- amb.CO2$mean*(1-f) - amb.12CO2$mean
-  
-  # get variances.
-  amb.delta$var_adj <- amb.delta$vari/(1-0.5^2)/amb.delta$numSamp # divide by n since we're still in variance terms.
-  amb.CO2$var_adj   <- amb.CO2$vari/(1-0.5^2)/amb.CO2$numSamp
-  
-  amb.12CO2$vari <- ((1-f)/(1+R_vpdb*(amb.delta$mean/1000+1)))^2*amb.CO2$var_adj + 
-    ((1-f)*amb.CO2$mean/(1+R_vpdb*(amb.delta$mean/1000+1))^2)^2*(R_vpdb/1000)^2*amb.delta$var_adj
-  
-  amb.13CO2$vari <- (1-f)^2*amb.CO2$var_adj + amb.12CO2$vari
   
   # ensure that time variables are in POSIXct.
   amb.start.times <- as.POSIXct(amb.delta$timeBgn,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")

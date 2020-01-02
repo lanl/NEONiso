@@ -28,6 +28,7 @@ calibrate_carbon_Bowling2003(
 \item{force.cal.to.end}{Extend last calibration to the end of the file? (Detault true)}
 
 \item{phi}{Coefficient of autocorrelation used to scale variance. Default of 0.5.}
+
 }
 \value{
 Returns nothing to the workspace, but creates a new output file.

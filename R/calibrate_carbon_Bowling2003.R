@@ -7,8 +7,8 @@
 #' @param time.diff.between.standards Time (in seconds) required between consecutive standard measurements.
 #' @param force.cal.to.beginning Extend first calibration to the beginning of the file? (Default true)
 #' @param force.cal.to.end Extend last calibration to the end of the file? (Detault true)
+#' @param ucrt.source Where do we take uncertainty estimates from? (not used currently, set to NEON)
 #' @param site Four letter NEON site code for site being processed.
-#' @param phi Coefficient of autocorrelation used to scale variance. Default of 0.5.
 #'
 #' @return Returns nothing to the workspace, but creates a new output file.
 #' @export
@@ -16,7 +16,7 @@
 #' 
 calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.standards=1800,
                                          force.cal.to.beginning=TRUE,force.cal.to.end=TRUE,
-                                         phi=0.5) {
+                                         ucrt.source="NEON") {
   #------------------------------------------------------------
   # Print some information before starting data processing
   #------------------------------------------------------------
@@ -35,15 +35,14 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   
   #-----------------------------------------------------------
   # pull all carbon isotope data into a list.
+  
   ciso <- h5read(inname,paste0('/',site,'/dp01/data/isoCo2'))
   ucrt <- h5read(inname,paste0('/',site,'/dp01/ucrt/isoCo2'))
   
-  high_rs <- extract_carbon_calibration_data(ciso,"high")
-  med_rs  <- extract_carbon_calibration_data(ciso,"med")
-  low_rs  <- extract_carbon_calibration_data(ciso,"low")
-
-  high_uc <- extract_carbon_ucrt_data(ucrt,"high")
-  
+  high_rs <- extract_carbon_calibration_data(ciso,ucrt,"high")
+  med_rs  <- extract_carbon_calibration_data(ciso,ucrt,"med")
+  low_rs  <- extract_carbon_calibration_data(ciso,ucrt,"low")
+    
   # combine data frames, calculate derived variables, and then separate back out.
   standards <- do.call(rbind,list(low_rs,med_rs,high_rs))
   rm(high_rs,med_rs,low_rs)
@@ -61,14 +60,11 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
     # NB: 191112 - RPF - as of now, reference gas uncertainties are hard-coded! they are 
     # supposed to be available in the dp0p data folder, but the values there seem to have
     # an issue with them. I've raised this w/ NEON.
-    #--- adjust variances for autocorrelation, repeated measurements.
-    mutate(var_adj_d13C_obs = d13C_obs_var/((1-phi^2)*d13C_obs_n)) %>% # adjust for autocorrelation, divide by n
-    mutate(var_adj_CO2_obs  = CO2_obs_var/((1-phi^2)*CO2_obs_n)) %>%
-    mutate(vari12CCO2_ref = 0.1) %>% # placeholder! need to figure out better solution.
-    mutate(vari13CCO2_ref = 0.01) %>% # placeholder! need to figure out better solution.
-    mutate(vari12CCO2_obs = ((1-f)/(1+R_vpdb*(d13C_obs_mean/1000+1)))^2*var_adj_CO2_obs + 
-             ((1-f)*CO2_obs_mean*R_vpdb/(1+R_vpdb*(d13C_obs_mean/1000+1))^2)^2*var_adj_d13C_obs) %>%
-    mutate(vari13CCO2_obs = (1-f)^2*var_adj_CO2_obs + vari12CCO2_obs)
+    mutate(vari12CCO2_obs = ((1-f)/(1+R_vpdb*(d13C_obs_mean/1000+1)))^2*CO2_obs_var + 
+             ((1-f)*CO2_obs_mean*R_vpdb/(1+R_vpdb*(d13C_obs_mean/1000+1))^2)^2*d13C_obs_var) %>%
+    mutate(vari13CCO2_obs = (1-f)^2*CO2_obs_var + vari12CCO2_obs) %>%
+    mutate(vari12CCO2_ref = 0.1) %>% # NOTE: theses are placeholders!!!!
+    mutate(vari13CCO2_ref = 0.01)
     
   # split back out into 3 data frames for each standard.
   low_rs <- dplyr::filter(standards,std_name=="low")
@@ -133,7 +129,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   # of expected [CO2]? This will help scrub out bad data from empty tanks, etc.
   
   conc_thres <- 10 # threshold in ppm.
-  conc_var_thres <- 2 # threshold for co2 variance in ppm.
+  conc_var_thres <- 10 # threshold for co2 variance in ppm.
   
   # need to make a list of how many good calibration points there are for each calibration period.
   val.df <- data.frame(low=ifelse(abs(low_rs$CO2_obs_mean - low_rs$CO2_ref_mean) < conc_thres &
@@ -160,7 +156,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   #-----------------------------------------------------------------------
   # preallocate variables.
   cal.vals <- list()
-
+  
   for (i in 1:nrow(val.df)) {
     if (!is.na(val.df$tot[i]) & val.df$tot[i] == 3) { # e.g., all calibration points are good.
       cal.vals[[i]] <- calculate_gain_and_offset(high_rs[i,],low_rs[i,])
@@ -183,7 +179,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
                                   "offset12C"=NA,"vari.o12C"=NA,"offset13C"=NA,"vari.o13C"=NA)
     }# if tot >= 2
   } # for
-  
+
   cal.vals <- do.call(rbind,cal.vals)
   names(cal.vals) <- c("gain12C","vari.g12C","gain13C","vari.g13C","offset12C","vari.o12C","offset13C","vari.o13C")
   #-----------------------------------------------------------------
@@ -206,8 +202,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   # loop through times, assign beginning, ending value. max etime should be just fine.
   starttimes <- vector()
   endtimes <- vector()
-
-  # specify beignning,end of calibratino periods.
+  # specify beignning,end of calibration periods
   for (i in 1:nrow(high_rs)) {
     starttimes[i] <- ifelse(i !=1, 
                             high_rs$d13C_obs_btime[i],
@@ -276,24 +271,45 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
   
   low.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
+  
+  # check to see if there are any data; if not, fill w/ row of NAs.
+  if (nrow(low_rs) < 1) {
+    low_rs[1,] <- rep(NA,ncol(low_rs))
+  }
+  
+  
   h5writeDataset.data.frame(obj = low_rs,h5loc=low.outloc,
                             name="dlta13CCo2",
                             DataFrameAsCompound = TRUE)
+
   H5Gclose(low.outloc)
   
+  #------------------------------------------------------------
   #medium
   h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
   
   med.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
+  
+  if (nrow(med_rs) < 1) {
+    med_rs[1,] <- rep(NA,ncol(med_rs))
+  }
+  
   h5writeDataset.data.frame(obj = med_rs,h5loc=med.outloc,
                             name="dlta13CCo2",
                             DataFrameAsCompound = TRUE)
+  
   H5Gclose(med.outloc)
   
+  #------------------------------------------------------------
   #low
   h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
   
   high.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
+  
+  if (nrow(high_rs) < 1) {
+    high_rs[1,] <- rep(NA,ncol(med_rs))
+  }
+  
   h5writeDataset.data.frame(obj = high_rs,h5loc=high.outloc,
                             name="dlta13CCo2",
                             DataFrameAsCompound = TRUE)
@@ -316,6 +332,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
 
   h5closeAll()
   
+  print("Copying qfqm...")
   # copy over ucrt and qfqm groups as well.
   h5createGroup(outname,paste0('/',site,'/dp01/qfqm/'))
   h5createGroup(outname,paste0('/',site,'/dp01/qfqm/isoCo2'))
@@ -327,6 +344,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
 
   h5closeAll()
 
+  print("Copying ucrt...")
   # now ucrt.
   h5createGroup(outname,paste0('/',site,'/dp01/ucrt/'))
   h5createGroup(outname,paste0('/',site,'/dp01/ucrt/isoCo2'))
