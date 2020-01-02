@@ -3,8 +3,9 @@
 %   R/extract_carbon_ucrt_data.R
 \name{extract_carbon_calibration_data}
 \alias{extract_carbon_calibration_data}
-\title{Title}
+\title{extract_carbon_calibration_data.R}
 \usage{
+
 extract_carbon_calibration_data(ucrt.list, standard)
 
 extract_carbon_calibration_data(ucrt.list, standard)
