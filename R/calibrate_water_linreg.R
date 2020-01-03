@@ -104,6 +104,39 @@ calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standa
   low_rs <- low_rs %>%
     mutate(std_name="low")
   
+  #--------------------------------------------------------------
+  # Ensure there are the same number of standard measurements for each standard.
+  #--------------------------------------------------------------
+  
+  # 191024 rpf - prior versions of this have just sliced out the first observation per day.
+  # however, the most common cause of multiple standards to be analyzed per day is a 
+  # malfunctioning valve in the manifold that causes the same standard gas to register as multiple
+  # peaks. each peak is shorter, higher variance, and doesn't allow even the CO2 concentration
+  # to stabilize. until further notice, i suggest removing these standards altogether.
+  # code below has been modified to achieve this.
+  # 200103 rpf - copying over this code from carbon script to fix the same bug present in the water isotope code.
+  
+  high_rs <- high_rs %>%
+    mutate(dom = day(d18O_meas_btime)) %>% # get day of month
+    group_by(dom) %>%
+    filter(d18O_meas_n > 60 | is.na(d18O_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+    slice(1) %>%
+    ungroup()
+  
+  med_rs <- med_rs %>%
+    mutate(dom = day(d18O_meas_btime)) %>% # get day of month
+    group_by(dom) %>%
+    filter(d18O_meas_n > 60 | is.na(d18O_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+    slice(1) %>%
+    ungroup()
+  
+  low_rs <- low_rs %>%
+    mutate(dom = day(d18O_meas_btime)) %>% # get day of month
+    group_by(dom) %>%
+    filter(d18O_meas_n > 60 | is.na(d18O_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+    slice(1) %>%
+    ungroup()
+  
   # bind together, and cleanup.
   stds <- do.call(rbind,list(high_rs,med_rs,low_rs))
   
