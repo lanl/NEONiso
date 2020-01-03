@@ -261,19 +261,15 @@ calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standa
   # write out high/mid/low rs.
   
   #low
-  print("here a")
   h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o/h2oLow_09m'))
 
-  print("here aa")
   low.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o/h2oLow_09m'))
 
-  print("here aaa")
   # check to see if there are any data; if not, fill w/ row of NAs.
   if (nrow(low_rs) < 1) {
     low_rs[1,] <- rep(NA,ncol(low_rs))
   }
 
-  print("here b")
   h5writeDataset.data.frame(obj = low_rs,h5loc=low.outloc,
                             name="wisoStds",
                             DataFrameAsCompound = TRUE)
@@ -282,8 +278,6 @@ calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standa
 
   #------------------------------------------------------------
   #medium
-
-  print("here c")
   h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o/h2oMed_09m'))
 
   med.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o/h2oMed_09m'))
@@ -292,7 +286,6 @@ calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standa
     med_rs[1,] <- rep(NA,ncol(med_rs))
   }
 
-  print("here d")
   h5writeDataset.data.frame(obj = med_rs,h5loc=med.outloc,
                             name="wisoStds",
                             DataFrameAsCompound = TRUE)
@@ -301,8 +294,7 @@ calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standa
 
   #------------------------------------------------------------
   #high
-  
-  print("here e")
+
   h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o/h2oHigh_09m'))
 
   high.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o/h2oHigh_09m'))
@@ -311,7 +303,6 @@ calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standa
     high_rs[1,] <- rep(NA,ncol(med_rs))
   }
 
-  print("here e")
   h5writeDataset.data.frame(obj = high_rs,h5loc=high.outloc,
                             name="wisoStds",
                             DataFrameAsCompound = TRUE)
@@ -360,5 +351,5 @@ calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standa
                     outname=x,file=outname,site=site,species="H2O")})
 
   h5closeAll()
-#   
+   
 }
