@@ -4,7 +4,7 @@
 \alias{copy_ucrt_group}
 \title{Title}
 \usage{
-copy_ucrt_group(data.list, outname, site, file)
+copy_ucrt_group(data.list, outname, site, file, species)
 }
 \arguments{
 \item{data.list}{}
@@ -14,10 +14,6 @@ copy_ucrt_group(data.list, outname, site, file)
 \item{site}{}
 
 \item{file}{}
-}
-
-\value{
-
 }
 \description{
 Title

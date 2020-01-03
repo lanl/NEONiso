@@ -4,15 +4,9 @@
 \alias{calibrate_carbon_Bowling2003}
 \title{calibrate_carbon_Bowling2003}
 \usage{
-calibrate_carbon_Bowling2003(
-  inname,
-  outname,
-  site,
-  time.diff.between.standards = 1800,
-  force.cal.to.beginning = TRUE,
-  force.cal.to.end = TRUE,
-  phi = 0.5
-)
+calibrate_carbon_Bowling2003(inname, outname, site,
+  time.diff.between.standards = 1800, force.cal.to.beginning = TRUE,
+  force.cal.to.end = TRUE, ucrt.source = "NEON")
 }
 \arguments{
 \item{inname}{Name of the input file.}
@@ -27,8 +21,7 @@ calibrate_carbon_Bowling2003(
 
 \item{force.cal.to.end}{Extend last calibration to the end of the file? (Detault true)}
 
-\item{phi}{Coefficient of autocorrelation used to scale variance. Default of 0.5.}
-
+\item{ucrt.source}{Where do we take uncertainty estimates from? (not used currently, set to NEON)}
 }
 \value{
 Returns nothing to the workspace, but creates a new output file.

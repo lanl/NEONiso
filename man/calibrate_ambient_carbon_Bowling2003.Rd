@@ -4,16 +4,9 @@
 \alias{calibrate_ambient_carbon_Bowling2003}
 \title{calibrate_ambient_carbon_Bowling2003}
 \usage{
-calibrate_ambient_carbon_Bowling2003(
-  amb.data.list,
-  caldf,
-  outname,
-  site,
-  file,
-  forceToEnd = TRUE,
-  forceToBeginning = TRUE,
-  carryLastGoodCal = TRUE
-)
+calibrate_ambient_carbon_Bowling2003(amb.data.list, caldf, outname, site,
+  file, forceToEnd = TRUE, forceToBeginning = TRUE,
+  carryLastGoodCal = TRUE)
 }
 \arguments{
 \item{amb.data.list}{}

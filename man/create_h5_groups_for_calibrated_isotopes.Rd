@@ -11,9 +11,6 @@ create_h5_groups_for_calibrated_isotopes(file, site)
 
 \item{site}{}
 }
-\value{
-
-}
 \description{
 create_h5_groups_for_calibrated_isotopes
 }

@@ -4,14 +4,9 @@
 \alias{calibrate_water_linreg}
 \title{calibrate_water_linreg}
 \usage{
-calibrate_water_linreg(
-  inname,
-  outname,
-  site,
-  time.diff.betweeen.standards = 1800,
-  force.cal.to.beginning = TRUE,
-  force.cal.to.end = TRUE
-)
+calibrate_water_linreg(inname, outname, site,
+  time.diff.betweeen.standards = 1800, force.cal.to.beginning = TRUE,
+  force.cal.to.end = TRUE)
 }
 \arguments{
 \item{inname}{Name of the input file.}
@@ -25,9 +20,6 @@ calibrate_water_linreg(
 \item{force.cal.to.beginning}{Extend first calibration to the beginning of the file? (Default true)}
 
 \item{force.cal.to.end}{Extend last calibration to the end of the file? (Detault true)}
-}
-\value{
-
 }
 \description{
 calibrate_water_linreg
