@@ -104,6 +104,9 @@ calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standa
   low_rs <- low_rs %>%
     mutate(std_name="low")
   
+  # add fix for NEON standard swap.
+  low_rs <- swap_standard_isotoperatios(low_rs)
+  
   #--------------------------------------------------------------
   # Ensure there are the same number of standard measurements for each standard.
   #--------------------------------------------------------------
