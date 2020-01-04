@@ -114,27 +114,29 @@ calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standa
   # peaks. each peak is shorter, higher variance, and doesn't allow even the CO2 concentration
   # to stabilize. until further notice, i suggest removing these standards altogether.
   # code below has been modified to achieve this.
-  # 200103 rpf - copying over this code from carbon script to fix the same bug present in the water isotope code.
+  # 200103 rpf - copying over this code from carbon script to fix the same bug present in 
+  # the water isotope code. modify slightly to account for the fact that we expect more than
+  # 1 row per day. commented out 
   
   high_rs <- high_rs %>%
     mutate(dom = day(d18O_meas_btime)) %>% # get day of month
     group_by(dom) %>%
-    filter(d18O_meas_n > 60 | is.na(d18O_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
-    slice(1) %>%
+    filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+    slice(tail(row_number(),3)) %>%
     ungroup()
   
   med_rs <- med_rs %>%
     mutate(dom = day(d18O_meas_btime)) %>% # get day of month
     group_by(dom) %>%
-    filter(d18O_meas_n > 60 | is.na(d18O_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
-    slice(1) %>%
+    filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+    slice(tail(row_number(),3)) %>%
     ungroup()
   
   low_rs <- low_rs %>%
     mutate(dom = day(d18O_meas_btime)) %>% # get day of month
     group_by(dom) %>%
-    filter(d18O_meas_n > 60 | is.na(d18O_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
-    slice(1) %>%
+    filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+    slice(tail(row_number(),3)) %>%
     ungroup()
   
   # bind together, and cleanup.
