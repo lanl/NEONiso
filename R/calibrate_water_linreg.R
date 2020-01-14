@@ -104,9 +104,48 @@ calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standa
   low_rs <- low_rs %>%
     mutate(std_name="low")
   
+  # add fix for NEON standard swap.
+  low_rs <- swap_standard_isotoperatios(low_rs)
+  
+  #--------------------------------------------------------------
+  # Ensure there are the same number of standard measurements for each standard.
+  #--------------------------------------------------------------
+  
+  # 191024 rpf - prior versions of this have just sliced out the first observation per day.
+  # however, the most common cause of multiple standards to be analyzed per day is a 
+  # malfunctioning valve in the manifold that causes the same standard gas to register as multiple
+  # peaks. each peak is shorter, higher variance, and doesn't allow even the CO2 concentration
+  # to stabilize. until further notice, i suggest removing these standards altogether.
+  # code below has been modified to achieve this.
+  # 200103 rpf - copying over this code from carbon script to fix the same bug present in 
+  # the water isotope code. modify slightly to account for the fact that we expect more than
+  # 1 row per day. commented out 
+  
+  high_rs <- high_rs %>%
+    mutate(dom = day(d18O_meas_btime)) %>% # get day of month
+    group_by(dom) %>%
+    filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+    slice(tail(row_number(),3)) %>%
+    ungroup()
+  
+  med_rs <- med_rs %>%
+    mutate(dom = day(d18O_meas_btime)) %>% # get day of month
+    group_by(dom) %>%
+    filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+    slice(tail(row_number(),3)) %>%
+    ungroup()
+  
+  low_rs <- low_rs %>%
+    mutate(dom = day(d18O_meas_btime)) %>% # get day of month
+    group_by(dom) %>%
+    filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+    slice(tail(row_number(),3)) %>%
+    ungroup()
+  
   # bind together, and cleanup.
   stds <- do.call(rbind,list(high_rs,med_rs,low_rs))
-  rm(high_rs,med_rs,low_rs,high,med,low)
+  
+  #rm(high_rs,med_rs,low_rs,high,med,low)
   
   # replace NaNs with NA
   # rpf note on 181121 - what does this line actually do? Seems tautological.
@@ -255,19 +294,100 @@ calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standa
   
   # close the group and the file
   H5Gclose(h2o.cal.outloc)
-  H5Fclose(fid)
   
+  #-----------------------------------------
+  # write out high/mid/low rs.
+  
+  #low
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o/h2oLow_09m'))
+
+  low.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o/h2oLow_09m'))
+
+  # check to see if there are any data; if not, fill w/ row of NAs.
+  if (nrow(low_rs) < 1) {
+    low_rs[1,] <- rep(NA,ncol(low_rs))
+  }
+
+  h5writeDataset.data.frame(obj = low_rs,h5loc=low.outloc,
+                            name="wisoStds",
+                            DataFrameAsCompound = TRUE)
+
+  H5Gclose(low.outloc)
+
+  #------------------------------------------------------------
+  #medium
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o/h2oMed_09m'))
+
+  med.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o/h2oMed_09m'))
+
+  if (nrow(med_rs) < 1) {
+    med_rs[1,] <- rep(NA,ncol(med_rs))
+  }
+
+  h5writeDataset.data.frame(obj = med_rs,h5loc=med.outloc,
+                            name="wisoStds",
+                            DataFrameAsCompound = TRUE)
+
+  H5Gclose(med.outloc)
+
+  #------------------------------------------------------------
+  #high
+
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o/h2oHigh_09m'))
+
+  high.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o/h2oHigh_09m'))
+
+  if (nrow(high_rs) < 1) {
+    high_rs[1,] <- rep(NA,ncol(med_rs))
+  }
+
+  h5writeDataset.data.frame(obj = high_rs,h5loc=high.outloc,
+                            name="wisoStds",
+                            DataFrameAsCompound = TRUE)
+  H5Gclose(high.outloc)
+
+  # close the group and the file
+  H5Fclose(fid)
+  Sys.sleep(0.5)
+
+  h5closeAll()
+  
+  #===========================================================
   # calibrate data for each height.
   #-------------------------------------
   # extract ambient measurements from ciso
   wiso_logical <- grepl(pattern="000",x=names(wiso))
   wiso_subset <- wiso[wiso_logical]
-  
+
   lapply(names(wiso_subset),
          function(x){calibrate_ambient_water_linreg(amb.data.list=wiso_subset[[x]],
                                                      caldf=out,outname=x,file=outname,site=site)})
-  
+
   h5closeAll()
-  
-  
+
+
+  print("Copying qfqm...")
+  # copy over ucrt and qfqm groups as well.
+  h5createGroup(outname,paste0('/',site,'/dp01/qfqm/'))
+  h5createGroup(outname,paste0('/',site,'/dp01/qfqm/isoH2o'))
+  qfqm <- h5read(inname,paste0('/',site,'/dp01/qfqm/isoH2o'))
+
+  lapply(names(qfqm),function(x) {
+    copy_qfqm_group(data.list=qfqm[[x]],
+                    outname=x,file=outname,site=site,species="H2O")})
+
+  h5closeAll()
+
+  print("Copying ucrt...")
+  # now ucrt.
+  h5createGroup(outname,paste0('/',site,'/dp01/ucrt/'))
+  h5createGroup(outname,paste0('/',site,'/dp01/ucrt/isoH2o'))
+  ucrt <- h5read(inname,paste0('/',site,'/dp01/ucrt/isoH2o'))
+
+  lapply(names(ucrt),function(x) {
+    copy_ucrt_group(data.list=ucrt[[x]],
+                    outname=x,file=outname,site=site,species="H2O")})
+
+  h5closeAll()
+   
 }
