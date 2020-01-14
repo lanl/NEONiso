@@ -7,6 +7,10 @@ This repository contains functions for an R package to calibrate NEON atmospheri
 
 Please report any issues you have, bugs found, or enhancement suggestions as issues to this repository.
 
+## Installation instructions:
+1) Install devtools.
+2) Run: devtools::install_github("rfiorella/NEONiso",auth_token="841102cfd94910fc46ce7db581143f8b4c5be502")
+
 ## What functions are complete? (please test!)
 ### Calibration functions
 1) **calibrate_carbon_Bowling2003** - calibrates carbon isotope data using the Bowling et al. 2003 AFM gain and offset calibration technique. Simultaneously corrects to the VPDB scale and for any non-linearities with CO2 concentration. Determined by Wen et al. 2013 to be "most accurate" carbon isotope calibration method. Includes logic to select two good calibration points, where available, to calculate gain and offset parameters and the third calibration point as a QA/QC point.  Ambient observations are calibrated by a call to a different function, calibrate_ambient_carbon_Bowling2003.
