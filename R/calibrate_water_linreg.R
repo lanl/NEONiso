@@ -287,6 +287,16 @@ calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standa
   # okay try to write out to h5 file.
   fid <- H5Fopen(outname)
   
+    # copy attributes from source file and write to output file.
+  tmp <- h5readAttributes(inname,paste0('/',site))
+  attrloc <- H5Gopen(fid,paste0('/',site))
+  
+  for (i in 1:length(tmp)) { # probably a more rapid way to do this in the future...lapply?
+    h5writeAttribute(h5obj=attrloc,attr=tmp[[i]],name=names(tmp)[i])
+  }
+  
+  H5Gclose(attrloc)
+  
   h2o.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o'))
   
   # write out dataset.
@@ -351,6 +361,18 @@ calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standa
   Sys.sleep(0.5)
 
   h5closeAll()
+  
+    fid <- H5Fopen(outname)
+  
+  # copy attributes from source file and write to output file.
+  tmp <- h5readAttributes(inname,paste0('/',site))
+  attrloc <- H5Gopen(fid,paste0('/',site))
+  
+  for (i in 1:length(tmp)) { # probably a more rapid way to do this in the future...lapply?
+    h5writeAttribute(h5obj=attrloc,attr=tmp[[i]],name=names(tmp)[i])
+  }
+  
+  H5Gclose(attrloc)
   
   #===========================================================
   # calibrate data for each height.
