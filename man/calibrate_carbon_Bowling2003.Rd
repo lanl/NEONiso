@@ -4,9 +4,15 @@
 \alias{calibrate_carbon_Bowling2003}
 \title{calibrate_carbon_Bowling2003}
 \usage{
-calibrate_carbon_Bowling2003(inname, outname, site,
-  time.diff.between.standards = 1800, force.cal.to.beginning = TRUE,
-  force.cal.to.end = TRUE, ucrt.source = "NEON")
+calibrate_carbon_Bowling2003(
+  inname,
+  outname,
+  site,
+  time.diff.between.standards = 1800,
+  force.cal.to.beginning = TRUE,
+  force.cal.to.end = TRUE,
+  ucrt.source = "NEON"
+)
 }
 \arguments{
 \item{inname}{Name of the input file.}

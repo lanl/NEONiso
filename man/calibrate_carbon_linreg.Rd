@@ -4,9 +4,14 @@
 \alias{calibrate_carbon_linreg}
 \title{calibrate_carbon_linreg}
 \usage{
-calibrate_carbon_linreg(inname, outname, site,
-  time.diff.betweeen.standards = 1800, force.cal.to.beginning = TRUE,
-  force.cal.to.end = TRUE)
+calibrate_carbon_linreg(
+  inname,
+  outname,
+  site,
+  time.diff.betweeen.standards = 1800,
+  force.cal.to.beginning = TRUE,
+  force.cal.to.end = TRUE
+)
 }
 \arguments{
 \item{inname}{Name of the input file.}
