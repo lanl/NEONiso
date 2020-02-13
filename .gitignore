@@ -8,3 +8,6 @@ Meta
 
 # remove spotlight files.
 .DS_Store
+
+# don't upload any pdfs.
+*.pdf
