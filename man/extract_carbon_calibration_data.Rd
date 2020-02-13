@@ -4,7 +4,12 @@
 \alias{extract_carbon_calibration_data}
 \title{extract_carbon_calibration_data.R}
 \usage{
-extract_carbon_calibration_data(data.list, ucrt.list, standard)
+extract_carbon_calibration_data(
+  data.list,
+  ucrt.list,
+  standard,
+  ucrt.source = "data"
+)
 }
 \arguments{
 \item{data.list}{List containing data, from the /*/dp01/data/ group in NEON HDF5 file.}
@@ -12,6 +17,8 @@ extract_carbon_calibration_data(data.list, ucrt.list, standard)
 \item{ucrt.list}{List containing uncertainty data, from the /*/dp01/ucrt/ group in NEON HDF5 file.}
 
 \item{standard}{String indicating whether to grab data from the high, medium, or low standard.}
+
+\item{ucrt.source}{Where in the HDF5 file should the variance be extracted from? (Valid values are "data" and "ucrt")}
 }
 \value{
 Returns data frame of required variables from /data/ and /ucrt/ groups.
