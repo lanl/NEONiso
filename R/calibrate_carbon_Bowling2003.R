@@ -243,13 +243,11 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   if (nrow(val.df) == 1 && is.na(val.df$low) && is.na(val.df$med) && is.na(val.df$high)) {
     out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
-                      diff.12C=NA,diff.13C=NA,diff.delta=NA,
-                      calgood=NA)
+                      diff.delta=NA,calgood=NA)
   } else {
     out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(endtimes,tz="UTC",origin="1970-01-01"),
-                      diff.12C,diff.13C,diff.delta,
-                      calgood)
+                      diff.delta,calgood)
   }
 
   out <- cbind(out,cal.vals)
