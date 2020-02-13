@@ -56,7 +56,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
     mutate(conc12CCO2_obs = CO2_obs_mean*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
     mutate(conc13CCO2_obs = CO2_obs_mean*(1-f)-conc12CCO2_obs) %>%
     #------------------------------------------------------------
-    # calculate variance on 12CO2 and 12CO2 for the reference gases and observed values.
+    # calculate variance on 12CO2 and 13CO2 for the reference gases and observed values.
     # NB: 191112 - RPF - as of now, reference gas uncertainties are hard-coded! they are 
     # supposed to be available in the dp0p data folder, but the values there seem to have
     # an issue with them. I've raised this w/ NEON.
@@ -72,10 +72,10 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   high_rs <- dplyr::filter(standards,std_name=="high")
     
   rm(standards)
+  
   #--------------------------------------------------------------
   # Ensure there are the same number of standard measurements for each standard.
   #--------------------------------------------------------------
-  
     # 191024 rpf - prior versions of this have just sliced out the first observation per day.
     # however, the most common cause of multiple standards to be analyzed per day is a 
     # malfunctioning valve in the manifold that causes the same standard gas to register as multiple
@@ -103,7 +103,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
       filter(d13C_obs_n > 250 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
       slice(1) %>%
       ungroup()
-
+  
   # filter to only common days?
   common_days <- Reduce(intersect,list(low_rs$dom,med_rs$dom,high_rs$dom))
   
@@ -113,6 +113,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
     filter(dom %in% common_days)
   high_rs <- high_rs %>%
     filter(dom %in% common_days)
+  
   #------------------------------------------------------------
   # OLD CODE - LEFT HERE FOR REFERENCE
   # if (!(identical(nrow(high_rs),nrow(med_rs)) & identical(nrow(high_rs),nrow(low_rs)))) {
@@ -151,57 +152,79 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   }
   
   val.df$tot <- rowSums(val.df,na.rm=TRUE) # make sure to remove NAs
-
+  print(val.df$tot)
+  
+  # -----------------------------------------------------------------------
+  # step above determined how many calibration points were good, next step is 
+  # to determine *which* of these calibration points pass the test.
+  #
   # there's almost definitely a faster way to implement this, but coding as a loop for now.
   #-----------------------------------------------------------------------
   # preallocate variables.
   cal.vals <- list()
   
   for (i in 1:nrow(val.df)) {
+    
     if (!is.na(val.df$tot[i]) & val.df$tot[i] == 3) { # e.g., all calibration points are good.
+
+      # if all points are good, use the high and low standards
       cal.vals[[i]] <- calculate_gain_and_offset(high_rs[i,],low_rs[i,])
+    
     } else if (!is.na(val.df$tot[i]) & val.df$tot[i] == 2) { # 1 calibration point doesn't pass test(s)
+      
       # need to determine which two points are good, which can be done w/ 2 logical tests.
       if (!is.na(val.df$tot[i]) & !is.na(val.df$low[i]) & val.df$low[i] == 1) { # low point is good, need to determine if med or high point is
                                                                                 # other valid point.
+      
         if (!is.na(val.df$tot[i]) & !is.na(val.df$med[i]) & val.df$med[i] == 1) { # low and medium point are valid.
-          cal.vals[[i]] <- calculate_gain_and_offset(med_rs[i,],low_rs[i,])
+        
+            # medium and low standards pass the tests, so calculate gain and offset on these.
+            cal.vals[[i]] <- calculate_gain_and_offset(med_rs[i,],low_rs[i,])
+            
         } else { # low and high only are good.
+          
+          # medium standard is off, so use low and high standards.
           cal.vals[[i]] <- calculate_gain_and_offset(high_rs[i,],low_rs[i,])
+          
         }
+        
       } else { # MUST be medium and high points that are good.
+        
         cal.vals[[i]] <- calculate_gain_and_offset(high_rs[i,],med_rs[i,])
-      } # if low == 1
+        
+      } # end if low == 1
+      
     } else if (is.na(val.df$tot[i]) | val.df$tot[i] < 2) {
+      
       # can't really do anything here if less than 2 valid points, 
       # set as missing, and fill w/ last known good calibration later?
       cal.vals[[i]] <- data.frame("gain12C"=NA,"vari.g12C"=NA,"gain13C"=NA,"vari.g13C"=NA,
                                   "offset12C"=NA,"vari.o12C"=NA,"offset13C"=NA,"vari.o13C"=NA)
     }# if tot >= 2
-  } # for
+  } # for loop
 
   cal.vals <- do.call(rbind,cal.vals)
   names(cal.vals) <- c("gain12C","vari.g12C","gain13C","vari.g13C","offset12C","vari.o12C","offset13C","vari.o13C")
+  
   #-----------------------------------------------------------------
   # perform validation
   est.med.12C <- med_rs$conc12CCO2_obs*cal.vals$gain12C + cal.vals$offset12C
   est.med.13C <- med_rs$conc13CCO2_obs*cal.vals$gain13C + cal.vals$offset13C
   
-  diff.12C <- est.med.12C - med_rs$conc12CCO2_ref
-  diff.13C <- est.med.13C - med_rs$conc13CCO2_ref
-  diff.delta <- 1000*(est.med.13C/est.med.12C/R_vpdb - 1) - 1000*(med_rs$conc13CCO2_ref/med_rs$conc12CCO2_ref/R_vpdb-1)
+  diff.delta <- 1000*(est.med.13C/est.med.12C/R_vpdb - 1) - med_rs$d13C_ref_mean
 
-  calgood <-  ifelse(val.df$tot > 1,
-                          1, # set to pass if 2+ valid points.
-                          0) # otherwise, set to fail.
-  # #--------------------------------------------------------------------
+  calgood <-  val.df$tot 
+  
+  #--------------------------------------------------------------------
   # create output data frame...
   #--------------------------------------------------------------------
   # get start and end times from high standard. apply each calibration
   # forward in time to the next calibration point.
   # loop through times, assign beginning, ending value. max etime should be just fine.
+  
   starttimes <- vector()
   endtimes <- vector()
+  
   # specify beignning,end of calibration periods
   for (i in 1:nrow(high_rs)) {
     starttimes[i] <- ifelse(i !=1, 
@@ -353,8 +376,6 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   lapply(names(ucrt),function(x) {
     copy_ucrt_group(data.list=ucrt[[x]],
                     outname=x,file=outname,site=site,species="CO2")})
-
-
 
   h5closeAll()
   
