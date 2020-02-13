@@ -1,5 +1,9 @@
 #' calibrate_carbon_Bowling2003
 #' 
+#' Use the gain-and-offset style calibration approach detailed in Bowling et al. 2003 AFM.
+#' Wen et al. 2011 compared several different carbon isotope calibration techniques and
+#' found this to be the superior method under most circumstances.
+#' 
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
 #' @param inname Name of the input file.
@@ -10,7 +14,7 @@
 #' @param ucrt.source Where do we take uncertainty estimates from? (not used currently, set to NEON)
 #' @param site Four letter NEON site code for site being processed.
 #'
-#' @return Returns nothing to the workspace, but creates a new output file.
+#' @return Returns nothing to the workspace, but creates a new output file containing calibrated carbon isotope values.
 #' @export
 #'
 #' 
