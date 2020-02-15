@@ -20,7 +20,7 @@
 #' 
 calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.standards=1800,
                                          force.cal.to.beginning=TRUE,force.cal.to.end=TRUE,
-                                         ucrt.source="NEON") {
+                                         ucrt.source="data") {
   #------------------------------------------------------------
   # Print some information before starting data processing
   #------------------------------------------------------------
@@ -133,7 +133,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   # should remove the most heinous values: are measured [CO2] w/in some tolerance
   # of expected [CO2]? This will help scrub out bad data from empty tanks, etc.
   
-  conc_thres <- 10 # threshold in ppm.
+  conc_thres <- 20 # threshold in ppm.
   conc_var_thres <- 10 # threshold for co2 variance in ppm.
   
   # need to make a list of how many good calibration points there are for each calibration period.
