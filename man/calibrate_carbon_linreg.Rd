@@ -27,13 +27,10 @@ calibrate_carbon_linreg(
 \item{force.cal.to.end}{Extend last calibration to the end of the file? (Detault true)}
 }
 \value{
-nothing to the workspace, but creates a new output file.
+nothing to the workspace, but creates a new output file of calibrated carbon isotope data.
 }
 \description{
 calibrate_carbon_linreg
-}
-\examples{
-
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
