@@ -9,10 +9,9 @@
 #' @param time.diff.betweeen.standards Time (in seconds) required between consecutive standard measurements.
 #' @param force.cal.to.end Extend last calibration to the end of the file? (Detault true)
 #'
-#' @return nothing to the workspace, but creates a new output file.
+#' @return nothing to the workspace, but creates a new output file of calibrated carbon isotope data.
 #' @export
-#'
-#' @examples
+
 #' 
 
 calibrate_carbon_linreg <- function(inname,outname,site,time.diff.betweeen.standards=1800,
@@ -23,43 +22,11 @@ calibrate_carbon_linreg <- function(inname,outname,site,time.diff.betweeen.stand
   print("Applying three-point mixing ratio bracketing interpolation")
 
   ciso <- h5read(inname,paste0('/',site,'/dp01/data/isoCo2'))
+  ucrt <- h5read(inname,paste0('/',site,'/dp01/ucrt/isoCo2'))
   
-  # extract standards data.
-  high <- ciso$co2High_09m
-  med <- ciso$co2Med_09m
-  low <- ciso$co2Low_09m
-  
-
-  # attempt to pull relevent data out to a single dataframe.
-  high_rs <- data.frame(d13C_meas_mean=high$dlta13CCo2$mean,
-                        d13C_meas_var=high$dlta13CCo2$vari,d13C_meas_n=high$dlta13CCo2$numSamp,
-                        d13C_meas_btime=high$dlta13CCo2$timeBgn,d13C_meas_etime=high$dlta13CCo2$timeEnd,
-                        d13C_ref_mean=high$dlta13CCo2Refe$mean,d13C_ref_var=high$dlta13CCo2Refe$vari,
-                        d13C_ref_n=high$dlta13CCo2Refe$numSamp,d13C_ref_btime=high$dlta13CCo2Refe$timeBgn,
-                        d13C_ref_etime=high$dlta13CCo2Refe$timeEnd)
-  
-  high_rs <- high_rs %>%
-    mutate(std_name="high")
-  
-  med_rs <- data.frame(d13C_meas_mean=med$dlta13CCo2$mean,
-                       d13C_meas_var=med$dlta13CCo2$vari,d13C_meas_n=med$dlta13CCo2$numSamp,
-                       d13C_meas_btime=med$dlta13CCo2$timeBgn,d13C_meas_etime=med$dlta13CCo2$timeEnd,
-                       d13C_ref_mean=med$dlta13CCo2Refe$mean,d13C_ref_var=med$dlta13CCo2Refe$vari,
-                       d13C_ref_n=med$dlta13CCo2Refe$numSamp,d13C_ref_btime=med$dlta13CCo2Refe$timeBgn,
-                       d13C_ref_etime=med$dlta13CCo2Refe$timeEnd)
-  
-  med_rs <- med_rs %>%
-    mutate(std_name="med")
-  
-  low_rs <- data.frame(d13C_meas_mean=low$dlta13CCo2$mean,
-                       d13C_meas_var=low$dlta13CCo2$vari,d13C_meas_n=low$dlta13CCo2$numSamp,
-                       d13C_meas_btime=low$dlta13CCo2$timeBgn,d13C_meas_etime=low$dlta13CCo2$timeEnd,
-                       d13C_ref_mean=low$dlta13CCo2Refe$mean,d13C_ref_var=low$dlta13CCo2Refe$vari,
-                       d13C_ref_n=low$dlta13CCo2Refe$numSamp,d13C_ref_btime=low$dlta13CCo2Refe$timeBgn,
-                       d13C_ref_etime=low$dlta13CCo2Refe$timeEnd)
-  
-  low_rs <- low_rs %>%
-    mutate(std_name="low")
+  high_rs <- extract_carbon_calibration_data(ciso,ucrt,"high")
+  med_rs  <- extract_carbon_calibration_data(ciso,ucrt,"med")
+  low_rs  <- extract_carbon_calibration_data(ciso,ucrt,"low")
   
   #=======================================================================
   # apply calibration routines
