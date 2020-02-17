@@ -18,8 +18,14 @@
 #' @export
 #'
 #' 
-calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.standards=1800,
-                                         force.cal.to.beginning=TRUE,force.cal.to.end=TRUE,
+calibrate_carbon_Bowling2003 <- function(inname,
+                                         outname,
+                                         site,
+                                         time.diff.between.standards=1800,
+                                         force.cal.to.beginning=TRUE,
+                                         force.cal.to.end=TRUE,
+                                         interpolate.missing.cals=TRUE,
+                                         interpolation.method="LWMA", 
                                          ucrt.source="data") {
   #------------------------------------------------------------
   # Print some information before starting data processing
@@ -90,21 +96,21 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
     high_rs <- high_rs %>%
       mutate(dom = day(d13C_obs_btime)) %>% # get day of month
       group_by(dom) %>%
-      filter(d13C_obs_n > 250 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+      filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
       slice(1) %>%
       ungroup()
     
     med_rs <- med_rs %>%
       mutate(dom = day(d13C_obs_btime)) %>% # get day of month
       group_by(dom) %>%
-      filter(d13C_obs_n > 250 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+      filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
       slice(1) %>%
       ungroup()
     
     low_rs <- low_rs %>%
       mutate(dom = day(d13C_obs_btime)) %>% # get day of month
       group_by(dom) %>%
-      filter(d13C_obs_n > 250 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+      filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
       slice(1) %>%
       ungroup()
   
@@ -133,20 +139,24 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   # should remove the most heinous values: are measured [CO2] w/in some tolerance
   # of expected [CO2]? This will help scrub out bad data from empty tanks, etc.
   
-  conc_thres <- 20 # threshold in ppm.
+  conc_thres <- 15 # threshold in ppm.
   conc_var_thres <- 10 # threshold for co2 variance in ppm.
+  d13C_diff_thres <- 3 # absolute deviation of d13C value allowed for standards. 3 per mil chosen based on visual inspection of all data.
   
   # need to make a list of how many good calibration points there are for each calibration period.
   val.df <- data.frame(low=ifelse(abs(low_rs$CO2_obs_mean - low_rs$CO2_ref_mean) < conc_thres &
                                  low_rs$CO2_obs_var < conc_var_thres &
+                                 abs(low_rs$d13C_obs_mean - low_rs$d13C_ref_mean) < d13C_diff_thres &  
                                  !is.na(low_rs$d13C_obs_mean) & !is.na(low_rs$d13C_ref_mean),
                                   1,0), # 1 if true, 0 if false
                        med=ifelse(abs(med_rs$CO2_obs_mean - med_rs$CO2_ref_mean) < conc_thres &
                                     med_rs$CO2_obs_var < conc_var_thres &
+                                    abs(med_rs$d13C_obs_mean - med_rs$d13C_ref_mean) < d13C_diff_thres &  
                                     !is.na(med_rs$d13C_obs_mean) & !is.na(med_rs$d13C_ref_mean),
                                   1,0),
                        high=ifelse(abs(high_rs$CO2_obs_mean - high_rs$CO2_ref_mean) < conc_thres &
                                      high_rs$CO2_obs_var < conc_var_thres &
+                                     abs(high_rs$d13C_obs_mean - high_rs$d13C_ref_mean) < d13C_diff_thres &  
                                      !is.na(high_rs$d13C_obs_mean) & !is.na(high_rs$d13C_ref_mean),
                                   1,0))
   
@@ -156,7 +166,7 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   }
   
   val.df$tot <- rowSums(val.df,na.rm=TRUE) # make sure to remove NAs
-  print(val.df$tot)
+  #print(val.df$tot)
   
   # -----------------------------------------------------------------------
   # step above determined how many calibration points were good, next step is 
@@ -209,16 +219,53 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
 
   cal.vals <- do.call(rbind,cal.vals)
   names(cal.vals) <- c("gain12C","vari.g12C","gain13C","vari.g13C","offset12C","vari.o12C","offset13C","vari.o13C")
-  
+
   #-----------------------------------------------------------------
   # perform validation
   est.med.12C <- med_rs$conc12CCO2_obs*cal.vals$gain12C + cal.vals$offset12C
   est.med.13C <- med_rs$conc13CCO2_obs*cal.vals$gain13C + cal.vals$offset13C
   
-  diff.delta <- 1000*(est.med.13C/est.med.12C/R_vpdb - 1) - med_rs$d13C_ref_mean
+  diff.delta <- vector()
+  
+  for (i in 1:nrow(val.df)) {
+    diff.delta[i] <- ifelse(val.df$tot[i] == 3,
+                         1000*(est.med.13C[i]/est.med.12C[i]/R_vpdb - 1) - med_rs$d13C_ref_mean[i],
+                         NA)
+  }
 
   calgood <-  val.df$tot 
   
+  #--------------------------------------------------------------------
+  # perform interpolation, if requested.
+  
+  if (interpolate.missing.cals == TRUE) {
+    
+    if (sum(!is.na(cal.vals$gain12C)) > 5 & sum(val.df$tot) > 15) {
+
+      # check to determine which method to use.
+      if (interpolation.method == "LWMA") {
+        # save a vector of which values have been replaced!
+        replaced.vals <- ifelse(is.na(cal.vals$gain12C),1,0)
+        
+        print(paste0(100*sum(replaced.vals)/length(replaced.vals),"% of values filled w/ LWMA"))
+        
+        # linear weighted moving average chosen.
+        cal.vals$gain12C <- imputeTS::na_ma(cal.vals$gain12C, weighting = "linear") 
+        cal.vals$gain13C <- imputeTS::na_ma(cal.vals$gain13C, weighting = "linear")
+        cal.vals$offset12C <- imputeTS::na_ma(cal.vals$offset12C, weighting = "linear") 
+        cal.vals$offset13C <- imputeTS::na_ma(cal.vals$offset13C, weighting = "linear") 
+        
+      } else if (interpolation.method == "LOCF") {
+        
+        stop("LOCF not activated yet.")
+      } else {
+        stop("Interpolation method not recognized. Valid values currently are LOCF or LWMA, others to come if requested.")
+      }
+    } else {
+      # set replaced.vals as 0, since none were replaced.
+      replaced.vals <- rep(0,nrow(cal.vals))
+    }
+  }
   #--------------------------------------------------------------------
   # create output data frame...
   #--------------------------------------------------------------------
@@ -243,15 +290,21 @@ calibrate_carbon_Bowling2003 <- function(inname,outname,site,time.diff.between.s
   if (nrow(val.df) == 1 && is.na(val.df$low) && is.na(val.df$med) && is.na(val.df$high)) {
     out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
-                      diff.delta=NA,calgood=NA)
+                      diff.delta=NA,calgood=NA,replaced.vals=NA)
   } else {
     out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(endtimes,tz="UTC",origin="1970-01-01"),
-                      diff.delta,calgood)
+                      diff.delta,calgood,replaced.vals)
   }
 
   out <- cbind(out,cal.vals)
   var_for_h5 <- out
+  
+  # out should now have 12 columns, check to see if this is true.
+  if (!ncol(var_for_h5) == 13) {
+    print(var_for_h5)
+    stop("Output dataframe does not have proper row of columns - what happened?")
+  }
   
   var_for_h5$start <- convert_POSIXct_to_NEONhdf5_time(out$start)
   var_for_h5$end <- convert_POSIXct_to_NEONhdf5_time(out$end)
