@@ -9,7 +9,7 @@ Please report any issues you have, bugs found, or enhancement suggestions as iss
 
 ## Installation instructions:
 1) Install devtools.
-2) Run: devtools::install_github("rfiorella/NEONiso",auth_token="841102cfd94910fc46ce7db581143f8b4c5be502")
+2) Run: devtools::install_github("SPATIAL-Lab/NEONiso") Note: I haven't tested this yet! there might be permissions issues, please let me know if you run into issues.
 
 ## What functions are complete? (please test!)
 ### Calibration functions
