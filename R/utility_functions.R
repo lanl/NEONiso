@@ -73,3 +73,22 @@ terrestrial_relocatable_sites <- function() {
   return(reloc.sites)
   
 }
+
+#' water_isotope_sites
+#' 
+#' #' Return a vector listing NEON sites measuring water vapor isotope ratios.
+#'
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+
+water_isotope_sites <- function() {
+  
+  # relocatable sites as of 190523.
+  
+  wiso.sites <- c("BONA","CLBJ","CPER","GUAN","HARV","KONZ",
+                  "NIWO","ONAQ","ORNL","OSBS","PUUM","SCBI",
+                  "SJER","SRER","TALL","TOOL","UNDE","WOOD",
+                  "WREF","YELL","BARR")
+  
+  return(wiso.sites)
+  
+}
