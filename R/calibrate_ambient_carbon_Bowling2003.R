@@ -4,17 +4,17 @@
 #' @param caldf Calibration data frame containing gain and offset values for 12C and 13C isotopologues.
 #' @param outname Output file name.
 #' @param site Four-letter NEON code corersponding to site being processed.
+#' @param forceToEnd 
+#' @param forceToBeginning 
+#' @param carryLastGoodCal 
 #' @param file 
-#' @param force.to.end Extend last good calibration to end of dataset??
-#' @param force.to.beginning Enforce a valid calibration at the beginning of the record by carrying first good calibration back to beginning of record? (Default = TRUE)
 #'
 #' @return Nothing to environment; returns calibrated ambient observations to the calibrate_carbon_Bowling2003 function. This function is not designed to be called on its own.
 #' @export
 #'
 #' @examples
 #' 
-calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,site,file,forceToEnd=TRUE,forceToBeginning=TRUE,
-                                                 carryLastGoodCal=TRUE) {
+calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,site,file) {
   
   # required libraries
   require(rhdf5)
@@ -49,11 +49,6 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
   
   # determine which cal period each ambient data belongs to.
   var.inds.in.calperiod <- list()
-  
-  # require NAs to be removed.
-  if (carryLastGoodCal == TRUE) {
-    caldf <- na.locf(caldf,na.rm=FALSE)
-  }
   
   for (i in 1:nrow(caldf)) {
     int <- interval(caldf$start[i],caldf$end[i])
@@ -117,5 +112,5 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
   h5closeAll()
   
   # seems to be a problem where closed file handles aren't registering....so introduce a short break.
-  Sys.sleep(0.5) 
+  #Sys.sleep(0.5) 
 }

@@ -8,12 +8,22 @@ This repository contains functions for an R package to calibrate NEON atmospheri
 Please report any issues you have, bugs found, or enhancement suggestions as issues to this repository.
 
 ## Installation instructions:
+
+If you want to contribute to development:
+1) Clone this repo to a local repository.
+2) Open the .Rproj file in Rstudio.
+3) Rstudio has the required package building functions within it to compile the package for use. I have a series of scripts as well that will use these functions to "drive" calibration of the NEON EC files.
+
+If you just want to use the functions (note: this won't work quite yet - needs an auth token to be generated first!):
 1) Install devtools.
-2) Run: devtools::install_github("rfiorella/NEONiso",auth_token="841102cfd94910fc46ce7db581143f8b4c5be502")
+2) Run: devtools::install_github("SPATIAL-Lab/NEONiso") Note: requires an auth token! Not yet implemetned.
 
 ## What functions are complete? (please test!)
 ### Calibration functions
 1) **calibrate_carbon_Bowling2003** - calibrates carbon isotope data using the Bowling et al. 2003 AFM gain and offset calibration technique. Simultaneously corrects to the VPDB scale and for any non-linearities with CO2 concentration. Determined by Wen et al. 2013 to be "most accurate" carbon isotope calibration method. Includes logic to select two good calibration points, where available, to calculate gain and offset parameters and the third calibration point as a QA/QC point.  Ambient observations are calibrated by a call to a different function, calibrate_ambient_carbon_Bowling2003.
+
+Median/mean site-level RMSE for calibration as of 2/13/20: 0.21/0.24‰.
+Median/mean site-level RMSE for calibratino as of 2/17/20: 0.20/0.23‰.
 
 2) **calibrate_carbon_linreg** - calibrates carbon isotope data using a standard linear regression. Corrects to VPDB scale. Currently uses all three points and an R^2 threshold to determine if calibration data are "good." Considering replacing with an alternate version with some *a priori* constraints on what constitutes a "quality" analysis, and using only two points to leave the third as a calibration point. Ambient observations are calibrated by a call to a different function, calibrate_ambient_carbon_linreg. Gain and offset parameters calculated by calculate_gain_and_offset
 
