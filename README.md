@@ -8,8 +8,15 @@ This repository contains functions for an R package to calibrate NEON atmospheri
 Please report any issues you have, bugs found, or enhancement suggestions as issues to this repository.
 
 ## Installation instructions:
+
+If you want to contribute to development:
+1) Clone this repo to a local repository.
+2) Open the .Rproj file in Rstudio.
+3) Rstudio has the required package building functions within it to compile the package for use. I have a series of scripts as well that will use these functions to "drive" calibration of the NEON EC files.
+
+If you just want to use the functions (note: this won't work quite yet - needs an auth token to be generated first!):
 1) Install devtools.
-2) Run: devtools::install_github("SPATIAL-Lab/NEONiso") Note: I haven't tested this yet! there might be permissions issues, please let me know if you run into issues.
+2) Run: devtools::install_github("SPATIAL-Lab/NEONiso") Note: requires an auth token! Not yet implemetned.
 
 ## What functions are complete? (please test!)
 ### Calibration functions
