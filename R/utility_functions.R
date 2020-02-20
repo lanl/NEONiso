@@ -2,8 +2,8 @@
 # this file is intended to keep short utilitie functions
 # that do *not* need to be exported, to help keep down on
 # number of files present in the repo/package. -rpf 200214.
+# 200219 - added a water isotope function.
 #--------------------------------------------------------------
-
 
 #' convert_POSIXct_to_NEONhdf5_time
 #'
