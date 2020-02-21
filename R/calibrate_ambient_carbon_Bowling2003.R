@@ -4,17 +4,20 @@
 #' @param caldf Calibration data frame containing gain and offset values for 12C and 13C isotopologues.
 #' @param outname Output file name.
 #' @param site Four-letter NEON code corersponding to site being processed.
-#' @param forceToEnd 
-#' @param forceToBeginning 
-#' @param carryLastGoodCal 
 #' @param file 
+#' @param filter.data 
 #'
 #' @return Nothing to environment; returns calibrated ambient observations to the calibrate_carbon_Bowling2003 function. This function is not designed to be called on its own.
 #' @export
 #'
 #' @examples
 #' 
-calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,site,file) {
+calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
+                                                 caldf,
+                                                 outname,
+                                                 site,
+                                                 file,
+                                                 filter.data) {
   
   # required libraries
   require(rhdf5)
@@ -81,6 +84,11 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,caldf,outname,sit
   
   # output calibrated delta values.
   amb.delta$mean_cal <- 1000*(mean13C/mean12C/R_vpdb - 1)
+  
+  # apply median filter to data
+  if (filter.data == TRUE) {
+    amb.delta$mean_cal <- filter_median_Brock86(amb.delta$mean_cal)
+  }
   #amb.delta$mean12CCO2 <- mean12C
   #amb.delta$mean13CCO2 <- mean13C
   #amb.delta$vari12CCO2 <- vari12C

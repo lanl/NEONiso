@@ -26,7 +26,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
                                          force.cal.to.end=TRUE,
                                          interpolate.missing.cals=TRUE,
                                          interpolation.method="LWMA", 
-                                         ucrt.source="data") {
+                                         ucrt.source="data",
+                                         filter.ambient=TRUE) {
   #------------------------------------------------------------
   # Print some information before starting data processing
   #------------------------------------------------------------
@@ -404,9 +405,17 @@ calibrate_carbon_Bowling2003 <- function(inname,
   ciso_logical <- grepl(pattern="000",x=names(ciso))
   ciso_subset <- ciso[ciso_logical]
 
-  lapply(names(ciso_subset),
-         function(x){calibrate_ambient_carbon_Bowling2003(amb.data.list=ciso_subset[[x]],
-                                        caldf=out,outname=x,file=outname,site=site)})
+  if (filter.ambient == TRUE) {
+    lapply(names(ciso_subset),
+           function(x){calibrate_ambient_carbon_Bowling2003(amb.data.list=ciso_subset[[x]],
+                                                            caldf=out,outname=x,file=outname,site=site,
+                                                            filter.data=TRUE)})
+  } else {
+    lapply(names(ciso_subset),
+           function(x){calibrate_ambient_carbon_Bowling2003(amb.data.list=ciso_subset[[x]],
+                                                            caldf=out,outname=x,file=outname,site=site)})
+  }
+
 
   h5closeAll()
   
