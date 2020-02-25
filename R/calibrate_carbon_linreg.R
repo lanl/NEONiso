@@ -33,7 +33,7 @@ calibrate_carbon_linreg <- function(inname,outname,site,time.diff.betweeen.stand
   #======================================================================= 
   # bind together, and cleanup.
   stds <- do.call(rbind,list(high_rs,med_rs,low_rs))
-  rm(high_rs,med_rs,low_rs,high,med,low)
+  rm(high_rs,med_rs,low_rs)
   
   # replace NaNs with NA
   # rpf note on 181121 - what does this line actually do? Seems tautological.
@@ -42,20 +42,20 @@ calibrate_carbon_linreg <- function(inname,outname,site,time.diff.betweeen.stand
   stds[ is.na(stds) ] <- NA
   
   # change class of time variables from charatcter to posixct.
-  stds$d13C_meas_btime <- as.POSIXct(stds$d13C_meas_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
-  stds$d13C_meas_etime <- as.POSIXct(stds$d13C_meas_etime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+  stds$d13C_obs_btime <- as.POSIXct(stds$d13C_obs_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+  stds$d13C_obs_etime <- as.POSIXct(stds$d13C_obs_etime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
   
   stds$d13C_ref_btime <- as.POSIXct(stds$d13C_ref_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
   stds$d13C_ref_etime <- as.POSIXct(stds$d13C_ref_etime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
   
   # reorder data frame
-  stds <- stds[order(stds$d13C_meas_btime),]
+  stds <- stds[order(stds$d13C_obs_btime),]
   
   # assign a vector corresponding to calibration period.
-  stds$cal_period <- stds$d13C_meas_n
+  stds$cal_period <- stds$d13C_obs_n
   
   period_id <- 1
-  tdiffs <- c(diff(stds$d13C_meas_btime),0)
+  tdiffs <- c(diff(stds$d13C_obs_btime),0)
   for (i in 1:nrow(stds)) {
     stds$cal_period[i] <- period_id   
     if (tdiffs[i] >= time.diff.betweeen.standards) {period_id = period_id + 1}
@@ -72,8 +72,8 @@ calibrate_carbon_linreg <- function(inname,outname,site,time.diff.betweeen.stand
     # subset data.
     cal.subset <- stds[which(stds$cal_period==i | stds$cal_period==(i-1)),]
     
-    if (!all(is.na(cal.subset$d13C_meas_mean)) & !all(is.na(cal.subset$d13C_ref_mean))) { # ensure that not all cases are missing.
-      tmp <- lm(d13C_ref_mean ~ d13C_meas_mean,data=cal.subset)
+    if (!all(is.na(cal.subset$d13C_obs_mean)) & !all(is.na(cal.subset$d13C_ref_mean))) { # ensure that not all cases are missing.
+      tmp <- lm(d13C_ref_mean ~ d13C_obs_mean,data=cal.subset)
       
       cal_slopes[i-1] <- coef(tmp)[[2]]
       cal_ints[i-1] <- coef(tmp)[[1]]
@@ -87,9 +87,9 @@ calibrate_carbon_linreg <- function(inname,outname,site,time.diff.betweeen.stand
   
   # make dataframe of calibration data.
   times <- stds %>%
-    select(d13C_meas_btime,d13C_meas_etime,d13C_ref_btime,d13C_ref_etime,cal_period) %>%
+    select(d13C_obs_btime,d13C_obs_etime,d13C_ref_btime,d13C_ref_etime,cal_period) %>%
     group_by(cal_period) %>%
-    summarize(etime = max(c(d13C_meas_etime,d13C_ref_etime)))
+    summarize(etime = max(c(d13C_obs_etime,d13C_ref_etime)))
   
   # loop through times, assign beginning, ending value. max etime should be just fine.
   starttimes <- vector()
@@ -119,9 +119,9 @@ calibrate_carbon_linreg <- function(inname,outname,site,time.diff.betweeen.stand
   # okay try to write out to h5 file.
   h5createFile(outname)
   h5createGroup(outname,paste0('/',site))
-  h5createGroup(outname,paste0('/',site,'/dp01iso'))
-  h5createGroup(outname,paste0('/',site,'/dp01iso/data'))
-  h5createGroup(outname,paste0('/',site,'/dp01iso/data/isoCo2'))
+  h5createGroup(outname,paste0('/',site,'/dp01'))
+  h5createGroup(outname,paste0('/',site,'/dp01/data'))
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2'))
   
   fid <- H5Fopen(outname)
   
@@ -136,7 +136,7 @@ calibrate_carbon_linreg <- function(inname,outname,site,time.diff.betweeen.stand
   
   H5Gclose(attrloc)
   
-  co2.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01iso/data/isoCo2'))
+  co2.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2'))
   
   # write out dataset.
   h5writeDataset.data.frame(obj = var_for_h5,h5loc=co2.cal.outloc,name="calRegressions",DataFrameAsCompound = TRUE)
@@ -158,4 +158,29 @@ calibrate_carbon_linreg <- function(inname,outname,site,time.diff.betweeen.stand
   
   h5closeAll()
 
+  # copy over qfqm and ucrt data groups.
+  print("Copying qfqm...")
+  # copy over ucrt and qfqm groups as well.
+  h5createGroup(outname,paste0('/',site,'/dp01/qfqm/'))
+  h5createGroup(outname,paste0('/',site,'/dp01/qfqm/isoCo2'))
+  qfqm <- h5read(inname,paste0('/',site,'/dp01/qfqm/isoCo2'))
+  
+  lapply(names(qfqm),function(x) {
+    copy_qfqm_group(data.list=qfqm[[x]],
+                    outname=x,file=outname,site=site,species="CO2")})
+  
+  h5closeAll()
+  
+  print("Copying ucrt...")
+  # now ucrt.
+  h5createGroup(outname,paste0('/',site,'/dp01/ucrt/'))
+  h5createGroup(outname,paste0('/',site,'/dp01/ucrt/isoCo2'))
+  ucrt <- h5read(inname,paste0('/',site,'/dp01/ucrt/isoCo2'))
+  
+  lapply(names(ucrt),function(x) {
+    copy_ucrt_group(data.list=ucrt[[x]],
+                    outname=x,file=outname,site=site,species="CO2")})
+  
+  h5closeAll()
+  
 }

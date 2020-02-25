@@ -80,8 +80,7 @@ calibrate_ambient_carbon_linreg <- function(amb.data.list,caldf,outname,site,fil
     # write out dataset to HDF5 file.
     fid <- H5Fopen(file)
     
-    print(outname)
-    co2.data.outloc <- H5Gcreate(fid,paste0('/',site,'/dp01iso/data/isoCo2/',outname))
+    co2.data.outloc <- H5Gcreate(fid,paste0('/',site,'/dp01/data/isoCo2/',outname))
     
     # loop through each of the variables in list amb.data.list and write out as a dataframe.
     lapply(names(amb.data.list),function(x) {
