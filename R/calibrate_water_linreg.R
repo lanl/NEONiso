@@ -13,8 +13,12 @@
 #' @export
 #'
 #' @examples
-calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standards=1800,
-                                           force.cal.to.beginning=TRUE,force.cal.to.end=TRUE){
+calibrate_water_linreg <- function(inname,
+                                   outname,
+                                   site,
+                                   time.diff.betweeen.standards=1800,
+                                   interpolate.missing.cals=TRUE,
+                                   interpolation.method="LWMA") {
   
   # list required packages.
   require(rhdf5)
@@ -254,6 +258,48 @@ calibrate_water_linreg <- function(inname,outname,site,time.diff.betweeen.standa
                     end=as.POSIXct(endtimes,tz="UTC",origin="1970-01-01"),
                     o.slope=oxy_cal_slopes,o.intercept=oxy_cal_ints,o.r2=oxy_cal_rsq,
                     h.slope=hyd_cal_slopes,h.intercept=hyd_cal_ints,h.r2=hyd_cal_rsq)
+  
+  
+    #--------------------------------------------------------------------
+  # perform interpolation, if requested.
+  
+  if (interpolate.missing.cals == TRUE) {
+    
+    # need to filter out poor values.
+    out$o.slope[out$o.r2 < 0.9] <- NA
+    out$o.intercept[out$o.r2 < 0.9] <- NA
+    out$o.r2[out$o.r2 < 0.9] <- NA
+    out$h.slope[out$h.r2 < 0.9] <- NA
+    out$h.intercept[out$h.r2 < 0.9] <- NA
+    out$h.slope[out$h.r2 < 0.9] <- NA
+    
+    if (sum(!is.na(out$o.slope)) > 5 & sum(!is.na(out$o.slope)) > 5) {
+
+      # check to determine which method to use.
+      if (interpolation.method == "LWMA") {
+        # save a vector of which values have been replaced!
+        replaced.vals <- ifelse(is.na(out$o.slope),1,0)
+        
+        print(paste0(100*sum(replaced.vals)/length(replaced.vals),"% of values filled w/ LWMA"))
+    
+        # linear weighted moving average chosen.
+        out$o.slope <- imputeTS::na_ma(out$o.slope, weighting = "linear") 
+        out$h.slope <- imputeTS::na_ma(out$h.slope, weighting = "linear")
+        out$o.intercept <- imputeTS::na_ma(out$o.intercept, weighting = "linear") 
+        out$h.intercept <- imputeTS::na_ma(out$h.intercept, weighting = "linear") 
+        
+      } else if (interpolation.method == "LOCF") {
+        
+        stop("LOCF not activated yet.")
+      } else {
+        stop("Interpolation method not recognized. Valid values currently are LOCF or LWMA, others to come if requested.")
+      }
+    } else {
+      # set replaced.vals as 0, since none were replaced.
+      print("Too many values are missing, so do not interpolate...")
+      replaced.vals <- rep(0,nrow(out))
+    }
+  }  
   
   var_for_h5 <- out
   
