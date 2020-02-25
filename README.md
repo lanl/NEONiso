@@ -3,6 +3,9 @@
 Author: Rich Fiorella \
 Last Updated: Jan 13, 2020.
 
+## DATA ALERT:
+- do not use carbon isotope data from UNDE from 5/2019-9/2019 (inclusive), there is a clear spectral issue that cannot be corrected by calibration!
+
 This repository contains functions for an R package to calibrate NEON atmospheric isotope data. Separate functions exist for calibrating carbon and water data.
 
 Please report any issues you have, bugs found, or enhancement suggestions as issues to this repository.

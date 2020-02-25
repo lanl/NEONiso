@@ -301,7 +301,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   out <- cbind(out,cal.vals)
   var_for_h5 <- out
   
-  # out should now have 12 columns, check to see if this is true.
+  # out should now have 13 columns, check to see if this is true.
   if (!ncol(var_for_h5) == 13) {
     print(var_for_h5)
     stop("Output dataframe does not have proper row of columns - what happened?")
