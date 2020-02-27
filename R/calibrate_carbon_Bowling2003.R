@@ -302,8 +302,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   var_for_h5 <- out
   
   # out should now have 13 columns, check to see if this is true.
-  if (!ncol(var_for_h5) == 13) {
-    print(var_for_h5)
+  if (!(ncol(var_for_h5) == 13)) {
     stop("Output dataframe does not have proper row of columns - what happened?")
   }
   
@@ -312,6 +311,16 @@ calibrate_carbon_Bowling2003 <- function(inname,
   
   var_for_h5$valid_period_start <- var_for_h5$start
   var_for_h5$valid_period_end   <- var_for_h5$end
+  
+  # enforce that all other columns are numeric
+  var_for_h5$gain12C <- as.numeric(var_for_h5$gain12C)
+  var_for_h5$gain13C <- as.numeric(var_for_h5$gain13C)
+  var_for_h5$offset12C <- as.numeric(var_for_h5$offset12C)
+  var_for_h5$offset13C <- as.numeric(var_for_h5$offset13C)
+  var_for_h5$vari.g12C <- as.numeric(var_for_h5$vari.g12C)
+  var_for_h5$vari.g13C <- as.numeric(var_for_h5$vari.g13C)
+  var_for_h5$vari.o12C <- as.numeric(var_for_h5$vari.o12C)
+  var_for_h5$vari.o13C <- as.numeric(var_for_h5$vari.o13C)
   
   # remove old vars.
   var_for_h5$start <- var_for_h5$end <- NULL
@@ -335,68 +344,88 @@ calibrate_carbon_Bowling2003 <- function(inname,
   
   H5Gclose(attrloc)
   
-  co2.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2'))
-  
-  # write out dataset.
-  h5writeDataset.data.frame(obj = var_for_h5,h5loc=co2.cal.outloc,
-                            name="calGainsOffsets",
-                            DataFrameAsCompound = TRUE)
-  H5Gclose(co2.cal.outloc)
-  
+  # co2.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2'))
+  # 
+  # # write out dataset.
+  # h5writeDataset.data.frame(obj = var_for_h5,h5loc=co2.cal.outloc,
+  #                           name="calGainsOffsets",
+  #                           DataFrameAsCompound = TRUE)
+  # H5Gclose(co2.cal.outloc)
+  # 
   #-----------------------------------------
   # write out high/mid/low rs.
   
-  #low
-  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
-  
-  low.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
-  
-  # check to see if there are any data; if not, fill w/ row of NAs.
-  if (nrow(low_rs) < 1) {
-    low_rs[1,] <- rep(NA,ncol(low_rs))
-  }
-  
-  
-  h5writeDataset.data.frame(obj = low_rs,h5loc=low.outloc,
-                            name="dlta13CCo2",
-                            DataFrameAsCompound = TRUE)
-
-  H5Gclose(low.outloc)
-  
-  #------------------------------------------------------------
-  #medium
-  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
-  
-  med.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
-  
-  if (nrow(med_rs) < 1) {
-    med_rs[1,] <- rep(NA,ncol(med_rs))
-  }
-  
-  h5writeDataset.data.frame(obj = med_rs,h5loc=med.outloc,
-                            name="dlta13CCo2",
-                            DataFrameAsCompound = TRUE)
-  
-  H5Gclose(med.outloc)
-  
-  #------------------------------------------------------------
-  #low
-  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
-  
-  high.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
-  
-  if (nrow(high_rs) < 1) {
-    high_rs[1,] <- rep(NA,ncol(med_rs))
-  }
-  
-  h5writeDataset.data.frame(obj = high_rs,h5loc=high.outloc,
-                            name="dlta13CCo2",
-                            DataFrameAsCompound = TRUE)
-  H5Gclose(high.outloc)
-  
-  # close the group and the file
-  H5Fclose(fid)
-  Sys.sleep(0.5)
+  # #low
+  # h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
+  # 
+  # low.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
+  # 
+  # # check to see if there are any data; if not, fill w/ row of NAs.
+  # if (nrow(low_rs) < 1) {
+  #   low_rs[1,] <- rep(NA,ncol(low_rs))
+  # }
+  # 
+  # if (ncol(low_rs) != 24) {
+  #   stop("Unexpected number of columns in low standard!")
+  # }
+  # 
+  # # convert d13C_obs_btime from posixct to chr.
+  # low_rs$d13C_obs_btime <- convert_POSIXct_to_NEONhdf5_time(low_rs$d13C_obs_btime)
+  # 
+  # h5writeDataset.data.frame(obj = low_rs,h5loc=low.outloc,
+  #                           name="dlta13CCo2",
+  #                           DataFrameAsCompound = TRUE)
+  # 
+  # H5Gclose(low.outloc)
+  # 
+  # #------------------------------------------------------------
+  # #medium
+  # h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
+  # 
+  # med.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
+  # 
+  # if (nrow(med_rs) < 1) {
+  #   med_rs[1,] <- rep(NA,ncol(med_rs))
+  # }
+  # 
+  # if (ncol(med_rs) != 24) {
+  #   stop("Unexpected number of columns in medium standard!")
+  # }
+  # 
+  # # convert d13C_obs_btime from posixct to chr.
+  # med_rs$d13C_obs_btime <- convert_POSIXct_to_NEONhdf5_time(med_rs$d13C_obs_btime)
+  # 
+  # h5writeDataset.data.frame(obj = med_rs,h5loc=med.outloc,
+  #                           name="dlta13CCo2",
+  #                           DataFrameAsCompound = TRUE)
+  # 
+  # H5Gclose(med.outloc)
+  # 
+  # #------------------------------------------------------------
+  # #high
+  # h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
+  # 
+  # high.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
+  # 
+  # if (nrow(high_rs) < 1) {
+  #   high_rs[1,] <- rep(NA,ncol(high_rs))
+  # }
+  # 
+  # if (ncol(high_rs) != 24) {
+  #   stop("Unexpected number of columns in high standard!")
+  # }
+  # 
+  # # convert d13C_obs_btime from posixct to chr.
+  # high_rs$d13C_obs_btime <- convert_POSIXct_to_NEONhdf5_time(high_rs$d13C_obs_btime)
+  # 
+  # h5writeDataset.data.frame(obj = high_rs,h5loc=high.outloc,
+  #                           name="dlta13CCo2",
+  #                           DataFrameAsCompound = TRUE)
+  # H5Gclose(high.outloc)
+  # 
+  # # close the group and the file
+  # H5Fclose(fid)
+  # Sys.sleep(0.5)
   
   h5closeAll()  
   #----------------------------------------------------------------------------------------
