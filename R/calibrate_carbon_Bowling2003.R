@@ -344,14 +344,16 @@ calibrate_carbon_Bowling2003 <- function(inname,
   
   H5Gclose(attrloc)
   
-  # co2.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2'))
-  # 
-  # # write out dataset.
-  # h5writeDataset.data.frame(obj = var_for_h5,h5loc=co2.cal.outloc,
-  #                           name="calGainsOffsets",
-  #                           DataFrameAsCompound = TRUE)
-  # H5Gclose(co2.cal.outloc)
-  # 
+  # write out calibration dataframe to a new group to keep it away from stackEddy
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/calData'))
+  co2.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/calData'))
+
+  # write out dataset.
+  h5writeDataset.data.frame(obj = var_for_h5,h5loc=co2.cal.outloc,
+                            name="calGainsOffsets",
+                            DataFrameAsCompound = TRUE)
+  H5Gclose(co2.cal.outloc)
+
   #-----------------------------------------
   # write out high/mid/low rs.
   
