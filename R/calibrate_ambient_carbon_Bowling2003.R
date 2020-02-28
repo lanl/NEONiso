@@ -101,12 +101,11 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   # replace ambdf in amb.data.list, return amb.data.list
   amb.data.list$dlta13CCo2 <- amb.delta
   
-  str(amb.delta) # check for logicals
   # trap to see if qflag1, qflag2, or mean_cal is ever a logical.
   if (class(amb.delta$qflag1) == "logical" |
       class(amb.delta$qflag2) == "logical" |
       class(amb.delta$mean_cal) == "logical") {
-    stop("Fugitive logical in ambient calibration - seek and destroy.")
+    stop("Incorrect class in ambient dataset being written to hdf5 - make sure all logicals are numeric.")
   }
   
   # write out dataset to HDF5 file.
