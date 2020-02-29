@@ -2,21 +2,50 @@
 #' 
 #' Use the gain-and-offset style calibration approach detailed in Bowling et al. 2003 AFM.
 #' Wen et al. 2011 compared several different carbon isotope calibration techniques and
-#' found this to be the superior method under most circumstances.
+#' found this to be the superior method under most circumstances. In brief, this method takes
+#' two of the measurement and reference CO2 and d13C values for two of the three daily reference
+#' materials to define a correction equation that defines gain and offset parameters to correct
+#' the observations to the VPDB scale. These gain and offset parameters are analagous to 
+#' regression slope and intercepts, but jointly correct for CO2 concentration dependence and place
+#' d13C values on the VPDB scale. Gain and offset parameters are determined independently for
+#' each major isotopologue (12CO2 and 13CO2). For the two reference materials selected, the gain and offset
+#' parameters are defined by: 
+#' \deqn{G = (X_{2,ref}-X_{1,ref})/(X_{2,meas}-X_{1,meas})}
+#' \deqn{O = X_{2,ref}- G X_{2,meas}}
+#' Calibrated ambient isotopologues are then given using these gain and offset parameters as:
+#' \deqn{X_{cal} = X_{meas} G + O}
+#' 
+#' Measurements of reference materials were considered "good" if the following conditions were met:
+#' \itemize{
+#'   \item Measured CO2 concentrations were within 10 ppm of known "reference" concentrations.
+#'   \item Variance of the CO2 concentration in standard peak was less than 2 ppm.
+#'   \item Measured d13C value must be within 3 per mil of known "reference" d13C value.
+#' }
+#' The first two criteria are intended to filter out periods where there is a clear issue with the
+#' gas delivery system (i.e., nearly empty gas tank, problem with a valve in the manifold, etc.); the third
+#' criterion was adopted after visual inspection of data timeseries revealed that often the first
+#' standard measurement following an instrument issue had a higher-than-expected error. This criterion
+#' clips clearly poor values. 
 #' 
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param inname Name of the input file.
-#' @param outname Name of the output file.
-#' @param time.diff.between.standards Time (in seconds) required between consecutive standard measurements.
-#' @param force.cal.to.beginning Extend first calibration to the beginning of the file? (Default true)
-#' @param force.cal.to.end Extend last calibration to the end of the file? (Detault true)
-#' @param ucrt.source Where do we take uncertainty estimates from? (not used currently, set to NEON)
-#' @param site Four letter NEON site code for site being processed.
+#' @param inname Name of the input file. (character)
+#' @param outname Name of the output file. (character)
+#' @param time.diff.between.standards Time (in seconds) required between consecutive standard measurements. (numeric)
+#' @param force.cal.to.beginning Extend first calibration to the beginning of the file? (CURRENTLY NOT USED)
+#' @param force.cal.to.end Extend last calibration to the end of the file? (CURRENTLY NOT USED)
+#' @param ucrt.source Where do we take uncertainty estimates from (data variance, or the ucrt group in the hdf5 file?)
+#' @param site Four letter NEON site code for site being processed. (character)
+#' @param interpolate.missing.cals If a calibration is flagged as bad, should we replace these calibrations by interpolating from the closest good calibrations? (logical)
+#' @param interpolation.method How to interpolate across bad calibrations, if \code{interpolate.missing.cals == TRUE}. (character)
+#' @param filter.ambient Apply the median absolute deviation filter (Brock 86) to remove impulse spikes in output ambient data? (logical; default true)
 #'
-#' @return Returns nothing to the workspace, but creates a new output file containing calibrated carbon isotope values.
+#' @return Returns nothing to the workspace, but creates a new output HDF5 file containing calibrated carbon isotope values.
 #' @export
 #'
+#' @example 
+#' \dontrun{calibrate_carbon_Bowling("NEON.D01.BART.DP4.00200.001.nsae.2017-01.basic.h5",
+#' "NEON.D01.BART.DP4.00200.001.nsae.2017-01.basic.calibrated.h5","BART")}
 #' 
 calibrate_carbon_Bowling2003 <- function(inname,
                                          outname,
