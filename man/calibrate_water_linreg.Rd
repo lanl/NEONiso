@@ -9,8 +9,8 @@ calibrate_water_linreg(
   outname,
   site,
   time.diff.betweeen.standards = 1800,
-  force.cal.to.beginning = TRUE,
-  force.cal.to.end = TRUE
+  interpolate.missing.cals = TRUE,
+  interpolation.method = "LWMA"
 )
 }
 \arguments{

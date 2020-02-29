@@ -10,9 +10,7 @@ calibrate_ambient_carbon_Bowling2003(
   outname,
   site,
   file,
-  forceToEnd = TRUE,
-  forceToBeginning = TRUE,
-  carryLastGoodCal = TRUE
+  filter.data
 )
 }
 \arguments{
@@ -26,9 +24,7 @@ calibrate_ambient_carbon_Bowling2003(
 
 \item{file}{}
 
-\item{force.to.end}{Extend last good calibration to end of dataset??}
-
-\item{force.to.beginning}{Enforce a valid calibration at the beginning of the record by carrying first good calibration back to beginning of record? (Default = TRUE)}
+\item{filter.data}{}
 }
 \value{
 Nothing to environment; returns calibrated ambient observations to the calibrate_carbon_Bowling2003 function. This function is not designed to be called on its own.
