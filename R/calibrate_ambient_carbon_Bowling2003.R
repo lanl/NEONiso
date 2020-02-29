@@ -1,16 +1,20 @@
 #' calibrate_ambient_carbon_Bowling2003
 #'
-#' @param amb.data.list 
-#' @param caldf Calibration data frame containing gain and offset values for 12C and 13C isotopologues.
-#' @param outname Output file name.
-#' @param site Four-letter NEON code corersponding to site being processed.
-#' @param file 
-#' @param filter.data 
+#' Function called by \code{calibrate_ambient_carbon_Bowling2003} to apply
+#' gain and offset parameters to the ambient datasets (000_0x0_09m and 000_0x0_30m).
+#' This function should generally not be used independently, but should be used 
+#' in coordination with \code{calibrate_ambient_carbon_Bowling2003}.
 #'
-#' @return Nothing to environment; returns calibrated ambient observations to the calibrate_carbon_Bowling2003 function. This function is not designed to be called on its own.
+#' @param amb.data.list List containing an ambient d13C dataset. Will include all variables in 000_0x0_xxm. (character)
+#' @param caldf Calibration data frame containing gain and offset values for 12C and 13C isotopologues. 
+#' @param outname Output variable name. Inherited from \code{calibrate_ambient_carbon_Bowling2003}
+#' @param site Four-letter NEON code corersponding to site being processed.
+#' @param file Output file name. Inherited from \code{calibrate_ambient_carbon_Bowling2003}
+#' @param filter.data Apply median absolute deviation filter from Brock 86 to remove impulse spikes? Inherited from \code{calibrate_ambient_carbon_Bowling2003}
+#'
+#' @return Nothing to environment; returns calibrated ambient observations to the output file. This function is not designed to be called on its own.
 #' @export
 #'
-#' @examples
 #' 
 calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
                                                  caldf,
@@ -18,10 +22,6 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
                                                  site,
                                                  file,
                                                  filter.data) {
-  
-  # required libraries
-  require(rhdf5)
-  require(zoo)
   
   #-----------------------------------------------------------
   # specify a few parameters for the Bowling method.
@@ -32,7 +32,6 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   
   R_vpdb <- 0.0111797 # 13C/12C ratio for VPD standard.
   
-  # Method 1 refers to the Bowling et al. 2003 calibratino technique.
   # should be able to get a calGainsOffsets object from the H5 file.
   
   # only working on the d13C of the amb.data.list, so extract just this...
@@ -76,10 +75,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
     mean13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
     #vari13C[var.inds.in.calperiod[[i]]] <- caldf$vari.g13C[i]*amb.13CO2$mean[var.inds.in.calperiod[[i]]]^2 +
     #      caldf$gain13C[i]^2*amb.13CO2$vari[var.inds.in.calperiod[[i]]] + caldf$vari.o13C[i]
-    
-    # copy over quality flag to indicate where the calibration seems to be good.
-    #amb.delta$qflag1[var.inds.in.calperiod[[i]]] <- caldf$calVal.flag1[var.inds.in.calperiod[[i]]]
-    #amb.delta$qflag2[var.inds.in.calperiod[[i]]] <- caldf$calVal.flag2[var.inds.in.calperiod[[i]]]
+
   }
   
   # output calibrated delta values.
@@ -89,14 +85,6 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   if (filter.data == TRUE) {
     amb.delta$mean_cal <- filter_median_Brock86(amb.delta$mean_cal)
   }
-  #amb.delta$mean12CCO2 <- mean12C
-  #amb.delta$mean13CCO2 <- mean13C
-  #amb.delta$vari12CCO2 <- vari12C
-  #amb.delta$vari13CCO2 <- vari13C
-  #amb.delta$vari_cal <- amb.delta$mean_cal^2*(vari12C/mean12C^2+vari13C/mean13C^2)
-  
-  #amb.delta$min_cal <- 1000*(min13C/min12C/R_vpdb - 1)
-  #amb.delta$max_cal <- 1000*(max13C/max12C/R_vpdb - 1)
   
   # replace ambdf in amb.data.list, return amb.data.list
   amb.data.list$dlta13CCo2 <- amb.delta

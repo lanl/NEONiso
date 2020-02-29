@@ -43,10 +43,6 @@
 #' @return Returns nothing to the workspace, but creates a new output HDF5 file containing calibrated carbon isotope values.
 #' @export
 #'
-#' @example 
-#' \dontrun{calibrate_carbon_Bowling("NEON.D01.BART.DP4.00200.001.nsae.2017-01.basic.h5",
-#' "NEON.D01.BART.DP4.00200.001.nsae.2017-01.basic.calibrated.h5","BART")}
-#' 
 calibrate_carbon_Bowling2003 <- function(inname,
                                          outname,
                                          site,
@@ -170,7 +166,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   # of expected [CO2]? This will help scrub out bad data from empty tanks, etc.
   
   conc_thres <- 15 # threshold in ppm.
-  conc_var_thres <- 10 # threshold for co2 variance in ppm.
+  conc_var_thres <- 5 # threshold for co2 variance in ppm.
   d13C_diff_thres <- 3 # absolute deviation of d13C value allowed for standards. 3 per mil chosen based on visual inspection of all data.
   
   # need to make a list of how many good calibration points there are for each calibration period.

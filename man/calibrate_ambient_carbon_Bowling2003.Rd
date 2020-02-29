@@ -14,24 +14,24 @@ calibrate_ambient_carbon_Bowling2003(
 )
 }
 \arguments{
-\item{amb.data.list}{}
+\item{amb.data.list}{List containing an ambient d13C dataset. Will include all variables in 000_0x0_xxm. (character)}
 
 \item{caldf}{Calibration data frame containing gain and offset values for 12C and 13C isotopologues.}
 
-\item{outname}{Output file name.}
+\item{outname}{Output variable name. Inherited from \code{calibrate_ambient_carbon_Bowling2003}}
 
 \item{site}{Four-letter NEON code corersponding to site being processed.}
 
-\item{file}{}
+\item{file}{Output file name. Inherited from \code{calibrate_ambient_carbon_Bowling2003}}
 
-\item{filter.data}{}
+\item{filter.data}{Apply median absolute deviation filter from Brock 86 to remove impulse spikes? Inherited from \code{calibrate_ambient_carbon_Bowling2003}}
 }
 \value{
-Nothing to environment; returns calibrated ambient observations to the calibrate_carbon_Bowling2003 function. This function is not designed to be called on its own.
+Nothing to environment; returns calibrated ambient observations to the output file. This function is not designed to be called on its own.
 }
 \description{
-calibrate_ambient_carbon_Bowling2003
-}
-\examples{
-
+Function called by \code{calibrate_ambient_carbon_Bowling2003} to apply
+gain and offset parameters to the ambient datasets (000_0x0_09m and 000_0x0_30m).
+This function should generally not be used independently, but should be used 
+in coordination with \code{calibrate_ambient_carbon_Bowling2003}.
 }
