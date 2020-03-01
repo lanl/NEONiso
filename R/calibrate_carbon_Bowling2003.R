@@ -255,7 +255,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   
   for (i in 1:nrow(val.df)) {
     calRmse[i] <- ifelse(val.df$tot[i] == 3,
-                         1000*(est.med.13C[i]/est.med.12C[i]/R_vpdb - 1) - med_rs$d13C_ref_mean[i],
+                         sqrt((1000*(est.med.13C[i]/est.med.12C[i]/R_vpdb - 1) - med_rs$d13C_ref_mean[i])^2),
                          NA)
   }
 
