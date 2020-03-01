@@ -251,10 +251,10 @@ calibrate_carbon_Bowling2003 <- function(inname,
   est.med.12C <- med_rs$conc12CCO2_obs*cal.vals$gain12C + cal.vals$offset12C
   est.med.13C <- med_rs$conc13CCO2_obs*cal.vals$gain13C + cal.vals$offset13C
   
-  diff.delta <- vector()
+  calRmse <- vector()
   
   for (i in 1:nrow(val.df)) {
-    diff.delta[i] <- ifelse(val.df$tot[i] == 3,
+    calRmse[i] <- ifelse(val.df$tot[i] == 3,
                          1000*(est.med.13C[i]/est.med.12C[i]/R_vpdb - 1) - med_rs$d13C_ref_mean[i],
                          NA)
   }
@@ -316,11 +316,11 @@ calibrate_carbon_Bowling2003 <- function(inname,
   if (nrow(val.df) == 1 && is.na(val.df$low) && is.na(val.df$med) && is.na(val.df$high)) {
     out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
-                      diff.delta=NA,calgood=NA,replaced.vals=NA)
+                      calRmse=NA,calgood=NA,replaced.vals=NA)
   } else {
     out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(endtimes,tz="UTC",origin="1970-01-01"),
-                      diff.delta,calgood,replaced.vals)
+                      calRmse,calgood,replaced.vals)
   }
 
   out <- cbind(out,cal.vals)
