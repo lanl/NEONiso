@@ -153,7 +153,7 @@ calibrate_carbon_linreg <- function(inname,outname,site,time.diff.betweeen.stand
     out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(endtimes,tz="UTC",origin="1970-01-01"),
                       slope=cal_slopes,intercept=cal_ints,r2=cal_rsq,
-                      calRmse)
+                      calRmse=as.numeric(calRmse))
     
   } else {
 
