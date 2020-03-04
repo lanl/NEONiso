@@ -303,19 +303,9 @@ calibrate_water_linreg <- function(inname,
   
   var_for_h5 <- out
   
-  var_for_h5$start <- as.character(paste0(year(out$start),"-",
-                                          ifelse(month(out$start)<10,paste0("0",month(out$start)),month(out$start)),"-",
-                                          ifelse(day(out$start)<10,paste0("0",day(out$start)),day(out$start)),"T",
-                                          ifelse(hour(out$start)<10,paste0("0",hour(out$start)),hour(out$start)),":",
-                                          ifelse(minute(out$start)<10,paste0("0",minute(out$start)),minute(out$start)),":",
-                                          ifelse(second(out$start)<10,paste0("0",second(out$start)),second(out$start)),"Z"))
+  var_for_h5$start <- convert_POSIXct_to_NEONhdf5_time(var_for_h5$start)
   
-  var_for_h5$end <- as.character(paste0(year(out$end),"-",
-                                        ifelse(month(out$end)<10,paste0("0",month(out$end)),month(out$end)),"-",
-                                        ifelse(day(out$end)<10,paste0("0",day(out$end)),day(out$end)),"T",
-                                        ifelse(hour(out$end)<10,paste0("0",hour(out$end)),hour(out$end)),":",
-                                        ifelse(minute(out$end)<10,paste0("0",minute(out$end)),minute(out$end)),":",
-                                        ifelse(second(out$end)<10,paste0("0",second(out$end)),second(out$end)),"Z"))
+  var_for_h5$end <- convert_POSIXct_to_NEONhdf5_time(var_for_h5$end)
   
   var_for_h5$valid_period_start <- var_for_h5$start
   var_for_h5$valid_period_end   <- var_for_h5$end
@@ -343,7 +333,8 @@ calibrate_water_linreg <- function(inname,
   
   H5Gclose(attrloc)
   
-  h2o.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o'))
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o/calData'))
+  h2o.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o/calData'))
   
   # write out dataset.
   h5writeDataset.data.frame(obj = var_for_h5,h5loc=h2o.cal.outloc,name="calRegressions",DataFrameAsCompound = TRUE)
@@ -355,9 +346,9 @@ calibrate_water_linreg <- function(inname,
   # write out high/mid/low rs.
   
   #low
-  h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o/h2oLow_09m'))
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o/h2oLow_cal'))
 
-  low.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o/h2oLow_09m'))
+  low.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o/h2oLow_cal'))
 
   # check to see if there are any data; if not, fill w/ row of NAs.
   if (nrow(low_rs) < 1) {
@@ -372,9 +363,9 @@ calibrate_water_linreg <- function(inname,
 
   #------------------------------------------------------------
   #medium
-  h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o/h2oMed_09m'))
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o/h2oMed_cal'))
 
-  med.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o/h2oMed_09m'))
+  med.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o/h2oMed_cal'))
 
   if (nrow(med_rs) < 1) {
     med_rs[1,] <- rep(NA,ncol(med_rs))
@@ -389,9 +380,9 @@ calibrate_water_linreg <- function(inname,
   #------------------------------------------------------------
   #high
 
-  h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o/h2oHigh_09m'))
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoH2o/h2oHigh_cal'))
 
-  high.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o/h2oHigh_09m'))
+  high.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoH2o/h2oHigh_cal'))
 
   if (nrow(high_rs) < 1) {
     high_rs[1,] <- rep(NA,ncol(med_rs))
