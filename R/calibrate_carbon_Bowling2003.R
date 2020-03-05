@@ -90,17 +90,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
     mutate(conc12CCO2_ref = CO2_ref_mean*(1-f)/(1+R_vpdb*(1+d13C_ref_mean/1000))) %>%
     mutate(conc13CCO2_ref = CO2_ref_mean*(1-f)-conc12CCO2_ref) %>%
     mutate(conc12CCO2_obs = CO2_obs_mean*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
-    mutate(conc13CCO2_obs = CO2_obs_mean*(1-f)-conc12CCO2_obs) %>%
-    #------------------------------------------------------------
-    # calculate variance on 12CO2 and 13CO2 for the reference gases and observed values.
-    # NB: 191112 - RPF - as of now, reference gas uncertainties are hard-coded! they are 
-    # supposed to be available in the dp0p data folder, but the values there seem to have
-    # an issue with them. I've raised this w/ NEON.
-    mutate(vari12CCO2_obs = ((1-f)/(1+R_vpdb*(d13C_obs_mean/1000+1)))^2*CO2_obs_var + 
-             ((1-f)*CO2_obs_mean*R_vpdb/(1+R_vpdb*(d13C_obs_mean/1000+1))^2)^2*d13C_obs_var) %>%
-    mutate(vari13CCO2_obs = (1-f)^2*CO2_obs_var + vari12CCO2_obs) %>%
-    mutate(vari12CCO2_ref = 0.1) %>% # NOTE: theses are placeholders!!!!
-    mutate(vari13CCO2_ref = 0.01)
+    mutate(conc13CCO2_obs = CO2_obs_mean*(1-f)-conc12CCO2_obs) 
     
   # split back out into 3 data frames for each standard.
   low_rs <- dplyr::filter(standards,std_name=="low")
@@ -238,13 +228,13 @@ calibrate_carbon_Bowling2003 <- function(inname,
       
       # can't really do anything here if less than 2 valid points, 
       # set as missing, and fill w/ last known good calibration later?
-      cal.vals[[i]] <- data.frame("gain12C"=NA,"vari.g12C"=NA,"gain13C"=NA,"vari.g13C"=NA,
-                                  "offset12C"=NA,"vari.o12C"=NA,"offset13C"=NA,"vari.o13C"=NA)
+      cal.vals[[i]] <- data.frame("gain12C"=NA,"gain13C"=NA,"offset12C"=NA,"offset13C"=NA)
+      
     }# if tot >= 2
   } # for loop
 
   cal.vals <- do.call(rbind,cal.vals)
-  names(cal.vals) <- c("gain12C","vari.g12C","gain13C","vari.g13C","offset12C","vari.o12C","offset13C","vari.o13C")
+  names(cal.vals) <- c("gain12C","gain13C","offset12C","offset13C")
 
   #-----------------------------------------------------------------
   # perform validation
@@ -326,8 +316,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
   out <- cbind(out,cal.vals)
   var_for_h5 <- out
   
-  # out should now have 13 columns, check to see if this is true.
-  if (!(ncol(var_for_h5) == 13)) {
+  # out should now have 9 columns, check to see if this is true.
+  if (!(ncol(var_for_h5) == 9)) {
     stop("Output dataframe does not have proper row of columns - what happened?")
   }
   
@@ -342,10 +332,6 @@ calibrate_carbon_Bowling2003 <- function(inname,
   var_for_h5$gain13C <- as.numeric(var_for_h5$gain13C)
   var_for_h5$offset12C <- as.numeric(var_for_h5$offset12C)
   var_for_h5$offset13C <- as.numeric(var_for_h5$offset13C)
-  var_for_h5$vari.g12C <- as.numeric(var_for_h5$vari.g12C)
-  var_for_h5$vari.g13C <- as.numeric(var_for_h5$vari.g13C)
-  var_for_h5$vari.o12C <- as.numeric(var_for_h5$vari.o12C)
-  var_for_h5$vari.o13C <- as.numeric(var_for_h5$vari.o13C)
   
   # remove old vars.
   var_for_h5$start <- var_for_h5$end <- NULL
@@ -392,7 +378,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
     low_rs[1,] <- rep(NA,ncol(low_rs))
   }
 
-  if (ncol(low_rs) != 24) {
+  if (ncol(low_rs) != 20) {
     stop("Unexpected number of columns in low standard!")
   }
 
@@ -415,7 +401,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
     med_rs[1,] <- rep(NA,ncol(med_rs))
   }
 
-  if (ncol(med_rs) != 24) {
+  if (ncol(med_rs) != 20) {
     stop("Unexpected number of columns in medium standard!")
   }
 
@@ -438,7 +424,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
     high_rs[1,] <- rep(NA,ncol(high_rs))
   }
 
-  if (ncol(high_rs) != 24) {
+  if (ncol(high_rs) != 20) {
     stop("Unexpected number of columns in high standard!")
   }
 
