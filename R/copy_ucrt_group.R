@@ -8,7 +8,7 @@
 #' @return
 #' @export
 #'
-#' @examples
+
 copy_ucrt_group <- function(data.list,outname,site,file,species) {
   
   # create hdf5 structure for these variables.
