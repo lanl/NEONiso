@@ -82,7 +82,6 @@ calibrate_carbon_linreg <- function(inname,
   #======================================================================= 
   # bind together, and cleanup.
   stds <- do.call(rbind,list(high_rs,med_rs,low_rs))
-  rm(high_rs,med_rs,low_rs)
   
   if (nrow(stds) > 0) {
     # replace NaNs with NA
@@ -118,7 +117,7 @@ calibrate_carbon_linreg <- function(inname,
     cal_slopes <- vector()
     cal_ints   <- vector()
     cal_rsq    <- vector()
-    calRmse <- vector()
+    calUcrt <- vector()
     
     
     for (i in 2:max(stds$cal_period)) {
@@ -144,12 +143,12 @@ calibrate_carbon_linreg <- function(inname,
           # get medium vars.
           tmp <- subset(cal.subset, std_name == "med")
           
-          calRmse[i-1] <- mean(sqrt(((tmp$d13C_obs_mean*cal_slopes[i-1] + cal_ints[i-1]) - tmp$d13C_ref_mean)^2),
+          calUcrt[i-1] <- max(tmp$d13C_obs_mean*cal_slopes[i-1] + cal_ints[i-1] - tmp$d13C_ref_mean,
                                   na.rm = TRUE)
           
         } else {
           
-          calRmse[i-1] <- NA
+          calUcrt[i-1] <- NA
           
         }
         
@@ -158,7 +157,7 @@ calibrate_carbon_linreg <- function(inname,
         cal_slopes[i-1] <- NA
         cal_ints[i-1] <- NA
         cal_rsq[i-1] <- NA
-        calRmse[i-1] <- NA
+        calUcrt[i-1] <- NA
         
       }
     }
@@ -182,7 +181,7 @@ calibrate_carbon_linreg <- function(inname,
     out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(endtimes,tz="UTC",origin="1970-01-01"),
                       slope=cal_slopes,intercept=cal_ints,r2=cal_rsq,
-                      calRmse=as.numeric(calRmse))
+                      calUcrt=as.numeric(calUcrt))
     
   } else {
 
@@ -190,7 +189,7 @@ calibrate_carbon_linreg <- function(inname,
     out <- data.frame(start=as.POSIXct(as.Date("1970-01-01"),tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(as.Date("1970-01-01"),tz="UTC",origin="1970-01-01"),
                       slope=as.numeric(NA),intercept=as.numeric(NA),r2=as.numeric(NA),
-                      calRmse=as.numeric(NA))
+                      calUcrt=as.numeric(NA))
   }
   
  
@@ -233,8 +232,67 @@ calibrate_carbon_linreg <- function(inname,
   
   # close the group and the file
   H5Gclose(co2.cal.outloc)
+  
+  #---------------------------------------------
+  #---------------------------------------------
+  # copy high/mid/low standard data from input file.
+  #---------------------------------------------
+  #---------------------------------------------
+  #low
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
+  low.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
+  
+  low <- h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
+  
+  # loop through each of the variables in list amb.data.list and write out as a dataframe.
+  lapply(names(low),function(x) {
+    h5writeDataset.data.frame(obj=low[[x]],
+                              h5loc=low.outloc,
+                              name=x,
+                              DataFrameAsCompound = TRUE)})
+  
+  H5Gclose(low.outloc)
+  
+  #------------------------------------------------------------
+  #medium
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
+  
+  med.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
+  
+  med <- h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
+  
+  # loop through each of the variables in list amb.data.list and write out as a dataframe.
+  lapply(names(med),function(x) {
+    h5writeDataset.data.frame(obj=med[[x]],
+                              h5loc=med.outloc,
+                              name=x,
+                              DataFrameAsCompound = TRUE)})
+  
+  H5Gclose(med.outloc)
+  
+  #------------------------------------------------------------
+  #high
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
+  
+  high.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
+  
+  high <- h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
+  
+  # loop through each of the variables in list amb.data.list and write out as a dataframe.
+  lapply(names(high),function(x) {
+    h5writeDataset.data.frame(obj=high[[x]],
+                              h5loc=high.outloc,
+                              name=x,
+                              DataFrameAsCompound = TRUE)})
+  
+  H5Gclose(high.outloc)
+  
+  # close the group and the file
   H5Fclose(fid)
+  Sys.sleep(0.5)
+  
   h5closeAll()  
+  
   
   # calibrate data for each height.
   #-------------------------------------

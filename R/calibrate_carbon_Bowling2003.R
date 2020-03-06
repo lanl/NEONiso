@@ -241,10 +241,10 @@ calibrate_carbon_Bowling2003 <- function(inname,
   est.med.12C <- med_rs$conc12CCO2_obs*cal.vals$gain12C + cal.vals$offset12C
   est.med.13C <- med_rs$conc13CCO2_obs*cal.vals$gain13C + cal.vals$offset13C
   
-  calRmse <- vector()
+  calUcrt <- vector()
   
   for (i in 1:nrow(val.df)) {
-    calRmse[i] <- ifelse(val.df$tot[i] == 3,
+    calUcrt[i] <- ifelse(val.df$tot[i] == 3,
                          sqrt((1000*(est.med.13C[i]/est.med.12C[i]/R_vpdb - 1) - med_rs$d13C_ref_mean[i])^2),
                          NA)
   }
@@ -306,11 +306,11 @@ calibrate_carbon_Bowling2003 <- function(inname,
   if (nrow(val.df) == 1 && is.na(val.df$low) && is.na(val.df$med) && is.na(val.df$high)) {
     out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
-                      calRmse=NA,calgood=NA,replaced.vals=NA)
+                      calUcrt=NA,calgood=NA,replaced.vals=NA)
   } else {
     out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(endtimes,tz="UTC",origin="1970-01-01"),
-                      calRmse,calgood,replaced.vals)
+                      calUcrt,calgood,replaced.vals)
   }
 
   out <- cbind(out,cal.vals)
@@ -365,75 +365,58 @@ calibrate_carbon_Bowling2003 <- function(inname,
                             DataFrameAsCompound = TRUE)
   H5Gclose(co2.cal.outloc)
 
-  #-----------------------------------------
-  # write out high/mid/low rs.
-  
+  #---------------------------------------------
+  #---------------------------------------------
+  # copy high/mid/low standard data from input file.
+  #---------------------------------------------
+  #---------------------------------------------
   #low
-  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Low_cal'))
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
+  low.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
 
-  low.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Low_cal'))
-
-  # check to see if there are any data; if not, fill w/ row of NAs.
-  if (nrow(low_rs) < 1) {
-    low_rs[1,] <- rep(NA,ncol(low_rs))
-  }
-
-  if (ncol(low_rs) != 20) {
-    stop("Unexpected number of columns in low standard!")
-  }
-
-  # convert d13C_obs_btime from posixct to chr.
-  low_rs$d13C_obs_btime <- convert_POSIXct_to_NEONhdf5_time(low_rs$d13C_obs_btime)
-
-  h5writeDataset.data.frame(obj = low_rs,h5loc=low.outloc,
-                            name="dlta13CCo2",
-                            DataFrameAsCompound = TRUE)
-
+  low <- h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
+  
+  # loop through each of the variables in list amb.data.list and write out as a dataframe.
+  lapply(names(low),function(x) {
+    h5writeDataset.data.frame(obj=low[[x]],
+                              h5loc=low.outloc,
+                              name=x,
+                              DataFrameAsCompound = TRUE)})
+  
   H5Gclose(low.outloc)
 
   #------------------------------------------------------------
   #medium
-  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Med_cal'))
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
 
-  med.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Med_cal'))
-
-  if (nrow(med_rs) < 1) {
-    med_rs[1,] <- rep(NA,ncol(med_rs))
-  }
-
-  if (ncol(med_rs) != 20) {
-    stop("Unexpected number of columns in medium standard!")
-  }
-
-  # convert d13C_obs_btime from posixct to chr.
-  med_rs$d13C_obs_btime <- convert_POSIXct_to_NEONhdf5_time(med_rs$d13C_obs_btime)
-
-  h5writeDataset.data.frame(obj = med_rs,h5loc=med.outloc,
-                            name="dlta13CCo2",
-                            DataFrameAsCompound = TRUE)
-
+  med.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
+  
+  med <- h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
+  
+  # loop through each of the variables in list amb.data.list and write out as a dataframe.
+  lapply(names(med),function(x) {
+    h5writeDataset.data.frame(obj=med[[x]],
+                              h5loc=med.outloc,
+                              name=x,
+                              DataFrameAsCompound = TRUE)})
+ 
   H5Gclose(med.outloc)
 
   #------------------------------------------------------------
   #high
-  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2High_cal'))
+  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
 
-  high.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2High_cal'))
+  high.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
 
-  if (nrow(high_rs) < 1) {
-    high_rs[1,] <- rep(NA,ncol(high_rs))
-  }
-
-  if (ncol(high_rs) != 20) {
-    stop("Unexpected number of columns in high standard!")
-  }
-
-  # convert d13C_obs_btime from posixct to chr.
-  high_rs$d13C_obs_btime <- convert_POSIXct_to_NEONhdf5_time(high_rs$d13C_obs_btime)
-
-  h5writeDataset.data.frame(obj = high_rs,h5loc=high.outloc,
-                            name="dlta13CCo2",
-                            DataFrameAsCompound = TRUE)
+  high <- h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
+  
+  # loop through each of the variables in list amb.data.list and write out as a dataframe.
+  lapply(names(high),function(x) {
+    h5writeDataset.data.frame(obj=high[[x]],
+                              h5loc=high.outloc,
+                              name=x,
+                              DataFrameAsCompound = TRUE)})
+ 
   H5Gclose(high.outloc)
 
   # close the group and the file

@@ -63,16 +63,14 @@ calibrate_ambient_carbon_linreg <- function(amb.data.list,caldf,outname,site,fil
       }
     }
     
-    # calibrate data at this height.
-    ambdf$mean_cal <- ambdf$mean
-    ambdf$max_cal  <- ambdf$max
-    ambdf$min_cal  <- ambdf$min
-    
     for (i in 1:length(var.inds.in.calperiod)) {
-      ambdf$mean_cal[var.inds.in.calperiod[[i]]] <- ambdf$mean[var.inds.in.calperiod[[i]]]*caldf$slope[i] + caldf$intercept[i]
-      ambdf$min_cal[var.inds.in.calperiod[[i]]] <- ambdf$min[var.inds.in.calperiod[[i]]]*caldf$slope[i] + caldf$intercept[i]
-      ambdf$max_cal[var.inds.in.calperiod[[i]]] <- ambdf$max[var.inds.in.calperiod[[i]]]*caldf$slope[i] + caldf$intercept[i]
+      ambdf$mean[var.inds.in.calperiod[[i]]] <- round(ambdf$mean[var.inds.in.calperiod[[i]]]*caldf$slope[i] + caldf$intercept[i], digits = 2)
+      ambdf$min[var.inds.in.calperiod[[i]]] <- round(ambdf$min[var.inds.in.calperiod[[i]]]*caldf$slope[i] + caldf$intercept[i], digits = 2)
+      ambdf$max[var.inds.in.calperiod[[i]]] <- round(ambdf$max[var.inds.in.calperiod[[i]]]*caldf$slope[i] + caldf$intercept[i], digits = 2)
     }
+    
+    # round variance down to 2 digits
+    ambdf$vari <- round(ambdf$vari, digits = 2)
     
     # replace ambdf in amb.data.list, return amb.data.list
     amb.data.list$dlta13CCo2 <- ambdf
