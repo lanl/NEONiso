@@ -43,6 +43,8 @@
 #' @return Returns nothing to the workspace, but creates a new output HDF5 file containing calibrated carbon isotope values.
 #' @export
 #'
+#' @importFrom magrittr %>%
+#' 
 calibrate_carbon_Bowling2003 <- function(inname,
                                          outname,
                                          site,
@@ -72,8 +74,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
   #-----------------------------------------------------------
   # pull all carbon isotope data into a list.
   
-  ciso <- h5read(inname,paste0('/',site,'/dp01/data/isoCo2'))
-  ucrt <- h5read(inname,paste0('/',site,'/dp01/ucrt/isoCo2'))
+  ciso <- rhdf5::h5read(inname,paste0('/',site,'/dp01/data/isoCo2'))
+  ucrt <- rhdf5::h5read(inname,paste0('/',site,'/dp01/ucrt/isoCo2'))
   
   high_rs <- extract_carbon_calibration_data(ciso,ucrt,"high")
   med_rs  <- extract_carbon_calibration_data(ciso,ucrt,"med")
@@ -84,13 +86,13 @@ calibrate_carbon_Bowling2003 <- function(inname,
   rm(high_rs,med_rs,low_rs)
   
   standards <- standards %>%
-    mutate(d13C_obs_btime=as.POSIXct(d13C_obs_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")) %>% # for assigning times later. 
+    dplyr::mutate(d13C_obs_btime=as.POSIXct(d13C_obs_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")) %>% # for assigning times later. 
     #------------------------------------------------------------
     # calculate mole fraction of 12CO2 and 13CO2 for the reference gases and observed values.
-    mutate(conc12CCO2_ref = CO2_ref_mean*(1-f)/(1+R_vpdb*(1+d13C_ref_mean/1000))) %>%
-    mutate(conc13CCO2_ref = CO2_ref_mean*(1-f)-conc12CCO2_ref) %>%
-    mutate(conc12CCO2_obs = CO2_obs_mean*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
-    mutate(conc13CCO2_obs = CO2_obs_mean*(1-f)-conc12CCO2_obs) 
+    dplyr::mutate(conc12CCO2_ref = CO2_ref_mean*(1-f)/(1+R_vpdb*(1+d13C_ref_mean/1000))) %>%
+    dplyr::mutate(conc13CCO2_ref = CO2_ref_mean*(1-f)-conc12CCO2_ref) %>%
+    dplyr::mutate(conc12CCO2_obs = CO2_obs_mean*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
+    dplyr::mutate(conc13CCO2_obs = CO2_obs_mean*(1-f)-conc12CCO2_obs) 
     
   # split back out into 3 data frames for each standard.
   low_rs <- dplyr::filter(standards,std_name=="low")
@@ -110,35 +112,35 @@ calibrate_carbon_Bowling2003 <- function(inname,
     # code below has been modified to achieve this.
     
     high_rs <- high_rs %>%
-      mutate(dom = day(d13C_obs_btime)) %>% # get day of month
-      group_by(dom) %>%
-      filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
-      slice(1) %>%
-      ungroup()
+      dplyr::mutate(dom = day(d13C_obs_btime)) %>% # get day of month
+      dplyr::group_by(dom) %>%
+      dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+      dplyr::slice(1) %>%
+      dplyr::ungroup()
     
     med_rs <- med_rs %>%
-      mutate(dom = day(d13C_obs_btime)) %>% # get day of month
-      group_by(dom) %>%
-      filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
-      slice(1) %>%
-      ungroup()
+      dplyr::mutate(dom = day(d13C_obs_btime)) %>% # get day of month
+      dplyr::group_by(dom) %>%
+      dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+      dplyr::slice(1) %>%
+      dplyr::ungroup()
     
     low_rs <- low_rs %>%
-      mutate(dom = day(d13C_obs_btime)) %>% # get day of month
-      group_by(dom) %>%
-      filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
-      slice(1) %>%
-      ungroup()
+      dplyr::mutate(dom = day(d13C_obs_btime)) %>% # get day of month
+      dplyr::group_by(dom) %>%
+      dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
+      dplyr::slice(1) %>%
+      dplyr::ungroup()
   
   # filter to only common days?
   common_days <- Reduce(intersect,list(low_rs$dom,med_rs$dom,high_rs$dom))
   
   low_rs <- low_rs %>%
-    filter(dom %in% common_days)
+    dplyr::filter(dom %in% common_days)
   med_rs <- med_rs %>%
-    filter(dom %in% common_days)
+    dplyr::filter(dom %in% common_days)
   high_rs <- high_rs %>%
-    filter(dom %in% common_days)
+    dplyr::filter(dom %in% common_days)
   
   #------------------------------------------------------------
   # OLD CODE - LEFT HERE FOR REFERENCE
@@ -337,33 +339,33 @@ calibrate_carbon_Bowling2003 <- function(inname,
   var_for_h5$start <- var_for_h5$end <- NULL
 
   # okay try to write out to h5 file.
-  h5createFile(outname)
-  h5createGroup(outname,paste0('/',site))
-  h5createGroup(outname,paste0('/',site,'/dp01'))
-  h5createGroup(outname,paste0('/',site,'/dp01/data'))
-  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2'))
+  rhdf5::h5createFile(outname)
+  rhdf5::h5createGroup(outname,paste0('/',site))
+  rhdf5::h5createGroup(outname,paste0('/',site,'/dp01'))
+  rhdf5::h5createGroup(outname,paste0('/',site,'/dp01/data'))
+  rhdf5::h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2'))
   
-  fid <- H5Fopen(outname)
+  fid <- rhdf5::H5Fopen(outname)
   
   # copy attributes from source file and write to output file.
-  tmp <- h5readAttributes(inname,paste0('/',site))
-  attrloc <- H5Gopen(fid,paste0('/',site))
+  tmp <- rhdf5::h5readAttributes(inname,paste0('/',site))
+  attrloc <- rhdf5::H5Gopen(fid,paste0('/',site))
   
   for (i in 1:length(tmp)) { # probably a more rapid way to do this in the future...lapply?
-    h5writeAttribute(h5obj=attrloc,attr=tmp[[i]],name=names(tmp)[i])
+    rhdf5::h5writeAttribute(h5obj=attrloc,attr=tmp[[i]],name=names(tmp)[i])
   }
   
-  H5Gclose(attrloc)
+  rhdf5::H5Gclose(attrloc)
   
   # write out calibration dataframe to a new group to keep it away from stackEddy
-  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/calData'))
-  co2.cal.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/calData'))
+  rhdf5::h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/calData'))
+  co2.cal.outloc <- rhdf5::H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/calData'))
 
   # write out dataset.
-  h5writeDataset.data.frame(obj = var_for_h5,h5loc=co2.cal.outloc,
+  rhdf5::h5writeDataset.data.frame(obj = var_for_h5,h5loc=co2.cal.outloc,
                             name="calGainsOffsets",
                             DataFrameAsCompound = TRUE)
-  H5Gclose(co2.cal.outloc)
+  rhdf5::H5Gclose(co2.cal.outloc)
 
   #---------------------------------------------
   #---------------------------------------------
@@ -371,59 +373,59 @@ calibrate_carbon_Bowling2003 <- function(inname,
   #---------------------------------------------
   #---------------------------------------------
   #low
-  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
-  low.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
+  rhdf5::h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
+  low.outloc <- rhdf5::H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
 
-  low <- h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
+  low <- rhdf5::h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
   
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(low),function(x) {
-    h5writeDataset.data.frame(obj=low[[x]],
+    rhdf5::h5writeDataset.data.frame(obj=low[[x]],
                               h5loc=low.outloc,
                               name=x,
                               DataFrameAsCompound = TRUE)})
   
-  H5Gclose(low.outloc)
+  rhdf5::H5Gclose(low.outloc)
 
   #------------------------------------------------------------
   #medium
-  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
+  rhdf5::h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
 
-  med.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
+  med.outloc <- rhdf5::H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
   
-  med <- h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
+  med <- rhdf5::h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
   
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(med),function(x) {
-    h5writeDataset.data.frame(obj=med[[x]],
+    rhdf5::h5writeDataset.data.frame(obj=med[[x]],
                               h5loc=med.outloc,
                               name=x,
                               DataFrameAsCompound = TRUE)})
  
-  H5Gclose(med.outloc)
+  rhdf5::H5Gclose(med.outloc)
 
   #------------------------------------------------------------
   #high
-  h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
+  rhdf5::h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
 
-  high.outloc <- H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
+  high.outloc <- rhdf5::H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
 
-  high <- h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
+  high <- rhdf5::h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
   
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(high),function(x) {
-    h5writeDataset.data.frame(obj=high[[x]],
+    rhdf5::h5writeDataset.data.frame(obj=high[[x]],
                               h5loc=high.outloc,
                               name=x,
                               DataFrameAsCompound = TRUE)})
  
-  H5Gclose(high.outloc)
+  rhdf5::H5Gclose(high.outloc)
 
   # close the group and the file
-  H5Fclose(fid)
+  rhdf5::H5Fclose(fid)
   Sys.sleep(0.5)
   
-  h5closeAll()  
+  rhdf5::h5closeAll()  
   #----------------------------------------------------------------------------------------
   # calibrate ambient data.
   # extract ambient measurements from ciso
@@ -442,31 +444,31 @@ calibrate_carbon_Bowling2003 <- function(inname,
   }
 
 
-  h5closeAll()
+  rhdf5::h5closeAll()
   
   print("Copying qfqm...")
   # copy over ucrt and qfqm groups as well.
-  h5createGroup(outname,paste0('/',site,'/dp01/qfqm/'))
-  h5createGroup(outname,paste0('/',site,'/dp01/qfqm/isoCo2'))
-  qfqm <- h5read(inname,paste0('/',site,'/dp01/qfqm/isoCo2'))
+  rhdf5::h5createGroup(outname,paste0('/',site,'/dp01/qfqm/'))
+  rhdf5::h5createGroup(outname,paste0('/',site,'/dp01/qfqm/isoCo2'))
+  qfqm <- rhdf5::h5read(inname,paste0('/',site,'/dp01/qfqm/isoCo2'))
 
   lapply(names(qfqm),function(x) {
     copy_qfqm_group(data.list=qfqm[[x]],
                     outname=x,file=outname,site=site,species="CO2")})
 
-  h5closeAll()
+  rhdf5::h5closeAll()
 
   print("Copying ucrt...")
   # now ucrt.
-  h5createGroup(outname,paste0('/',site,'/dp01/ucrt/'))
-  h5createGroup(outname,paste0('/',site,'/dp01/ucrt/isoCo2'))
-  ucrt <- h5read(inname,paste0('/',site,'/dp01/ucrt/isoCo2'))
+  rhdf5::h5createGroup(outname,paste0('/',site,'/dp01/ucrt/'))
+  rhdf5::h5createGroup(outname,paste0('/',site,'/dp01/ucrt/isoCo2'))
+  ucrt <- rhdf5::h5read(inname,paste0('/',site,'/dp01/ucrt/isoCo2'))
 
   lapply(names(ucrt),function(x) {
     copy_ucrt_group(data.list=ucrt[[x]],
                     outname=x,file=outname,site=site,species="CO2")})
 
-  h5closeAll()
+  rhdf5::h5closeAll()
   
   Sys.sleep(0.5)
 }

@@ -15,6 +15,7 @@
 #' @return Nothing to environment; returns calibrated ambient observations to the output file. This function is not designed to be called on its own.
 #' @export
 #'
+#' @importFrom magrittr %>%
 #' 
 calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
                                                  caldf,
@@ -59,7 +60,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   var.inds.in.calperiod <- list()
   
   for (i in 1:nrow(caldf)) {
-    int <- interval(caldf$start[i],caldf$end[i])
+    int <- lubridate::interval(caldf$start[i],caldf$end[i])
     var.inds.in.calperiod[[i]] <- which(amb.end.times %within% int)
   }
   
@@ -99,22 +100,22 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   amb.data.list$dlta13CCo2 <- amb.delta
   
   # write out dataset to HDF5 file.
-  fid <- H5Fopen(file)
+  fid <- rhdf5::H5Fopen(file)
   
   #print(outname)
-  co2.data.outloc <- H5Gcreate(fid,paste0('/',site,'/dp01/data/isoCo2/',outname))
+  co2.data.outloc <- rhdf5::H5Gcreate(fid,paste0('/',site,'/dp01/data/isoCo2/',outname))
   
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(amb.data.list),function(x) {
-    h5writeDataset.data.frame(obj=amb.data.list[[x]],
+    rhdf5::h5writeDataset.data.frame(obj=amb.data.list[[x]],
                               h5loc=co2.data.outloc,
                               name=x,
                               DataFrameAsCompound = TRUE)})
   
-  H5Gclose(co2.data.outloc)
-  H5Fclose(fid)
+  rhdf5::H5Gclose(co2.data.outloc)
+  rhdf5::H5Fclose(fid)
   # close all open handles.
-  h5closeAll()
+  rhdf5::h5closeAll()
   
   # seems to be a problem where closed file handles aren't registering....so introduce a short break.
   #Sys.sleep(0.5) 

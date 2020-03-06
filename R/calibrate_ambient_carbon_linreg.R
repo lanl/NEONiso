@@ -16,6 +16,7 @@
 #'
 #' @examples
 #' 
+#' @importFrom magrittr %>%
 #' 
 calibrate_ambient_carbon_linreg <- function(amb.data.list,caldf,outname,site,file,force.to.end=TRUE,force.to.beginning=TRUE,r2.thres=0.95) {
 
@@ -42,7 +43,7 @@ calibrate_ambient_carbon_linreg <- function(amb.data.list,caldf,outname,site,fil
     var.inds.in.calperiod <- list()
     
     for (i in 1:nrow(caldf)) {
-      int <- interval(caldf$start[i],caldf$end[i])
+      int <- lubridate::interval(caldf$start[i],caldf$end[i])
       var.inds.in.calperiod[[i]] <- which(amb.end.times %within% int)
       
       # check to see if calibration point is "valid" - 
@@ -76,17 +77,17 @@ calibrate_ambient_carbon_linreg <- function(amb.data.list,caldf,outname,site,fil
     amb.data.list$dlta13CCo2 <- ambdf
     
     # write out dataset to HDF5 file.
-    fid <- H5Fopen(file)
+    fid <- rhdf5::H5Fopen(file)
     
-    co2.data.outloc <- H5Gcreate(fid,paste0('/',site,'/dp01/data/isoCo2/',outname))
+    co2.data.outloc <- rhdf5::H5Gcreate(fid,paste0('/',site,'/dp01/data/isoCo2/',outname))
     
     # loop through each of the variables in list amb.data.list and write out as a dataframe.
     lapply(names(amb.data.list),function(x) {
-      h5writeDataset.data.frame(obj=amb.data.list[[x]],
+      rhdf5::h5writeDataset.data.frame(obj=amb.data.list[[x]],
                                 h5loc=co2.data.outloc,
                                 name=x,
                                 DataFrameAsCompound = TRUE)})
     
     # close all open handles.
-    h5closeAll()
+    rhdf5::h5closeAll()
 }
