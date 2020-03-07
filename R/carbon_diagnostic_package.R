@@ -10,6 +10,9 @@
 #' @examples
 #' 
 #' @importFrom magrittr %>%
+#' @import ggplot2 
+#' @import gridExtra
+#' @import xts
 #' 
 carbon_diagnostic_package <- function(data_path,
                                       plot_path,
@@ -18,13 +21,10 @@ carbon_diagnostic_package <- function(data_path,
   
   # what plots would be good here:
   # 1) timeseries of calibration data
-  # 2) timeseries of calibratino regressions
+  # 2) timeseries of calibration regressions
   # 3) timeseries of ambient data
   # 4) monthly versions of 1-3.
   # all of these should be queried when running this function.
- 
-  require(ggplot2)
-  require(gridExtra)
   
   # query re: calibration plots
   print("This function makes diagnostic plots of calibrated NEON carbon isotope data.")
@@ -88,17 +88,24 @@ carbon_diagnostic_package <- function(data_path,
   # get vector of sites:
   unq_sites <- unique(sitecd)
   
+  print(unq_sites)
+  
   for (i in 1:length(unq_sites)) {
+    
+    print(paste("Processing data for site:",unq_sites[i]))
     
     c13_obs_data <- neonUtilities::stackEddy(paste0(data_path,"/",unq_sites[i]),level="dp01",var="dlta13CCo2",avg=9)     
     c13_ref_data <- neonUtilities::stackEddy(paste0(data_path,"/",unq_sites[i]),level="dp01",var="dlta13CCo2Refe",avg=9)     
     co2_obs_data <- neonUtilities::stackEddy(paste0(data_path,"/",unq_sites[i]),level="dp01",var="rtioMoleDryCo2",avg=9)     
     co2_ref_data <- neonUtilities::stackEddy(paste0(data_path,"/",unq_sites[i]),level="dp01",var="rtioMoleDryCo2Refe",avg=9)  
     
+    #-----------------------------------------------------
     # select data a little more cleverly.
-    calData <- list()
     
-    test <- c13_obs_data[[1]]
+    #=========================
+    # 1. CALIBRATION DATA.
+    
+    calData <- list()
     
     calData[[1]] <- c13_obs_data[[1]] %>%
       dplyr::filter(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch")) %>%
@@ -126,6 +133,43 @@ carbon_diagnostic_package <- function(data_path,
     calData$timeBgn <- as.POSIXct(calData$timeBgn,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
     calData$timeEnd <- as.POSIXct(calData$timeEnd,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
 
+    #=========================
+    # 2. AMBIENT DATA
+    
+    ambData <- list()
+    
+    # need to get attributes for this site (i wonder if there's a better way to do this?)
+    flist <- list.files(paste0(data_path,"/",unq_sites[i]),full.names=TRUE) 
+    
+    attrs <- rhdf5::h5readAttributes(flist[1],unq_sites[i])
+    heights <- as.numeric(attrs$DistZaxsLvlMeasTow)
+    
+    ambData[[1]] <- c13_obs_data[[1]] %>%
+      dplyr::filter(verticalPosition %in% c("010","020","030","040","050","060","070","080")) %>%
+      dplyr::select(timeBgn,timeEnd,data.isoCo2.dlta13CCo2.mean,verticalPosition)%>%
+      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd, mean13C = data.isoCo2.dlta13CCo2.mean, level = verticalPosition)
+    
+    ambData[[2]] <- co2_obs_data[[1]] %>%
+      dplyr::filter(verticalPosition %in% c("010","020","030","040","050","060","070","080")) %>%
+      dplyr::select(timeBgn,timeEnd,data.isoCo2.rtioMoleDryCo2.mean,verticalPosition) %>%
+      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd, meanCo2 = data.isoCo2.rtioMoleDryCo2.mean, level = verticalPosition)
+    
+    ambData <- Reduce(function(x,y) merge(x,y,by=c("timeBgn","timeEnd","level")), ambData)
+    
+    # loop through heights, and make a new vector that holds these heights.
+    ambData$height <- 0
+
+    for (j in 1:length(heights)) {
+      level_var <- paste0("0",j,"0")
+      
+      ambData$height[ambData$level == level_var] <- heights[j]
+      
+    }
+    
+    # convert times to POSIXct.
+    ambData$timeBgn <- as.POSIXct(ambData$timeBgn,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
+    ambData$timeEnd <- as.POSIXct(ambData$timeEnd,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
+    
     #--------------------------------------------------------------
     #--------------------------------------------------------------
     # PLOTTING SCRIPTS LIVE BELOW.
@@ -139,12 +183,28 @@ carbon_diagnostic_package <- function(data_path,
       
     }
     
+    # 6. calibrated ambient data - timeseries
+    if (which.plots == 3 | which.plots == 8 | which.plots == 9) {
+      
+      NEONiso:::cplot_monthly_ambient(ambData,out_folder,unq_sites[i])
+      
+    } # if
+    
     # 4. Raw calibration data - timeseries
     if (which.plots == 4 | which.plots == 8 | which.plots == 9) {
       
       NEONiso:::cplot_fullts_standards(calData,out_folder,unq_sites[i])
       
     } # if
+    
+    # 6. calibrated ambient data - timeseries
+    if (which.plots == 6 | which.plots == 8 | which.plots == 9) {
+      
+      NEONiso:::cplot_fullts_ambient(ambData,out_folder,unq_sites[i])
+      
+    } # if
+    
+    
   } # for unq_sites
 } # function
 
