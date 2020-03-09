@@ -16,7 +16,6 @@
 #' 
 carbon_diagnostic_package <- function(data_path,
                                       plot_path,
-                                      method,
                                       which.sites="all") {
   
   # what plots would be good here:
@@ -134,12 +133,51 @@ carbon_diagnostic_package <- function(data_path,
     calData$timeEnd <- as.POSIXct(calData$timeEnd,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
 
     #=========================
-    # 2. AMBIENT DATA
-    
-    ambData <- list()
+    # 2. CALIBRATION PARAMETERS
     
     # need to get attributes for this site (i wonder if there's a better way to do this?)
     flist <- list.files(paste0(data_path,"/",unq_sites[i]),full.names=TRUE) 
+    
+    calPars.tmp <- list()
+    calPars <- list() 
+    
+    for (k in 1:length(flist)) {
+      calPars.tmp[[k]] <- rhdf5::h5read(flist[k],paste0('/',unq_sites[i],'/dp01/data/isoCo2/calData'))
+      calPars[[k]] <- calPars.tmp[[k]][[1]]
+      
+      # convert valid_period_start and valid_period_end to POSIXct.
+      calPars[[k]]$valid_period_start <- as.POSIXct(calPars[[k]]$valid_period_start,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
+      calPars[[k]]$valid_period_end <- as.POSIXct(calPars[[k]]$valid_period_end,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
+      
+      str(calPars[[k]])
+      
+      # bug fix for now, but needs to be corrected in calibration functions.
+      if (!("calUcrt" %in% names(calPars[[k]]))) {
+        
+        calPars[[k]]$calUcrt <- as.numeric(rep(NA,length(calPars[[k]]$valid_period_start)))
+        
+      }
+    }
+    
+    # determine method.
+    if (names(calPars.tmp[[1]]) == 'calGainsOffsets') {
+      method <- "Bowling"
+    } else if (names(calPars.tmp[[1]]) == 'calRegressions') {
+      method <- "LinReg"
+    } else {
+      stop("Can't identify method.")
+    }
+    
+    # save a monthly version for plotting scripts.
+    calParsMon <- calPars
+    
+    # bind together before putting into plotting scripts.
+    calPars <- do.call(rbind,calPars)
+    
+    #=========================
+    # 3. AMBIENT DATA
+    
+    ambData <- list()
     
     attrs <- rhdf5::h5readAttributes(flist[1],unq_sites[i])
     heights <- as.numeric(attrs$DistZaxsLvlMeasTow)
@@ -183,8 +221,16 @@ carbon_diagnostic_package <- function(data_path,
       
     }
     
-    # 6. calibrated ambient data - timeseries
-    if (which.plots == 3 | which.plots == 8 | which.plots == 9) {
+    # 5. Calibration parameters - timeseries
+    if (which.plots == 2 | which.plots == 7 | which.plots == 9) {
+
+      NEONiso:::cplot_monthly_calParameters(calParsMon,out_folder,unq_sites[i],method)
+
+    } # if
+    
+    
+    # 3. calibrated ambient data - timeseries
+    if (which.plots == 3 | which.plots == 7 | which.plots == 9) {
       
       NEONiso:::cplot_monthly_ambient(ambData,out_folder,unq_sites[i])
       
@@ -194,6 +240,13 @@ carbon_diagnostic_package <- function(data_path,
     if (which.plots == 4 | which.plots == 8 | which.plots == 9) {
       
       NEONiso:::cplot_fullts_standards(calData,out_folder,unq_sites[i])
+      
+    } # if
+    
+    # 5. Calibration parameters - timeseries
+    if (which.plots == 5 | which.plots == 8 | which.plots == 9) {
+      
+      NEONiso:::cplot_fullts_calParameters(calPars,out_folder,unq_sites[i],method)
       
     } # if
     

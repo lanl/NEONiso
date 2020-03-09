@@ -62,6 +62,104 @@ cplot_monthly_standards <- function(calData,plot_path,site) {
 }
 
 #=================================================================
+# 2. monthly plots of calibration parameters.
+
+cplot_monthly_calParameters <- function(calParDf,plot_path,site,method) {
+  
+  str(calParDf)
+  
+  # open plot.
+  pdf(paste0(plot_path,"/","5_tsCPars_",site,"_",method,".pdf"))
+  
+  # check method.
+  if (method == "Bowling") {
+    
+    for (i in 1:length(calParDf)) {
+      
+      # need to plot: gain12C, gain13C, offset12C, offset13C, calgood, and calUcrt.
+      p1 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=gain12C)) +
+        geom_point() +
+        theme_bw() +
+        scale_x_datetime("date") +
+        scale_y_continuous("gain, 12C") 
+      
+      p2 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=gain13C)) +
+        geom_point() +
+        theme_bw() +
+        scale_x_datetime("date") +
+        scale_y_continuous("gain, 13C") 
+      
+      p3 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=offset12C)) +
+        geom_point() +
+        theme_bw() +
+        scale_x_datetime("date") +
+        scale_y_continuous("offset, 12C") 
+      
+      p4 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=offset13C)) +
+        geom_point() +
+        theme_bw() +
+        scale_x_datetime("date") +
+        scale_y_continuous("offset, 13C") 
+      
+      p5 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=calUcrt)) +
+        geom_point() +
+        geom_hline(yintercept= -0.2,col="red",lty=2) +
+        geom_hline(yintercept = 0.2,col="red",lty=2) +
+        theme_bw() +
+        scale_x_datetime("date") +
+        scale_y_continuous("Uncertainty")
+      
+      p6 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=calgood)) +
+        geom_point() +
+        theme_bw() +
+        scale_x_datetime("date") +
+        scale_y_continuous("# good cal points") 
+      
+      gridExtra::grid.arrange(p1,p2,p3,p4,p5,p6,nrow=6,top=site)
+      
+    }
+    
+  } else if (method == "LinReg") {
+    
+    for (i in 1:length(calParDf)) {
+      
+      # need to plot: slope, intercept, r2, calUcrt.
+      p1 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=slope)) +
+        geom_point() +
+        theme_bw() +
+        scale_x_datetime("date") +
+        scale_y_continuous("gain, 12C") 
+      
+      p2 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=intercept)) +
+        geom_point() +
+        theme_bw() +
+        scale_x_datetime("date") +
+        scale_y_continuous("gain, 13C") 
+      
+      p3 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=r2)) +
+        geom_point() +
+        theme_bw() +
+        scale_x_datetime("date") +
+        scale_y_continuous("offset, 12C") 
+      
+      p4 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=calUcrt)) +
+        geom_point() +
+        geom_hline(yintercept= -0.2,col="red",lty=2) +
+        geom_hline(yintercept = 0.2,col="red",lty=2) +
+        theme_bw() +
+        scale_x_datetime("date") +
+        scale_y_continuous("Uncertainty")
+      
+      gridExtra::grid.arrange(p1,p2,p3,p4,nrow=4,top=site)
+      
+    } #i
+  }# method
+  
+  dev.off()
+  
+}
+
+#=================================================================
 # 3. monthly plots of ambient measurements.
 cplot_monthly_ambient <- function(ambData,dir_plots,site) {
   
@@ -117,6 +215,7 @@ cplot_monthly_ambient <- function(ambData,dir_plots,site) {
   
 }
 
+#========================================================
 # 4. monthly plots of reference material measurements.
 cplot_fullts_standards <- function(calData,plot_path,site) {
   
@@ -168,7 +267,96 @@ cplot_fullts_standards <- function(calData,plot_path,site) {
 }
 
 #=================================================================
-# 6. monthly plots of ambient measurements.
+# 5. timeseries plots of calibration parameters.
+
+cplot_fullts_calParameters <- function(calParDf,plot_path,site,method) {
+  
+  # open plot.
+  pdf(paste0(plot_path,"/","5_tsCPars_",site,"_",method,".pdf"))
+  
+  # check method.
+  if (method == "Bowling") {
+    
+    # need to plot: gain12C, gain13C, offset12C, offset13C, calgood, and calUcrt.
+    p1 <- ggplot(data=calParDf,aes(x=valid_period_start,y=gain12C)) +
+      geom_point() +
+      theme_bw() +
+      scale_x_datetime("date") +
+      scale_y_continuous("gain, 12C") 
+      
+    p2 <- ggplot(data=calParDf,aes(x=valid_period_start,y=gain13C)) +
+      geom_point() +
+      theme_bw() +
+      scale_x_datetime("date") +
+      scale_y_continuous("gain, 13C") 
+    
+    p3 <- ggplot(data=calParDf,aes(x=valid_period_start,y=offset12C)) +
+      geom_point() +
+      theme_bw() +
+      scale_x_datetime("date") +
+      scale_y_continuous("offset, 12C") 
+    
+    p4 <- ggplot(data=calParDf,aes(x=valid_period_start,y=offset13C)) +
+      geom_point() +
+      theme_bw() +
+      scale_x_datetime("date") +
+      scale_y_continuous("offset, 13C") 
+    
+    p5 <- ggplot(data=calParDf,aes(x=valid_period_start,y=calUcrt)) +
+      geom_point() +
+      geom_hline(yintercept= -0.2,col="red",lty=2) +
+      geom_hline(yintercept = 0.2,col="red",lty=2) +
+      theme_bw() +
+      scale_x_datetime("date") +
+      scale_y_continuous("Uncertainty")
+    
+    p6 <- ggplot(data=calParDf,aes(x=valid_period_start,y=calgood)) +
+      geom_point() +
+      theme_bw() +
+      scale_x_datetime("date") +
+      scale_y_continuous("# good cal points") 
+    
+    gridExtra::grid.arrange(p1,p2,p3,p4,p5,p6,nrow=6,top=site)
+    
+  } else if (method == "LinReg") {
+    
+    # need to plot: slope, intercept, r2, calUcrt.
+    p1 <- ggplot(data=calParDf,aes(x=valid_period_start,y=slope)) +
+      geom_point() +
+      theme_bw() +
+      scale_x_datetime("date") +
+      scale_y_continuous("gain, 12C") 
+    
+    p2 <- ggplot(data=calParDf,aes(x=valid_period_start,y=intercept)) +
+      geom_point() +
+      theme_bw() +
+      scale_x_datetime("date") +
+      scale_y_continuous("gain, 13C") 
+    
+    p3 <- ggplot(data=calParDf,aes(x=valid_period_start,y=r2)) +
+      geom_point() +
+      theme_bw() +
+      scale_x_datetime("date") +
+      scale_y_continuous("offset, 12C") 
+    
+    p4 <- ggplot(data=calParDf,aes(x=valid_period_start,y=calUcrt)) +
+      geom_point() +
+      geom_hline(yintercept= -0.2,col="red",lty=2) +
+      geom_hline(yintercept = 0.2,col="red",lty=2) +
+      theme_bw() +
+      scale_x_datetime("date") +
+      scale_y_continuous("Uncertainty")
+    
+    gridExtra::grid.arrange(p1,p2,p3,p4,nrow=4,top=site)
+    
+  }
+  
+  dev.off()
+  
+}
+
+#=================================================================
+# 6. timeseries plots of ambient measurements.
 cplot_fullts_ambient <- function(ambData,dir_plots,site) {
 
   # get number of heights.
