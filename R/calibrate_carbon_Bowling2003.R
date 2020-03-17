@@ -306,6 +306,23 @@ calibrate_carbon_Bowling2003 <- function(inname,
   
   # output dataframe giving valid time range, slopes, intercepts, rsquared.
   if (nrow(val.df) == 1 && is.na(val.df$low) && is.na(val.df$med) && is.na(val.df$high)) {
+    if (any(is.na(starttimes)) | 
+        any(is.na(endtimes))) {
+      
+      # break apart inname to get year/month combo.
+      nm_tmp <- strsplit(inname,split=".",fixed=TRUE)
+      yrmn <- nm_tmp[[1]][8]
+      
+      # should have length 7 - check here!
+      if (!(nchar(yrmn) == 7)) {
+        stop("Can't identify yr-month from file name!")
+      }
+      
+      starttimes <- as.POSIXct(paste0(yrmn,"-15 00:00"),format="%Y-%m-%d %H:%M")      
+      endtimes   <- as.POSIXct(paste0(yrmn,"-16 00:00"),format="%Y-%m-%d %H:%M")
+      
+    }
+    
     out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       calUcrt=NA,calgood=NA,replaced.vals=NA)
@@ -316,6 +333,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   }
 
   out <- cbind(out,cal.vals)
+  
   var_for_h5 <- out
   
   # out should now have 9 columns, check to see if this is true.

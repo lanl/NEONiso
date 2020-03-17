@@ -66,10 +66,8 @@ cplot_monthly_standards <- function(calData,plot_path,site) {
 
 cplot_monthly_calParameters <- function(calParDf,plot_path,site,method) {
   
-  str(calParDf)
-  
   # open plot.
-  pdf(paste0(plot_path,"/","5_tsCPars_",site,"_",method,".pdf"))
+  pdf(paste0(plot_path,"/","2_monCPars_",site,"_",method,".pdf"))
   
   # check method.
   if (method == "Bowling") {

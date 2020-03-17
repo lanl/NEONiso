@@ -30,9 +30,16 @@ carbon_diagnostic_package <- function(data_path,
   
   #-------------------------------------------------------
   # query for which plots.
-  which.plots <- menu(c("Raw Calibration data - Monthly","Calibration Parameters - Monthly","Atmospheric Measurements - Monthly",
-                        "Raw Calibration data - Full Timeseries","Calibration Parametrs - Full Timeseries","Atmospheric Measurements - Full Timeseries",
-                        "All Monthly Plots","All Full Timeseries Plots","All Plots","I've made a huge mistake.")
+  which.plots <- menu(c("Raw Calibration data - Monthly",
+                        "Calibration Parameters - Monthly",
+                        "Atmospheric Measurements - Monthly",
+                        "Raw Calibration data - Full Timeseries",
+                        "Calibration Parametrs - Full Timeseries",
+                        "Atmospheric Measurements - Full Timeseries",
+                        "All Monthly Plots",
+                        "All Full Timeseries Plots",
+                        "All Plots",
+                        "I've made a huge mistake.")
                       ,title="Which plots should be run?")
   
   # allow graceful exit if want to stop.
@@ -104,6 +111,8 @@ carbon_diagnostic_package <- function(data_path,
     #=========================
     # 1. CALIBRATION DATA.
     
+    print("Extracting calibration data...")
+    
     calData <- list()
     
     calData[[1]] <- c13_obs_data[[1]] %>%
@@ -135,6 +144,8 @@ carbon_diagnostic_package <- function(data_path,
     #=========================
     # 2. CALIBRATION PARAMETERS
     
+    print("Extracting calibration parameters..")
+    
     # need to get attributes for this site (i wonder if there's a better way to do this?)
     flist <- list.files(paste0(data_path,"/",unq_sites[i]),full.names=TRUE) 
     
@@ -149,13 +160,17 @@ carbon_diagnostic_package <- function(data_path,
       calPars[[k]]$valid_period_start <- as.POSIXct(calPars[[k]]$valid_period_start,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
       calPars[[k]]$valid_period_end <- as.POSIXct(calPars[[k]]$valid_period_end,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
       
-      str(calPars[[k]])
-      
       # bug fix for now, but needs to be corrected in calibration functions.
-      if (!("calUcrt" %in% names(calPars[[k]]))) {
-        
-        calPars[[k]]$calUcrt <- as.numeric(rep(NA,length(calPars[[k]]$valid_period_start)))
-        
+      if (names(calPars.tmp[[k]]) == 'calGainsOffsets') {
+        if (!("calUcrt" %in% names(calPars[[k]]))) {
+          calPars[[k]]$calUcrt <- as.numeric(rep(NA,length(calPars[[k]]$valid_period_start)))
+        }
+        if (!("calgood" %in% names(calPars[[k]]))) {
+          calPars[[k]]$calgood <- as.numeric(rep(NA,length(calPars[[k]]$valid_period_start)))
+        }
+        if (!("replaced.vals" %in% names(calPars[[k]]))) {
+          calPars[[k]]$replaced.vals <- as.numeric(rep(NA,length(calPars[[k]]$valid_period_start)))
+        }
       }
     }
     
@@ -176,6 +191,8 @@ carbon_diagnostic_package <- function(data_path,
     
     #=========================
     # 3. AMBIENT DATA
+    
+    print("Extracting ambient data..")
     
     ambData <- list()
     
@@ -217,6 +234,7 @@ carbon_diagnostic_package <- function(data_path,
     # 1. Raw calibration data - monthly
     if (which.plots == 1 | which.plots == 7 | which.plots == 9) {
       
+      print("Plot 1")
       NEONiso:::cplot_monthly_standards(calData,out_folder,unq_sites[i])
       
     }
@@ -224,6 +242,7 @@ carbon_diagnostic_package <- function(data_path,
     # 5. Calibration parameters - timeseries
     if (which.plots == 2 | which.plots == 7 | which.plots == 9) {
 
+      print("Plot 2")
       NEONiso:::cplot_monthly_calParameters(calParsMon,out_folder,unq_sites[i],method)
 
     } # if
@@ -232,6 +251,7 @@ carbon_diagnostic_package <- function(data_path,
     # 3. calibrated ambient data - timeseries
     if (which.plots == 3 | which.plots == 7 | which.plots == 9) {
       
+      print("Plot 3")
       NEONiso:::cplot_monthly_ambient(ambData,out_folder,unq_sites[i])
       
     } # if
@@ -239,6 +259,7 @@ carbon_diagnostic_package <- function(data_path,
     # 4. Raw calibration data - timeseries
     if (which.plots == 4 | which.plots == 8 | which.plots == 9) {
       
+      print("Plot 4")
       NEONiso:::cplot_fullts_standards(calData,out_folder,unq_sites[i])
       
     } # if
@@ -246,6 +267,7 @@ carbon_diagnostic_package <- function(data_path,
     # 5. Calibration parameters - timeseries
     if (which.plots == 5 | which.plots == 8 | which.plots == 9) {
       
+      print("Plot 5")
       NEONiso:::cplot_fullts_calParameters(calPars,out_folder,unq_sites[i],method)
       
     } # if
@@ -253,10 +275,10 @@ carbon_diagnostic_package <- function(data_path,
     # 6. calibrated ambient data - timeseries
     if (which.plots == 6 | which.plots == 8 | which.plots == 9) {
       
+      print("Plot 6")
       NEONiso:::cplot_fullts_ambient(ambData,out_folder,unq_sites[i])
       
     } # if
-    
     
   } # for unq_sites
 } # function
