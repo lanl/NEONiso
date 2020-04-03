@@ -23,11 +23,12 @@ calibrate_ambient_carbon_linreg <- function(amb.data.list,caldf,outname,site,fil
     print("Processing carbon ambient data...")
     
     # only working on the d13C of the amb.data.list, so extract just this...
-    ambdf <- amb.data.list$dlta13CCo2
+    d13C_ambdf <- amb.data.list$dlta13CCo2
+    co2_ambdf  <- amb.data.list$rtioMoleDryCo2
     
     # ensure that time variables are in POSIXct.
-    amb.start.times <- as.POSIXct(ambdf$timeBgn,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
-    amb.end.times <- as.POSIXct(ambdf$timeEnd,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+    amb.start.times <- as.POSIXct(d13C_ambdf$timeBgn,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+    amb.end.times <- as.POSIXct(d13C_ambdf$timeEnd,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
     
     # if force.to.end and/or force.to.beginning are true, match out$start[1] to min(amb time)
     # and/or out$end[nrow] to max(amb time)
@@ -50,31 +51,50 @@ calibrate_ambient_carbon_linreg <- function(amb.data.list,caldf,outname,site,fil
       # at present - "valid" means r2 > r2.thres.
       # rpf - 190809.
       
-      if (!is.na(caldf$r2[i]) & caldf$r2[i] < r2.thres) {
+      if (!is.na(caldf$d13C_r2[i]) & caldf$d13C_r2[i] < r2.thres) {
         if (i > 1) {
-          caldf$slope[i] <- caldf$slope[i-1]
-          caldf$intercept[i] <- caldf$intercept[i-1]
-          caldf$r2[i] <- caldf$r2[i-1]
+          caldf$d13C_slope[i] <- caldf$d13C_slope[i-1]
+          caldf$d13C_intercept[i] <- caldf$d13C_intercept[i-1]
+          caldf$d13C_r2[i] <- caldf$d13C_r2[i-1]
         } else {
-          first.good.val <- min(which(caldf$r2 > r2.thres))
-          caldf$slope[i] <- caldf$slope[first.good.val]
-          caldf$intercept[i] <- caldf$intercept[first.good.val]
-          caldf$r2[i] <- caldf$r2[first.good.val]
+          first.good.val <- min(which(caldf$d13C_r2 > r2.thres))
+          caldf$d13C_slope[i] <- caldf$d13C_slope[first.good.val]
+          caldf$d13C_intercept[i] <- caldf$d13C_intercept[first.good.val]
+          caldf$d13C_r2[i] <- caldf$d13C_r2[first.good.val]
+        }
+      }     
+      if (!is.na(caldf$co2_r2[i]) & caldf$co2_r2[i] < r2.thres) {
+        if (i > 1) {
+          caldf$co2_slope[i] <- caldf$co2_slope[i-1]
+          caldf$co2_intercept[i] <- caldf$co2_intercept[i-1]
+          caldf$co2_r2[i] <- caldf$co2_r2[i-1]
+        } else {
+          first.good.val <- min(which(caldf$co2_r2 > r2.thres))
+          caldf$co2_slope[i] <- caldf$co2_slope[first.good.val]
+          caldf$co2_intercept[i] <- caldf$co2_intercept[first.good.val]
+          caldf$co2_r2[i] <- caldf$co2_r2[first.good.val]
         }
       }
     }
     
     for (i in 1:length(var.inds.in.calperiod)) {
-      ambdf$mean[var.inds.in.calperiod[[i]]] <- round(ambdf$mean[var.inds.in.calperiod[[i]]]*caldf$slope[i] + caldf$intercept[i], digits = 2)
-      ambdf$min[var.inds.in.calperiod[[i]]] <- round(ambdf$min[var.inds.in.calperiod[[i]]]*caldf$slope[i] + caldf$intercept[i], digits = 2)
-      ambdf$max[var.inds.in.calperiod[[i]]] <- round(ambdf$max[var.inds.in.calperiod[[i]]]*caldf$slope[i] + caldf$intercept[i], digits = 2)
+      d13C_ambdf$mean[var.inds.in.calperiod[[i]]] <- round(d13C_ambdf$mean[var.inds.in.calperiod[[i]]]*caldf$d13C_slope[i] + caldf$d13C_intercept[i], digits = 2)
+      d13C_ambdf$min[var.inds.in.calperiod[[i]]]  <- round(d13C_ambdf$min[var.inds.in.calperiod[[i]]]*caldf$d13C_slope[i] + caldf$d13C_intercept[i], digits = 2)
+      d13C_ambdf$max[var.inds.in.calperiod[[i]]]  <- round(d13C_ambdf$max[var.inds.in.calperiod[[i]]]*caldf$d13C_slope[i] + caldf$d13C_intercept[i], digits = 2)
+      
+      
+      co2_ambdf$mean[var.inds.in.calperiod[[i]]] <- round(co2_ambdf$mean[var.inds.in.calperiod[[i]]]*caldf$co2_slope[i] + caldf$co2_intercept[i], digits = 2)
+      co2_ambdf$min[var.inds.in.calperiod[[i]]]  <- round(co2_ambdf$min[var.inds.in.calperiod[[i]]]*caldf$co2_slope[i] + caldf$co2_intercept[i], digits = 2)
+      co2_ambdf$max[var.inds.in.calperiod[[i]]]  <- round(co2_ambdf$max[var.inds.in.calperiod[[i]]]*caldf$co2_slope[i] + caldf$co2_intercept[i], digits = 2)
     }
     
     # round variance down to 2 digits
-    ambdf$vari <- round(ambdf$vari, digits = 2)
+    d13C_ambdf$vari <- round(d13C_ambdf$vari, digits = 2)
+    co2_ambdf$vari <- round(co2_ambdf$vari, digits = 2)
     
     # replace ambdf in amb.data.list, return amb.data.list
-    amb.data.list$dlta13CCo2 <- ambdf
+    amb.data.list$dlta13CCo2 <- d13C_ambdf
+    amb.data.list$rtioMoleDryCo2 <- co2_ambdf
     
     # write out dataset to HDF5 file.
     fid <- rhdf5::H5Fopen(file)

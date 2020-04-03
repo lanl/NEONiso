@@ -116,11 +116,15 @@ calibrate_carbon_linreg <- function(inname,
     # okay, now run calibrations...
     #------------------------------
     # create output variables.
-    cal_slopes <- vector()
-    cal_ints   <- vector()
-    cal_rsq    <- vector()
-    calUcrt    <- vector()
+    delta_cal_slopes <- vector()
+    delta_cal_ints   <- vector()
+    delta_cal_rsq    <- vector()
+    calDelUcrt    <- vector()
     
+    co2_cal_slopes <- vector()
+    co2_cal_ints   <- vector()
+    co2_cal_rsq    <- vector()
+    calCO2Ucrt    <- vector()
     
     for (i in 2:max(stds$cal_period)) {
       # subset data.
@@ -135,32 +139,48 @@ calibrate_carbon_linreg <- function(inname,
           !all(is.na(cal.subset$d13C_obs_mean)) & # ensure that not all observational values are missing
           !all(is.na(cal.subset$d13C_ref_mean))) { # ensure that not all reference values are missing.
         
+        # model to calibrate delta 13C values.
         tmpmod <- lm(d13C_ref_mean ~ d13C_obs_mean,data=cal.subset)
         
-        cal_slopes[i-1] <- coef(tmpmod)[[2]]
-        cal_ints[i-1] <- coef(tmpmod)[[1]]
-        cal_rsq[i-1] <- summary(tmpmod)$r.squared
+        delta_cal_slopes[i-1] <- coef(tmpmod)[[2]]
+        delta_cal_ints[i-1] <- coef(tmpmod)[[1]]
+        delta_cal_rsq[i-1] <- summary(tmpmod)$r.squared
+        
+        # model to calibrate delta 13C values.
+        tmpmod <- lm(CO2_ref_mean ~ CO2_obs_mean,data=cal.subset)
+        
+        co2_cal_slopes[i-1] <- coef(tmpmod)[[2]]
+        co2_cal_ints[i-1] <- coef(tmpmod)[[1]]
+        co2_cal_rsq[i-1] <- summary(tmpmod)$r.squared
         
         if (any(cal.subset$std_name == "med")) {
           # get medium vars.
           tmp <- subset(cal.subset, std_name == "med")
           
-          calUcrt[i-1] <- max(tmp$d13C_obs_mean*cal_slopes[i-1] + cal_ints[i-1] - tmp$d13C_ref_mean,
+          calDelUcrt[i-1] <- max(tmp$d13C_obs_mean*delta_cal_slopes[i-1] + delta_cal_ints[i-1] - tmp$d13C_ref_mean,
                                   na.rm = TRUE)
+          calCO2Ucrt[i-1] <- max(tmp$CO2_obs_mean*co2_cal_slopes[i-1] + co2_cal_ints[i-1] - tmp$CO2_ref_mean,
+                                 na.rm = TRUE)
           
         } else {
           
-          calUcrt[i-1] <- NA
+          calDelUcrt[i-1] <- NA
+          calCO2Ucrt[i-1] <- NA
           
         }
         
       } else {
         
-        cal_slopes[i-1] <- NA
-        cal_ints[i-1] <- NA
-        cal_rsq[i-1] <- NA
-        calUcrt[i-1] <- NA
+        delta_cal_slopes[i-1] <- NA
+        delta_cal_ints[i-1] <- NA
+        delta_cal_rsq[i-1] <- NA
+        calDelUcrt[i-1] <- NA
         
+        co2_cal_slopes[i-1] <- NA
+        co2_cal_ints[i-1] <- NA
+        co2_cal_rsq[i-1] <- NA
+        calCO2Ucrt[i-1] <- NA
+                
       }
     }
     
@@ -174,7 +194,7 @@ calibrate_carbon_linreg <- function(inname,
     starttimes <- vector()
     endtimes <- vector()
     
-    for (i in 1:length(cal_slopes)) {
+    for (i in 1:length(delta_cal_slopes)) {
       starttimes[i] <- times$etime[i]
       endtimes[i] <- times$etime[i+1]
     }
@@ -182,18 +202,41 @@ calibrate_carbon_linreg <- function(inname,
     # output dataframe giving valid time range, slopes, intercepts, rsquared.
     out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(endtimes,tz="UTC",origin="1970-01-01"),
-                      slope=cal_slopes,intercept=cal_ints,r2=cal_rsq,
-                      calUcrt=as.numeric(calUcrt))
+                      d13C_slope=delta_cal_slopes,d13C_intercept=delta_cal_ints,d13C_r2=delta_cal_rsq,
+                      co2_slope=co2_cal_slopes,co2_intercept=co2_cal_ints,co2_r2=co2_cal_rsq,
+                      calDelUcrt=as.numeric(calDelUcrt),
+                      calCO2Ucrt=as.numeric(calCO2Ucrt))
     
   } else {
 
         # output dataframe giving valid time range, slopes, intercepts, rsquared.
     out <- data.frame(start=as.POSIXct(as.Date("1970-01-01"),tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(as.Date("1970-01-01"),tz="UTC",origin="1970-01-01"),
-                      slope=as.numeric(NA),intercept=as.numeric(NA),r2=as.numeric(NA),
-                      calUcrt=as.numeric(NA))
+                      d13C_slope=as.numeric(NA),d13C_intercept=as.numeric(NA),d13C_r2=as.numeric(NA),
+                      co2_slope=as.numeric(NA),co2_intercept=as.numeric(NA),co2_r2=as.numeric(NA),
+                      calDelUcrt=as.numeric(NA),calCO2Ucrt=as.numeric(NA))
   }
   
+  # check to ensure there are 6 columns.   
+  # add slope, intercept, r2 columns if missing.
+  if (!("d13C_slope" %in% names(out))) {
+    out$d13C_slope <- as.numeric(rep(NA,length(out$start)))
+  }
+  if (!("d13C_intercept" %in% names(out))) {
+    out$d13C_intercept <- as.numeric(rep(NA,length(out$start)))
+  }
+  if (!("d13C_r2" %in% names(out))) {
+    out$d13C_r2 <- as.numeric(rep(NA,length(out$start)))
+  }  
+  if (!("co2_slope" %in% names(out))) {
+    out$co2_slope <- as.numeric(rep(NA,length(out$start)))
+  }
+  if (!("co2_intercept" %in% names(out))) {
+    out$co2_intercept <- as.numeric(rep(NA,length(out$start)))
+  }
+  if (!("co2_r2" %in% names(out))) {
+    out$co2_r2 <- as.numeric(rep(NA,length(out$start)))
+  }
  
   var_for_h5 <- out
   
