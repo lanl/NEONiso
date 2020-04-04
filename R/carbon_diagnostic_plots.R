@@ -122,25 +122,25 @@ cplot_monthly_calParameters <- function(calParDf,plot_path,site,method) {
     for (i in 1:length(calParDf)) {
       
       # need to plot: slope, intercept, r2, calUcrt.
-      p1 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=slope)) +
+      p1 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=d13C_slope)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
         scale_y_continuous("gain, 12C") 
       
-      p2 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=intercept)) +
+      p2 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=d13C_intercept)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
         scale_y_continuous("gain, 13C") 
       
-      p3 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=r2)) +
+      p3 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=d13C_r2)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
         scale_y_continuous("offset, 12C") 
       
-      p4 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=calUcrt)) +
+      p4 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=calDelUcrt)) +
         geom_point() +
         geom_hline(yintercept= -0.2,col="red",lty=2) +
         geom_hline(yintercept = 0.2,col="red",lty=2) +
@@ -148,7 +148,34 @@ cplot_monthly_calParameters <- function(calParDf,plot_path,site,method) {
         scale_x_datetime("date") +
         scale_y_continuous("Uncertainty")
       
-      gridExtra::grid.arrange(p1,p2,p3,p4,nrow=4,top=site)
+      p5 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=co2_slope)) +
+        geom_point() +
+        theme_bw() +
+        scale_x_datetime("date") +
+        scale_y_continuous("gain, 12C") 
+      
+      p6 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=co2_intercept)) +
+        geom_point() +
+        theme_bw() +
+        scale_x_datetime("date") +
+        scale_y_continuous("gain, 13C") 
+      
+      p7 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=co2_r2)) +
+        geom_point() +
+        theme_bw() +
+        scale_x_datetime("date") +
+        scale_y_continuous("offset, 12C") 
+      
+      p8 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=calCO2Ucrt)) +
+        geom_point() +
+        geom_hline(yintercept= -0.2,col="red",lty=2) +
+        geom_hline(yintercept = 0.2,col="red",lty=2) +
+        theme_bw() +
+        scale_x_datetime("date") +
+        scale_y_continuous("Uncertainty")
+      
+      
+      gridExtra::grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,nrow=2,top=site)
       
     } #i
   }# method
@@ -319,25 +346,25 @@ cplot_fullts_calParameters <- function(calParDf,plot_path,site,method) {
   } else if (method == "LinReg") {
     
     # need to plot: slope, intercept, r2, calUcrt.
-    p1 <- ggplot(data=calParDf,aes(x=valid_period_start,y=slope)) +
+    p1 <- ggplot(data=calParDf,aes(x=valid_period_start,y=d13C_slope)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("gain, 12C") 
     
-    p2 <- ggplot(data=calParDf,aes(x=valid_period_start,y=intercept)) +
+    p2 <- ggplot(data=calParDf,aes(x=valid_period_start,y=d13C_intercept)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("gain, 13C") 
     
-    p3 <- ggplot(data=calParDf,aes(x=valid_period_start,y=r2)) +
+    p3 <- ggplot(data=calParDf,aes(x=valid_period_start,y=d13C_r2)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("offset, 12C") 
     
-    p4 <- ggplot(data=calParDf,aes(x=valid_period_start,y=calUcrt)) +
+    p4 <- ggplot(data=calParDf,aes(x=valid_period_start,y=calDelUcrt)) +
       geom_point() +
       geom_hline(yintercept= -0.2,col="red",lty=2) +
       geom_hline(yintercept = 0.2,col="red",lty=2) +
@@ -345,10 +372,35 @@ cplot_fullts_calParameters <- function(calParDf,plot_path,site,method) {
       scale_x_datetime("date") +
       scale_y_continuous("Uncertainty")
     
-    gridExtra::grid.arrange(p1,p2,p3,p4,nrow=4,top=site)
+    p5 <- ggplot(data=calParDf,aes(x=valid_period_start,y=co2_slope)) +
+      geom_point() +
+      theme_bw() +
+      scale_x_datetime("date") +
+      scale_y_continuous("gain, 12C") 
     
-  }
-  
+    p6 <- ggplot(data=calParDf,aes(x=valid_period_start,y=co2_intercept)) +
+      geom_point() +
+      theme_bw() +
+      scale_x_datetime("date") +
+      scale_y_continuous("gain, 13C") 
+    
+    p7 <- ggplot(data=calParDf,aes(x=valid_period_start,y=co2_r2)) +
+      geom_point() +
+      theme_bw() +
+      scale_x_datetime("date") +
+      scale_y_continuous("offset, 12C") 
+    
+    p8 <- ggplot(data=calParDf,aes(x=valid_period_start,y=calCO2Ucrt)) +
+      geom_point() +
+      geom_hline(yintercept= -0.2,col="red",lty=2) +
+      geom_hline(yintercept = 0.2,col="red",lty=2) +
+      theme_bw() +
+      scale_x_datetime("date") +
+      scale_y_continuous("Uncertainty")
+    
+    
+    gridExtra::grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,nrow=2,top=site)
+    
   dev.off()
   
 }

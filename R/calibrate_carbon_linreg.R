@@ -112,7 +112,6 @@ calibrate_carbon_linreg <- function(inname,
       if (tdiffs[i] >= time.diff.betweeen.standards) {period_id = period_id + 1}
     }
     
-    
     # okay, now run calibrations...
     #------------------------------
     # create output variables.
@@ -238,6 +237,8 @@ calibrate_carbon_linreg <- function(inname,
     out$co2_r2 <- as.numeric(rep(NA,length(out$start)))
   }
  
+  print(ncol(out))
+  
   var_for_h5 <- out
   
   var_for_h5$start <- convert_POSIXct_to_NEONhdf5_time(out$start)
@@ -245,6 +246,17 @@ calibrate_carbon_linreg <- function(inname,
   
   var_for_h5$valid_period_start <- var_for_h5$start
   var_for_h5$valid_period_end   <- var_for_h5$end
+  
+  # some columns are stripped when written out to file 
+  # I think there was a similar issue w/ the Bowling calibration that 
+  # was solved by enforcing all numeric coolumns to be numeric.  
+  # *feels super redundant w/ above, but worth a shot i suppose*
+  var_for_h5$d13C_slope <- as.numeric(var_for_h5$d13C_slope)
+  var_for_h5$co2_slope <- as.numeric(var_for_h5$co2_slope)  
+  var_for_h5$d13C_intercept <- as.numeric(var_for_h5$d13C_intercept)
+  var_for_h5$co2_intercept <- as.numeric(var_for_h5$co2_intercept)
+  var_for_h5$d13C_r2 <- as.numeric(var_for_h5$d13C_r2)
+  var_for_h5$co2_r2 <- as.numeric(var_for_h5$co2_r2)
   
   # remove old vars.
   var_for_h5$start <- var_for_h5$end <- NULL
