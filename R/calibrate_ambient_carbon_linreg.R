@@ -2,14 +2,14 @@
 #' 
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param amb.data.list 
-#' @param caldf 
-#' @param outname 
-#' @param site 
-#' @param file 
+#' @param amb.data.list List containing an ambient d13C dataset. Will include all variables in 000_0x0_xxm. (character)
+#' @param caldf Calibration data frame containing gain and offset values for 12C and 13C isotopologues.
+#' @param outname Output variable name. Inherited from \code{calibrate_ambient_carbon_linreg}
+#' @param site Four-letter NEON code corersponding to site being processed.
+#' @param file Output file name. Inherited from \code{calibrate_ambient_carbon_Bowling2003}
 #' @param force.to.end 
 #' @param force.to.beginning 
-#' @param r2.thres 
+#' @param r2.thres Minimum r2 value for calibration to be considered "good" and applied to ambient data.
 #'
 #' @return
 #' @export
@@ -18,7 +18,14 @@
 #' 
 #' @importFrom magrittr %>%
 #' 
-calibrate_ambient_carbon_linreg <- function(amb.data.list,caldf,outname,site,file,force.to.end=TRUE,force.to.beginning=TRUE,r2.thres=0.95) {
+calibrate_ambient_carbon_linreg <- function(amb.data.list,
+                                            caldf,
+                                            outname,
+                                            site,
+                                            file,
+                                            force.to.end=TRUE,
+                                            force.to.beginning=TRUE,
+                                            r2.thres=0.95) {
 
     print("Processing carbon ambient data...")
     
