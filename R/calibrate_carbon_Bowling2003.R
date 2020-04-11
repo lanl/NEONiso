@@ -243,12 +243,18 @@ calibrate_carbon_Bowling2003 <- function(inname,
   est.med.12C <- med_rs$conc12CCO2_obs*cal.vals$gain12C + cal.vals$offset12C
   est.med.13C <- med_rs$conc13CCO2_obs*cal.vals$gain13C + cal.vals$offset13C
   
-  calUcrt <- vector()
+  calDelUcrt <- vector()
+  calCO2Ucrt <- vector()
   
   for (i in 1:nrow(val.df)) {
-    calUcrt[i] <- ifelse(val.df$tot[i] == 3,
+    calDelUcrt[i] <- ifelse(val.df$tot[i] == 3,
                          sqrt((1000*(est.med.13C[i]/est.med.12C[i]/R_vpdb - 1) - med_rs$d13C_ref_mean[i])^2),
                          NA)
+    
+    calCO2Ucrt[i] <- ifelse(val.df$tot[i] == 3,
+                            sqrt(((est.med.12C + est.med.13C)/(1-f) - med_rs$CO2_ref_mean[i])^2),
+                            NA)
+    
   }
 
   calgood <-  val.df$tot 
@@ -325,19 +331,20 @@ calibrate_carbon_Bowling2003 <- function(inname,
     
     out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
-                      calUcrt=NA,calgood=NA,replaced.vals=NA)
+                      calDelUcrt=NA,calCO2Ucrt=NA,calgood=NA,replaced.vals=NA)
   } else {
     out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(endtimes,tz="UTC",origin="1970-01-01"),
-                      calUcrt,calgood,replaced.vals)
+                      calDelUcrt,calCO2Ucrt,calgood,replaced.vals)
   }
 
   out <- cbind(out,cal.vals)
   
   var_for_h5 <- out
   
-  # out should now have 9 columns, check to see if this is true.
-  if (!(ncol(var_for_h5) == 9)) {
+  # out should now have 12 columns, check to see if this is true.
+  if (!(ncol(var_for_h5) == 10)) {
+    print(ncol(var_for_h5))
     stop("Output dataframe does not have proper row of columns - what happened?")
   }
   
@@ -352,6 +359,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
   var_for_h5$gain13C <- as.numeric(var_for_h5$gain13C)
   var_for_h5$offset12C <- as.numeric(var_for_h5$offset12C)
   var_for_h5$offset13C <- as.numeric(var_for_h5$offset13C)
+  var_for_h5$calDelUcrt <- as.numeric(var_for_h5$calDelUcrt)
+  var_for_h5$calCO2Ucrt <- as.numeric(var_for_h5$calCO2Ucrt)
   
   # remove old vars.
   var_for_h5$start <- var_for_h5$end <- NULL
@@ -396,6 +405,13 @@ calibrate_carbon_Bowling2003 <- function(inname,
 
   low <- rhdf5::h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
   
+  # kludge fix for now - need to add mean_cal column to low - but currently uncalibrated!
+  low$dlta13CCo2$mean_cal <- low$dlta13CCo2$mean
+  low$dlta13CCo2$mean_cal <- as.numeric(NA)
+  
+  low$rtioMoleDryCo2$mean_cal <- low$rtioMoleDryCo2$mean
+  low$rtioMoleDryCo2$mean_cal <- as.numeric(NA)
+  
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(low),function(x) {
     rhdf5::h5writeDataset.data.frame(obj=low[[x]],
@@ -412,6 +428,13 @@ calibrate_carbon_Bowling2003 <- function(inname,
   med.outloc <- rhdf5::H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
   
   med <- rhdf5::h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
+  
+  # kludge fix for now - need to add mean_cal column to low - but currently uncalibrated!
+  med$dlta13CCo2$mean_cal <- med$dlta13CCo2$mean
+  med$dlta13CCo2$mean_cal <- as.numeric(NA)
+  
+  med$rtioMoleDryCo2$mean_cal <- med$rtioMoleDryCo2$mean
+  med$rtioMoleDryCo2$mean_cal <- as.numeric(NA)
   
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(med),function(x) {
@@ -430,6 +453,12 @@ calibrate_carbon_Bowling2003 <- function(inname,
 
   high <- rhdf5::h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
   
+  # kludge fix for now - need to add mean_cal column to low - but currently uncalibrated!
+  high$dlta13CCo2$mean_cal <- high$dlta13CCo2$mean
+  high$dlta13CCo2$mean_cal <- as.numeric(NA)
+  
+  high$rtioMoleDryCo2$mean_cal <- high$rtioMoleDryCo2$mean
+  high$rtioMoleDryCo2$mean_cal <- as.numeric(NA)
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(high),function(x) {
     rhdf5::h5writeDataset.data.frame(obj=high[[x]],

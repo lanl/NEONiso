@@ -71,6 +71,8 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   mean12C <- max12C <- min12C <- amb.delta$mean # create placeholders for 12CO2 vectors
   mean13C <- max13C <- min13C <- amb.delta$mean # create placeholders for 13CO2 vectors
   
+  amb.CO2$mean_cal <- amb.delta$mean
+  
   for (i in 1:length(var.inds.in.calperiod)) {
     # calculate calibrated 12CO2 concentrations
     mean12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i]*amb.12CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
@@ -84,20 +86,23 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   }
   
   # output calibrated delta values.
-  amb.delta$mean <- round(1000*(mean13C/mean12C/R_vpdb - 1),2)
+  amb.delta$mean_cal <- round(1000*(mean13C/mean12C/R_vpdb - 1),2)
   amb.delta$min  <- round(1000*(min13C/min12C/R_vpdb - 1),2)
   amb.delta$max  <- round(1000*(max13C/max12C/R_vpdb - 1),2)
   amb.delta$vari <- round(amb.delta$vari,2)
 
+  amb.CO2$mean_cal <- (mean13C + mean12C)/(1-f)
+  
   # apply median filter to data
   if (filter.data == TRUE) {
-    amb.delta$mean <- filter_median_Brock86(amb.delta$mean)
+    amb.delta$mean_cal <- filter_median_Brock86(amb.delta$mean_cal)
     amb.delta$min <- filter_median_Brock86(amb.delta$min)
     amb.delta$max <- filter_median_Brock86(amb.delta$max)
   }
   
   # replace ambdf in amb.data.list, return amb.data.list
   amb.data.list$dlta13CCo2 <- amb.delta
+  amb.data.list$rtioMoleDryCo2 <- amb.CO2
   
   # write out dataset to HDF5 file.
   fid <- rhdf5::H5Fopen(file)
