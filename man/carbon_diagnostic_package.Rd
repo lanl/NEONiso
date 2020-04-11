@@ -4,7 +4,7 @@
 \alias{carbon_diagnostic_package}
 \title{Title}
 \usage{
-carbon_diagnostic_package(data_path, plot_path, method, which.sites = "all")
+carbon_diagnostic_package(data_path, plot_path, which.sites = "all")
 }
 \arguments{
 \item{data_path}{Provide path to where calibrated data from one site live.}

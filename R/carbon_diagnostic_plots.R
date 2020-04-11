@@ -126,19 +126,19 @@ cplot_monthly_calParameters <- function(calParDf,plot_path,site,method) {
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
-        scale_y_continuous("gain, 12C") 
+        scale_y_continuous("d13C slope") 
       
       p2 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=d13C_intercept)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
-        scale_y_continuous("gain, 13C") 
+        scale_y_continuous("d13C intercept") 
       
       p3 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=d13C_r2)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
-        scale_y_continuous("offset, 12C") 
+        scale_y_continuous("d13C r2") 
       
       p4 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=calDelUcrt)) +
         geom_point() +
@@ -146,25 +146,25 @@ cplot_monthly_calParameters <- function(calParDf,plot_path,site,method) {
         geom_hline(yintercept = 0.2,col="red",lty=2) +
         theme_bw() +
         scale_x_datetime("date") +
-        scale_y_continuous("Uncertainty")
+        scale_y_continuous("d13C uncertainty")
       
       p5 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=co2_slope)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
-        scale_y_continuous("gain, 12C") 
+        scale_y_continuous("co2 slope") 
       
       p6 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=co2_intercept)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
-        scale_y_continuous("gain, 13C") 
+        scale_y_continuous("co2 intercept") 
       
       p7 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=co2_r2)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
-        scale_y_continuous("offset, 12C") 
+        scale_y_continuous("co2 r2") 
       
       p8 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=calCO2Ucrt)) +
         geom_point() +
@@ -172,10 +172,9 @@ cplot_monthly_calParameters <- function(calParDf,plot_path,site,method) {
         geom_hline(yintercept = 0.2,col="red",lty=2) +
         theme_bw() +
         scale_x_datetime("date") +
-        scale_y_continuous("Uncertainty")
-      
-      
-      gridExtra::grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,nrow=2,top=site)
+        scale_y_continuous("co2 uncertainty")
+
+      gridExtra::grid.arrange(p1,p5,p2,p6,p3,p7,p4,p8,nrow=4,top=site)
       
     } #i
   }# method
@@ -217,7 +216,13 @@ cplot_monthly_ambient <- function(ambData,dir_plots,site) {
       ambData_df$timeBgn <- as.POSIXct(ambData_df$timeBgn,origin="1970-01-01")
       
       #make a plot of this data.
-      assign(paste0("p",j),{ggplot(data=ambData_df,aes(x=timeBgn,y=mean13C)) +
+      assign(paste0("p",2*j-1),{ggplot(data=ambData_df,aes(x=timeBgn,y=mean13C)) +
+          geom_line() +
+          theme_bw() +
+          scale_y_continuous(name=paste("Height:",heights[j],"m")) +
+          scale_x_datetime(name="Time")})
+      
+      assign(paste0("p",2*j),{ggplot(data=ambData_df,aes(x=timeBgn,y=meanCo2)) +
           geom_line() +
           theme_bw() +
           scale_y_continuous(name=paste("Height:",heights[j],"m")) +
@@ -229,7 +234,7 @@ cplot_monthly_ambient <- function(ambData,dir_plots,site) {
     plot.list <- ls(pattern="^p")
     plots <- mget(plot.list)
 
-    gridExtra::grid.arrange(grobs=plots,ncol=1)
+    gridExtra::grid.arrange(grobs=plots,ncol=2)
 
     rm(plots,plot.list,ambData_height)
     rm(list=ls(pattern="^p"))
@@ -350,19 +355,19 @@ cplot_fullts_calParameters <- function(calParDf,plot_path,site,method) {
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
-      scale_y_continuous("gain, 12C") 
+      scale_y_continuous("d13C slope") 
     
     p2 <- ggplot(data=calParDf,aes(x=valid_period_start,y=d13C_intercept)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
-      scale_y_continuous("gain, 13C") 
+      scale_y_continuous("d13C intercept") 
     
     p3 <- ggplot(data=calParDf,aes(x=valid_period_start,y=d13C_r2)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
-      scale_y_continuous("offset, 12C") 
+      scale_y_continuous("d13C r2") 
     
     p4 <- ggplot(data=calParDf,aes(x=valid_period_start,y=calDelUcrt)) +
       geom_point() +
@@ -370,25 +375,25 @@ cplot_fullts_calParameters <- function(calParDf,plot_path,site,method) {
       geom_hline(yintercept = 0.2,col="red",lty=2) +
       theme_bw() +
       scale_x_datetime("date") +
-      scale_y_continuous("Uncertainty")
+      scale_y_continuous("d13C uncertainty")
     
     p5 <- ggplot(data=calParDf,aes(x=valid_period_start,y=co2_slope)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
-      scale_y_continuous("gain, 12C") 
+      scale_y_continuous("co2 slope") 
     
     p6 <- ggplot(data=calParDf,aes(x=valid_period_start,y=co2_intercept)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
-      scale_y_continuous("gain, 13C") 
+      scale_y_continuous("co2 intercept") 
     
     p7 <- ggplot(data=calParDf,aes(x=valid_period_start,y=co2_r2)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
-      scale_y_continuous("offset, 12C") 
+      scale_y_continuous("co2 r2") 
     
     p8 <- ggplot(data=calParDf,aes(x=valid_period_start,y=calCO2Ucrt)) +
       geom_point() +
@@ -396,13 +401,14 @@ cplot_fullts_calParameters <- function(calParDf,plot_path,site,method) {
       geom_hline(yintercept = 0.2,col="red",lty=2) +
       theme_bw() +
       scale_x_datetime("date") +
-      scale_y_continuous("Uncertainty")
+      scale_y_continuous("co2 uncertainty")
     
-    
-    gridExtra::grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,nrow=2,top=site)
-    
-  dev.off()
+    gridExtra::grid.arrange(p1,p5,p2,p6,p3,p7,p4,p8,nrow=4,top=site)
   
+  }
+  
+  dev.off()
+
 }
 
 #=================================================================
@@ -423,12 +429,18 @@ cplot_fullts_ambient <- function(ambData,dir_plots,site) {
       dplyr::filter(height == heights[j])
     
     # make a plot of this data.
-    assign(paste0("p",j),{ggplot(data=ambData_height,aes(x=timeBgn,y=mean13C)) + 
+    assign(paste0("p",2*j-1),{ggplot(data=ambData_height,aes(x=timeBgn,y=mean13C)) + 
         geom_line() + 
         theme_bw() +
         scale_y_continuous(name=paste("Height:",heights[j],"m")) +
         scale_x_datetime(name="Time")})
 
+    assign(paste0("p",2*j),{ggplot(data=ambData_height,aes(x=timeBgn,y=meanCo2)) + 
+        geom_line() + 
+        theme_bw() +
+        scale_y_continuous(name=paste("Height:",heights[j],"m")) +
+        scale_x_datetime(name="Time")})
+    
   }
   
   # generate list of grobs.
@@ -437,7 +449,7 @@ cplot_fullts_ambient <- function(ambData,dir_plots,site) {
   
   # open plot.
   pdf(paste0(dir_plots,"/","6_tsCAmb_",site,".pdf"))
-  gridExtra::grid.arrange(grobs=plots,ncol=1,top=site)
+  gridExtra::grid.arrange(grobs=plots,ncol=2,top=site)
   dev.off()
   
 }
