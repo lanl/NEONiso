@@ -301,6 +301,13 @@ calibrate_carbon_linreg <- function(inname,
   
   low <- rhdf5::h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2Low_09m'))
   
+  # kludge fix for now - need to add mean_cal column to low - but currently uncalibrated!
+  low$dlta13CCo2$mean_cal <- low$dlta13CCo2$mean
+  low$dlta13CCo2$mean_cal <- as.numeric(NA)
+  
+  low$rtioMoleDryCo2$mean_cal <- low$rtioMoleDryCo2$mean
+  low$rtioMoleDryCo2$mean_cal <- as.numeric(NA)
+  
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(low),function(x) {
     rhdf5::h5writeDataset.data.frame(obj=low[[x]],
@@ -318,6 +325,13 @@ calibrate_carbon_linreg <- function(inname,
   
   med <- rhdf5::h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2Med_09m'))
   
+  # kludge fix for now - need to add mean_cal column to low - but currently uncalibrated!
+  med$dlta13CCo2$mean_cal <- med$dlta13CCo2$mean
+  med$dlta13CCo2$mean_cal <- as.numeric(NA)
+  
+  med$rtioMoleDryCo2$mean_cal <- med$rtioMoleDryCo2$mean
+  med$rtioMoleDryCo2$mean_cal <- as.numeric(NA)
+  
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(med),function(x) {
     rhdf5::h5writeDataset.data.frame(obj=med[[x]],
@@ -334,6 +348,13 @@ calibrate_carbon_linreg <- function(inname,
   high.outloc <- rhdf5::H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
   
   high <- rhdf5::h5read(inname,paste0('/',site,'/dp01/data/isoCo2/co2High_09m'))
+  
+  # kludge fix for now - need to add mean_cal column to low - but currently uncalibrated!
+  high$dlta13CCo2$mean_cal <- high$dlta13CCo2$mean
+  high$dlta13CCo2$mean_cal <- as.numeric(NA)
+  
+  high$rtioMoleDryCo2$mean_cal <- high$rtioMoleDryCo2$mean
+  high$rtioMoleDryCo2$mean_cal <- as.numeric(NA)
   
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(high),function(x) {

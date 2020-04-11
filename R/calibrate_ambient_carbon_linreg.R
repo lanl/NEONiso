@@ -77,13 +77,16 @@ calibrate_ambient_carbon_linreg <- function(amb.data.list,caldf,outname,site,fil
       }
     }
     
+    d13C_ambdf$mean_cal <- d13C_ambdf$mean
+    co2_ambdf$mean_cal  <- co2_ambdf$mean
+    
     for (i in 1:length(var.inds.in.calperiod)) {
-      d13C_ambdf$mean[var.inds.in.calperiod[[i]]] <- round(d13C_ambdf$mean[var.inds.in.calperiod[[i]]]*caldf$d13C_slope[i] + caldf$d13C_intercept[i], digits = 2)
+      d13C_ambdf$mean_cal[var.inds.in.calperiod[[i]]] <- round(d13C_ambdf$mean[var.inds.in.calperiod[[i]]]*caldf$d13C_slope[i] + caldf$d13C_intercept[i], digits = 2)
       d13C_ambdf$min[var.inds.in.calperiod[[i]]]  <- round(d13C_ambdf$min[var.inds.in.calperiod[[i]]]*caldf$d13C_slope[i] + caldf$d13C_intercept[i], digits = 2)
       d13C_ambdf$max[var.inds.in.calperiod[[i]]]  <- round(d13C_ambdf$max[var.inds.in.calperiod[[i]]]*caldf$d13C_slope[i] + caldf$d13C_intercept[i], digits = 2)
       
       
-      co2_ambdf$mean[var.inds.in.calperiod[[i]]] <- round(co2_ambdf$mean[var.inds.in.calperiod[[i]]]*caldf$co2_slope[i] + caldf$co2_intercept[i], digits = 2)
+      co2_ambdf$mean_cal[var.inds.in.calperiod[[i]]] <- round(co2_ambdf$mean[var.inds.in.calperiod[[i]]]*caldf$co2_slope[i] + caldf$co2_intercept[i], digits = 2)
       co2_ambdf$min[var.inds.in.calperiod[[i]]]  <- round(co2_ambdf$min[var.inds.in.calperiod[[i]]]*caldf$co2_slope[i] + caldf$co2_intercept[i], digits = 2)
       co2_ambdf$max[var.inds.in.calperiod[[i]]]  <- round(co2_ambdf$max[var.inds.in.calperiod[[i]]]*caldf$co2_slope[i] + caldf$co2_intercept[i], digits = 2)
     }
