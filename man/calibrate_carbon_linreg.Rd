@@ -8,7 +8,7 @@ calibrate_carbon_linreg(
   inname,
   outname,
   site,
-  time.diff.betweeen.standards = 1800,
+  time.diff.between.standards = 1800,
   force.cal.to.beginning = TRUE,
   force.cal.to.end = TRUE
 )
@@ -20,7 +20,7 @@ calibrate_carbon_linreg(
 
 \item{site}{Four-letter NEON code for site being processed. (character)}
 
-\item{time.diff.betweeen.standards}{Time (in seconds) required between consecutive standard measurements. Used to define a calibration "period."}
+\item{time.diff.between.standards}{Time (in seconds) required between consecutive standard measurements. Used to define a calibration "period."}
 
 \item{force.cal.to.beginning}{Extend first calibration to the beginning of the file? (CURRENTLY NOT USED)}
 

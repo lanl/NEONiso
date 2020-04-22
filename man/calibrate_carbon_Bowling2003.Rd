@@ -11,7 +11,7 @@ calibrate_carbon_Bowling2003(
   time.diff.between.standards = 1800,
   force.cal.to.beginning = TRUE,
   force.cal.to.end = TRUE,
-  interpolate.missing.cals = TRUE,
+  interpolate.missing.cals = FALSE,
   interpolation.method = "LWMA",
   ucrt.source = "data",
   filter.ambient = TRUE

@@ -10,7 +10,10 @@ calibrate_ambient_carbon_Bowling2003(
   outname,
   site,
   file,
-  filter.data
+  filter.data,
+  force.to.end,
+  force.to.beginning,
+  r2.thres = 0.95
 )
 }
 \arguments{
@@ -25,11 +28,22 @@ calibrate_ambient_carbon_Bowling2003(
 \item{file}{Output file name. Inherited from \code{calibrate_ambient_carbon_Bowling2003}}
 
 \item{filter.data}{Apply median absolute deviation filter from Brock 86 to remove impulse spikes? Inherited from \code{calibrate_ambient_carbon_Bowling2003}}
+
+\item{force.to.end}{In given month, calibrate ambient data later than last calibration, using the last calibration? (default true)}
+
+\item{force.to.beginning}{In given month, calibrate ambient data before than first calibration, using the first calibration? (default true)}
+
+\item{r2.thres}{Minimum r2 value for calibration to be considered "good" and applied to ambient data.}
 }
 \value{
 Nothing to environment; returns calibrated ambient observations to the output file. This function is not designed to be called on its own.
 }
 \description{
+calibrate_ambient_carbon_Bowling2003
+}
+\author{
+Rich Fiorella \email{rich.fiorella@utah.edu}
+
 Function called by \code{calibrate_ambient_carbon_Bowling2003} to apply
 gain and offset parameters to the ambient datasets (000_0x0_09m and 000_0x0_30m).
 This function should generally not be used independently, but should be used 

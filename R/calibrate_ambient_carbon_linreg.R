@@ -2,16 +2,21 @@
 #' 
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
+#' Function called by \code{calibrate_ambient_carbon_linreg} to apply
+#' gain and offset parameters to the ambient datasets (000_0x0_09m and 000_0x0_30m).
+#' This function should generally not be used independently, but should be used 
+#' in coordination with \code{calibrate_ambient_carbon_linreg}.
+#'
 #' @param amb.data.list List containing an ambient d13C dataset. Will include all variables in 000_0x0_xxm. (character)
 #' @param caldf Calibration data frame containing gain and offset values for 12C and 13C isotopologues.
 #' @param outname Output variable name. Inherited from \code{calibrate_ambient_carbon_linreg}
 #' @param site Four-letter NEON code corersponding to site being processed.
-#' @param file Output file name. Inherited from \code{calibrate_ambient_carbon_Bowling2003}
-#' @param force.to.end 
-#' @param force.to.beginning 
+#' @param file Output file name. Inherited from \code{calibrate_ambient_carbon_linreg}
+#' @param force.to.end In given month, calibrate ambient data later than last calibration, using the last calibration? (default true)
+#' @param force.to.beginning In given month, calibrate ambient data before than first calibration, using the first calibration? (default true)
 #' @param r2.thres Minimum r2 value for calibration to be considered "good" and applied to ambient data.
 #'
-#' @return
+#' @return Nothing to environment; returns calibrated ambient observations to the output file. This function is not designed to be called on its own.
 #' @export
 #'
 #' @examples
