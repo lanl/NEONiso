@@ -63,19 +63,15 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   
   mean12C <- vari12C <- amb.delta$mean # create placeholders for 12CO2 vectors
   mean13C <- vari13C <- amb.delta$mean # create placeholders for 13CO2 vectors
-  amb.delta$mean_cal <- amb.delta$qflag2 <- amb.delta$qflag1 <- amb.delta$mean # placeholders for calibrated delta vals.
+  amb.delta$mean_cal <- amb.delta$mean # placeholders for calibrated delta vals.
   
   for (i in 1:length(var.inds.in.calperiod)) {
     # calculate calibrated 12CO2 concentrations
     mean12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i]*amb.12CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
-    #vari12C[var.inds.in.calperiod[[i]]] <- caldf$vari.g12C[i]*amb.12CO2$mean[var.inds.in.calperiod[[i]]]^2 +
-    #      caldf$gain12C[i]^2*amb.12CO2$vari[var.inds.in.calperiod[[i]]] + caldf$vari.o12C[i]
     
     # calculate calibrated 13CO2 concentrations
     mean13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
-    #vari13C[var.inds.in.calperiod[[i]]] <- caldf$vari.g13C[i]*amb.13CO2$mean[var.inds.in.calperiod[[i]]]^2 +
-    #      caldf$gain13C[i]^2*amb.13CO2$vari[var.inds.in.calperiod[[i]]] + caldf$vari.o13C[i]
-
+    
   }
   
   # output calibrated delta values.
@@ -90,9 +86,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   amb.data.list$dlta13CCo2 <- amb.delta
   
   # trap to see if qflag1, qflag2, or mean_cal is ever a logical.
-  if (class(amb.delta$qflag1) == "logical" |
-      class(amb.delta$qflag2) == "logical" |
-      class(amb.delta$mean_cal) == "logical") {
+  if (class(amb.delta$mean_cal) == "logical") {
     stop("Incorrect class in ambient dataset being written to hdf5 - make sure all logicals are numeric.")
   }
   
