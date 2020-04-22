@@ -31,7 +31,7 @@
 #' @param inname Name of the input file. (character)
 #' @param outname Name of the output file. (character)
 #' @param force.cal.to.beginning Extend first calibration to the beginning of the file? (CURRENTLY NOT USED)
-#' @param time.diff.betweeen.standards Time (in seconds) required between consecutive standard measurements. Used to define a calibration "period."
+#' @param time.diff.between.standards Time (in seconds) required between consecutive standard measurements. Used to define a calibration "period."
 #' @param force.cal.to.end Extend last calibration to the end of the file? (CURRENTLY NOT USED)
 #'
 #' @return nothing to the workspace, but creates a new output file of calibrated carbon isotope data.
@@ -42,7 +42,7 @@
 calibrate_carbon_linreg <- function(inname,
                                     outname,
                                     site,
-                                    time.diff.betweeen.standards=1800,
+                                    time.diff.between.standards=1800,
                                     force.cal.to.beginning=TRUE,
                                     force.cal.to.end=TRUE){
   
@@ -109,7 +109,7 @@ calibrate_carbon_linreg <- function(inname,
     tdiffs <- c(diff(stds$d13C_obs_btime),0)
     for (i in 1:nrow(stds)) {
       stds$cal_period[i] <- period_id   
-      if (tdiffs[i] >= time.diff.betweeen.standards) {period_id = period_id + 1}
+      if (tdiffs[i] >= time.diff.between.standards) {period_id = period_id + 1}
     }
     
     # okay, now run calibrations...

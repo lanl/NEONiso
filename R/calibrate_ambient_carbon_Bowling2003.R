@@ -67,7 +67,6 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   # calibrate data at this height.
   #-------------------------------------
   # extract 12CO2 and 13CO2 concentrations from the ambient data
-  
   mean12C <- max12C <- min12C <- amb.delta$mean # create placeholders for 12CO2 vectors
   mean13C <- max13C <- min13C <- amb.delta$mean # create placeholders for 13CO2 vectors
   
@@ -83,6 +82,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
     mean13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
     min13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
     max13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
+
   }
   
   # output calibrated delta values.
@@ -102,6 +102,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   
   # replace ambdf in amb.data.list, return amb.data.list
   amb.data.list$dlta13CCo2 <- amb.delta
+
   amb.data.list$rtioMoleDryCo2 <- amb.CO2
   
   # write out dataset to HDF5 file.
