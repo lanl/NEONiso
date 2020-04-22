@@ -57,19 +57,26 @@ calibrate_ambient_carbon_linreg <- function(amb.data.list,
       # check to see if calibration point is "valid" - 
       # at present - "valid" means r2 > r2.thres.
       # rpf - 190809.
+      # also some gap filling code here! 
       
       if (!is.na(caldf$d13C_r2[i]) & caldf$d13C_r2[i] < r2.thres) {
+        # if we're in calibration period 2 or later, carry previous 
+        # calibration period forward. else if the first calibration period
+        # is bad, find the first good calibration period at index n,
+        # and apply to first n periods.
         if (i > 1) {
           caldf$d13C_slope[i] <- caldf$d13C_slope[i-1]
           caldf$d13C_intercept[i] <- caldf$d13C_intercept[i-1]
           caldf$d13C_r2[i] <- caldf$d13C_r2[i-1]
-        } else {
+        } else { # i = 1, and need to find first good value.
           first.good.val <- min(which(caldf$d13C_r2 > r2.thres))
           caldf$d13C_slope[i] <- caldf$d13C_slope[first.good.val]
           caldf$d13C_intercept[i] <- caldf$d13C_intercept[first.good.val]
           caldf$d13C_r2[i] <- caldf$d13C_r2[first.good.val]
         }
-      }     
+      }
+      
+      # apply same logic to CO2 calibration.
       if (!is.na(caldf$co2_r2[i]) & caldf$co2_r2[i] < r2.thres) {
         if (i > 1) {
           caldf$co2_slope[i] <- caldf$co2_slope[i-1]

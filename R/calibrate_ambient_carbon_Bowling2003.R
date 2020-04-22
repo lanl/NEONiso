@@ -11,6 +11,9 @@
 #' @param site Four-letter NEON code corersponding to site being processed.
 #' @param file Output file name. Inherited from \code{calibrate_ambient_carbon_Bowling2003}
 #' @param filter.data Apply median absolute deviation filter from Brock 86 to remove impulse spikes? Inherited from \code{calibrate_ambient_carbon_Bowling2003}
+#' @param force.to.end 
+#' @param force.to.beginning 
+#' @param r2.thres 
 #'
 #' @return Nothing to environment; returns calibrated ambient observations to the output file. This function is not designed to be called on its own.
 #' @export
@@ -22,7 +25,10 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
                                                  outname,
                                                  site,
                                                  file,
-                                                 filter.data) {
+                                                 filter.data,
+                                                 force.to.end,
+                                                 force.to.beginning,
+                                                 r2.thres=0.95) {
   
   #-----------------------------------------------------------
   # specify a few parameters for the Bowling method.
@@ -56,12 +62,62 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   amb.start.times <- as.POSIXct(amb.delta$timeBgn,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
   amb.end.times <- as.POSIXct(amb.delta$timeEnd,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
   
+  # if force.to.end and/or force.to.beginning are true, match out$start[1] to min(amb time)
+  # and/or out$end[nrow] to max(amb time)
+  
+  if (force.to.end == TRUE) {
+    caldf$end[nrow(caldf)] <- amb.end.times[length(amb.end.times)]
+  }
+  if (force.to.beginning == TRUE) {
+    caldf$start[1] <- amb.start.times[1]
+  }
+  
+  # determine which cal period each ambient data belongs to.
+  var.inds.in.calperiod <- list()
+  
   # determine which cal period each ambient data belongs to.
   var.inds.in.calperiod <- list()
   
   for (i in 1:nrow(caldf)) {
     int <- lubridate::interval(caldf$start[i],caldf$end[i])
     var.inds.in.calperiod[[i]] <- which(amb.end.times %within% int)
+    
+    # check to see if calibration point is "valid" - 
+    # at present - "valid" means r2 > r2.thres.
+    # rpf - 190809.
+    # also some gap filling code here! 
+    
+    # 12CO2 calibration paramters.
+    if (!is.na(caldf$r2_12C[i]) & caldf$r2_12C[i] < r2.thres) {
+      # if we're in calibration period 2 or later, carry previous 
+      # calibration period forward. else if the first calibration period
+      # is bad, find the first good calibration period at index n,
+      # and apply to first n periods.
+      if (i > 1) {
+        caldf$gain12C[i] <- caldf$gain12C[i-1]
+        caldf$offset12C[i] <- caldf$offset12C[i-1]
+        caldf$r2_12C[i] <- caldf$r2_12C[i-1]
+      } else { # i = 1, and need to find first good value.
+        first.good.val <- min(which(caldf$r2_12C > r2.thres))
+        caldf$gain12C[i] <- caldf$gain12C[first.good.val]
+        caldf$offset12C[i] <- caldf$offset12C[first.good.val]
+        caldf$r2_12C[i] <- caldf$r2_12C[first.good.val]
+      }
+    }
+    
+    # 13CO2 calibration parameters - equivalent logic to 12Co2.
+    if (!is.na(caldf$r2_13C[i]) & caldf$r2_13C[i] < r2.thres) {
+      if (i > 1) {
+        caldf$gain13C[i] <- caldf$gain13C[i-1]
+        caldf$offset13C[i] <- caldf$offset13C[i-1]
+        caldf$r2_13C[i] <- caldf$r2_13C[i-1]
+      } else {
+        first.good.val <- min(which(caldf$r2_13C > r2.thres))
+        caldf$gain13C[i] <- caldf$gain13C[first.good.val]
+        caldf$offset13C[i] <- caldf$offset13C[first.good.val]
+        caldf$r2_13C[i] <- caldf$r2_13C[first.good.val]
+      }
+    }
   }
   
   # calibrate data at this height.
@@ -91,6 +147,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   amb.delta$max  <- round(1000*(max13C/max12C/R_vpdb - 1),2)
   amb.delta$vari <- round(amb.delta$vari,2)
 
+  # calibrate co2 mole fractions.
   amb.CO2$mean_cal <- (mean13C + mean12C)/(1-f)
   
   # apply median filter to data

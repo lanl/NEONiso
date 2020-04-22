@@ -136,13 +136,6 @@ calibrate_carbon_Bowling2003 <- function(inname,
     dplyr::slice(1) %>%
     dplyr::ungroup()
 
-  low_rs <- low_rs %>%
-    dplyr::filter(dom %in% common_days)
-  med_rs <- med_rs %>%
-    dplyr::filter(dom %in% common_days)
-  high_rs <- high_rs %>%
-    dplyr::filter(dom %in% common_days)
-  
   #------------------------------------------------------------
   # OLD CODE - LEFT HERE FOR REFERENCE
   # if (!(identical(nrow(high_rs),nrow(med_rs)) & identical(nrow(high_rs),nrow(low_rs)))) {
@@ -188,8 +181,11 @@ calibrate_carbon_Bowling2003 <- function(inname,
     gain13C   <- vector()
     offset12C <- vector()
     offset13C <- vector()
+    r2_12C    <- vector()
+    r2_13C    <- vector()
     
     for (i in 2:max(stds$cal_period)) {
+      
       # subset data.
       cal.subset <- stds[which(stds$cal_period==i | stds$cal_period==(i-1)),]
       
@@ -205,23 +201,15 @@ calibrate_carbon_Bowling2003 <- function(inname,
         tmpmod12C <- lm(conc12CCO2_ref ~ conc12CCO2_obs, data = cal.subset)
         tmpmod13C <- lm(conc13CCO2_ref ~ conc13CCO2_obs, data = cal.subset)
         
+        # calculate gain and offset values.
         gain12C[i-1] <- coef(tmpmod12C)[[2]]
         gain13C[i-1] <- coef(tmpmod13C)[[2]]
         offset12C[i-1] <- coef(tmpmod12C)[[1]]
         offset13C[i-1] <- coef(tmpmod13C)[[1]]
         
-        # if (any(cal.subset$std_name == "med")) {
-        #   # get medium vars.
-        #   tmp <- subset(cal.subset, std_name == "med")
-        #   
-        #   calRmse[i-1] <- mean(sqrt(((tmp$d13C_obs_mean*cal_slopes[i-1] + cal_ints[i-1]) - tmp$d13C_ref_mean)^2),
-        #                        na.rm = TRUE)
-        #   
-        # } else {
-        #   
-        #   calRmse[i-1] <- NA
-        #   
-        # }
+        # extract r2
+        r2_12C[i-1] <- summary(tmpmod12C)$r.squared
+        r2_13C[i-1] <- summary(tmpmod13C)$r.squared
 
       } else {
         
@@ -229,7 +217,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
         gain13C[i-1]   <- NA
         offset12C[i-1] <- NA
         offset13C[i-1] <- NA
-        
+        r2_12C[i-1]    <- NA
+        r2_13C[i-1]    <- NA
       }
     }
     
@@ -251,7 +240,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
     # output dataframe giving valid time range, slopes, intercepts, rsquared.
     out <- data.frame(start=as.POSIXct(starttimes,tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(endtimes,tz="UTC",origin="1970-01-01"),
-                      gain12C,gain13C,offset12C,offset13C)
+                      gain12C,gain13C,offset12C,offset13C,r2_12C,r2_13C)
     
   } else {
     
@@ -259,7 +248,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
     out <- data.frame(start=as.POSIXct(as.Date("1970-01-01"),tz="UTC",origin="1970-01-01"),
                       end=as.POSIXct(as.Date("1970-01-01"),tz="UTC",origin="1970-01-01"),
                       gain12C=as.numeric(NA),gain13C=as.numeric(NA),
-                      offset12C=as.numeric(NA),offset13C=as.numeric(NA))
+                      offset12C=as.numeric(NA),offset13C=as.numeric(NA),
+                      r2_12C=as.numeric(NA),r2_13C=as.numeric(NA))
   }
   
   var_for_h5 <- out
@@ -277,6 +267,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
   var_for_h5$gain13C <- as.numeric(var_for_h5$gain13C)
   var_for_h5$offset12C <- as.numeric(var_for_h5$offset12C)
   var_for_h5$offset13C <- as.numeric(var_for_h5$offset13C)
+  var_for_h5$r2_12C <- as.numeric(var_for_h5$r2_12C)
+  var_for_h5$r2_13C <- as.numeric(var_for_h5$r2_13C)
 
   # remove old vars.
   var_for_h5$start <- var_for_h5$end <- NULL
@@ -401,11 +393,15 @@ calibrate_carbon_Bowling2003 <- function(inname,
     lapply(names(ciso_subset),
            function(x){calibrate_ambient_carbon_Bowling2003(amb.data.list=ciso_subset[[x]],
                                                             caldf=out,outname=x,file=outname,site=site,
-                                                            filter.data=TRUE)})
+                                                            filter.data=TRUE,
+                                                            force.to.end=force.cal.to.end,
+                                                            force.to.beginning=force.cal.to.beginning)})
   } else {
     lapply(names(ciso_subset),
            function(x){calibrate_ambient_carbon_Bowling2003(amb.data.list=ciso_subset[[x]],
-                                                            caldf=out,outname=x,file=outname,site=site)})
+                                                            caldf=out,outname=x,file=outname,site=site,
+                                                            force.to.end=force.cal.to.end,
+                                                            force.to.beginning=force.cal.to.beginning)})
   }
 
   rhdf5::h5closeAll()
