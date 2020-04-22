@@ -15,6 +15,7 @@
 #' @return Nothing to environment; returns calibrated ambient observations to the output file. This function is not designed to be called on its own.
 #' @export
 #'
+#' @importFrom magrittr %>%
 #' 
 calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
                                                  caldf,
@@ -45,6 +46,12 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   amb.12CO2$mean <- amb.CO2$mean*(1-f)/(1+R_vpdb*(1+amb.delta$mean/1000))
   amb.13CO2$mean <- amb.CO2$mean*(1-f) - amb.12CO2$mean
   
+  amb.12CO2$min <- amb.CO2$min*(1-f)/(1+R_vpdb*(1+amb.delta$min/1000))
+  amb.13CO2$min <- amb.CO2$min*(1-f) - amb.12CO2$min
+  
+  amb.12CO2$max <- amb.CO2$max*(1-f)/(1+R_vpdb*(1+amb.delta$max/1000))
+  amb.13CO2$max <- amb.CO2$max*(1-f) - amb.12CO2$max
+  
   # ensure that time variables are in POSIXct.
   amb.start.times <- as.POSIXct(amb.delta$timeBgn,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
   amb.end.times <- as.POSIXct(amb.delta$timeEnd,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
@@ -53,60 +60,68 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   var.inds.in.calperiod <- list()
   
   for (i in 1:nrow(caldf)) {
-    int <- interval(caldf$start[i],caldf$end[i])
+    int <- lubridate::interval(caldf$start[i],caldf$end[i])
     var.inds.in.calperiod[[i]] <- which(amb.end.times %within% int)
   }
   
   # calibrate data at this height.
   #-------------------------------------
   # extract 12CO2 and 13CO2 concentrations from the ambient data
+  mean12C <- max12C <- min12C <- amb.delta$mean # create placeholders for 12CO2 vectors
+  mean13C <- max13C <- min13C <- amb.delta$mean # create placeholders for 13CO2 vectors
   
-  mean12C <- vari12C <- amb.delta$mean # create placeholders for 12CO2 vectors
-  mean13C <- vari13C <- amb.delta$mean # create placeholders for 13CO2 vectors
-  amb.delta$mean_cal <- amb.delta$mean # placeholders for calibrated delta vals.
+  amb.CO2$mean_cal <- amb.delta$mean
   
   for (i in 1:length(var.inds.in.calperiod)) {
     # calculate calibrated 12CO2 concentrations
     mean12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i]*amb.12CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
+    min12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i]*amb.12CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
+    max12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i]*amb.12CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
     
     # calculate calibrated 13CO2 concentrations
     mean13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
-    
+    min13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
+    max13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
+
   }
   
   # output calibrated delta values.
-  amb.delta$mean_cal <- 1000*(mean13C/mean12C/R_vpdb - 1)
+  amb.delta$mean_cal <- round(1000*(mean13C/mean12C/R_vpdb - 1),2)
+  amb.delta$min  <- round(1000*(min13C/min12C/R_vpdb - 1),2)
+  amb.delta$max  <- round(1000*(max13C/max12C/R_vpdb - 1),2)
+  amb.delta$vari <- round(amb.delta$vari,2)
+
+  amb.CO2$mean_cal <- (mean13C + mean12C)/(1-f)
   
   # apply median filter to data
   if (filter.data == TRUE) {
     amb.delta$mean_cal <- filter_median_Brock86(amb.delta$mean_cal)
+    amb.delta$min <- filter_median_Brock86(amb.delta$min)
+    amb.delta$max <- filter_median_Brock86(amb.delta$max)
   }
   
   # replace ambdf in amb.data.list, return amb.data.list
   amb.data.list$dlta13CCo2 <- amb.delta
-  
-  # trap to see if qflag1, qflag2, or mean_cal is ever a logical.
-  if (class(amb.delta$mean_cal) == "logical") {
-    stop("Incorrect class in ambient dataset being written to hdf5 - make sure all logicals are numeric.")
-  }
+
+  amb.data.list$rtioMoleDryCo2 <- amb.CO2
   
   # write out dataset to HDF5 file.
-  fid <- H5Fopen(file)
+  fid <- rhdf5::H5Fopen(file)
   
   #print(outname)
-  co2.data.outloc <- H5Gcreate(fid,paste0('/',site,'/dp01/data/isoCo2/',outname))
+  co2.data.outloc <- rhdf5::H5Gcreate(fid,paste0('/',site,'/dp01/data/isoCo2/',outname))
   
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(amb.data.list),function(x) {
-    h5writeDataset.data.frame(obj=amb.data.list[[x]],
+    rhdf5::h5writeDataset.data.frame(obj=amb.data.list[[x]],
                               h5loc=co2.data.outloc,
                               name=x,
                               DataFrameAsCompound = TRUE)})
   
-  H5Gclose(co2.data.outloc)
-  H5Fclose(fid)
+  rhdf5::H5Gclose(co2.data.outloc)
+  rhdf5::H5Fclose(fid)
   # close all open handles.
-  h5closeAll()
+  rhdf5::h5closeAll()
   
   # seems to be a problem where closed file handles aren't registering....so introduce a short break.
   #Sys.sleep(0.5) 

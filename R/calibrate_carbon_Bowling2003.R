@@ -90,13 +90,14 @@ calibrate_carbon_Bowling2003 <- function(inname,
                   d13C_obs_etime=as.POSIXct(d13C_obs_etime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC"),
                   d13C_ref_btime=as.POSIXct(d13C_ref_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC"),
                   d13C_ref_etime=as.POSIXct(d13C_ref_etime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")) %>% # for assigning times later. 
+
     #------------------------------------------------------------
     # calculate mole fraction of 12CO2 and 13CO2 for the reference gases and observed values.
     dplyr::mutate(conc12CCO2_ref = CO2_ref_mean*(1-f)/(1+R_vpdb*(1+d13C_ref_mean/1000))) %>%
     dplyr::mutate(conc13CCO2_ref = CO2_ref_mean*(1-f)-conc12CCO2_ref) %>%
     dplyr::mutate(conc12CCO2_obs = CO2_obs_mean*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
     dplyr::mutate(conc13CCO2_obs = CO2_obs_mean*(1-f)-conc12CCO2_obs) 
-  
+
   # split back out into 3 data frames for each standard.
   low_rs <- dplyr::filter(standards,std_name=="low")
   med_rs <- dplyr::filter(standards,std_name=="med")
@@ -113,14 +114,14 @@ calibrate_carbon_Bowling2003 <- function(inname,
   # peaks. each peak is shorter, higher variance, and doesn't allow even the CO2 concentration
   # to stabilize. until further notice, i suggest removing these standards altogether.
   # code below has been modified to achieve this.
-  
+
   high_rs <- high_rs %>%
     dplyr::mutate(dom = day(d13C_obs_btime)) %>% # get day of month
     dplyr::group_by(dom) %>%
     dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
     dplyr::slice(1) %>%
     dplyr::ungroup()
-  
+
   med_rs <- med_rs %>%
     dplyr::mutate(dom = day(d13C_obs_btime)) %>% # get day of month
     dplyr::group_by(dom) %>%
@@ -134,6 +135,13 @@ calibrate_carbon_Bowling2003 <- function(inname,
     dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>% # check to make sure peak sufficiently long, then slice off single.
     dplyr::slice(1) %>%
     dplyr::ungroup()
+
+  low_rs <- low_rs %>%
+    dplyr::filter(dom %in% common_days)
+  med_rs <- med_rs %>%
+    dplyr::filter(dom %in% common_days)
+  high_rs <- high_rs %>%
+    dplyr::filter(dom %in% common_days)
   
   #------------------------------------------------------------
   # OLD CODE - LEFT HERE FOR REFERENCE
@@ -153,7 +161,6 @@ calibrate_carbon_Bowling2003 <- function(inname,
   conc_thres <- 15 # threshold in ppm.
   conc_var_thres <- 5 # threshold for co2 variance in ppm.
   d13C_diff_thres <- 3 # absolute deviation of d13C value allowed for standards. 3 per mil chosen based on visual inspection of all data.
-  
   
   # merge standards back to a single df.
   stds <- do.call(rbind,list(low_rs,med_rs,high_rs))
@@ -215,7 +222,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
         #   calRmse[i-1] <- NA
         #   
         # }
-        
+
       } else {
         
         gain12C[i-1]   <- NA
@@ -258,13 +265,19 @@ calibrate_carbon_Bowling2003 <- function(inname,
   var_for_h5 <- out
   
   print(paste(nrow(out),"calibration periods IDed."))
-  
+
   var_for_h5$start <- convert_POSIXct_to_NEONhdf5_time(out$start)
   var_for_h5$end <- convert_POSIXct_to_NEONhdf5_time(out$end)
   
   var_for_h5$valid_period_start <- var_for_h5$start
   var_for_h5$valid_period_end   <- var_for_h5$end
   
+  # enforce that all other columns are numeric
+  var_for_h5$gain12C <- as.numeric(var_for_h5$gain12C)
+  var_for_h5$gain13C <- as.numeric(var_for_h5$gain13C)
+  var_for_h5$offset12C <- as.numeric(var_for_h5$offset12C)
+  var_for_h5$offset13C <- as.numeric(var_for_h5$offset13C)
+
   # remove old vars.
   var_for_h5$start <- var_for_h5$end <- NULL
   
@@ -279,7 +292,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   
   # copy attributes from source file and write to output file.
   tmp <- rhdf5::h5readAttributes(inname,paste0('/',site))
-  
+
   attrloc <- rhdf5::H5Gopen(fid,paste0('/',site))
   
   for (i in 1:length(tmp)) { # probably a more rapid way to do this in the future...lapply?
@@ -288,13 +301,15 @@ calibrate_carbon_Bowling2003 <- function(inname,
   
   rhdf5::H5Gclose(attrloc)
   
+  # write out calibration dataframe to a new group to keep it away from stackEddy
   rhdf5::h5createGroup(outname,paste0('/',site,'/dp01/data/isoCo2/calData'))
-  co2.cal.outloc <-rhdf5::H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/calData'))
-  
+  co2.cal.outloc <- rhdf5::H5Gopen(fid,paste0('/',site,'/dp01/data/isoCo2/calData'))
+
   # write out dataset.
-  rhdf5::h5writeDataset.data.frame(obj = var_for_h5,h5loc=co2.cal.outloc,name="calGainsOffsets",DataFrameAsCompound = TRUE)
-  
-  # close the group and the file
+  rhdf5::h5writeDataset.data.frame(obj = var_for_h5,h5loc=co2.cal.outloc,
+                            name="calGainsOffsets",
+                            DataFrameAsCompound = TRUE)
+
   rhdf5::H5Gclose(co2.cal.outloc)
 
   #---------------------------------------------

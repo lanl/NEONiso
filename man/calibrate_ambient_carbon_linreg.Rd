@@ -40,7 +40,6 @@ calibrate_ambient_carbon_isotopes
 }
 \examples{
 
-
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}

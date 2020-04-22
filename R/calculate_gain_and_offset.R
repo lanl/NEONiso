@@ -38,5 +38,5 @@ calculate_gain_and_offset <- function(std1,std2) {
   
   # return a list of gain and uncertainty values.
   return(data.frame(gain12C,gain13C,offset12C,offset13C))
-  
+ 
 }
