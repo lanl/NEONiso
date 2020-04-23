@@ -4,7 +4,9 @@ Author: Rich Fiorella \
 Last Updated: Jan 13, 2020.
 
 ## DATA ALERT:
-- do not use carbon isotope data from UNDE from 5/2019-9/2019 (inclusive), there is a clear spectral issue that cannot be corrected by calibration!
+A few notes about data quality issues that persist after calibration (and closing associated issues since I suspect these are unlikely to ever be fixed (they are acquisition issues, not calibration issues): 
+
+1. do not use carbon isotope data from UNDE from 5/2019-9/2019 (inclusive), SRER from 7/2019, or TEAK from 8 and 9/2018. there are clear spectral issues that cannot be corrected by calibration
 
 This repository contains functions for an R package to calibrate NEON atmospheric isotope data. Separate functions exist for calibrating carbon and water data.
 
