@@ -23,15 +23,15 @@ convert_POSIXct_to_NEONhdf5_time <- function(intime) {
   # convert from POSIXct to 
   # a time in YYmmddTHH:MM:SSSZ format used by NEON hdf5 files.
   outtime <- as.character(paste0(year(intime), "-", 
-                ifelse(month(intime)<10, 
+                ifelse(month(intime) < 10, 
                        paste0("0", month(intime)), month(intime)), "-", 
-                ifelse(day(intime)<10, 
+                ifelse(day(intime) < 10, 
                        paste0("0", day(intime)), day(intime)), "T", 
-                ifelse(hour(intime)<10, 
+                ifelse(hour(intime) < 10, 
                        paste0("0", hour(intime)), hour(intime)), ":", 
-                ifelse(minute(intime)<10, 
+                ifelse(minute(intime) < 10, 
                        paste0("0", minute(intime)), minute(intime)), ":", 
-                ifelse(second(intime)<10, 
+                ifelse(second(intime) < 10, 
                        paste0("0", second(intime), ".000Z"), 
                        paste0(second(intime), ".000Z"))))
 
