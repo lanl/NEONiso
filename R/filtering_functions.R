@@ -1,30 +1,32 @@
 # filtering_functions.R
 # a file with a few optinos for filtering output data.
-
-
-
 #---------------------------------
-#' Title
+#' filter_median_Brock86
 #'
-#' @param data 
-#' @param width 
-#' @param threshold 
+#' Median absolute deviation filter of Brock 1986.
 #'
-#' @return
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#'
+#' @param data Vector to filter.
+#' @param width Width of filter, in rows.
+#' @param threshold Only filter values that are \code{abs(threshold)}
+#'              away from median
+#'
+#' @return Returns filtered vector.
 #' @export
 #'
 #' @examples
-filter_median_Brock86 <- function(data,width=7,threshold=5) {
-  
+filter_median_Brock86 <- function(data, width = 7, threshold = 5) {
+
   # get rolling median of data.
-  filt <- zoo::rollapply(data,width,median,na.rm=TRUE,fill=NA)
-  
+  filt <- zoo::rollapply(data, width, median, na.rm = TRUE, fill = NA)
+
   # get logical vector of what indices are valid.
   spikes <- abs(data - filt) > threshold
-  
+
   # set spikes as missing - consider interpolation in future release?
   data[data == TRUE] <- NA
-  
+
   # return data vector back
   return(data)
 }
