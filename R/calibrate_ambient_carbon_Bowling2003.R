@@ -51,18 +51,21 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   # ratio instead.
   amb.12CO2 <- amb.13CO2 <- amb.CO2 # this is bad practice, but okay to start w/.
   
-  amb.12CO2$mean <- amb.CO2$mean*(1-f)/(1+R_vpdb*(1+amb.delta$mean/1000))
-  amb.13CO2$mean <- amb.CO2$mean*(1-f) - amb.12CO2$mean
+  amb.12CO2$mean <- amb.CO2$mean * ( 1 - f ) / 
+    ( 1 + R_vpdb * ( 1 + amb.delta$mean / 1000))
+  amb.13CO2$mean <- amb.CO2$mean * (1-f) - amb.12CO2$mean
   
-  amb.12CO2$min <- amb.CO2$min*(1-f)/(1+R_vpdb*(1+amb.delta$min/1000))
-  amb.13CO2$min <- amb.CO2$min*(1-f) - amb.12CO2$min
+  amb.12CO2$min <- amb.CO2$min * (1-f) / 
+    (1 + R_vpdb * (1 + amb.delta$min / 1000))
+  amb.13CO2$min <- amb.CO2$min * (1-f) - amb.12CO2$min
   
-  amb.12CO2$max <- amb.CO2$max*(1-f)/(1+R_vpdb*(1+amb.delta$max/1000))
-  amb.13CO2$max <- amb.CO2$max*(1-f) - amb.12CO2$max
+  amb.12CO2$max <- amb.CO2$max * (1-f) / 
+    (1 + R_vpdb * (1 + amb.delta$max / 1000))
+  amb.13CO2$max <- amb.CO2$max * (1-f) - amb.12CO2$max
   
   # ensure that time variables are in POSIXct.
-  amb.start.times <- as.POSIXct(amb.delta$timeBgn,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
-  amb.end.times <- as.POSIXct(amb.delta$timeEnd,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
+  amb.start.times <- as.POSIXct(amb.delta$timeBgn, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+  amb.end.times <- as.POSIXct(amb.delta$timeEnd, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
   
   # if force.to.end and/or force.to.beginning are true, match out$start[1] to min(amb time)
   # and/or out$end[nrow] to max(amb time)
@@ -81,7 +84,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   var.inds.in.calperiod <- list()
   
   for (i in 1:nrow(caldf)) {
-    int <- lubridate::interval(caldf$start[i],caldf$end[i])
+    int <- lubridate::interval(caldf$start[i], caldf$end[i])
     var.inds.in.calperiod[[i]] <- which(amb.end.times %within% int)
     
     # check to see if calibration point is "valid" - 
@@ -132,31 +135,31 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   
   for (i in 1:length(var.inds.in.calperiod)) {
     # calculate calibrated 12CO2 concentrations
-    mean12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i]*amb.12CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
-    min12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i]*amb.12CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
-    max12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i]*amb.12CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
+    mean12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i] * amb.12CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
+    min12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i] * amb.12CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
+    max12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i] * amb.12CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
     
     # calculate calibrated 13CO2 concentrations
-    mean13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
-    min13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
-    max13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i]*amb.13CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
+    mean13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i] * amb.13CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
+    min13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i] * amb.13CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
+    max13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i] * amb.13CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
 
   }
   
   # output calibrated delta values.
-  amb.delta$mean_cal <- round(1000*(mean13C/mean12C/R_vpdb - 1),2)
-  amb.delta$min  <- round(1000*(min13C/min12C/R_vpdb - 1),2)
-  amb.delta$max  <- round(1000*(max13C/max12C/R_vpdb - 1),2)
-  amb.delta$vari <- round(amb.delta$vari,2)
+  amb.delta$mean_cal <- round(1000 * (mean13C / mean12C / R_vpdb - 1), 2)
+  amb.delta$min  <- round(1000 * (min13C / min12C / R_vpdb - 1), 2)
+  amb.delta$max  <- round(1000 * (max13C / max12C / R_vpdb - 1), 2)
+  amb.delta$vari <- round(amb.delta$vari, 2)
 
   # calibrate co2 mole fractions.
-  amb.CO2$mean_cal <- (mean13C + mean12C)/(1-f)
+  amb.CO2$mean_cal <- (mean13C + mean12C) / (1-f)
   
   # apply median filter to data
   if (filter.data == TRUE) {
     amb.delta$mean_cal <- filter_median_Brock86(amb.delta$mean_cal)
-    amb.delta$min <- filter_median_Brock86(amb.delta$min)
-    amb.delta$max <- filter_median_Brock86(amb.delta$max)
+    amb.delta$min      <- filter_median_Brock86(amb.delta$min)
+    amb.delta$max      <- filter_median_Brock86(amb.delta$max)
   }
   
   # replace ambdf in amb.data.list, return amb.data.list
@@ -168,13 +171,13 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   fid <- rhdf5::H5Fopen(file)
   
   #print(outname)
-  co2.data.outloc <- rhdf5::H5Gcreate(fid,paste0('/',site,'/dp01/data/isoCo2/',outname))
+  co2.data.outloc <- rhdf5::H5Gcreate(fid, paste0("/", site, "/dp01/data/isoCo2/", outname))
   
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
-  lapply(names(amb.data.list),function(x) {
-    rhdf5::h5writeDataset.data.frame(obj=amb.data.list[[x]],
-                              h5loc=co2.data.outloc,
-                              name=x,
+  lapply(names(amb.data.list), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = amb.data.list[[x]], 
+                              h5loc = co2.data.outloc,
+                              name = x,
                               DataFrameAsCompound = TRUE)})
   
   rhdf5::H5Gclose(co2.data.outloc)
