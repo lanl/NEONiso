@@ -55,10 +55,10 @@
 calibrate_carbon_linreg <- function(inname,
                                     outname,
                                     site,
-                                    time.diff.between.standards=1800,
-                                    force.cal.to.beginning=TRUE,
-                                    force.cal.to.end=TRUE,
-                                    r2_thres=0.95) {
+                                    time.diff.between.standards = 1800,
+                                    force.cal.to.beginning = TRUE,
+                                    force.cal.to.end = TRUE,
+                                    r2_thres = 0.95) {
   
   # print status.
   print("Processing carbon calibration data...")
