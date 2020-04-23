@@ -39,8 +39,8 @@ calibrate_ambient_carbon_linreg <- function(amb.data.list,
     co2_ambdf  <- amb.data.list$rtioMoleDryCo2
     
     # ensure that time variables are in POSIXct.
-    amb.start.times <- as.POSIXct(d13C_ambdf$timeBgn,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
-    amb.end.times <- as.POSIXct(d13C_ambdf$timeEnd,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+    amb.start.times <- as.POSIXct(d13C_ambdf$timeBgn,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
+    amb.end.times <- as.POSIXct(d13C_ambdf$timeEnd,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
     
     # if force.to.end and/or force.to.beginning are true, match out$start[1] to min(amb time)
     # and/or out$end[nrow] to max(amb time)

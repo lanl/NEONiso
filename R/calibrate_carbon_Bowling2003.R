@@ -87,16 +87,16 @@ calibrate_carbon_Bowling2003 <- function(inname,
   
   standards <- standards %>%
     dplyr::mutate(d13C_obs_btime=as.POSIXct(d13C_obs_btime, 
-                                            format="%Y-%m-%dT%H:%M:%S.%OSZ", 
+                                            format="%Y-%m-%dT%H:%M:%OSZ", 
                                             tz="UTC"), 
                   d13C_obs_etime=as.POSIXct(d13C_obs_etime, 
-                                            format="%Y-%m-%dT%H:%M:%S.%OSZ", 
+                                            format="%Y-%m-%dT%H:%M:%OSZ", 
                                             tz="UTC"), 
                   d13C_ref_btime=as.POSIXct(d13C_ref_btime, 
-                                            format="%Y-%m-%dT%H:%M:%S.%OSZ", 
+                                            format="%Y-%m-%dT%H:%M:%OSZ", 
                                             tz="UTC"), 
                   d13C_ref_etime=as.POSIXct(d13C_ref_etime, 
-                                            format="%Y-%m-%dT%H:%M:%S.%OSZ", 
+                                            format="%Y-%m-%dT%H:%M:%OSZ", 
                                             tz="UTC")) %>% # for assigning times later. 
     #------------------------------------------------------------
     # calculate mole fraction of 12CO2 and 13CO2 for the reference gases and observed values.
@@ -313,7 +313,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   
   # convert start times to POSIXct.
   low$dlta13CCo2$timeBgn <- as.POSIXct(low$dlta13CCo2$timeBgn, 
-                                       format = "%Y-%m-%dT%H:%M:%S.%OSZ",
+                                       format = "%Y-%m-%dT%H:%M:%OSZ",
                                        tz = "UTC")
   
   if (nrow(low$dlta13CCo2) > 1) {
@@ -370,7 +370,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   
   # convert start times to POSIXct.
   med$dlta13CCo2$timeBgn <- as.POSIXct(med$dlta13CCo2$timeBgn, 
-                                       format = "%Y-%m-%dT%H:%M:%S.%OSZ",
+                                       format = "%Y-%m-%dT%H:%M:%OSZ",
                                        tz = "UTC")
   
   if (nrow(med$dlta13CCo2) > 1) {
@@ -427,7 +427,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   
   # convert start times to POSIXct.
   high$dlta13CCo2$timeBgn <- as.POSIXct(high$dlta13CCo2$timeBgn,
-                                       format = "%Y-%m-%dT%H:%M:%S.%OSZ",
+                                       format = "%Y-%m-%dT%H:%M:%OSZ",
                                        tz = "UTC")
   
   if (nrow(high$dlta13CCo2) > 1) {

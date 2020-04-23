@@ -33,8 +33,8 @@ calibrate_ambient_water_linreg <- function(amb.data.list,caldf,outname,site,file
   # oxygen.
   #-------------------------------------------------------
   # ensure that time variables are in POSIXct. (note: these should be the same for 18O and 2H?)
-  amb.start.times <- as.POSIXct(oxydf$timeBgn,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
-  amb.end.times <- as.POSIXct(oxydf$timeEnd,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+  amb.start.times <- as.POSIXct(oxydf$timeBgn,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
+  amb.end.times <- as.POSIXct(oxydf$timeEnd,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
   
   # if force.to.end and/or force.to.beginning are true, match out$start[1] to min(amb time)
   # and/or out$end[nrow] to max(amb time)
@@ -75,8 +75,8 @@ calibrate_ambient_water_linreg <- function(amb.data.list,caldf,outname,site,file
   rm(amb.start.times,oxydf,amb.end.times,i,var.periods.in.calperiod)
   
   # ensure that time variables are in POSIXct. (note: these should be the same for 18O and 2H?)
-  amb.start.times <- as.POSIXct(hyddf$timeBgn,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
-  amb.end.times <- as.POSIXct(hyddf$timeEnd,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+  amb.start.times <- as.POSIXct(hyddf$timeBgn,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
+  amb.end.times <- as.POSIXct(hyddf$timeEnd,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
   
   # if force.to.end and/or force.to.beginning are true, match out$start[1] to min(amb time)
   # and/or out$end[nrow] to max(amb time)

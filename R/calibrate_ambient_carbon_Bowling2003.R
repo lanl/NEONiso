@@ -61,8 +61,8 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
   amb.13CO2$max <- amb.CO2$max*(1-f) - amb.12CO2$max
   
   # ensure that time variables are in POSIXct.
-  amb.start.times <- as.POSIXct(amb.delta$timeBgn,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
-  amb.end.times <- as.POSIXct(amb.delta$timeEnd,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+  amb.start.times <- as.POSIXct(amb.delta$timeBgn,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
+  amb.end.times <- as.POSIXct(amb.delta$timeEnd,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
   
   # if force.to.end and/or force.to.beginning are true, match out$start[1] to min(amb time)
   # and/or out$end[nrow] to max(amb time)

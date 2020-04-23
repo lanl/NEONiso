@@ -44,7 +44,7 @@ calibrate_carbon_linreg <- function(inname,
                                     site,
                                     time.diff.between.standards=1800,
                                     force.cal.to.beginning=TRUE,
-                                    force.cal.to.end=TRUE){
+                                    force.cal.to.end=TRUE) {
   
   # print status.
   print("Processing carbon calibration data...")
@@ -93,11 +93,11 @@ calibrate_carbon_linreg <- function(inname,
     stds[ is.na(stds) ] <- NA
     
     # change class of time variables from charatcter to posixct.
-    stds$d13C_obs_btime <- as.POSIXct(stds$d13C_obs_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
-    stds$d13C_obs_etime <- as.POSIXct(stds$d13C_obs_etime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+    stds$d13C_obs_btime <- as.POSIXct(stds$d13C_obs_btime,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
+    stds$d13C_obs_etime <- as.POSIXct(stds$d13C_obs_etime,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
     
-    stds$d13C_ref_btime <- as.POSIXct(stds$d13C_ref_btime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
-    stds$d13C_ref_etime <- as.POSIXct(stds$d13C_ref_etime,format="%Y-%m-%dT%H:%M:%S.%OSZ",tz="UTC")
+    stds$d13C_ref_btime <- as.POSIXct(stds$d13C_ref_btime,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
+    stds$d13C_ref_etime <- as.POSIXct(stds$d13C_ref_etime,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
     
     # reorder data frame
     stds <- stds[order(stds$d13C_obs_btime),]
