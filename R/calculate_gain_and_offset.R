@@ -4,7 +4,7 @@
 #'
 #' @param std1 First standard used in Bowling et al.
 #'             gain and offset calibration.
-#' @param std2 Second standard used in Bowling et al. 
+#' @param std2 Second standard used in Bowling et al.
 #'            gain and offset calibration.
 #'
 #' @return Data frame of gain and offset values for 12CO2 and 13CO2.
@@ -14,15 +14,15 @@
 calculate_gain_and_offset <- function(std1, std2) {
 
   # calculate gain
-  gain12C <- (std1$conc12CCO2_ref - std2$conc12CCO2_ref)/
+  gain12C <- (std1$conc12CCO2_ref - std2$conc12CCO2_ref) /
     (std1$conc12CCO2_obs - std2$conc12CCO2_obs)
 
-  gain13C <- (std1$conc13CCO2_ref - std2$conc13CCO2_ref)/
+  gain13C <- (std1$conc13CCO2_ref - std2$conc13CCO2_ref) /
     (std1$conc13CCO2_obs - std2$conc13CCO2_obs)
 
   # calculate offset
-  offset12C <- std1$conc12CCO2_ref - gain12C*std1$conc12CCO2_obs
-  offset13C <- std1$conc13CCO2_ref - gain13C*std1$conc13CCO2_obs
+  offset12C <- std1$conc12CCO2_ref - gain12C * std1$conc12CCO2_obs
+  offset13C <- std1$conc13CCO2_ref - gain13C * std1$conc13CCO2_obs
 
   # return a list of gain and uncertainty values.
   return(data.frame(gain12C, gain13C, offset12C, offset13C))
