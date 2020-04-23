@@ -2,7 +2,7 @@
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param std1 First standard used in Bowling et al. 
+#' @param std1 First standard used in Bowling et al.
 #'             gain and offset calibration.
 #' @param std2 Second standard used in Bowling et al. 
 #'            gain and offset calibration.
@@ -16,32 +16,15 @@ calculate_gain_and_offset <- function(std1, std2) {
   # calculate gain
   gain12C <- (std1$conc12CCO2_ref - std2$conc12CCO2_ref)/
     (std1$conc12CCO2_obs - std2$conc12CCO2_obs)
-  
+
   gain13C <- (std1$conc13CCO2_ref - std2$conc13CCO2_ref)/
     (std1$conc13CCO2_obs - std2$conc13CCO2_obs)
 
   # calculate offset
   offset12C <- std1$conc12CCO2_ref - gain12C*std1$conc12CCO2_obs
   offset13C <- std1$conc13CCO2_ref - gain13C*std1$conc13CCO2_obs
-  
-  # # calculate uncertainty on gain values.
-  # vari.g12C <- (std1$vari12CCO2_ref + std2$vari12CCO2_ref)/ # already variance, so already sigma^2
-  #   (std1$conc12CCO2_obs - std2$conc12CCO2_obs)^2 +
-  #   (std1$vari12CCO2_obs + std2$vari12CCO2_obs)* # already variance, so already sigma^2
-  #   ((std1$conc12CCO2_ref - std2$conc12CCO2_ref)/(std1$conc12CCO2_obs - std2$conc12CCO2_obs)^2)^2
-  #
-  # vari.g13C <- (std1$vari13CCO2_ref + std2$vari13CCO2_ref)/ # already variance, so already sigma^2
-  #   (std1$conc13CCO2_obs - std2$conc13CCO2_obs)^2 +
-  #   (std1$vari13CCO2_obs + std2$vari13CCO2_obs)* # already variance, so already sigma^2
-  #   ((std1$conc13CCO2_ref - std2$conc13CCO2_ref)/(std1$conc13CCO2_obs - std2$conc13CCO2_obs)^2)^2
-  #
-  # vari.o12C <- std1$vari12CCO2_ref + std1$conc12CCO2_obs^2*vari.g12C + 
-  #   gain12C^2*std1$vari12CCO2_obs
-  #
-  # vari.o13C <- std1$vari13CCO2_ref + std1$conc13CCO2_obs^2*vari.g13C + 
-  #   gain13C^2*std1$vari13CCO2_obs
 
   # return a list of gain and uncertainty values.
   return(data.frame(gain12C, gain13C, offset12C, offset13C))
- 
+
 }
