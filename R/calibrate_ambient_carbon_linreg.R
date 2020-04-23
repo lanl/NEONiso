@@ -30,7 +30,7 @@ calibrate_ambient_carbon_linreg <- function(amb.data.list,
                                             file,
                                             force.to.end=TRUE,
                                             force.to.beginning=TRUE,
-                                            r2.thres=0.95) {
+                                            r2_thres) {
 
     print("Processing carbon ambient data...")
     
@@ -64,7 +64,7 @@ calibrate_ambient_carbon_linreg <- function(amb.data.list,
       # rpf - 190809.
       # also some gap filling code here! 
       
-      if (!is.na(caldf$d13C_r2[i]) & caldf$d13C_r2[i] < r2.thres) {
+      if (!is.na(caldf$d13C_r2[i]) & caldf$d13C_r2[i] < r2_thres) {
         # if we're in calibration period 2 or later, carry previous 
         # calibration period forward. else if the first calibration period
         # is bad, find the first good calibration period at index n,
@@ -74,7 +74,7 @@ calibrate_ambient_carbon_linreg <- function(amb.data.list,
           caldf$d13C_intercept[i] <- caldf$d13C_intercept[i-1]
           caldf$d13C_r2[i] <- caldf$d13C_r2[i-1]
         } else { # i = 1, and need to find first good value.
-          first.good.val <- min(which(caldf$d13C_r2 > r2.thres))
+          first.good.val <- min(which(caldf$d13C_r2 > r2_thres))
           caldf$d13C_slope[i] <- caldf$d13C_slope[first.good.val]
           caldf$d13C_intercept[i] <- caldf$d13C_intercept[first.good.val]
           caldf$d13C_r2[i] <- caldf$d13C_r2[first.good.val]
@@ -82,13 +82,13 @@ calibrate_ambient_carbon_linreg <- function(amb.data.list,
       }
       
       # apply same logic to CO2 calibration.
-      if (!is.na(caldf$co2_r2[i]) & caldf$co2_r2[i] < r2.thres) {
+      if (!is.na(caldf$co2_r2[i]) & caldf$co2_r2[i] < r2_thres) {
         if (i > 1) {
           caldf$co2_slope[i] <- caldf$co2_slope[i-1]
           caldf$co2_intercept[i] <- caldf$co2_intercept[i-1]
           caldf$co2_r2[i] <- caldf$co2_r2[i-1]
         } else {
-          first.good.val <- min(which(caldf$co2_r2 > r2.thres))
+          first.good.val <- min(which(caldf$co2_r2 > r2_thres))
           caldf$co2_slope[i] <- caldf$co2_slope[first.good.val]
           caldf$co2_intercept[i] <- caldf$co2_intercept[first.good.val]
           caldf$co2_r2[i] <- caldf$co2_r2[first.good.val]
