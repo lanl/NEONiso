@@ -7,34 +7,47 @@
 #' In brief, this function takes the following steps:
 #' \enumerate{
 #'   \item Extracts calibration data from uncalibrated file.
-#'   \item Basic QA/QC on each calibration data point, where the following factors must be true:
+#'   \item Basic QA/QC on each calibration data point, where the following 
+#'         factors must be true:
 #'   \itemize{
-#'     \item Calibration "peak" must have >= 200 data points, to remove some observed issues with gas manifold valves.
+#'     \item Calibration "peak" must have >= 200 data points, to remove some 
+#'           observed issues with gas manifold valves.
 #'     \item Calibration "peak" must not be missing.
 #'     \item Only one value per day meeting these criteria are selected.
 #'   }
-#'   \item Calibration periods are defined to bracket a sample of ambient data. In many cases, this will be one day bracketed by 
-#'         measurements of reference materials immediately before and immediately after this period.
-#'   \item Determine the slope, intercept, and r^2 of a regression of each calibration period. Calibration error is estimated using
-#'         the difference between the model-predicted reference value of each standard compared to the "known" reference value 
-#'         for the "medium" standard only. As this bracketing calibration may use two measurements of the medium standard, only the maximum
-#'         difference value is retained as the more conservative approach. The "valid" period of the regression is determined as the
+#'   \item Calibration periods are defined to bracket a sample of ambient data.
+#'         In many cases, this will be one day bracketed by measurements of 
+#'        reference materials immediately before after this period.
+#'   \item Determine the slope, intercept, and r^2 of a regression of each 
+#'         calibration period. Calibration error is estimated using
+#'         the difference between the model-predicted reference value of each 
+#'         standard compared to the "known" reference value 
+#'         for the "medium" standard only. As this bracketing calibration may 
+#'         use two measurements of the medium standard, only the maximum
+#'         difference value is retained as the more conservative approach.
 #'         
-#'   \item Regression parameters are written to a dataset in a new output file under \code{/site/dp01/data/isoCo2/calData/calRegressions}
-#'   \item Regression equations are applied ambient data, and written to same new output file.
+#'   \item Regression parameters are written to a dataset in a new output file
+#'         under \code{/site/dp01/data/isoCo2/calData/calRegressions}
+#'   \item Regression equations are applied ambient data, 
+#'         and written to same new output file.
 #' }
-#' The qfqm and ucrt folders are also copied over from the original file, and are unchanged.
+#' The qfqm and ucrt folders are also copied over from the original file, 
+#' and are unchanged.
 #' 
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
 #' @param site Four-letter NEON code for site being processed. (character)
 #' @param inname Name of the input file. (character)
 #' @param outname Name of the output file. (character)
-#' @param force.cal.to.beginning Extend first calibration to the beginning of the file? (CURRENTLY NOT USED)
-#' @param time.diff.between.standards Time (in seconds) required between consecutive standard measurements. Used to define a calibration "period."
-#' @param force.cal.to.end Extend last calibration to the end of the file? (CURRENTLY NOT USED)
+#' @param force.cal.to.beginning Extend first calibration to 
+#'                               the beginning of the file?
+#' @param time.diff.between.standards Time (in seconds) required between 
+#'              consecutive standard measurements. 
+#'              Used to define a calibration "period."
+#' @param force.cal.to.end Extend last calibration to the end of the file?
 #'
-#' @return nothing to the workspace, but creates a new output file of calibrated carbon isotope data.
+#' @return nothing to the workspace, but creates a new output file of 
+#'         calibrated carbon isotope data.
 #' @export
 #' 
 #' @importFrom magrittr %>%
@@ -88,16 +101,24 @@ calibrate_carbon_linreg <- function(inname,
   if (nrow(stds) > 0) {
     # replace NaNs with NA
     # rpf note on 181121 - what does this line actually do? Seems tautological.
-    # rpf note 181126 - is.na() also returns NaN as NA, so this does actually do what first
-    # comment indicates.
+    # rpf note 181126 - is.na() also returns NaN as NA, so this does actually 
+    # do what first comment indicates.
     stds[ is.na(stds) ] <- NA
     
     # change class of time variables from charatcter to posixct.
-    stds$d13C_obs_btime <- as.POSIXct(stds$d13C_obs_btime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-    stds$d13C_obs_etime <- as.POSIXct(stds$d13C_obs_etime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+    stds$d13C_obs_btime <- as.POSIXct(stds$d13C_obs_btime, 
+                                      format = "%Y-%m-%dT%H:%M:%OSZ", 
+                                      tz = "UTC")
+    stds$d13C_obs_etime <- as.POSIXct(stds$d13C_obs_etime, 
+                                      format = "%Y-%m-%dT%H:%M:%OSZ", 
+                                      tz = "UTC")
     
-    stds$d13C_ref_btime <- as.POSIXct(stds$d13C_ref_btime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-    stds$d13C_ref_etime <- as.POSIXct(stds$d13C_ref_etime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+    stds$d13C_ref_btime <- as.POSIXct(stds$d13C_ref_btime, 
+                                      format = "%Y-%m-%dT%H:%M:%OSZ", 
+                                      tz = "UTC")
+    stds$d13C_ref_etime <- as.POSIXct(stds$d13C_ref_etime, 
+                                      format = "%Y-%m-%dT%H:%M:%OSZ", 
+                                      tz = "UTC")
     
     # reorder data frame
     stds <- stds[order(stds$d13C_obs_btime), ]
@@ -138,19 +159,19 @@ calibrate_carbon_linreg <- function(inname,
       cal.subset <- cal.subset %>%
         dplyr::filter(d13C_obs_var < 5 & abs(CO2_obs_mean - CO2_ref_mean) < 15)
       
-      if (length(unique(cal.subset$std_name)) >= 2 & # ensure at least 2 standards are present
+      if (length(unique(cal.subset$std_name)) >= 2 & # at least 2 stds present
           !all(is.na(cal.subset$d13C_obs_mean)) & # ensure that not all observational values are missing
           !all(is.na(cal.subset$d13C_ref_mean))) { # ensure that not all reference values are missing.
         
         # model to calibrate delta 13C values.
-        tmpmod <- lm(d13C_ref_mean ~ d13C_obs_mean, data=cal.subset)
+        tmpmod <- lm(d13C_ref_mean ~ d13C_obs_mean, data = cal.subset)
         
         delta_cal_slopes[i-1] <- coef(tmpmod)[[2]]
         delta_cal_ints[i-1] <- coef(tmpmod)[[1]]
         delta_cal_rsq[i-1] <- summary(tmpmod)$r.squared
         
         # model to calibrate delta 13C values.
-        tmpmod <- lm(CO2_ref_mean ~ CO2_obs_mean, data=cal.subset)
+        tmpmod <- lm(CO2_ref_mean ~ CO2_obs_mean, data = cal.subset)
         
         co2_cal_slopes[i-1] <- coef(tmpmod)[[2]]
         co2_cal_ints[i-1] <- coef(tmpmod)[[1]]
@@ -160,9 +181,11 @@ calibrate_carbon_linreg <- function(inname,
           # get medium vars.
           tmp <- subset(cal.subset, std_name == "med")
           
-          calDelUcrt[i-1] <- max(tmp$d13C_obs_mean*delta_cal_slopes[i-1] + delta_cal_ints[i-1] - tmp$d13C_ref_mean,
+          calDelUcrt[i-1] <- max(tmp$d13C_obs_mean*delta_cal_slopes[i-1] + 
+                                   delta_cal_ints[i-1] - tmp$d13C_ref_mean,
                                   na.rm = TRUE)
-          calCO2Ucrt[i-1] <- max(tmp$CO2_obs_mean*co2_cal_slopes[i-1] + co2_cal_ints[i-1] - tmp$CO2_ref_mean,
+          calCO2Ucrt[i-1] <- max(tmp$CO2_obs_mean*co2_cal_slopes[i-1] + 
+                                   co2_cal_ints[i-1] - tmp$CO2_ref_mean,
                                  na.rm = TRUE)
           
         } else {
@@ -175,25 +198,27 @@ calibrate_carbon_linreg <- function(inname,
       } else {
         
         delta_cal_slopes[i-1] <- NA
-        delta_cal_ints[i-1] <- NA
-        delta_cal_rsq[i-1] <- NA
-        calDelUcrt[i-1] <- NA
+        delta_cal_ints[i-1]   <- NA
+        delta_cal_rsq[i-1]    <- NA
+        calDelUcrt[i-1]       <- NA
         
         co2_cal_slopes[i-1] <- NA
-        co2_cal_ints[i-1] <- NA
-        co2_cal_rsq[i-1] <- NA
-        calCO2Ucrt[i-1] <- NA
+        co2_cal_ints[i-1]   <- NA
+        co2_cal_rsq[i-1]    <- NA
+        calCO2Ucrt[i-1]     <- NA
                 
       }
     }
     
     # make dataframe of calibration data.
     times <- stds %>%
-      dplyr::select(d13C_obs_btime, d13C_obs_etime, d13C_ref_btime, d13C_ref_etime, cal_period) %>%
+      dplyr::select(d13C_obs_btime, d13C_obs_etime, d13C_ref_btime, 
+                    d13C_ref_etime, cal_period) %>%
       dplyr::group_by(cal_period) %>%
       dplyr::summarize(etime = max(c(d13C_obs_etime, d13C_ref_etime)))
     
-    # loop through times, assign beginning, ending value. max etime should be just fine.
+    # loop through times, assign beginning, ending value. 
+    # max etime should be just fine.
     starttimes <- vector()
     endtimes <- vector()
     
@@ -203,21 +228,38 @@ calibrate_carbon_linreg <- function(inname,
     }
     
     # output dataframe giving valid time range, slopes, intercepts, rsquared.
-    out <- data.frame(start=as.POSIXct(starttimes, tz="UTC", origin="1970-01-01"),
-                      end=as.POSIXct(endtimes, tz="UTC", origin="1970-01-01"),
-                      d13C_slope=delta_cal_slopes, d13C_intercept=delta_cal_ints, d13C_r2=delta_cal_rsq,
-                      co2_slope=co2_cal_slopes, co2_intercept=co2_cal_ints, co2_r2=co2_cal_rsq,
-                      calDelUcrt=as.numeric(calDelUcrt),
-                      calCO2Ucrt=as.numeric(calCO2Ucrt))
+    out <- data.frame(start = as.POSIXct(starttimes, 
+                                       tz = "UTC", 
+                                       origin = "1970-01-01"),
+                      end = as.POSIXct(endtimes, 
+                                     tz = "UTC", 
+                                     origin = "1970-01-01"),
+                      d13C_slope = delta_cal_slopes, 
+                      d13C_intercept = delta_cal_ints, 
+                      d13C_r2 = delta_cal_rsq,
+                      co2_slope = co2_cal_slopes,
+                      co2_intercept = co2_cal_ints, 
+                      co2_r2 = co2_cal_rsq,
+                      calDelUcrt = as.numeric(calDelUcrt),
+                      calCO2Ucrt = as.numeric(calCO2Ucrt))
     
   } else {
 
         # output dataframe giving valid time range, slopes, intercepts, rsquared.
-    out <- data.frame(start=as.POSIXct(as.Date("1970-01-01"), tz="UTC", origin="1970-01-01"),
-                      end=as.POSIXct(as.Date("1970-01-01"), tz="UTC", origin="1970-01-01"),
-                      d13C_slope=as.numeric(NA), d13C_intercept=as.numeric(NA), d13C_r2=as.numeric(NA),
-                      co2_slope=as.numeric(NA), co2_intercept=as.numeric(NA), co2_r2=as.numeric(NA),
-                      calDelUcrt=as.numeric(NA), calCO2Ucrt=as.numeric(NA))
+    out <- data.frame(start = as.POSIXct(as.Date("1970-01-01"), 
+                                       tz = "UTC", 
+                                       origin = "1970-01-01"),
+                      end = as.POSIXct(as.Date("1970-01-01"), 
+                                       tz = "UTC", 
+                                       origin = "1970-01-01"),
+                      d13C_slope = as.numeric(NA), 
+                      d13C_intercept = as.numeric(NA),
+                      d13C_r2 = as.numeric(NA),
+                      co2_slope = as.numeric(NA), 
+                      co2_intercept = as.numeric(NA), 
+                      co2_r2 = as.numeric(NA),
+                      calDelUcrt = as.numeric(NA), 
+                      calCO2Ucrt = as.numeric(NA))
   }
   
   # check to ensure there are 6 columns.   
@@ -240,8 +282,6 @@ calibrate_carbon_linreg <- function(inname,
   if (!("co2_r2" %in% names(out))) {
     out$co2_r2 <- as.numeric(rep(NA, length(out$start)))
   }
- 
-  print(ncol(out))
   
   var_for_h5 <- out
   
@@ -279,17 +319,23 @@ calibrate_carbon_linreg <- function(inname,
   
   attrloc <- rhdf5::H5Gopen(fid, paste0("/", site))
   
-  for (i in 1:length(tmp)) { # probably a more rapid way to do this in the future...lapply?
-    rhdf5::h5writeAttribute(h5obj = attrloc, attr = tmp[[i]], name = names(tmp)[i])
+  for (i in 1:length(tmp)) { # a more rapid way to do this in future...lapply?
+    rhdf5::h5writeAttribute(h5obj = attrloc, 
+                            attr = tmp[[i]], 
+                            name = names(tmp)[i])
   }
   
   rhdf5::H5Gclose(attrloc)
   
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoCo2/calData"))
-  co2.cal.outloc <- rhdf5::H5Gopen(fid, paste0("/", site, "/dp01/data/isoCo2/calData"))
+  co2.cal.outloc <- rhdf5::H5Gopen(fid, 
+                                paste0("/", site, "/dp01/data/isoCo2/calData"))
   
   # write out dataset.
-  rhdf5::h5writeDataset.data.frame(obj = var_for_h5, h5loc=co2.cal.outloc, name="calRegressions", DataFrameAsCompound = TRUE)
+  rhdf5::h5writeDataset.data.frame(obj = var_for_h5, 
+                                   h5loc=co2.cal.outloc, 
+                                   name="calRegressions", 
+                                   DataFrameAsCompound = TRUE)
   
   # close the group and the file
   rhdf5::H5Gclose(co2.cal.outloc)
@@ -300,12 +346,15 @@ calibrate_carbon_linreg <- function(inname,
   #---------------------------------------------
   #---------------------------------------------
   #low
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoCo2/co2Low_09m"))
-  low.outloc <- rhdf5::H5Gopen(fid, paste0("/", site, "/dp01/data/isoCo2/co2Low_09m"))
+  rhdf5::h5createGroup(outname, 
+                       paste0("/", site, "/dp01/data/isoCo2/co2Low_09m"))
   
-  low <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2/co2Low_09m"))
+  low.outloc <- rhdf5::H5Gopen(fid, 
+                            paste0("/", site, "/dp01/data/isoCo2/co2Low_09m"))
   
-  # kludge fix for now - need to add mean_cal column to low - but currently uncalibrated!
+  low <- rhdf5::h5read(inname, 
+                       paste0("/", site, "/dp01/data/isoCo2/co2Low_09m"))
+  
   low$dlta13CCo2$mean_cal <- low$dlta13CCo2$mean
   low$dlta13CCo2$mean_cal <- as.numeric(NA)
   
@@ -323,11 +372,14 @@ calibrate_carbon_linreg <- function(inname,
   
   #------------------------------------------------------------
   #medium
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
+  rhdf5::h5createGroup(outname, 
+                       paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
   
-  med.outloc <- rhdf5::H5Gopen(fid, paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
+  med.outloc <- rhdf5::H5Gopen(fid, 
+                            paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
   
-  med <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
+  med <- rhdf5::h5read(inname, 
+                       paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
   
   # kludge fix for now - need to add mean_cal column to low - but currently uncalibrated!
   med$dlta13CCo2$mean_cal <- med$dlta13CCo2$mean
@@ -347,11 +399,14 @@ calibrate_carbon_linreg <- function(inname,
   
   #------------------------------------------------------------
   #high
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
+  rhdf5::h5createGroup(outname, 
+                       paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
   
-  high.outloc <- rhdf5::H5Gopen(fid, paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
+  high.outloc <- rhdf5::H5Gopen(fid, 
+                            paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
   
-  high <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
+  high <- rhdf5::h5read(inname, 
+                        paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
   
   # kludge fix for now - need to add mean_cal column to low - but currently uncalibrated!
   high$dlta13CCo2$mean_cal <- high$dlta13CCo2$mean
@@ -375,19 +430,21 @@ calibrate_carbon_linreg <- function(inname,
   
   rhdf5::h5closeAll()  
   
-  
   # calibrate data for each height.
   #-------------------------------------
   # extract ambient measurements from ciso
-  ciso_logical <- grepl(pattern="000", x=names(ciso))
+  ciso_logical <- grepl(pattern="000", x = names(ciso))
   ciso_subset <- ciso[ciso_logical]
   
   lapply(names(ciso_subset), 
-         function(x){calibrate_ambient_carbon_linreg(amb.data.list = ciso_subset[[x]], 
+         function(x) {
+           calibrate_ambient_carbon_linreg(amb.data.list = ciso_subset[[x]], 
                                                      caldf = out, 
                                                      outname = x,
                                                      file = outname, 
-                                                     site = site)})
+                                                     site = site)
+           }
+         ) # lapply
   
   rhdf5::h5closeAll()
 
