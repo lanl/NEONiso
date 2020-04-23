@@ -316,9 +316,6 @@ calibrate_carbon_Bowling2003 <- function(inname,
                                        format = "%Y-%m-%dT%H:%M:%S.%OSZ",
                                        tz = "UTC")
   
-  # determine which cal period to use.
-  print(paste(nrow(low$dlta13CCo2), "rows in cal data frame."))
-  
   if (nrow(low$dlta13CCo2) > 1) {
     for (i in 1:(nrow(low$dlta13CCo2)-1)) { # use n-1 because the standards are bracketing
       
@@ -337,7 +334,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
       
       if (!is.null(cal_12C) & !is.null(cal_13C) &
           !length(cal_12C) == 0 & !length(cal_13C) == 0) {
-        low$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C / cal_12C / R_vpdb - 1), 2)
+        low$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C / cal_12C / R_vpdb - 1), 3)
         low$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) / (1 - f)
       } else {
         low$dlta13CCo2$mean_cal[i] <- low$rtioMoleDryCo2$mean_cal[i] <- NA
@@ -365,12 +362,45 @@ calibrate_carbon_Bowling2003 <- function(inname,
   
   med <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
   
-  # kludge fix for now - need to add mean_cal column to low - but currently uncalibrated!
+  # calibrate standards using value for corresponding calibration period.
   med$dlta13CCo2$mean_cal <- med$dlta13CCo2$mean
   med$dlta13CCo2$mean_cal <- as.numeric(NA)
   
   med$rtioMoleDryCo2$mean_cal <- med$rtioMoleDryCo2$mean
-  med$rtioMoleDryCo2$mean_cal <- as.numeric(NA)
+  
+  # convert start times to POSIXct.
+  med$dlta13CCo2$timeBgn <- as.POSIXct(med$dlta13CCo2$timeBgn, 
+                                       format = "%Y-%m-%dT%H:%M:%S.%OSZ",
+                                       tz = "UTC")
+  
+  if (nrow(med$dlta13CCo2) > 1) {
+    for (i in 1:(nrow(med$dlta13CCo2)-1)) { # use n-1 because the standards are bracketing
+      
+      # determine which row calibration point is in. 
+      int <- lubridate::interval(out$start[i], out$end[i])
+      cal_id <- which(med$dlta13CCo2$timeBgn %within% int)
+      
+      # calibrate isotopologues using appropriate cal_id
+      uncal_12C <- med$rtioMoleDryCo2$mean[i] * (1-f) /
+        (1 + R_vpdb * ( 1 + med$dlta13CCo2$mean[i] / 1000))
+      
+      uncal_13C <- med$rtioMoleDryCo2$mean[i] * ( 1 - f ) - uncal_12C
+      
+      cal_12C <- out$gain12C[cal_id] * uncal_12C + out$offset12C[cal_id]
+      cal_13C <- out$gain13C[cal_id] * uncal_13C + out$offset13C[cal_id]
+      
+      if (!is.null(cal_12C) & !is.null(cal_13C) &
+          !length(cal_12C) == 0 & !length(cal_13C) == 0) {
+        med$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C / cal_12C / R_vpdb - 1), 3)
+        med$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) / (1 - f)
+      } else {
+        med$dlta13CCo2$mean_cal[i] <- med$rtioMoleDryCo2$mean_cal[i] <- NA
+      }
+    }
+  }
+  
+  # convert time back to NEON format.
+  med$dlta13CCo2$timeBgn <- convert_POSIXct_to_NEONhdf5_time(med$dlta13CCo2$timeBgn)
   
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(med), function(x) {
@@ -389,12 +419,46 @@ calibrate_carbon_Bowling2003 <- function(inname,
 
   high <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
   
-  # kludge fix for now - need to add mean_cal column to low - but currently uncalibrated!
+  # calibrate standards using value for corresponding calibration period.
   high$dlta13CCo2$mean_cal <- high$dlta13CCo2$mean
   high$dlta13CCo2$mean_cal <- as.numeric(NA)
   
   high$rtioMoleDryCo2$mean_cal <- high$rtioMoleDryCo2$mean
-  high$rtioMoleDryCo2$mean_cal <- as.numeric(NA)
+  
+  # convert start times to POSIXct.
+  high$dlta13CCo2$timeBgn <- as.POSIXct(high$dlta13CCo2$timeBgn,
+                                       format = "%Y-%m-%dT%H:%M:%S.%OSZ",
+                                       tz = "UTC")
+  
+  if (nrow(high$dlta13CCo2) > 1) {
+    for (i in 1:(nrow(high$dlta13CCo2)-1)) { # use n-1 because the standards are bracketing
+      
+      # determine which row calibration point is in. 
+      int <- lubridate::interval(out$start[i], out$end[i])
+      cal_id <- which(high$dlta13CCo2$timeBgn %within% int)
+      
+      # calibrate isotopologues using appropriate cal_id
+      uncal_12C <- high$rtioMoleDryCo2$mean[i] * (1-f) /
+        (1 + R_vpdb * ( 1 + high$dlta13CCo2$mean[i] / 1000))
+      
+      uncal_13C <- high$rtioMoleDryCo2$mean[i] * ( 1 - f ) - uncal_12C
+      
+      cal_12C <- out$gain12C[cal_id] * uncal_12C + out$offset12C[cal_id]
+      cal_13C <- out$gain13C[cal_id] * uncal_13C + out$offset13C[cal_id]
+      
+      if (!is.null(cal_12C) & !is.null(cal_13C) &
+          !length(cal_12C) == 0 & !length(cal_13C) == 0) {
+        high$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C / cal_12C / R_vpdb - 1), 3)
+        high$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) / (1 - f)
+      } else {
+        high$dlta13CCo2$mean_cal[i] <- high$rtioMoleDryCo2$mean_cal[i] <- NA
+      }
+    }
+  }
+  
+  # convert time back to NEON format.
+  high$dlta13CCo2$timeBgn <- convert_POSIXct_to_NEONhdf5_time(high$dlta13CCo2$timeBgn)
+  
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(high), function(x) {
     rhdf5::h5writeDataset.data.frame(obj = high[[x]],
