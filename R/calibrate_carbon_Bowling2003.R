@@ -48,13 +48,13 @@
 calibrate_carbon_Bowling2003 <- function(inname,
                                          outname,
                                          site,
-                                         time.diff.between.standards=1800,
-                                         force.cal.to.beginning=TRUE,
-                                         force.cal.to.end=TRUE,
-                                         interpolate.missing.cals=FALSE,
-                                         interpolation.method="LWMA", 
-                                         ucrt.source="data",
-                                         filter.ambient=TRUE) {
+                                         time.diff.between.standards = 1800,
+                                         force.cal.to.beginning = TRUE,
+                                         force.cal.to.end = TRUE,
+                                         interpolate.missing.cals = FALSE,
+                                         interpolation.method = "LWMA", 
+                                         ucrt.source = "data",
+                                         filter.ambient = TRUE) {
   
   #------------------------------------------------------------
   # Print some information before starting data processing
@@ -74,8 +74,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
   #-----------------------------------------------------------
   # pull all carbon isotope data into a list.
   
-  ciso <- rhdf5::h5read(inname, paste0('/', site, '/dp01/data/isoCo2'))
-  ucrt <- rhdf5::h5read(inname, paste0('/', site, '/dp01/ucrt/isoCo2'))
+  ciso <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2"))
+  ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/isoCo2"))
   
   high_rs <- extract_carbon_calibration_data(ciso, ucrt, "high")
   med_rs  <- extract_carbon_calibration_data(ciso, ucrt, "med")
@@ -148,12 +148,18 @@ calibrate_carbon_Bowling2003 <- function(inname,
     
     period_id <- 1
     tdiffs <- c(diff(stds$d13C_obs_btime), 0)
+    # enforce units of tdiffs to be seconds, otherwise it 
+    # will occasionally be minutes and produce incorrect output.
+    units(tdiffs) <- "secs"
+    
+    
     for (i in 1:nrow(stds)) {
       stds$cal_period[i] <- period_id   
       if (tdiffs[i] >= time.diff.between.standards) {period_id = period_id + 1}
     }
     
-    print(stds)
+    print(tdiffs)
+    print(stds$cal_period)
     
     # okay, now run calibrations...
     #------------------------------

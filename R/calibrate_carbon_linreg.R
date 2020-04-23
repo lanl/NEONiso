@@ -107,6 +107,10 @@ calibrate_carbon_linreg <- function(inname,
     
     period_id <- 1
     tdiffs <- c(diff(stds$d13C_obs_btime),0)
+    # enforce units of tdiffs to be seconds, otherwise it 
+    # will occasionally be minutes and produce incorrect output.
+    units(tdiffs) <- "secs"
+    
     for (i in 1:nrow(stds)) {
       stds$cal_period[i] <- period_id   
       if (tdiffs[i] >= time.diff.between.standards) {period_id = period_id + 1}
