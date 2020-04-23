@@ -54,7 +54,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
                                          interpolate.missing.cals = FALSE,
                                          interpolation.method = "LWMA", 
                                          ucrt.source = "data",
-                                         filter.ambient = TRUE) {
+                                         filter.ambient = TRUE,
+                                         r2_thres = 0.95) {
   
   #------------------------------------------------------------
   # Print some information before starting data processing
@@ -333,7 +334,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
       cal_13C <- out$gain13C[cal_id] * uncal_13C + out$offset13C[cal_id]
       
       if (!is.null(cal_12C) & !is.null(cal_13C) &
-          !length(cal_12C) == 0 & !length(cal_13C) == 0) {
+          !length(cal_12C) == 0 & !length(cal_13C) == 0 &
+          out$r2_12C[cal_id] > r2_thres & out$r2_13C[cal_id] > r2_thres) {
         low$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C / cal_12C / R_vpdb - 1), 3)
         low$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) / (1 - f)
       } else {
@@ -390,7 +392,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
       cal_13C <- out$gain13C[cal_id] * uncal_13C + out$offset13C[cal_id]
       
       if (!is.null(cal_12C) & !is.null(cal_13C) &
-          !length(cal_12C) == 0 & !length(cal_13C) == 0) {
+          !length(cal_12C) == 0 & !length(cal_13C) == 0 &
+          out$r2_12C[cal_id] > r2_thres & out$r2_13C[cal_id] > r2_thres) {
         med$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C / cal_12C / R_vpdb - 1), 3)
         med$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) / (1 - f)
       } else {
@@ -447,7 +450,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
       cal_13C <- out$gain13C[cal_id] * uncal_13C + out$offset13C[cal_id]
       
       if (!is.null(cal_12C) & !is.null(cal_13C) &
-          !length(cal_12C) == 0 & !length(cal_13C) == 0) {
+          !length(cal_12C) == 0 & !length(cal_13C) == 0 &
+          out$r2_12C[cal_id] > r2_thres & out$r2_13C[cal_id] > r2_thres) {
         high$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C / cal_12C / R_vpdb - 1), 3)
         high$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) / (1 - f)
       } else {
@@ -488,7 +492,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
                                                             site = site,
                                                             filter.data = TRUE,
                                                             force.to.end = force.cal.to.end,
-                                                            force.to.beginning = force.cal.to.beginning)})
+                                                            force.to.beginning = force.cal.to.beginning,
+                                                            r2.thres = r2_thres)})
   } else {
     lapply(names(ciso_subset),
            function(x){calibrate_ambient_carbon_Bowling2003(amb.data.list = ciso_subset[[x]],
@@ -497,7 +502,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
                                                             file = outname,
                                                             site = site,
                                                             force.to.end = force.cal.to.end,
-                                                            force.to.beginning = force.cal.to.beginning)})
+                                                            force.to.beginning = force.cal.to.beginning,
+                                                            r2.thres = r2_thres)})
   }
 
   rhdf5::h5closeAll()

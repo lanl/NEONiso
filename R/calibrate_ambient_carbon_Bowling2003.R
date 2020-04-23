@@ -41,7 +41,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
                                                  filter.data,
                                                  force.to.end,
                                                  force.to.beginning,
-                                                 r2.thres=0.95) {
+                                                 r2.thres) {
   
   #-----------------------------------------------------------
   # specify a few parameters for the Bowling method.
