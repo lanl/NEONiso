@@ -60,7 +60,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   # Print some information before starting data processing
   #------------------------------------------------------------
   print("Processing carbon calibration data...")
-  print("Applying method 1: linear regression on 12CO2 and 13CO2 isotope ratios separately.")
+  print("Applying method 1: linear regression on 12CO2 and 13CO2 separately.")
   print("Reference: Bowling et al. 2003 AFM")
   #----------------------------------------------------------
   # specify a few parameters for the Bowling method.
@@ -86,17 +86,26 @@ calibrate_carbon_Bowling2003 <- function(inname,
   rm(high_rs, med_rs, low_rs)
   
   standards <- standards %>%
-    dplyr::mutate(d13C_obs_btime=as.POSIXct(d13C_obs_btime, format="%Y-%m-%dT%H:%M:%S.%OSZ", tz="UTC"), 
-                  d13C_obs_etime=as.POSIXct(d13C_obs_etime, format="%Y-%m-%dT%H:%M:%S.%OSZ", tz="UTC"), 
-                  d13C_ref_btime=as.POSIXct(d13C_ref_btime, format="%Y-%m-%dT%H:%M:%S.%OSZ", tz="UTC"), 
-                  d13C_ref_etime=as.POSIXct(d13C_ref_etime, format="%Y-%m-%dT%H:%M:%S.%OSZ", tz="UTC")) %>% # for assigning times later. 
-
+    dplyr::mutate(d13C_obs_btime=as.POSIXct(d13C_obs_btime, 
+                                            format="%Y-%m-%dT%H:%M:%S.%OSZ", 
+                                            tz="UTC"), 
+                  d13C_obs_etime=as.POSIXct(d13C_obs_etime, 
+                                            format="%Y-%m-%dT%H:%M:%S.%OSZ", 
+                                            tz="UTC"), 
+                  d13C_ref_btime=as.POSIXct(d13C_ref_btime, 
+                                            format="%Y-%m-%dT%H:%M:%S.%OSZ", 
+                                            tz="UTC"), 
+                  d13C_ref_etime=as.POSIXct(d13C_ref_etime, 
+                                            format="%Y-%m-%dT%H:%M:%S.%OSZ", 
+                                            tz="UTC")) %>% # for assigning times later. 
     #------------------------------------------------------------
     # calculate mole fraction of 12CO2 and 13CO2 for the reference gases and observed values.
-    dplyr::mutate(conc12CCO2_ref = CO2_ref_mean*(1-f)/(1+R_vpdb*(1+d13C_ref_mean/1000))) %>%
-    dplyr::mutate(conc13CCO2_ref = CO2_ref_mean*(1-f)-conc12CCO2_ref) %>%
-    dplyr::mutate(conc12CCO2_obs = CO2_obs_mean*(1-f)/(1+R_vpdb*(1+d13C_obs_mean/1000))) %>%
-    dplyr::mutate(conc13CCO2_obs = CO2_obs_mean*(1-f)-conc12CCO2_obs) 
+    dplyr::mutate(conc12CCO2_ref = CO2_ref_mean * ( 1 - f ) / 
+                    ( 1 + R_vpdb * ( 1 + d13C_ref_mean / 1000))) %>%
+    dplyr::mutate(conc13CCO2_ref = CO2_ref_mean * ( 1 - f ) - conc12CCO2_ref) %>%
+    dplyr::mutate(conc12CCO2_obs = CO2_obs_mean * ( 1 - f ) / 
+                    ( 1 + R_vpdb * ( 1 + d13C_obs_mean / 1000))) %>%
+    dplyr::mutate(conc13CCO2_obs = CO2_obs_mean * ( 1 - f ) - conc12CCO2_obs) 
 
   # split back out into 3 data frames for each standard.
   low_rs <- dplyr::filter(standards, std_name=="low")
@@ -152,14 +161,10 @@ calibrate_carbon_Bowling2003 <- function(inname,
     # will occasionally be minutes and produce incorrect output.
     units(tdiffs) <- "secs"
     
-    
     for (i in 1:nrow(stds)) {
       stds$cal_period[i] <- period_id   
       if (tdiffs[i] >= time.diff.between.standards) {period_id = period_id + 1}
     }
-    
-    print(tdiffs)
-    print(stds$cal_period)
     
     # okay, now run calibrations...
     #------------------------------
@@ -189,8 +194,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
         tmpmod13C <- lm(conc13CCO2_ref ~ conc13CCO2_obs, data = cal.subset)
         
         # calculate gain and offset values.
-        gain12C[i-1] <- coef(tmpmod12C)[[2]]
-        gain13C[i-1] <- coef(tmpmod13C)[[2]]
+        gain12C[i-1]   <- coef(tmpmod12C)[[2]]
+        gain13C[i-1]   <- coef(tmpmod13C)[[2]]
         offset12C[i-1] <- coef(tmpmod12C)[[1]]
         offset13C[i-1] <- coef(tmpmod13C)[[1]]
         
@@ -225,18 +230,18 @@ calibrate_carbon_Bowling2003 <- function(inname,
     }
     
     # output dataframe giving valid time range, slopes, intercepts, rsquared.
-    out <- data.frame(start=as.POSIXct(starttimes, tz="UTC", origin="1970-01-01"), 
-                      end=as.POSIXct(endtimes, tz="UTC", origin="1970-01-01"),
+    out <- data.frame(start = as.POSIXct(starttimes, tz = "UTC", origin = "1970-01-01"), 
+                      end = as.POSIXct(endtimes, tz = "UTC", origin = "1970-01-01"),
                       gain12C, gain13C, offset12C, offset13C, r2_12C, r2_13C)
     
   } else {
     
     # output dataframe giving valid time range, slopes, intercepts, rsquared.
-    out <- data.frame(start=as.POSIXct(as.Date("1970-01-01"), tz="UTC", origin="1970-01-01"),
-                      end=as.POSIXct(as.Date("1970-01-01"), tz="UTC", origin="1970-01-01"),
-                      gain12C=as.numeric(NA), gain13C=as.numeric(NA), 
-                      offset12C=as.numeric(NA), offset13C=as.numeric(NA),
-                      r2_12C=as.numeric(NA), r2_13C=as.numeric(NA))
+    out <- data.frame(start = as.POSIXct(as.Date("1970-01-01"), tz = "UTC", origin = "1970-01-01"),
+                      end = as.POSIXct(as.Date("1970-01-01"), tz = "UTC", origin = "1970-01-01"),
+                      gain12C = as.numeric(NA), gain13C = as.numeric(NA), 
+                      offset12C = as.numeric(NA), offset13C = as.numeric(NA),
+                      r2_12C = as.numeric(NA), r2_13C = as.numeric(NA))
   }
   
   var_for_h5 <- out
@@ -260,31 +265,31 @@ calibrate_carbon_Bowling2003 <- function(inname,
   
   # okay try to write out to h5 file.
   rhdf5::h5createFile(outname)
-  rhdf5::h5createGroup(outname, paste0('/', site))
-  rhdf5::h5createGroup(outname, paste0('/', site, '/dp01'))
-  rhdf5::h5createGroup(outname, paste0('/', site, '/dp01/data'))
-  rhdf5::h5createGroup(outname, paste0('/', site, '/dp01/data/isoCo2'))
+  rhdf5::h5createGroup(outname, paste0("/", site))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoCo2"))
   
   fid <- rhdf5::H5Fopen(outname)
   
   # copy attributes from source file and write to output file.
-  tmp <- rhdf5::h5readAttributes(inname, paste0('/', site))
+  tmp <- rhdf5::h5readAttributes(inname, paste0("/", site))
 
-  attrloc <- rhdf5::H5Gopen(fid, paste0('/', site))
+  attrloc <- rhdf5::H5Gopen(fid, paste0("/", site))
   
   for (i in 1:length(tmp)) { # probably a more rapid way to do this in the future...lapply?
-    rhdf5::h5writeAttribute(h5obj=attrloc, attr=tmp[[i]], name=names(tmp)[i])
+    rhdf5::h5writeAttribute(h5obj = attrloc, attr = tmp[[i]], name = names(tmp)[i])
   }
   
   rhdf5::H5Gclose(attrloc)
   
   # write out calibration dataframe to a new group to keep it away from stackEddy
-  rhdf5::h5createGroup(outname, paste0('/', site, '/dp01/data/isoCo2/calData'))
-  co2.cal.outloc <- rhdf5::H5Gopen(fid, paste0('/', site, '/dp01/data/isoCo2/calData'))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoCo2/calData"))
+  co2.cal.outloc <- rhdf5::H5Gopen(fid, paste0("/", site, "/dp01/data/isoCo2/calData"))
 
   # write out dataset.
-  rhdf5::h5writeDataset.data.frame(obj = var_for_h5, h5loc=co2.cal.outloc, 
-                            name="calGainsOffsets", 
+  rhdf5::h5writeDataset.data.frame(obj = var_for_h5, h5loc = co2.cal.outloc, 
+                            name = "calGainsOffsets", 
                             DataFrameAsCompound = TRUE)
 
   rhdf5::H5Gclose(co2.cal.outloc)
@@ -295,10 +300,10 @@ calibrate_carbon_Bowling2003 <- function(inname,
   #---------------------------------------------
   #---------------------------------------------
   #low
-  rhdf5::h5createGroup(outname, paste0('/', site, '/dp01/data/isoCo2/co2Low_09m'))
-  low.outloc <- rhdf5::H5Gopen(fid, paste0('/', site, '/dp01/data/isoCo2/co2Low_09m'))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoCo2/co2Low_09m"))
+  low.outloc <- rhdf5::H5Gopen(fid, paste0("/", site, "/dp01/data/isoCo2/co2Low_09m"))
 
-  low <- rhdf5::h5read(inname, paste0('/', site, '/dp01/data/isoCo2/co2Low_09m'))
+  low <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2/co2Low_09m"))
   
   # calibrate standards using value for corresponding calibration period.
   low$dlta13CCo2$mean_cal <- low$dlta13CCo2$mean
@@ -307,10 +312,13 @@ calibrate_carbon_Bowling2003 <- function(inname,
   low$rtioMoleDryCo2$mean_cal <- low$rtioMoleDryCo2$mean
   
   # convert start times to POSIXct.
-  low$dlta13CCo2$timeBgn <- as.POSIXct(low$dlta13CCo2$timeBgn, format="%Y-%m-%dT%H:%M:%S.%OSZ", tz="UTC")
+  low$dlta13CCo2$timeBgn <- as.POSIXct(low$dlta13CCo2$timeBgn, 
+                                       format = "%Y-%m-%dT%H:%M:%S.%OSZ",
+                                       tz = "UTC")
   
   # determine which cal period to use.
   print(paste(nrow(low$dlta13CCo2), "rows in cal data frame."))
+  
   if (nrow(low$dlta13CCo2) > 1) {
     for (i in 1:(nrow(low$dlta13CCo2)-1)) { # use n-1 because the standards are bracketing
       
@@ -319,18 +327,18 @@ calibrate_carbon_Bowling2003 <- function(inname,
       cal_id <- which(low$dlta13CCo2$timeBgn %within% int)
 
       # calibrate isotopologues using appropriate cal_id
-      uncal_12C <- low$rtioMoleDryCo2$mean[i]*(1-f)/
-        (1+R_vpdb*(1+low$dlta13CCo2$mean[i]/1000))
+      uncal_12C <- low$rtioMoleDryCo2$mean[i] * (1-f) /
+        (1 + R_vpdb * ( 1 + low$dlta13CCo2$mean[i] / 1000))
       
-      uncal_13C <- low$rtioMoleDryCo2$mean[i]*(1-f) - uncal_12C
+      uncal_13C <- low$rtioMoleDryCo2$mean[i] * ( 1 - f ) - uncal_12C
       
-      cal_12C <- out$gain12C[cal_id]*uncal_12C + out$offset12C[cal_id]
-      cal_13C <- out$gain12C[cal_id]*uncal_13C + out$offset12C[cal_id]
+      cal_12C <- out$gain12C[cal_id] * uncal_12C + out$offset12C[cal_id]
+      cal_13C <- out$gain13C[cal_id] * uncal_13C + out$offset13C[cal_id]
       
       if (!is.null(cal_12C) & !is.null(cal_13C) &
           !length(cal_12C) == 0 & !length(cal_13C) == 0) {
-        low$dlta13CCo2$mean_cal[i] <- round(1000*(cal_13C/cal_12C/R_vpdb - 1), 2)
-        low$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C)/(1-f)
+        low$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C / cal_12C / R_vpdb - 1), 2)
+        low$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) / (1 - f)
       } else {
         low$dlta13CCo2$mean_cal[i] <- low$rtioMoleDryCo2$mean_cal[i] <- NA
       }
@@ -342,20 +350,20 @@ calibrate_carbon_Bowling2003 <- function(inname,
   
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(low), function(x) {
-    rhdf5::h5writeDataset.data.frame(obj=low[[x]],
-                              h5loc=low.outloc,
-                              name=x,
+    rhdf5::h5writeDataset.data.frame(obj = low[[x]],
+                              h5loc = low.outloc,
+                              name = x,
                               DataFrameAsCompound = TRUE)})
   
   rhdf5::H5Gclose(low.outloc)
 
   #------------------------------------------------------------
   #medium
-  rhdf5::h5createGroup(outname, paste0('/', site, '/dp01/data/isoCo2/co2Med_09m'))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
 
-  med.outloc <- rhdf5::H5Gopen(fid, paste0('/', site, '/dp01/data/isoCo2/co2Med_09m'))
+  med.outloc <- rhdf5::H5Gopen(fid, paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
   
-  med <- rhdf5::h5read(inname, paste0('/', site, '/dp01/data/isoCo2/co2Med_09m'))
+  med <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
   
   # kludge fix for now - need to add mean_cal column to low - but currently uncalibrated!
   med$dlta13CCo2$mean_cal <- med$dlta13CCo2$mean
@@ -366,20 +374,20 @@ calibrate_carbon_Bowling2003 <- function(inname,
   
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(med), function(x) {
-    rhdf5::h5writeDataset.data.frame(obj=med[[x]],
-                              h5loc=med.outloc,
-                              name=x,
+    rhdf5::h5writeDataset.data.frame(obj = med[[x]],
+                              h5loc = med.outloc,
+                              name = x,
                               DataFrameAsCompound = TRUE)})
  
   rhdf5::H5Gclose(med.outloc)
 
   #------------------------------------------------------------
   #high
-  rhdf5::h5createGroup(outname, paste0('/', site, '/dp01/data/isoCo2/co2High_09m'))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
 
-  high.outloc <- rhdf5::H5Gopen(fid, paste0('/', site, '/dp01/data/isoCo2/co2High_09m'))
+  high.outloc <- rhdf5::H5Gopen(fid, paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
 
-  high <- rhdf5::h5read(inname, paste0('/', site, '/dp01/data/isoCo2/co2High_09m'))
+  high <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
   
   # kludge fix for now - need to add mean_cal column to low - but currently uncalibrated!
   high$dlta13CCo2$mean_cal <- high$dlta13CCo2$mean
@@ -389,9 +397,9 @@ calibrate_carbon_Bowling2003 <- function(inname,
   high$rtioMoleDryCo2$mean_cal <- as.numeric(NA)
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(high), function(x) {
-    rhdf5::h5writeDataset.data.frame(obj=high[[x]],
-                              h5loc=high.outloc,
-                              name=x,
+    rhdf5::h5writeDataset.data.frame(obj = high[[x]],
+                              h5loc = high.outloc,
+                              name = x,
                               DataFrameAsCompound = TRUE)})
  
   rhdf5::H5Gclose(high.outloc)
@@ -404,47 +412,59 @@ calibrate_carbon_Bowling2003 <- function(inname,
   #----------------------------------------------------------------------------------------
   # calibrate ambient data.
   # extract ambient measurements from ciso
-  ciso_logical <- grepl(pattern="000", x=names(ciso))
+  ciso_logical <- grepl(pattern = "000", x = names(ciso))
   ciso_subset <- ciso[ciso_logical]
 
   if (filter.ambient == TRUE) {
     lapply(names(ciso_subset), 
-           function(x){calibrate_ambient_carbon_Bowling2003(amb.data.list=ciso_subset[[x]],
-                                                            caldf=out,outname=x,file=outname,site=site,
-                                                            filter.data=TRUE,
-                                                            force.to.end=force.cal.to.end,
-                                                            force.to.beginning=force.cal.to.beginning)})
+           function(x){calibrate_ambient_carbon_Bowling2003(amb.data.list = ciso_subset[[x]],
+                                                            caldf = out,
+                                                            outname = x,
+                                                            file = outname,
+                                                            site = site,
+                                                            filter.data = TRUE,
+                                                            force.to.end = force.cal.to.end,
+                                                            force.to.beginning = force.cal.to.beginning)})
   } else {
     lapply(names(ciso_subset),
-           function(x){calibrate_ambient_carbon_Bowling2003(amb.data.list=ciso_subset[[x]],
-                                                            caldf=out,outname=x,file=outname,site=site,
-                                                            force.to.end=force.cal.to.end,
-                                                            force.to.beginning=force.cal.to.beginning)})
+           function(x){calibrate_ambient_carbon_Bowling2003(amb.data.list = ciso_subset[[x]],
+                                                            caldf = out,
+                                                            outname = x,
+                                                            file = outname,
+                                                            site = site,
+                                                            force.to.end = force.cal.to.end,
+                                                            force.to.beginning = force.cal.to.beginning)})
   }
 
   rhdf5::h5closeAll()
   
   print("Copying qfqm...")
   # copy over ucrt and qfqm groups as well.
-  rhdf5::h5createGroup(outname, paste0('/', site, '/dp01/qfqm/'))
-  rhdf5::h5createGroup(outname, paste0('/', site, '/dp01/qfqm/isoCo2'))
-  qfqm <- rhdf5::h5read(inname, paste0('/', site, '/dp01/qfqm/isoCo2'))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoCo2"))
+  qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/isoCo2"))
 
   lapply(names(qfqm), function(x) {
-    copy_qfqm_group(data.list=qfqm[[x]],
-                    outname=x, file=outname, site=site, species="CO2")})
+    copy_qfqm_group(data.list = qfqm[[x]],
+                    outname = x, 
+                    file = outname, 
+                    site = site, 
+                    species = "CO2")})
 
   rhdf5::h5closeAll()
 
   print("Copying ucrt...")
   # now ucrt.
-  rhdf5::h5createGroup(outname, paste0('/', site, '/dp01/ucrt/'))
-  rhdf5::h5createGroup(outname, paste0('/', site, '/dp01/ucrt/isoCo2'))
-  ucrt <- rhdf5::h5read(inname, paste0('/', site, '/dp01/ucrt/isoCo2'))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoCo2"))
+  ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/isoCo2"))
 
   lapply(names(ucrt), function(x) {
-    copy_ucrt_group(data.list=ucrt[[x]],
-                    outname=x, file=outname, site=site, species="CO2")})
+    copy_ucrt_group(data.list = ucrt[[x]],
+                    outname = x, 
+                    file = outname, 
+                    site = site, 
+                    species = "CO2")})
 
   rhdf5::h5closeAll()
   
