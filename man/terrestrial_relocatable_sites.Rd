@@ -7,7 +7,7 @@
 terrestrial_relocatable_sites()
 }
 \description{
-#' Return a vector listing NEON core terrestrial sites.
+Return a vector listing NEON core terrestrial sites.
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}

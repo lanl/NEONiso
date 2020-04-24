@@ -14,7 +14,7 @@ Returns character version of POSIXct object matching NEON time variable format.
 }
 \description{
 Converts a POSIXct object back to the character format used by NEON in their
-HDF eddy covariance files. Output format, using strptime syntax, is
+HDF eddy covariance files. Output format,  using strptime syntax,  is
 %Y-%m-%dT%H:%M:%OSZ.
 }
 \author{

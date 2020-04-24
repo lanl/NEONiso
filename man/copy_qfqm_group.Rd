@@ -2,24 +2,28 @@
 % Please edit documentation in R/copy_qfqm_group.R
 \name{copy_qfqm_group}
 \alias{copy_qfqm_group}
-\title{Title}
+\title{copy_qfqm_group}
 \usage{
 copy_qfqm_group(data.list, outname, site, file, species)
 }
 \arguments{
 \item{data.list}{}
 
-\item{outname}{}
+\item{outname}{Output filename. Inhereted from one of the calibrate functions.}
 
-\item{site}{}
+\item{site}{Four-letter NEON site code.}
 
-\item{file}{}
+\item{file}{Input filename. Inhereted from one of the calibrate functions.}
 
-\item{species}{}
+\item{species}{CO2 or H2O? Same function used for both CO2 and H2O isotopes.}
 }
 \value{
-
+Nothing to the workspace, but copies qfqm group from input file to 
+        output file.
 }
 \description{
-Title
+copy_qfqm_group
+}
+\author{
+Rich Fiorella \email{rich.fiorella@utah.edu}
 }

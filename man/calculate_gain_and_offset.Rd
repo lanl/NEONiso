@@ -7,12 +7,14 @@
 calculate_gain_and_offset(std1, std2)
 }
 \arguments{
-\item{std1}{First standard used in Bowling et al. gain and offset calibration.}
+\item{std1}{First standard used in Bowling et al.
+gain and offset calibration.}
 
-\item{std2}{Second standard used in Bowling et al. gain and offset calibration.}
+\item{std2}{Second standard used in Bowling et al.
+gain and offset calibration.}
 }
 \value{
-Data frame of gain and offset values, along with variance estimates, for 12CO2 and 13CO2.
+Data frame of gain and offset values for 12CO2 and 13CO2.
 }
 \description{
 calculate_gain_and_offset.R

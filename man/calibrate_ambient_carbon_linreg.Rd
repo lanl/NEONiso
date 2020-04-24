@@ -12,7 +12,7 @@ calibrate_ambient_carbon_linreg(
   file,
   force.to.end = TRUE,
   force.to.beginning = TRUE,
-  r2.thres = 0.95
+  r2_thres
 )
 }
 \arguments{

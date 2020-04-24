@@ -5,38 +5,48 @@
 \title{calibrate_ambient_carbon_Bowling2003}
 \usage{
 calibrate_ambient_carbon_Bowling2003(
-  amb.data.list,
+  amb_data_list,
   caldf,
   outname,
   site,
   file,
-  filter.data,
-  force.to.end,
-  force.to.beginning,
-  r2.thres = 0.95
+  filter_data,
+  force_to_end,
+  force_to_beginning,
+  r2_thres
 )
 }
 \arguments{
-\item{amb.data.list}{List containing an ambient d13C dataset. Will include all variables in 000_0x0_xxm. (character)}
+\item{amb_data_list}{List containing an ambient d13C dataset.
+Will include all variables in 000_0x0_xxm. (character)}
 
-\item{caldf}{Calibration data frame containing gain and offset values for 12C and 13C isotopologues.}
+\item{caldf}{Calibration data frame containing gain and offset values for
+12C and 13C isotopologues.}
 
-\item{outname}{Output variable name. Inherited from \code{calibrate_ambient_carbon_Bowling2003}}
+\item{outname}{Output variable name. Inherited from
+\code{calibrate_ambient_carbon_Bowling2003}}
 
 \item{site}{Four-letter NEON code corersponding to site being processed.}
 
-\item{file}{Output file name. Inherited from \code{calibrate_ambient_carbon_Bowling2003}}
+\item{file}{Output file name. Inherited from
+\code{calibrate_ambient_carbon_Bowling2003}}
 
-\item{filter.data}{Apply median absolute deviation filter from Brock 86 to remove impulse spikes? Inherited from \code{calibrate_ambient_carbon_Bowling2003}}
+\item{filter_data}{Apply median absolute deviation filter from Brock 86 to
+remove impulse spikes? Inherited from
+\code{calibrate_ambient_carbon_Bowling2003}}
 
-\item{force.to.end}{In given month, calibrate ambient data later than last calibration, using the last calibration? (default true)}
+\item{force_to_end}{In given month, calibrate ambient data later than last
+calibration, using the last calibration? (default true)}
 
-\item{force.to.beginning}{In given month, calibrate ambient data before than first calibration, using the first calibration? (default true)}
+\item{force_to_beginning}{In given month, calibrate ambient data before than
+first calibration, using the first calibration? (default true)}
 
-\item{r2.thres}{Minimum r2 value for calibration to be considered "good" and applied to ambient data.}
+\item{r2_thres}{Minimum r2 value for calibration to be considered "good" and
+applied to ambient data.}
 }
 \value{
-Nothing to environment; returns calibrated ambient observations to the output file. This function is not designed to be called on its own.
+Nothing to environment; returns calibrated ambient observations to
+   the output file. This function is not designed to be called on its own.
 }
 \description{
 calibrate_ambient_carbon_Bowling2003
@@ -45,7 +55,8 @@ calibrate_ambient_carbon_Bowling2003
 Rich Fiorella \email{rich.fiorella@utah.edu}
 
 Function called by \code{calibrate_ambient_carbon_Bowling2003} to apply
-gain and offset parameters to the ambient datasets (000_0x0_09m and 000_0x0_30m).
-This function should generally not be used independently, but should be used 
-in coordination with \code{calibrate_ambient_carbon_Bowling2003}.
+gain and offset parameters to the ambient datasets (000_0x0_09m and
+000_0x0_30m). This function should generally not be used independently,
+but should be used in coordination with
+\code{calibrate_ambient_carbon_Bowling2003}.
 }

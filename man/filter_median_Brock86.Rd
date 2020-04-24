@@ -2,20 +2,24 @@
 % Please edit documentation in R/filtering_functions.R
 \name{filter_median_Brock86}
 \alias{filter_median_Brock86}
-\title{Title}
+\title{filter_median_Brock86}
 \usage{
 filter_median_Brock86(data, width = 7, threshold = 5)
 }
 \arguments{
-\item{data}{}
+\item{data}{Vector to filter.}
 
-\item{width}{}
+\item{width}{Width of filter, in rows.}
 
-\item{threshold}{}
+\item{threshold}{Only filter values that are \code{abs(threshold)}
+away from median}
 }
 \value{
-
+Returns filtered vector.
 }
 \description{
-Title
+Median absolute deviation filter of Brock 1986.
+}
+\author{
+Rich Fiorella \email{rich.fiorella@utah.edu}
 }
