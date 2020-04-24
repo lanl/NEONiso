@@ -321,23 +321,26 @@ calibrate_carbon_Bowling2003 <- function(inname,
     for (i in 1:(nrow(low$dlta13CCo2)-1)) { # use n-1 because the standards are bracketing
       
       # determine which row calibration point is in. 
-      int <- lubridate::interval(out$start[i], out$end[i])
-      cal_id <- which(low$dlta13CCo2$timeBgn %within% int)
-
-      # calibrate isotopologues using appropriate cal_id
-      uncal_12C <- low$rtioMoleDryCo2$mean[i] * (1-f) /
-        (1 + R_vpdb * ( 1 + low$dlta13CCo2$mean[i] / 1000))
+      int <- lubridate::interval(out$start, out$end)
+      cal_id <- which(low$dlta13CCo2$timeBgn[i] %within% int)
       
-      uncal_13C <- low$rtioMoleDryCo2$mean[i] * ( 1 - f ) - uncal_12C
-      
-      cal_12C <- out$gain12C[cal_id] * uncal_12C + out$offset12C[cal_id]
-      cal_13C <- out$gain13C[cal_id] * uncal_13C + out$offset13C[cal_id]
-      
-      if (!is.null(cal_12C) & !is.null(cal_13C) &
-          !length(cal_12C) == 0 & !length(cal_13C) == 0 &
-          out$r2_12C[cal_id] > r2_thres & out$r2_13C[cal_id] > r2_thres) {
-        low$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C / cal_12C / R_vpdb - 1), 3)
-        low$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) / (1 - f)
+      if (!(length(cal_id) == 0)) {
+        # calibrate isotopologues using appropriate cal_id
+        uncal_12C <- low$rtioMoleDryCo2$mean[i] * (1-f) /
+          (1 + R_vpdb * ( 1 + low$dlta13CCo2$mean[i] / 1000))
+        
+        uncal_13C <- low$rtioMoleDryCo2$mean[i] * ( 1 - f ) - uncal_12C
+        
+        cal_12C <- out$gain12C[cal_id] * uncal_12C + out$offset12C[cal_id]
+        cal_13C <- out$gain13C[cal_id] * uncal_13C + out$offset13C[cal_id]
+        
+        if (!is.na(out$r2_12C[cal_id]) & !is.na(out$r2_13C[cal_id]) &
+            out$r2_12C[cal_id] > r2_thres & out$r2_13C[cal_id] > r2_thres) {
+          low$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C / cal_12C / R_vpdb - 1), 3)
+          low$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) / (1 - f)
+        } else {
+          low$dlta13CCo2$mean_cal[i] <- low$rtioMoleDryCo2$mean_cal[i] <- NA
+        }
       } else {
         low$dlta13CCo2$mean_cal[i] <- low$rtioMoleDryCo2$mean_cal[i] <- NA
       }
@@ -364,6 +367,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   
   med <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
   
+  
   # calibrate standards using value for corresponding calibration period.
   med$dlta13CCo2$mean_cal <- med$dlta13CCo2$mean
   med$dlta13CCo2$mean_cal <- as.numeric(NA)
@@ -379,23 +383,26 @@ calibrate_carbon_Bowling2003 <- function(inname,
     for (i in 1:(nrow(med$dlta13CCo2)-1)) { # use n-1 because the standards are bracketing
       
       # determine which row calibration point is in. 
-      int <- lubridate::interval(out$start[i], out$end[i])
-      cal_id <- which(med$dlta13CCo2$timeBgn %within% int)
+      int <- lubridate::interval(out$start, out$end)
+      cal_id <- which(med$dlta13CCo2$timeBgn[i] %within% int)
       
-      # calibrate isotopologues using appropriate cal_id
-      uncal_12C <- med$rtioMoleDryCo2$mean[i] * (1-f) /
-        (1 + R_vpdb * ( 1 + med$dlta13CCo2$mean[i] / 1000))
-      
-      uncal_13C <- med$rtioMoleDryCo2$mean[i] * ( 1 - f ) - uncal_12C
-      
-      cal_12C <- out$gain12C[cal_id] * uncal_12C + out$offset12C[cal_id]
-      cal_13C <- out$gain13C[cal_id] * uncal_13C + out$offset13C[cal_id]
-      
-      if (!is.null(cal_12C) & !is.null(cal_13C) &
-          !length(cal_12C) == 0 & !length(cal_13C) == 0 &
-          out$r2_12C[cal_id] > r2_thres & out$r2_13C[cal_id] > r2_thres) {
-        med$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C / cal_12C / R_vpdb - 1), 3)
-        med$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) / (1 - f)
+      if (!(length(cal_id) == 0)) {
+        # calibrate isotopologues using appropriate cal_id
+        uncal_12C <- med$rtioMoleDryCo2$mean[i] * (1-f) /
+          (1 + R_vpdb * ( 1 + med$dlta13CCo2$mean[i] / 1000))
+        
+        uncal_13C <- med$rtioMoleDryCo2$mean[i] * ( 1 - f ) - uncal_12C
+        
+        cal_12C <- out$gain12C[cal_id] * uncal_12C + out$offset12C[cal_id]
+        cal_13C <- out$gain13C[cal_id] * uncal_13C + out$offset13C[cal_id]
+        
+        if (!is.na(out$r2_12C[cal_id]) & !is.na(out$r2_13C[cal_id]) &
+            out$r2_12C[cal_id] > r2_thres & out$r2_13C[cal_id] > r2_thres) {
+          med$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C / cal_12C / R_vpdb - 1), 3)
+          med$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) / (1 - f)
+        } else {
+          med$dlta13CCo2$mean_cal[i] <- med$rtioMoleDryCo2$mean_cal[i] <- NA
+        }
       } else {
         med$dlta13CCo2$mean_cal[i] <- med$rtioMoleDryCo2$mean_cal[i] <- NA
       }
@@ -437,23 +444,26 @@ calibrate_carbon_Bowling2003 <- function(inname,
     for (i in 1:(nrow(high$dlta13CCo2)-1)) { # use n-1 because the standards are bracketing
       
       # determine which row calibration point is in. 
-      int <- lubridate::interval(out$start[i], out$end[i])
-      cal_id <- which(high$dlta13CCo2$timeBgn %within% int)
-      
-      # calibrate isotopologues using appropriate cal_id
-      uncal_12C <- high$rtioMoleDryCo2$mean[i] * (1-f) /
-        (1 + R_vpdb * ( 1 + high$dlta13CCo2$mean[i] / 1000))
-      
-      uncal_13C <- high$rtioMoleDryCo2$mean[i] * ( 1 - f ) - uncal_12C
-      
-      cal_12C <- out$gain12C[cal_id] * uncal_12C + out$offset12C[cal_id]
-      cal_13C <- out$gain13C[cal_id] * uncal_13C + out$offset13C[cal_id]
-      
-      if (!is.null(cal_12C) & !is.null(cal_13C) &
-          !length(cal_12C) == 0 & !length(cal_13C) == 0 &
-          out$r2_12C[cal_id] > r2_thres & out$r2_13C[cal_id] > r2_thres) {
-        high$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C / cal_12C / R_vpdb - 1), 3)
-        high$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) / (1 - f)
+      int <- lubridate::interval(out$start, out$end)
+      cal_id <- which(high$dlta13CCo2$timeBgn[i] %within% int)
+
+      if (!(length(cal_id) == 0)) {
+        # calibrate isotopologues using appropriate cal_id
+        uncal_12C <- high$rtioMoleDryCo2$mean[i] * (1-f) /
+          (1 + R_vpdb * ( 1 + high$dlta13CCo2$mean[i] / 1000))
+        
+        uncal_13C <- high$rtioMoleDryCo2$mean[i] * ( 1 - f ) - uncal_12C
+        
+        cal_12C <- out$gain12C[cal_id] * uncal_12C + out$offset12C[cal_id]
+        cal_13C <- out$gain13C[cal_id] * uncal_13C + out$offset13C[cal_id]
+        
+        if (!is.na(out$r2_12C[cal_id]) & !is.na(out$r2_13C[cal_id]) & 
+            out$r2_12C[cal_id] > r2_thres & out$r2_13C[cal_id] > r2_thres) {
+          high$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C / cal_12C / R_vpdb - 1), 3)
+          high$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) / (1 - f)
+        } else {
+          high$dlta13CCo2$mean_cal[i] <- high$rtioMoleDryCo2$mean_cal[i] <- NA
+        }
       } else {
         high$dlta13CCo2$mean_cal[i] <- high$rtioMoleDryCo2$mean_cal[i] <- NA
       }
