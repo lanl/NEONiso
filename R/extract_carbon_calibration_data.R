@@ -59,7 +59,7 @@ extract_carbon_calibration_data <- function(data_list, ucrt_list,
                          d13C_ref_var = data$dlta13CCo2Refe$vari,
                          CO2_obs_mean = data$rtioMoleDryCo2$mean,
                          CO2_obs_n = data$rtioMoleDryCo2$numSamp,
-                         CO2_ref_mean=data$rtioMoleDryCo2Refe$mean,
+                         CO2_ref_mean = data$rtioMoleDryCo2Refe$mean,
                          CO2_ref_var = data$rtioMoleDryCo2Refe$vari,
                          CO2_obs_var = data$rtioMoleDryCo2$vari)
 

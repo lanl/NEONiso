@@ -14,7 +14,8 @@
 #'
 #' @param intime POSIXct vector to convert to NEON time format.
 #'
-#' @return Returns character version of POSIXct object matching NEON time variable format.
+#' @return Returns character version of POSIXct object
+#'         matching NEON time variable format.
 #'
 #'
 #'

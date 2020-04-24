@@ -3,207 +3,205 @@
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
 #' Function called by \code{calibrate_ambient_carbon_Bowling2003} to apply
-#' gain and offset parameters to the ambient datasets (000_0x0_09m and 
-#' 000_0x0_30m). This function should generally not be used independently, 
-#' but should be used in coordination with 
+#' gain and offset parameters to the ambient datasets (000_0x0_09m and
+#' 000_0x0_30m). This function should generally not be used independently,
+#' but should be used in coordination with
 #' \code{calibrate_ambient_carbon_Bowling2003}.
 #'
-#' @param amb.data.list List containing an ambient d13C dataset. 
+#' @param amb_data_list List containing an ambient d13C dataset.
 #'                      Will include all variables in 000_0x0_xxm. (character)
-#' @param caldf Calibration data frame containing gain and offset values for 
-#'              12C and 13C isotopologues. 
-#' @param outname Output variable name. Inherited from 
+#' @param caldf Calibration data frame containing gain and offset values for
+#'              12C and 13C isotopologues.
+#' @param outname Output variable name. Inherited from
 #'                 \code{calibrate_ambient_carbon_Bowling2003}
 #' @param site Four-letter NEON code corersponding to site being processed.
-#' @param file Output file name. Inherited from 
+#' @param file Output file name. Inherited from
 #'              \code{calibrate_ambient_carbon_Bowling2003}
-#' @param filter.data Apply median absolute deviation filter from Brock 86 to 
-#'             remove impulse spikes? Inherited from 
+#' @param filter_data Apply median absolute deviation filter from Brock 86 to
+#'             remove impulse spikes? Inherited from
 #'             \code{calibrate_ambient_carbon_Bowling2003}
-#' @param force.to.end In given month, calibrate ambient data later than last 
+#' @param force_to_end In given month, calibrate ambient data later than last
 #'             calibration, using the last calibration? (default true)
-#' @param force.to.beginning In given month, calibrate ambient data before than
+#' @param force_to_beginning In given month, calibrate ambient data before than
 #'              first calibration, using the first calibration? (default true)
-#' @param r2.thres Minimum r2 value for calibration to be considered "good" and
+#' @param r2_thres Minimum r2 value for calibration to be considered "good" and
 #'             applied to ambient data.
 #'
-#' @return Nothing to environment; returns calibrated ambient observations to 
+#' @return Nothing to environment; returns calibrated ambient observations to
 #'    the output file. This function is not designed to be called on its own.
 #' @export
 #'
 #' @importFrom magrittr %>%
-#' 
-calibrate_ambient_carbon_Bowling2003 <- function(amb.data.list,
+#' @importFrom lubridate %within%
+#'
+calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
                                                  caldf,
                                                  outname,
                                                  site,
                                                  file,
-                                                 filter.data,
-                                                 force.to.end,
-                                                 force.to.beginning,
-                                                 r2.thres) {
-  
+                                                 filter_data,
+                                                 force_to_end,
+                                                 force_to_beginning,
+                                                 r2_thres) {
+
   #-----------------------------------------------------------
   # specify a few parameters for the Bowling method.
-  
+
   f <- 0.00474  # fraction of CO2 isotopomers that aren't 12CO2 or 13CO2
   # note: f technically varies, but this has little impact
   # on calibration per Griffis et al. 2004.
-  
+
   R_vpdb <- 0.0111797 # 13C/12C ratio for VPD standard.
-  
+
   # should be able to get a calGainsOffsets object from the H5 file.
-  
-  # only working on the d13C of the amb.data.list, so extract just this...
-  amb.delta <- amb.data.list$dlta13CCo2
-  amb.CO2   <- amb.data.list$rtioMoleDryCo2
-  
-  # instead of using the [12CO2] and [13CO2] values, calculate from 
+
+  # only working on the d13C of the amb_data_list, so extract just this...
+  amb_delta <- amb_data_list$dlta13CCo2
+  amb_co2   <- amb_data_list$rtioMoleDryCo2
+
+  # instead of using the [12CO2] and [13CO2] values, calculate from
   # the isotope ratio instead.
-  amb.12CO2 <- amb.13CO2 <- amb.CO2 
-  
-  amb.12CO2$mean <- amb.CO2$mean * ( 1 - f ) / 
-    ( 1 + R_vpdb * ( 1 + amb.delta$mean / 1000))
-  amb.13CO2$mean <- amb.CO2$mean * (1-f) - amb.12CO2$mean
-  
-  amb.12CO2$min <- amb.CO2$min * (1-f) / 
-    (1 + R_vpdb * (1 + amb.delta$min / 1000))
-  amb.13CO2$min <- amb.CO2$min * (1-f) - amb.12CO2$min
-  
-  amb.12CO2$max <- amb.CO2$max * (1-f) / 
-    (1 + R_vpdb * (1 + amb.delta$max / 1000))
-  amb.13CO2$max <- amb.CO2$max * (1-f) - amb.12CO2$max
-  
+  amb_12CO2 <- amb_13CO2 <- amb_co2
+
+  amb_12CO2$mean <- amb_co2$mean * (1 - f) /
+    (1 + R_vpdb * (1 + amb_delta$mean / 1000))
+  amb_13CO2$mean <- amb_co2$mean * (1 - f) - amb_12CO2$mean
+
+  amb_12CO2$min <- amb_co2$min * (1 - f) /
+    (1 + R_vpdb * (1 + amb_delta$min / 1000))
+  amb_13CO2$min <- amb_co2$min * (1 - f) - amb_12CO2$min
+
+  amb_12CO2$max <- amb_co2$max * (1 - f) /
+    (1 + R_vpdb * (1 + amb_delta$max / 1000))
+  amb_13CO2$max <- amb_co2$max * (1 - f) - amb_12CO2$max
+
   # ensure that time variables are in POSIXct.
-  amb.start.times <- as.POSIXct(amb.delta$timeBgn, 
+  amb_start_times <- as.POSIXct(amb_delta$timeBgn,
                                 format = "%Y-%m-%dT%H:%M:%OSZ",
                                 tz = "UTC")
-  amb.end.times <- as.POSIXct(amb.delta$timeEnd, 
+  amb_end_times <- as.POSIXct(amb_delta$timeEnd,
                               format = "%Y-%m-%dT%H:%M:%OSZ",
                               tz = "UTC")
-  
-  # if force.to.end and/or force.to.beginning are true, match 
+
+  # if force_to_end and/or force_to_beginning are true, match
   # out$start[1] to min(amb time) and/or out$end[nrow] to max(amb time)
-  
-  if (force.to.end == TRUE) {
-    caldf$end[nrow(caldf)] <- amb.end.times[length(amb.end.times)]
+
+  if (force_to_end == TRUE) {
+    caldf$end[nrow(caldf)] <- amb_end_times[length(amb_end_times)]
   }
-  if (force.to.beginning == TRUE) {
-    caldf$start[1] <- amb.start.times[1]
+  if (force_to_beginning == TRUE) {
+    caldf$start[1] <- amb_start_times[1]
   }
-  
+
   # determine which cal period each ambient data belongs to.
-  var.inds.in.calperiod <- list()
-  
-  # determine which cal period each ambient data belongs to.
-  var.inds.in.calperiod <- list()
-  
+  var_inds_in_calperiod <- list()
+
   for (i in 1:nrow(caldf)) {
     int <- lubridate::interval(caldf$start[i], caldf$end[i])
-    var.inds.in.calperiod[[i]] <- which(amb.end.times %within% int)
-    
-    # check to see if calibration point is "valid" - 
-    # at present - "valid" means r2 > r2.thres.
+    var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
+
+    # check to see if calibration point is "valid" -
+    # at present - "valid" means r2 > r2_thres.
     # rpf - 190809.
-    # also some gap filling code here! 
-    
+    # also some gap filling code here!
+
     # 12CO2 calibration paramters.
-    if (!is.na(caldf$r2_12C[i]) & caldf$r2_12C[i] < r2.thres) {
-      # if we're in calibration period 2 or later, carry previous 
+    if (!is.na(caldf$r2_12C[i]) & caldf$r2_12C[i] < r2_thres) {
+      # if we're in calibration period 2 or later, carry previous
       # calibration period forward. else if the first calibration period
       # is bad, find the first good calibration period at index n,
       # and apply to first n periods.
       if (i > 1) {
-        caldf$gain12C[i] <- caldf$gain12C[i-1]
-        caldf$offset12C[i] <- caldf$offset12C[i-1]
-        caldf$r2_12C[i] <- caldf$r2_12C[i-1]
+        caldf$gain12C[i] <- caldf$gain12C[i - 1]
+        caldf$offset12C[i] <- caldf$offset12C[i - 1]
+        caldf$r2_12C[i] <- caldf$r2_12C[i - 1]
       } else { # i = 1, and need to find first good value.
-        first.good.val <- min(which(caldf$r2_12C > r2.thres))
-        caldf$gain12C[i] <- caldf$gain12C[first.good.val]
-        caldf$offset12C[i] <- caldf$offset12C[first.good.val]
-        caldf$r2_12C[i] <- caldf$r2_12C[first.good.val]
+        first_good_val <- min(which(caldf$r2_12C > r2_thres))
+        caldf$gain12C[i] <- caldf$gain12C[first_good_val]
+        caldf$offset12C[i] <- caldf$offset12C[first_good_val]
+        caldf$r2_12C[i] <- caldf$r2_12C[first_good_val]
       }
     }
-    
+
     # 13CO2 calibration parameters - equivalent logic to 12Co2.
-    if (!is.na(caldf$r2_13C[i]) & caldf$r2_13C[i] < r2.thres) {
+    if (!is.na(caldf$r2_13C[i]) & caldf$r2_13C[i] < r2_thres) {
       if (i > 1) {
-        caldf$gain13C[i] <- caldf$gain13C[i-1]
-        caldf$offset13C[i] <- caldf$offset13C[i-1]
-        caldf$r2_13C[i] <- caldf$r2_13C[i-1]
+        caldf$gain13C[i] <- caldf$gain13C[i - 1]
+        caldf$offset13C[i] <- caldf$offset13C[i - 1]
+        caldf$r2_13C[i] <- caldf$r2_13C[i - 1]
       } else {
-        first.good.val <- min(which(caldf$r2_13C > r2.thres))
-        caldf$gain13C[i] <- caldf$gain13C[first.good.val]
-        caldf$offset13C[i] <- caldf$offset13C[first.good.val]
-        caldf$r2_13C[i] <- caldf$r2_13C[first.good.val]
+        first_good_val <- min(which(caldf$r2_13C > r2_thres))
+        caldf$gain13C[i] <- caldf$gain13C[first_good_val]
+        caldf$offset13C[i] <- caldf$offset13C[first_good_val]
+        caldf$r2_13C[i] <- caldf$r2_13C[first_good_val]
       }
     }
   }
-  
+
   # calibrate data at this height.
   #-------------------------------------
   # extract 12CO2 and 13CO2 concentrations from the ambient data
-  mean12C <- max12C <- min12C <- amb.delta$mean # placeholders for 12CO2 vecs
-  mean13C <- max13C <- min13C <- amb.delta$mean # placeholders for 13CO2 vecs
-  
-  amb.CO2$mean_cal <- amb.delta$mean
-  
+  mean12c <- max12c <- min12c <- amb_delta$mean # placeholders for 12CO2 vecs
+  mean13c <- max13c <- min13c <- amb_delta$mean # placeholders for 13CO2 vecs
+
+  amb_co2$mean_cal <- amb_delta$mean
+
   for (i in 1:length(var.inds.in.calperiod)) {
     # calculate calibrated 12CO2 concentrations
-    mean12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i] * 
-      amb.12CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
-    min12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i] * 
-      amb.12CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
-    max12C[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i] * 
-      amb.12CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
-    
+    mean12c[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i] *
+      amb_12CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
+    min12c[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i] *
+      amb_12CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
+    max12c[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i] *
+      amb_12CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
+
     # calculate calibrated 13CO2 concentrations
-    mean13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i] * 
-      amb.13CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
-    min13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i] * 
-      amb.13CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
-    max13C[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i] * 
-      amb.13CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
+    mean13c[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i] *
+      amb_13CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
+    min13c[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i] *
+      amb_13CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
+    max13c[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i] *
+      amb_13CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
 
   }
-  
+
   # output calibrated delta values.
-  amb.delta$mean_cal <- round(1000 * (mean13C / mean12C / R_vpdb - 1), 2)
-  amb.delta$min  <- round(1000 * (min13C / min12C / R_vpdb - 1), 2)
-  amb.delta$max  <- round(1000 * (max13C / max12C / R_vpdb - 1), 2)
-  amb.delta$vari <- round(amb.delta$vari, 2)
+  amb_delta$mean_cal <- round(1000 * (mean13c / mean12c / R_vpdb - 1), 2)
+  amb_delta$min  <- round(1000 * (min13c / min12c / R_vpdb - 1), 2)
+  amb_delta$max  <- round(1000 * (max13c / max12c / R_vpdb - 1), 2)
+  amb_delta$vari <- round(amb_delta$vari, 2)
 
   # calibrate co2 mole fractions.
-  amb.CO2$mean_cal <- (mean13C + mean12C) / (1-f)
-  
-  # apply median filter to data
-  if (filter.data == TRUE) {
-    amb.delta$mean_cal <- filter_median_Brock86(amb.delta$mean_cal)
-    amb.delta$min      <- filter_median_Brock86(amb.delta$min)
-    amb.delta$max      <- filter_median_Brock86(amb.delta$max)
-  }
-  
-  # replace ambdf in amb.data.list, return amb.data.list
-  amb.data.list$dlta13CCo2 <- amb.delta
+  amb_co2$mean_cal <- (mean13c + mean12c) / (1 - f)
 
-  amb.data.list$rtioMoleDryCo2 <- amb.CO2
-  
+  # apply median filter to data
+  if (filter_data == TRUE) {
+    amb_delta$mean_cal <- filter_median_Brock86(amb_delta$mean_cal)
+    amb_delta$min      <- filter_median_Brock86(amb_delta$min)
+    amb_delta$max      <- filter_median_Brock86(amb_delta$max)
+  }
+
+  # replace ambdf in amb_data_list, return amb_data_list
+  amb_data_list$dlta13CCo2 <- amb_delta
+
+  amb_data_list$rtioMoleDryCo2 <- amb_co2
+
   # write out dataset to HDF5 file.
   fid <- rhdf5::H5Fopen(file)
-  
-  #print(outname)
-  co2.data.outloc <- rhdf5::H5Gcreate(fid, 
+
+  co2_data_outloc <- rhdf5::H5Gcreate(fid,
                               paste0("/", site, "/dp01/data/isoCo2/", outname))
-  
-  # loop through variables in list amb.data.list and write out as a dataframe.
-  lapply(names(amb.data.list), function(x) {
-    rhdf5::h5writeDataset.data.frame(obj = amb.data.list[[x]], 
-                              h5loc = co2.data.outloc,
+
+  # loop through variables in list amb_data_list and write out as a dataframe.
+  lapply(names(amb_data_list), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = amb_data_list[[x]],
+                              h5loc = co2_data_outloc,
                               name = x,
                               DataFrameAsCompound = TRUE)})
-  
-  rhdf5::H5Gclose(co2.data.outloc)
+
+  rhdf5::H5Gclose(co2_data_outloc)
   rhdf5::H5Fclose(fid)
+
   # close all open handles.
   rhdf5::h5closeAll()
 
