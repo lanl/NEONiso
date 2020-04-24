@@ -70,6 +70,6 @@ extract_carbon_calibration_data <- function(data_list, ucrt_list,
     mutate(std_name = standard)
 
   # return standard data frame.
-  return(std.df)
+  return(std_df)
 
 }
