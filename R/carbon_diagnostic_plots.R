@@ -99,19 +99,17 @@ cplot_monthly_calParameters <- function(calParDf,plot_path,site,method) {
         scale_x_datetime("date") +
         scale_y_continuous("offset, 13C") 
       
-      p5 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=calUcrt)) +
+      p5 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=r2_12C)) +
         geom_point() +
-        geom_hline(yintercept= -0.2,col="red",lty=2) +
-        geom_hline(yintercept = 0.2,col="red",lty=2) +
         theme_bw() +
         scale_x_datetime("date") +
-        scale_y_continuous("Uncertainty")
+        scale_y_continuous("r2, 12C")
       
-      p6 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=calgood)) +
+      p6 <- ggplot(data=calParDf[[i]],aes(x=valid_period_start,y=r2_13C)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
-        scale_y_continuous("# good cal points") 
+        scale_y_continuous("r2, 13C") 
       
       gridExtra::grid.arrange(p1,p2,p3,p4,p5,p6,nrow=6,top=site)
       
@@ -332,19 +330,17 @@ cplot_fullts_calParameters <- function(calParDf,plot_path,site,method) {
       scale_x_datetime("date") +
       scale_y_continuous("offset, 13C") 
     
-    p5 <- ggplot(data=calParDf,aes(x=valid_period_start,y=calUcrt)) +
+    p5 <- ggplot(data=calParDf,aes(x=valid_period_start,y=r2_12C)) +
       geom_point() +
-      geom_hline(yintercept= -0.2,col="red",lty=2) +
-      geom_hline(yintercept = 0.2,col="red",lty=2) +
       theme_bw() +
       scale_x_datetime("date") +
-      scale_y_continuous("Uncertainty")
+      scale_y_continuous("r2, 12C")
     
-    p6 <- ggplot(data=calParDf,aes(x=valid_period_start,y=calgood)) +
+    p6 <- ggplot(data=calParDf,aes(x=valid_period_start,y=r2_13C)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
-      scale_y_continuous("# good cal points") 
+      scale_y_continuous("r2, 13C") 
     
     gridExtra::grid.arrange(p1,p2,p3,p4,p5,p6,nrow=6,top=site)
     
@@ -453,3 +449,54 @@ cplot_fullts_ambient <- function(ambData,dir_plots,site) {
   dev.off()
   
 }
+
+#=================================================================
+# 7. empirical density functions of reference materials and isotopologues.
+
+cplot_standard_distributions <- function(calData,plot_path,site) {
+  
+  # define f and R
+  f <- 0.00474
+  R <- 0.0111797
+  
+  # calculate 12CO2 and 13CO2 from d13C and CO2.
+  if (!all(is.na(calData$refCo2)) & !all(is.na(calData$ref13C))) {
+    calData$c12 <- (1 - f) * calData$refCo2 / (1 + R * (1 + calData$ref13C / 1000))
+    calData$c13 <- (1 - f) * calData$refCo2 - calData$c12
+  } else {
+    calData$c12 <- NA
+    calData$c13 <- NA
+  }
+  
+  # make plots of the distribution of each variable.
+  p1 <- ggplot(data = calData, aes(x = c12, y = ..density..)) +
+    geom_histogram(binwidth = 1) +
+    theme_bw() +
+    scale_y_continuous("Frequency") +
+    scale_x_continuous("12CO2 mixing ratio, ppm")
+  
+  p2 <- ggplot(data = calData, aes(x = c13, y = ..density..)) +
+    geom_histogram(binwidth = 0.01) +
+    theme_bw() +
+    scale_y_continuous("Frequency") +
+    scale_x_continuous("13CO2 mixing ratio, ppm")
+  
+  p3 <- ggplot(data = calData, aes(x = ref13C, y = ..density..)) +
+    geom_histogram(binwidth = 0.1) +
+    theme_bw() +
+    scale_y_continuous("Frequency") +
+    scale_x_continuous("d13C")
+  
+  p4 <- ggplot(data = calData, aes(x = refCo2, y = ..density..)) +
+    geom_histogram(binwidth =  1) +
+    theme_bw() +
+    scale_y_continuous("Frequency") +
+    scale_x_continuous("CO2 mixing ratio, ppm")
+  
+  # open plot.
+  pdf(paste0(plot_path,"/","7_refDist_",site,".pdf"))
+  gridExtra::grid.arrange(p1,p2,p3,p4,ncol=2,top=site)
+  dev.off()
+   
+}
+

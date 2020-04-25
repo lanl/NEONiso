@@ -39,11 +39,12 @@ carbon_diagnostic_package <- function(data_path,
                         "All Monthly Plots",
                         "All Full Timeseries Plots",
                         "All Plots",
+                        "Reference material distributions",
                         "I've made a huge mistake.")
                       ,title="Which plots should be run?")
   
   # allow graceful exit if want to stop.
-  if (which.plots == 10) {
+  if (which.plots == 11) {
     stop()
   }
   
@@ -159,19 +160,7 @@ carbon_diagnostic_package <- function(data_path,
       # convert valid_period_start and valid_period_end to POSIXct.
       calPars[[k]]$valid_period_start <- as.POSIXct(calPars[[k]]$valid_period_start,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
       calPars[[k]]$valid_period_end <- as.POSIXct(calPars[[k]]$valid_period_end,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
-      
-      # bug fix for now, but needs to be corrected in calibration functions.
-      if (names(calPars.tmp[[k]]) == 'calGainsOffsets') {
-        if (!("calUcrt" %in% names(calPars[[k]]))) {
-          calPars[[k]]$calUcrt <- as.numeric(rep(NA,length(calPars[[k]]$valid_period_start)))
-        }
-        if (!("calgood" %in% names(calPars[[k]]))) {
-          calPars[[k]]$calgood <- as.numeric(rep(NA,length(calPars[[k]]$valid_period_start)))
-        }
-        if (!("replaced.vals" %in% names(calPars[[k]]))) {
-          calPars[[k]]$replaced.vals <- as.numeric(rep(NA,length(calPars[[k]]$valid_period_start)))
-        }
-      }
+
     }
     
     # determine method.
@@ -277,6 +266,14 @@ carbon_diagnostic_package <- function(data_path,
       
       print("Plot 6")
       NEONiso:::cplot_fullts_ambient(ambData,out_folder,unq_sites[i])
+      
+    } # if
+    
+    # 6. calibrated ambient data - timeseries
+    if (which.plots == 10 | which.plots == 8 | which.plots == 9) {
+      
+      print("Plot 10")
+      NEONiso:::cplot_standard_distributions(calData,out_folder,unq_sites[i])
       
     } # if
     
