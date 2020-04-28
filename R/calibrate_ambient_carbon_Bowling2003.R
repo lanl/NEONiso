@@ -146,22 +146,22 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
 
   amb_co2$mean_cal <- amb_delta$mean
 
-  for (i in 1:length(var.inds.in.calperiod)) {
+  for (i in 1:length(var_inds_in_calperiod)) {
     # calculate calibrated 12CO2 concentrations
-    mean12c[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i] *
-      amb_12CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
-    min12c[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i] *
-      amb_12CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
-    max12c[var.inds.in.calperiod[[i]]] <- caldf$gain12C[i] *
-      amb_12CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset12C[i]
+    mean12c[var_inds_in_calperiod[[i]]] <- caldf$gain12C[i] *
+      amb_12CO2$mean[var_inds_in_calperiod[[i]]] + caldf$offset12C[i]
+    min12c[var_inds_in_calperiod[[i]]] <- caldf$gain12C[i] *
+      amb_12CO2$min[var_inds_in_calperiod[[i]]] + caldf$offset12C[i]
+    max12c[var_inds_in_calperiod[[i]]] <- caldf$gain12C[i] *
+      amb_12CO2$max[var_inds_in_calperiod[[i]]] + caldf$offset12C[i]
 
     # calculate calibrated 13CO2 concentrations
-    mean13c[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i] *
-      amb_13CO2$mean[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
-    min13c[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i] *
-      amb_13CO2$min[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
-    max13c[var.inds.in.calperiod[[i]]] <- caldf$gain13C[i] *
-      amb_13CO2$max[var.inds.in.calperiod[[i]]] + caldf$offset13C[i]
+    mean13c[var_inds_in_calperiod[[i]]] <- caldf$gain13C[i] *
+      amb_13CO2$mean[var_inds_in_calperiod[[i]]] + caldf$offset13C[i]
+    min13c[var_inds_in_calperiod[[i]]] <- caldf$gain13C[i] *
+      amb_13CO2$min[var_inds_in_calperiod[[i]]] + caldf$offset13C[i]
+    max13c[var_inds_in_calperiod[[i]]] <- caldf$gain13C[i] *
+      amb_13CO2$max[var_inds_in_calperiod[[i]]] + caldf$offset13C[i]
 
   }
 

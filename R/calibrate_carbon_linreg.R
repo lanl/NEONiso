@@ -161,7 +161,7 @@ calibrate_carbon_linreg <- function(inname,
       #---------------------------------------------
       # do some light validation of these points.
       cal.subset <- cal.subset %>%
-        dplyr::filter(d13C_obs_var < 5 & abs(CO2_obs_mean - CO2_ref_mean) < 15)
+        dplyr::filter(d13C_obs_var < 5 & abs(CO2_obs_mean - CO2_ref_mean) < 10)
 
       if (length(unique(cal.subset$std_name)) >= 2 & # at least 2 stds present
           !all(is.na(cal.subset$d13C_obs_mean)) & # ensure that not all observational values are missing

@@ -213,7 +213,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
       #---------------------------------------------
       # do some light validation of these points.
       cal_subset <- cal_subset %>%
-        filter(d13C_obs_var < 5 & abs(CO2_obs_mean - CO2_ref_mean) < 15)
+        filter(d13C_obs_var < 5 & abs(CO2_obs_mean - CO2_ref_mean) < 10)
 
       if (length(unique(cal_subset$std_name)) >= 2 & # ensure at least 2 standards are present
           !all(is.na(cal_subset$d13C_obs_mean)) & # ensure that not all observational values are missing
@@ -550,25 +550,25 @@ calibrate_carbon_Bowling2003 <- function(inname,
 
   if (filter_ambient == TRUE) {
     lapply(names(ciso_subset),
-           function(x){calibrate_ambient_carbon_Bowling2003(amb.data.list = ciso_subset[[x]],
+           function(x){calibrate_ambient_carbon_Bowling2003(amb_data_list = ciso_subset[[x]],
                                                             caldf = out,
                                                             outname = x,
                                                             file = outname,
                                                             site = site,
-                                                            filter.data = TRUE,
-                                                            force.to.end = force_cal_to_end,
-                                                            force.to.beginning = force_cal_to_beginning,
-                                                            r2.thres = r2_thres)})
+                                                            filter_data = TRUE,
+                                                            force_to_end = force_cal_to_end,
+                                                            force_to_beginning = force_cal_to_beginning,
+                                                            r2_thres = r2_thres)})
   } else {
     lapply(names(ciso_subset),
-           function(x){calibrate_ambient_carbon_Bowling2003(amb.data.list = ciso_subset[[x]],
+           function(x){calibrate_ambient_carbon_Bowling2003(amb_data_list = ciso_subset[[x]],
                                                             caldf = out,
                                                             outname = x,
                                                             file = outname,
                                                             site = site,
-                                                            force.to.end = force_cal_to_end,
-                                                            force.to.beginning = force_cal_to_beginning,
-                                                            r2.thres = r2_thres)})
+                                                            force_to_end = force_cal_to_end,
+                                                            force_to_beginning = force_cal_to_beginning,
+                                                            r2_thres = r2_thres)})
   }
 
   rhdf5::h5closeAll()
