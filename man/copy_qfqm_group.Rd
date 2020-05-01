@@ -4,11 +4,9 @@
 \alias{copy_qfqm_group}
 \title{copy_qfqm_group}
 \usage{
-copy_qfqm_group(data.list, outname, site, file, species)
+copy_qfqm_group(data_list, outname, site, file, species)
 }
 \arguments{
-\item{data.list}{}
-
 \item{outname}{Output filename. Inhereted from one of the calibrate functions.}
 
 \item{site}{Four-letter NEON site code.}

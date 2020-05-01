@@ -34,7 +34,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom lubridate %within%
 #'
-calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
+whocalibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
                                                  caldf,
                                                  outname,
                                                  site,
@@ -96,7 +96,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   # determine which cal period each ambient data belongs to.
   var_inds_in_calperiod <- list()
 
-  for (i in 1:nrow(caldf)) {
+  for (i in seq_len(nrow(caldf))) {
     int <- lubridate::interval(caldf$start[i], caldf$end[i])
     var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
 
@@ -146,7 +146,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
 
   amb_co2$mean_cal <- amb_delta$mean
 
-  for (i in 1:length(var_inds_in_calperiod)) {
+  for (i in seq_len(length(var_inds_in_calperiod))) {
     # calculate calibrated 12CO2 concentrations
     mean12c[var_inds_in_calperiod[[i]]] <- caldf$gain12C[i] *
       amb_12CO2$mean[var_inds_in_calperiod[[i]]] + caldf$offset12C[i]

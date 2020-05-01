@@ -5,28 +5,16 @@
 \title{calibrate_ambient_water_isotopes}
 \usage{
 calibrate_ambient_water_linreg(
-  amb.data.list,
+  amb_data_list,
   caldf,
   outname,
   site,
   file,
-  force.to.end = TRUE,
-  force.to.beginning = TRUE
+  force_to_end = TRUE,
+  force_to_beginning = TRUE
 )
 }
 \arguments{
-\item{amb.data.list}{}
-
-\item{caldf}{}
-
-\item{outname}{}
-
-\item{site}{}
-
-\item{file}{}
-
-\item{force.to.end}{}
-
 \item{force.to.beginning}{}
 }
 \value{

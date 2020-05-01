@@ -13,21 +13,21 @@
 #' @import ggplot2 
 #' @import gridExtra
 #' @import xts
-#' 
+#'
 carbon_diagnostic_package <- function(data_path,
                                       plot_path,
-                                      which.sites="all") {
-  
+                                      which.sites = "all") {
+
   # what plots would be good here:
   # 1) timeseries of calibration data
   # 2) timeseries of calibration regressions
   # 3) timeseries of ambient data
   # 4) monthly versions of 1-3.
   # all of these should be queried when running this function.
-  
+
   # query re: calibration plots
   print("This function makes diagnostic plots of calibrated NEON carbon isotope data.")
-  
+
   #-------------------------------------------------------
   # query for which plots.
   which.plots <- menu(c("Raw Calibration data - Monthly",
@@ -42,43 +42,43 @@ carbon_diagnostic_package <- function(data_path,
                         "Reference material distributions",
                         "I've made a huge mistake.")
                       ,title="Which plots should be run?")
-  
+
   # allow graceful exit if want to stop.
   if (which.plots == 11) {
     stop()
   }
-  
+
   #--------------------------------------------------------------
   # If we're still running, make a folder to hold diagnostic plots.
-  out_folder <- paste0(plot_path,"/",Sys.time())
-  
+  out_folder <- paste0(plot_path, "/", Sys.time())
+
   dir.create(out_folder)
 
   #--------------------------------------------------------------
   # Find files common to each plotting script below.
-  
+
   # find the files associated w/ that site.
   if (which.sites == "all") {
-    slist <- list.files(data_path,pattern='.h5',recursive=TRUE)  
+    slist <- list.files(data_path, pattern = ".h5", recursive = TRUE)  
   } else {   
     # check to see if *is* a neon site.
     neon.sites <- c(NEONiso:::terrestrial_core_sites(),
                     NEONiso:::terrestrial_relocatable_sites())
-    
+
     if (!(which.sites %in% neon.sites)) {
       stop("Invalid NEON site selected!")
     } else {
-      slist <- list.files(paste0(data_path,"/",which.sites),pattern='.h5')  
+      slist <- list.files(paste0(data_path, "/", which.sites), pattern = ".h5")  
     }
   }
-  
-  
+
+
   # extract lists of domains, site codes, and year-month combos from file names
-  slist.tmp <- strsplit(slist,split=".",fixed=TRUE)
-  
-  domain <- sapply(slist.tmp,'[[',2)
-  sitecd <- sapply(slist.tmp,'[[',3)
-  yrmn   <- sapply(slist.tmp,'[[',8)
+  slist.tmp <- strsplit(slist, split = ".", fixed = TRUE)
+
+  domain <- sapply(slist.tmp, '[[', 2)
+  sitecd <- sapply(slist.tmp, '[[', 3)
+  yrmn   <- sapply(slist.tmp, '[[', 8)
 
   # validate sitecd. if single site was given, should have 1 unique value.
   if (which.sites != "all") {
@@ -87,196 +87,195 @@ carbon_diagnostic_package <- function(data_path,
       stop("Single site selected by user, but multiple sites chosen here")
     }
   }
-  
+
   #--------------------------------------------------------------
   # Set up logical tests to determine which plots below to run.
   # get data.
-  
+
   # get vector of sites:
   unq_sites <- unique(sitecd)
-  
+
   print(unq_sites)
-  
+
   for (i in 1:length(unq_sites)) {
-    
-    print(paste("Processing data for site:",unq_sites[i]))
-    
-    c13_obs_data <- neonUtilities::stackEddy(paste0(data_path,"/",unq_sites[i]),level="dp01",var="dlta13CCo2",avg=9)     
-    c13_ref_data <- neonUtilities::stackEddy(paste0(data_path,"/",unq_sites[i]),level="dp01",var="dlta13CCo2Refe",avg=9)     
-    co2_obs_data <- neonUtilities::stackEddy(paste0(data_path,"/",unq_sites[i]),level="dp01",var="rtioMoleDryCo2",avg=9)     
-    co2_ref_data <- neonUtilities::stackEddy(paste0(data_path,"/",unq_sites[i]),level="dp01",var="rtioMoleDryCo2Refe",avg=9)  
-    
+
+    print(paste("Processing data for site:", unq_sites[i]))
+
+    c13_obs_data <- neonUtilities::stackEddy(paste0(data_path, "/", unq_sites[i]), level = "dp01", var = "dlta13CCo2", avg = 9)     
+    c13_ref_data <- neonUtilities::stackEddy(paste0(data_path, "/", unq_sites[i]), level = "dp01", var = "dlta13CCo2Refe", avg = 9)     
+    co2_obs_data <- neonUtilities::stackEddy(paste0(data_path, "/", unq_sites[i]), level = "dp01", var = "rtioMoleDryCo2", avg = 9)     
+    co2_ref_data <- neonUtilities::stackEddy(paste0(data_path, "/", unq_sites[i]), level = "dp01", var = "rtioMoleDryCo2Refe", avg = 9)  
+
     #-----------------------------------------------------
     # select data a little more cleverly.
-    
+
     #=========================
     # 1. CALIBRATION DATA.
-    
+
     print("Extracting calibration data...")
-    
+
     calData <- list()
-    
+
     calData[[1]] <- c13_obs_data[[1]] %>%
-      dplyr::filter(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch")) %>%
-      dplyr::select(timeBgn,timeEnd,data.isoCo2.dlta13CCo2.mean,verticalPosition)%>%
+      dplyr::filter(verticalPosition %in% c("co2Low", "co2Med", "co2High", "co2Arch")) %>%
+      dplyr::select(timeBgn, timeEnd, data.isoCo2.dlta13CCo2.mean, verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd, mean13C = data.isoCo2.dlta13CCo2.mean, standard = verticalPosition)
-    
+
     calData[[2]] <- c13_ref_data[[1]] %>%
-      dplyr::filter(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch")) %>%
-      dplyr::select(timeBgn,timeEnd,data.isoCo2.dlta13CCo2Refe.mean,verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd, ref13C = data.isoCo2.dlta13CCo2Refe.mean, standard = verticalPosition)
+      dplyr::filter(verticalPosition %in% c("co2Low", "co2Med", "co2High", "co2Arch")) %>%
+      dplyr::select(timeBgn, timeEnd, data.isoCo2.dlta13CCo2Refe.mean, verticalPosition) %>%
+      dplyr::rename(timeBgn = timeBgn,  timeEnd = timeEnd,  ref13C = data.isoCo2.dlta13CCo2Refe.mean, standard = verticalPosition)
 
     calData[[3]] <- co2_obs_data[[1]] %>%
-      dplyr::filter(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch")) %>%
-      dplyr::select(timeBgn,timeEnd,data.isoCo2.rtioMoleDryCo2.mean,verticalPosition) %>%
+      dplyr::filter(verticalPosition %in% c("co2Low", "co2Med", "co2High", "co2Arch")) %>%
+      dplyr::select(timeBgn, timeEnd, data.isoCo2.rtioMoleDryCo2.mean, verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd, meanCo2 = data.isoCo2.rtioMoleDryCo2.mean, standard = verticalPosition)
-    
+
     calData[[4]] <- co2_ref_data[[1]] %>%
-      dplyr::filter(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch")) %>%
-      dplyr::select(timeBgn,timeEnd,data.isoCo2.rtioMoleDryCo2Refe.mean,verticalPosition) %>%
+      dplyr::filter(verticalPosition %in% c("co2Low", "co2Med", "co2High", "co2Arch")) %>%
+      dplyr::select(timeBgn, timeEnd, data.isoCo2.rtioMoleDryCo2Refe.mean, verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd, refCo2 = data.isoCo2.rtioMoleDryCo2Refe.mean, standard = verticalPosition)
-    
-    calData <- Reduce(function(x,y) merge(x,y,by=c("timeBgn","timeEnd","standard")), calData)
-    
+
+    calData <- Reduce(function(x, y) merge(x, y, by = c("timeBgn", "timeEnd", "standard")), calData)
+
     # convert times to POSIXct.
-    calData$timeBgn <- as.POSIXct(calData$timeBgn,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
-    calData$timeEnd <- as.POSIXct(calData$timeEnd,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
+    calData$timeBgn <- as.POSIXct(calData$timeBgn, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+    calData$timeEnd <- as.POSIXct(calData$timeEnd, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
 
     #=========================
     # 2. CALIBRATION PARAMETERS
-    
+
     print("Extracting calibration parameters..")
-    
+
     # need to get attributes for this site (i wonder if there's a better way to do this?)
-    flist <- list.files(paste0(data_path,"/",unq_sites[i]),full.names=TRUE) 
-    
+    flist <- list.files(paste0(data_path, "/", unq_sites[i]), full.names = TRUE) 
+
     calPars.tmp <- list()
-    calPars <- list() 
-    
+    calPars <- list()
+
     for (k in 1:length(flist)) {
-      calPars.tmp[[k]] <- rhdf5::h5read(flist[k],paste0('/',unq_sites[i],'/dp01/data/isoCo2/calData'))
+      calPars.tmp[[k]] <- rhdf5::h5read(flist[k], paste0("/", unq_sites[i], "/dp01/data/isoCo2/calData"))
       calPars[[k]] <- calPars.tmp[[k]][[1]]
-      
+
       # convert valid_period_start and valid_period_end to POSIXct.
-      calPars[[k]]$valid_period_start <- as.POSIXct(calPars[[k]]$valid_period_start,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
-      calPars[[k]]$valid_period_end <- as.POSIXct(calPars[[k]]$valid_period_end,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
+      calPars[[k]]$valid_period_start <- as.POSIXct(calPars[[k]]$valid_period_start, format="%Y-%m-%dT%H:%M:%OSZ", tz="UTC")
+      calPars[[k]]$valid_period_end <- as.POSIXct(calPars[[k]]$valid_period_end, format="%Y-%m-%dT%H:%M:%OSZ", tz="UTC")
 
     }
-    
+
     # determine method.
-    if (names(calPars.tmp[[1]]) == 'calGainsOffsets') {
+    if (names(calPars.tmp[[1]]) == "calGainsOffsets") {
       method <- "Bowling"
-    } else if (names(calPars.tmp[[1]]) == 'calRegressions') {
+    } else if (names(calPars.tmp[[1]]) == "calRegressions") {
       method <- "LinReg"
     } else {
       stop("Can't identify method.")
     }
-    
+
     # save a monthly version for plotting scripts.
     calParsMon <- calPars
-    
+
     # bind together before putting into plotting scripts.
-    calPars <- do.call(rbind,calPars)
-    
+    calPars <- do.call(rbind, calPars)
+
     #=========================
     # 3. AMBIENT DATA
-    
+
     print("Extracting ambient data..")
-    
+
     ambData <- list()
-    
-    attrs <- rhdf5::h5readAttributes(flist[1],unq_sites[i])
+
+    attrs <- rhdf5::h5readAttributes(flist[1], unq_sites[i])
     heights <- as.numeric(attrs$DistZaxsLvlMeasTow)
-    
+
     ambData[[1]] <- c13_obs_data[[1]] %>%
-      dplyr::filter(verticalPosition %in% c("010","020","030","040","050","060","070","080")) %>%
-      dplyr::select(timeBgn,timeEnd,data.isoCo2.dlta13CCo2.mean,verticalPosition)%>%
+      dplyr::filter(verticalPosition %in% c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
+      dplyr::select(timeBgn, timeEnd, data.isoCo2.dlta13CCo2.mean, verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd, mean13C = data.isoCo2.dlta13CCo2.mean, level = verticalPosition)
-    
+
     ambData[[2]] <- co2_obs_data[[1]] %>%
-      dplyr::filter(verticalPosition %in% c("010","020","030","040","050","060","070","080")) %>%
-      dplyr::select(timeBgn,timeEnd,data.isoCo2.rtioMoleDryCo2.mean,verticalPosition) %>%
+      dplyr::filter(verticalPosition %in% c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
+      dplyr::select(timeBgn, timeEnd, data.isoCo2.rtioMoleDryCo2.mean, verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd, meanCo2 = data.isoCo2.rtioMoleDryCo2.mean, level = verticalPosition)
-    
-    ambData <- Reduce(function(x,y) merge(x,y,by=c("timeBgn","timeEnd","level")), ambData)
-    
+
+    ambData <- Reduce(function(x, y) merge(x, y, by = c("timeBgn", "timeEnd", "level")), ambData)
+
     # loop through heights, and make a new vector that holds these heights.
     ambData$height <- 0
 
     for (j in 1:length(heights)) {
-      level_var <- paste0("0",j,"0")
-      
+      level_var <- paste0("0", j, "0")
+
       ambData$height[ambData$level == level_var] <- heights[j]
-      
+
     }
-    
+
     # convert times to POSIXct.
-    ambData$timeBgn <- as.POSIXct(ambData$timeBgn,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
-    ambData$timeEnd <- as.POSIXct(ambData$timeEnd,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
-    
+    ambData$timeBgn <- as.POSIXct(ambData$timeBgn, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+    ambData$timeEnd <- as.POSIXct(ambData$timeEnd, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+
     #--------------------------------------------------------------
     #--------------------------------------------------------------
     # PLOTTING SCRIPTS LIVE BELOW.
     #--------------------------------------------------------------
     #--------------------------------------------------------------
-    
+
     # 1. Raw calibration data - monthly
     if (which.plots == 1 | which.plots == 7 | which.plots == 9) {
-      
+  
       print("Plot 1")
-      NEONiso:::cplot_monthly_standards(calData,out_folder,unq_sites[i])
-      
+      NEONiso:::cplot_monthly_standards(calData, out_folder, unq_sites[i])
+
     }
-    
+
     # 5. Calibration parameters - timeseries
     if (which.plots == 2 | which.plots == 7 | which.plots == 9) {
 
       print("Plot 2")
-      NEONiso:::cplot_monthly_calParameters(calParsMon,out_folder,unq_sites[i],method)
+      NEONiso:::cplot_monthly_calParameters(calParsMon, out_folder, unq_sites[i], method)
 
     } # if
-    
-    
+
+
     # 3. calibrated ambient data - timeseries
     if (which.plots == 3 | which.plots == 7 | which.plots == 9) {
-      
+
       print("Plot 3")
-      NEONiso:::cplot_monthly_ambient(ambData,out_folder,unq_sites[i])
-      
+      NEONiso:::cplot_monthly_ambient(ambData, out_folder, unq_sites[i])
+
     } # if
-    
+
     # 4. Raw calibration data - timeseries
     if (which.plots == 4 | which.plots == 8 | which.plots == 9) {
-      
+
       print("Plot 4")
-      NEONiso:::cplot_fullts_standards(calData,out_folder,unq_sites[i])
-      
+      NEONiso:::cplot_fullts_standards(calData, out_folder, unq_sites[i])
+
     } # if
-    
+
     # 5. Calibration parameters - timeseries
     if (which.plots == 5 | which.plots == 8 | which.plots == 9) {
-      
+
       print("Plot 5")
-      NEONiso:::cplot_fullts_calParameters(calPars,out_folder,unq_sites[i],method)
-      
+      NEONiso:::cplot_fullts_calParameters(calPars, out_folder, unq_sites[i], method)
+
     } # if
-    
+
     # 6. calibrated ambient data - timeseries
     if (which.plots == 6 | which.plots == 8 | which.plots == 9) {
-      
+
       print("Plot 6")
-      NEONiso:::cplot_fullts_ambient(ambData,out_folder,unq_sites[i])
-      
+      NEONiso:::cplot_fullts_ambient(ambData, out_folder, unq_sites[i])
+
     } # if
-    
+
     # 6. calibrated ambient data - timeseries
     if (which.plots == 10 | which.plots == 8 | which.plots == 9) {
-      
+
       print("Plot 10")
-      NEONiso:::cplot_standard_distributions(calData,out_folder,unq_sites[i])
-      
+      NEONiso:::cplot_standard_distributions(calData, out_folder, unq_sites[i])
+
     } # if
-    
+
   } # for unq_sites
 } # function
-

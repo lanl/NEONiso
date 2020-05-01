@@ -10,7 +10,8 @@ convert_POSIXct_to_NEONhdf5_time(intime)
 \item{intime}{POSIXct vector to convert to NEON time format.}
 }
 \value{
-Returns character version of POSIXct object matching NEON time variable format.
+Returns character version of POSIXct object
+        matching NEON time variable format.
 }
 \description{
 Converts a POSIXct object back to the character format used by NEON in their

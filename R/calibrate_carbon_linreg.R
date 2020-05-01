@@ -97,7 +97,8 @@ calibrate_carbon_linreg <- function(inname,
   # apply calibration routines
   #======================================================================= 
   # bind together, and cleanup.
-  stds <- do.call(rbind, list(high_rs, med_rs, low_rs))
+  #### OMIT FOR ERROR PROPOAGATION.
+  stds <- do.call(rbind, list(high_rs, med_rs))
 
   if (nrow(stds) > 0) {
     # replace NaNs with NA
@@ -532,51 +533,51 @@ calibrate_carbon_linreg <- function(inname,
   # calibrate data for each height.
   #-------------------------------------
   # extract ambient measurements from ciso
-  ciso_logical <- grepl(pattern="000", x = names(ciso))
-  ciso_subset <- ciso[ciso_logical]
-
-  lapply(names(ciso_subset),
-         function(x) {
-           calibrate_ambient_carbon_linreg(amb.data.list = ciso_subset[[x]],
-                                           caldf = out,
-                                           outname = x,
-                                           file = outname,
-                                           site = site,
-                                           r2_thres = r2_thres)
-
-           }) # lapply
-
-  rhdf5::h5closeAll()
-
-  # copy over qfqm and ucrt data groups.
-  print("Copying qfqm...")
-  # copy over ucrt and qfqm groups as well.
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoCo2"))
-  qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/isoCo2"))
-
-  lapply(names(qfqm), function(x) {
-    copy_qfqm_group(data.list = qfqm[[x]],
-                    outname = x,
-                    file = outname,
-                    site = site,
-                    species = "CO2")})
-
-  rhdf5::h5closeAll()
-
-  print("Copying ucrt...")
-  # now ucrt.
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoCo2"))
-  ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/isoCo2"))
-
-  lapply(names(ucrt), function(x) {
-    copy_ucrt_group(data.list = ucrt[[x]],
-                    outname = x,
-                    file = outname,
-                    site = site,
-                    species = "CO2")})
-
-  rhdf5::h5closeAll()
+  # ciso_logical <- grepl(pattern="000", x = names(ciso))
+  # ciso_subset <- ciso[ciso_logical]
+  # 
+  # lapply(names(ciso_subset),
+  #        function(x) {
+  #          calibrate_ambient_carbon_linreg(amb_data_list = ciso_subset[[x]],
+  #                                          caldf = out,
+  #                                          outname = x,
+  #                                          file = outname,
+  #                                          site = site,
+  #                                          r2_thres = r2_thres)
+  # 
+  #          }) # lapply
+  # 
+  # rhdf5::h5closeAll()
+  # 
+  # # copy over qfqm and ucrt data groups.
+  # print("Copying qfqm...")
+  # # copy over ucrt and qfqm groups as well.
+  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/"))
+  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoCo2"))
+  # qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/isoCo2"))
+  # 
+  # lapply(names(qfqm), function(x) {
+  #   copy_qfqm_group(data_list = qfqm[[x]],
+  #                   outname = x,
+  #                   file = outname,
+  #                   site = site,
+  #                   species = "CO2")})
+  # 
+  # rhdf5::h5closeAll()
+  # 
+  # print("Copying ucrt...")
+  # # now ucrt.
+  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/"))
+  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoCo2"))
+  # ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/isoCo2"))
+  # 
+  # lapply(names(ucrt), function(x) {
+  #   copy_ucrt_group(data_list = ucrt[[x]],
+  #                   outname = x,
+  #                   file = outname,
+  #                   site = site,
+  #                   species = "CO2")})
+  # 
+  # rhdf5::h5closeAll()
 
 }

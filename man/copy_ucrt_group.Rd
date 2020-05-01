@@ -4,15 +4,9 @@
 \alias{copy_ucrt_group}
 \title{Title}
 \usage{
-copy_ucrt_group(data.list, outname, site, file, species)
+copy_ucrt_group(data_list, outname, site, file, species)
 }
 \arguments{
-\item{data.list}{}
-
-\item{outname}{}
-
-\item{site}{}
-
 \item{file}{}
 }
 \value{
@@ -20,4 +14,7 @@ copy_ucrt_group(data.list, outname, site, file, species)
 }
 \description{
 Title
+}
+\author{
+Rich Fiorella \email{rich.fiorella@utah.edu}
 }

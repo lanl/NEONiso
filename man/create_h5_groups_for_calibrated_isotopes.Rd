@@ -7,18 +7,18 @@
 create_h5_groups_for_calibrated_isotopes(file, site)
 }
 \arguments{
-\item{file}{}
+\item{file}{Filename where new h5 groups should be created.}
 
-\item{site}{}
+\item{site}{Four-letter NEON site code for file.}
 }
 \value{
-
+Nothing to the workspace, but adds new groups to
+        output \code{file}.
 }
 \description{
 create_h5_groups_for_calibrated_isotopes
 }
 \examples{
-
 
 }
 \author{

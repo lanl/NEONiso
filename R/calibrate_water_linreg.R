@@ -24,7 +24,7 @@ calibrate_water_linreg <- function(inname,
   print("Processing water calibration data...")
   
   # load file, get calibration data.
-  wiso <- h5read(inname, paste0('/', site, '/dp01/data/isoH2o'))
+  wiso <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoH2o"))
   
   # extract standards data.
   high <- wiso$h2oHigh_03m
@@ -171,67 +171,67 @@ calibrate_water_linreg <- function(inname,
   
   # reorder data frame
   stds <- stds[order(stds$d18O_meas_btime), ]
-  
+
   # assign a vector corresponding to calibration period.
   stds$cal_period <- stds$d18O_meas_n
-  
+
   period_id <- 1
   tdiffs <- c(diff(stds$d18O_meas_btime), 0)
   for (i in 1:nrow(stds)) {
     stds$cal_period[i] <- period_id
-    
+
     if (tdiffs[i] >= time.diff.betweeen.standards) {period_id = period_id + 1}
   }
-  
+
   # okay, now run calibrations...
   #------------------------------
-  
+
   # create output variables.
   oxy_cal_slopes <- vector()
   oxy_cal_ints   <- vector()
   oxy_cal_rsq    <- vector()
-  
+
   hyd_cal_slopes <- vector()
   hyd_cal_ints   <- vector()
   hyd_cal_rsq    <- vector()
-  
+
   for (i in 2:max(stds$cal_period)) {
     # check to see if data exist.
     cal.subset <- stds[which(stds$cal_period==i | stds$cal_period==(i-1)), ]
-    
+  
     # check to see if sum of is.na() on oxygen data = nrow of oxygen data
     if (sum(is.na(cal.subset$d18O_meas_mean)) < nrow(cal.subset) &
         sum(is.na(cal.subset$d18O_ref_mean)) < nrow(cal.subset)) {
       tmp <- lm(d18O_ref_mean ~ d18O_meas_mean, data = cal.subset)
-      
+
       oxy_cal_slopes[i-1] <- coef(tmp)[[2]]
       oxy_cal_ints[i-1] <- coef(tmp)[[1]]
       oxy_cal_rsq[i-1] <- summary(tmp)$r.squared  
-      
+
     } else { # all are missing
       oxy_cal_slopes[i-1] <- NA
       oxy_cal_ints[i-1] <- NA
       oxy_cal_rsq[i-1] <- NA 
     }
-    
+
     # HYDROGEN
-    
+
     # check to see if sum of is.na() on oxygen data = nrow of oxygen data
     if (sum(is.na(cal.subset$d2H_meas_mean)) < nrow(cal.subset) &
         sum(is.na(cal.subset$d2H_ref_mean)) < nrow(cal.subset)) {
       tmp <- lm(d2H_ref_mean ~ d2H_meas_mean, data = cal.subset)
-      
+
       hyd_cal_slopes[i - 1] <- coef(tmp)[[2]]
       hyd_cal_ints[i - 1] <- coef(tmp)[[1]]
       hyd_cal_rsq[i - 1] <- summary(tmp)$r.squared  
-      
+
     } else { # all are missing
       hyd_cal_slopes[i - 1] <- NA
       hyd_cal_ints[i - 1] <- NA
       hyd_cal_rsq[i - 1] <- NA 
     }
   }
-  
+
   # make dataframe of calibration data.
   # TODO: add hydrogen data in here...
   times <- stds %>%
@@ -239,28 +239,28 @@ calibrate_water_linreg <- function(inname,
            d2H_meas_btime, d2H_meas_etime, d2H_ref_btime, d2H_ref_etime, cal_period) %>%
     group_by(cal_period) %>%
     summarize(etime = max(c(d18O_meas_etime, d18O_ref_etime, d2H_meas_etime, d2H_ref_etime)))
-  
+
   # loop through times, assign beginning, ending value. max etime should be just fine.
   starttimes <- vector()
   endtimes <- vector()
-  
+
   for (i in 1:length(oxy_cal_slopes)) {
     starttimes[i] <- times$etime[i]
     endtimes[i] <- times$etime[i + 1]
   }
-  
+
   # output dataframe giving valid time range, slopes, intercepts, rsquared.
   out <- data.frame(start = as.POSIXct(starttimes, tz = "UTC", origin = "1970-01-01"),
                     end = as.POSIXct(endtimes, tz = "UTC", origin = "1970-01-01"),
                     o.slope = oxy_cal_slopes, o.intercept = oxy_cal_ints, o.r2 = oxy_cal_rsq,
                     h.slope = hyd_cal_slopes, h.intercept = hyd_cal_ints, h.r2 = hyd_cal_rsq)
-  
-  
+
+
     #--------------------------------------------------------------------
   # perform interpolation, if requested.
-  
+
   if (interpolate.missing.cals == TRUE) {
-    
+
     # need to filter out poor values.
     out$o.slope[out$o.r2 < 0.9] <- NA
     out$o.intercept[out$o.r2 < 0.9] <- NA
@@ -268,24 +268,24 @@ calibrate_water_linreg <- function(inname,
     out$h.slope[out$h.r2 < 0.9] <- NA
     out$h.intercept[out$h.r2 < 0.9] <- NA
     out$h.slope[out$h.r2 < 0.9] <- NA
-    
+
     if (sum(!is.na(out$o.slope)) > 5 & sum(!is.na(out$o.slope)) > 5) {
 
       # check to determine which method to use.
       if (interpolation.method == "LWMA") {
         # save a vector of which values have been replaced!
         replaced.vals <- ifelse(is.na(out$o.slope), 1, 0)
-        
+
         print(paste0(100*sum(replaced.vals)/length(replaced.vals), "% of values filled w/ LWMA"))
-    
+
         # linear weighted moving average chosen.
         out$o.slope <- imputeTS::na_ma(out$o.slope,  weighting = "linear") 
         out$h.slope <- imputeTS::na_ma(out$h.slope,  weighting = "linear")
         out$o.intercept <- imputeTS::na_ma(out$o.intercept,  weighting = "linear") 
         out$h.intercept <- imputeTS::na_ma(out$h.intercept,  weighting = "linear") 
-        
+
       } else if (interpolation.method == "LOCF") {
-        
+
         stop("LOCF not activated yet.")
       } else {
         stop("Interpolation method not recognized. Valid values currently are LOCF or LWMA, others to come if requested.")
@@ -295,8 +295,8 @@ calibrate_water_linreg <- function(inname,
       print("Too many values are missing, so do not interpolate...")
       replaced.vals <- rep(0,nrow(out))
     }
-  }  
-  
+  }
+
   var_for_h5 <- out
   
   var_for_h5$start <- convert_POSIXct_to_NEONhdf5_time(var_for_h5$start)
@@ -310,102 +310,103 @@ calibrate_water_linreg <- function(inname,
   var_for_h5$start <- var_for_h5$end <- NULL
   
   # okay try to write out to h5 file.
-  h5createFile(outname)
-  h5createGroup(outname, paste0('/', site))
-  h5createGroup(outname, paste0('/', site, '/dp01'))
-  h5createGroup(outname, paste0('/', site, '/dp01/data'))
-  h5createGroup(outname, paste0('/', site, '/dp01/data/isoH2o'))
+  rhdf5::h5createFile(outname)
+  rhdf5::h5createGroup(outname, paste0("/", site))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o"))
   
   # okay try to write out to h5 file.
-  fid <- H5Fopen(outname)
+  fid <- rhdf5::H5Fopen(outname)
   
     # copy attributes from source file and write to output file.
-  tmp <- h5readAttributes(inname, paste0('/', site))
-  attrloc <- H5Gopen(fid, paste0('/', site))
+  tmp <- rhdf5::h5readAttributes(inname, paste0("/", site))
+  attrloc <- rhdf5::H5Gopen(fid, paste0("/", site))
   
   for (i in 1:length(tmp)) { # probably a more rapid way to do this in the future...lapply?
-    h5writeAttribute(h5obj = attrloc, attr = tmp[[i]], name = names(tmp)[i])
+    rhdf5::h5writeAttribute(h5obj = attrloc, attr = tmp[[i]], name = names(tmp)[i])
   }
   
-  H5Gclose(attrloc)
+  rhdf5::H5Gclose(attrloc)
   
-  h5createGroup(outname, paste0('/', site, '/dp01/data/isoH2o/calData'))
-  h2o.cal.outloc <- H5Gopen(fid, paste0('/', site, '/dp01/data/isoH2o/calData'))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o/calData"))
+  h2o.cal.outloc <- rhdf5::H5Gopen(fid, paste0("/", site, "/dp01/data/isoH2o/calData"))
   
   # write out dataset.
-  h5writeDataset.data.frame(obj = var_for_h5, h5loc = h2o.cal.outloc, name = "calRegressions", DataFrameAsCompound = TRUE)
+  rhdf5::h5writeDataset.data.frame(obj = var_for_h5, h5loc = h2o.cal.outloc, name = "calRegressions", DataFrameAsCompound = TRUE)
   
   # close the group and the file
-  H5Gclose(h2o.cal.outloc)
+  rhdf5::H5Gclose(h2o.cal.outloc)
   
   #-----------------------------------------
   # write out high/mid/low rs.
   
   #low
-  h5createGroup(outname, paste0('/', site, '/dp01/data/isoH2o/h2oLow_cal'))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o/h2oLow_cal"))
 
-  low.outloc <- H5Gopen(fid, paste0('/', site, '/dp01/data/isoH2o/h2oLow_cal'))
+  low.outloc <- rhdf5::H5Gopen(fid, paste0("/", site, "/dp01/data/isoH2o/h2oLow_cal"))
 
   # check to see if there are any data; if not, fill w/ row of NAs.
   if (nrow(low_rs) < 1) {
     low_rs[1, ] <- rep(NA, ncol(low_rs))
   }
 
-  h5writeDataset.data.frame(obj = low_rs, h5loc = low.outloc,
+  rhdf5::h5writeDataset.data.frame(obj = low_rs, h5loc = low.outloc,
                             name = "wisoStds",
                             DataFrameAsCompound = TRUE)
 
-  H5Gclose(low.outloc)
+  rhdf5::H5Gclose(low.outloc)
 
   #------------------------------------------------------------
   #medium
-  h5createGroup(outname, paste0('/', site, '/dp01/data/isoH2o/h2oMed_cal'))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o/h2oMed_cal"))
 
-  med.outloc <- H5Gopen(fid, paste0('/', site, '/dp01/data/isoH2o/h2oMed_cal'))
+  med.outloc <- rhdf5::H5Gopen(fid, paste0("/", site, "/dp01/data/isoH2o/h2oMed_cal"))
 
   if (nrow(med_rs) < 1) {
     med_rs[1, ] <- rep(NA, ncol(med_rs))
   }
 
-  h5writeDataset.data.frame(obj = med_rs, h5loc = med.outloc,
+  rhdf5::h5writeDataset.data.frame(obj = med_rs, h5loc = med.outloc,
                             name = "wisoStds",
                             DataFrameAsCompound = TRUE)
 
-  H5Gclose(med.outloc)
+  rhdf5::H5Gclose(med.outloc)
 
   #------------------------------------------------------------
   #high
 
-  h5createGroup(outname, paste0('/', site, '/dp01/data/isoH2o/h2oHigh_cal'))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o/h2oHigh_cal"))
 
-  high.outloc <- H5Gopen(fid, paste0('/', site, '/dp01/data/isoH2o/h2oHigh_cal'))
+  high.outloc <- rhdf5::H5Gopen(fid, paste0("/", site, "/dp01/data/isoH2o/h2oHigh_cal"))
 
   if (nrow(high_rs) < 1) {
     high_rs[1, ] <- rep(NA, ncol(med_rs))
   }
 
-  h5writeDataset.data.frame(obj = high_rs, h5loc = high.outloc,
+  rhdf5::h5writeDataset.data.frame(obj = high_rs, h5loc = high.outloc,
                             name = "wisoStds",
                             DataFrameAsCompound  =  TRUE)
-  H5Gclose(high.outloc)
+
+  rhdf5::H5Gclose(high.outloc)
 
   # close the group and the file
-  H5Fclose(fid)
+  rhdf5::H5Fclose(fid)
   Sys.sleep(0.5)
 
-  h5closeAll()
+  rhdf5::h5closeAll()
   
-    fid <- H5Fopen(outname)
+  fid <- rhdf5::H5Fopen(outname)
   
   # copy attributes from source file and write to output file.
-  tmp <- h5readAttributes(inname, paste0('/', site))
-  attrloc <- H5Gopen(fid, paste0('/', site))
+  tmp <- rhdf5::h5readAttributes(inname, paste0("/", site))
+  attrloc <- rhdf5::H5Gopen(fid, paste0("/", site))
   
   for (i in 1:length(tmp)) { # probably a more rapid way to do this in the future...lapply?
-    h5writeAttribute(h5obj = attrloc, attr = tmp[[i]], name = names(tmp)[i])
+    rhdf5::h5writeAttribute(h5obj = attrloc, attr = tmp[[i]], name = names(tmp)[i])
   }
   
-  H5Gclose(attrloc)
+  rhdf5::H5Gclose(attrloc)
   
   #===========================================================
   # calibrate data for each height.
@@ -415,34 +416,34 @@ calibrate_water_linreg <- function(inname,
   wiso_subset <- wiso[wiso_logical]
 
   lapply(names(wiso_subset), 
-         function(x){calibrate_ambient_water_linreg(amb.data.list = wiso_subset[[x]],
+         function(x){calibrate_ambient_water_linreg(amb_data_list = wiso_subset[[x]],
                                                      caldf = out, outname = x, file = outname, site = site)})
 
-  h5closeAll()
+  rhdf5::h5closeAll()
 
 
   print("Copying qfqm...")
   # copy over ucrt and qfqm groups as well.
-  h5createGroup(outname, paste0('/', site, '/dp01/qfqm/'))
-  h5createGroup(outname, paste0('/', site, '/dp01/qfqm/isoH2o'))
-  qfqm <- h5read(inname, paste0('/', site, '/dp01/qfqm/isoH2o'))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoH2o"))
+  qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/isoH2o"))
 
   lapply(names(qfqm), function(x) {
-    copy_qfqm_group(data.list = qfqm[[x]],
+    copy_qfqm_group(data_list = qfqm[[x]],
                     outname = x, file = outname, site = site, species = "H2O")})
 
-  h5closeAll()
+  rhdf5::h5closeAll()
 
   print("Copying ucrt...")
   # now ucrt.
-  h5createGroup(outname, paste0('/', site, '/dp01/ucrt/'))
-  h5createGroup(outname, paste0('/', site, '/dp01/ucrt/isoH2o'))
-  ucrt <- h5read(inname, paste0('/', site, '/dp01/ucrt/isoH2o'))
+  hdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/"))
+  hdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoH2o"))
+  ucrt <- hdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/isoH2o"))
 
   lapply(names(ucrt), function(x) {
-    copy_ucrt_group(data.list = ucrt[[x]],
+    copy_ucrt_group(data_list = ucrt[[x]],
                     outname = x, file = outname, site = site, species = "H2O")})
 
-  h5closeAll()
+  hdf5::h5closeAll()
    
 }
