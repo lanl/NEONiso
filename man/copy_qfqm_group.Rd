@@ -16,7 +16,7 @@ copy_qfqm_group(data_list, outname, site, file, species)
 \item{species}{CO2 or H2O? Same function used for both CO2 and H2O isotopes.}
 }
 \value{
-Nothing to the workspace, but copies qfqm group from input file to 
+Nothing to the workspace, but copies qfqm group from input file to
         output file.
 }
 \description{

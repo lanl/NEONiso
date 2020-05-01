@@ -34,7 +34,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom lubridate %within%
 #'
-whocalibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
+calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
                                                  caldf,
                                                  outname,
                                                  site,

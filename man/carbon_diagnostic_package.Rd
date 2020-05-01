@@ -9,8 +9,6 @@ carbon_diagnostic_package(data_path, plot_path, which.sites = "all")
 \arguments{
 \item{data_path}{Provide path to where calibrated data from one site live.}
 
-\item{plot_path}{}
-
 \item{method}{Bowling or linear regression calibration method? (Valid values: Bowling, LinReg)}
 }
 \value{

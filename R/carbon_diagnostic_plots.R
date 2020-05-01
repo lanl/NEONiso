@@ -240,19 +240,21 @@ cplot_monthly_ambient <- function(ambData, dir_plots, site) {
                                        origin = "1970-01-01")
 
       #make a plot of this data.
-      assign(paste0("p", 2 * j - 1), {ggplot(data = ambData_df,
-                                             aes(x = timeBgn, y = mean13C)) +
+      assign(paste0("p", 2 * j - 1), {
+        ggplot(data = ambData_df, aes(x = timeBgn, y = mean13C)) +
           geom_line() +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-          scale_x_datetime(name = "Time")})
+          scale_x_datetime(name = "Time")
+        })
 
-      assign(paste0("p", 2 * j), {ggplot(data = ambData_df,
-                                         aes(x = timeBgn, y = meanCo2)) +
+      assign(paste0("p", 2 * j), {
+        ggplot(data = ambData_df, aes(x = timeBgn, y = meanCo2)) +
           geom_line() +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-          scale_x_datetime(name = "Time")})
+          scale_x_datetime(name = "Time")
+        })
 
     } # j
 
@@ -310,7 +312,7 @@ cplot_fullts_standards <- function(calData, plot_path, site) {
     scale_x_datetime("date") +
     scale_y_continuous("[CO2], ref")
 
-  p6 <- ggplot(data = calData, 
+  p6 <- ggplot(data = calData,
                aes(x = timeBgn, y = meanCo2 - refCo2, col = standard)) +
     geom_point() +
     theme_bw() +
@@ -384,7 +386,7 @@ cplot_fullts_calParameters <- function(calParDf, plot_path, site, method) {
       scale_x_datetime("date") +
       scale_y_continuous("d13C slope")
 
-    p2 <- ggplot(data=calParDf,
+    p2 <- ggplot(data = calParDf,
                  aes(x = valid_period_start, y = d13C_intercept)) +
       geom_point() +
       theme_bw() +
@@ -457,19 +459,21 @@ cplot_fullts_ambient <- function(ambData, dir_plots, site) {
       dplyr::filter(height == heights[j])
 
     # make a plot of this data.
-    assign(paste0("p", 2 * j - 1), {ggplot(data = ambData_height,
-                                           aes(x = timeBgn, y = mean13C)) +
+    assign(paste0("p", 2 * j - 1), {
+      ggplot(data = ambData_height, aes(x = timeBgn, y = mean13C)) +
         geom_line() +
         theme_bw() +
         scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-        scale_x_datetime(name = "Time")})
+        scale_x_datetime(name = "Time")
+      })
 
-    assign(paste0("p", 2 * j),
-           {ggplot(data = ambData_height, aes(x = timeBgn, y = meanCo2)) +
+    assign(paste0("p", 2 * j), {
+      ggplot(data = ambData_height, aes(x = timeBgn, y = meanCo2)) +
         geom_line() +
         theme_bw() +
         scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-        scale_x_datetime(name = "Time")})
+        scale_x_datetime(name = "Time")
+      })
 
   }
 

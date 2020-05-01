@@ -1,16 +1,16 @@
 #' Title
 #'
 #' @param data_path Provide path to where calibrated data from one site live.
-#' @param plot_path 
+#' @param plot_path
 #' @param method Bowling or linear regression calibration method? (Valid values: Bowling, LinReg)
 #'
 #' @return
 #' @export
 #'
 #' @examples
-#' 
+#'
 #' @importFrom magrittr %>%
-#' @import ggplot2 
+#' @import ggplot2
 #' @import gridExtra
 #' @import xts
 #'
@@ -76,9 +76,9 @@ carbon_diagnostic_package <- function(data_path,
   # extract lists of domains, site codes, and year-month combos from file names
   slist.tmp <- strsplit(slist, split = ".", fixed = TRUE)
 
-  domain <- sapply(slist.tmp, '[[', 2)
-  sitecd <- sapply(slist.tmp, '[[', 3)
-  yrmn   <- sapply(slist.tmp, '[[', 8)
+  domain <- sapply(slist.tmp, "[[", 2)
+  sitecd <- sapply(slist.tmp, "[[", 3)
+  yrmn   <- sapply(slist.tmp, "[[", 8)
 
   # validate sitecd. if single site was given, should have 1 unique value.
   if (which.sites != "all") {
@@ -158,8 +158,8 @@ carbon_diagnostic_package <- function(data_path,
       calPars[[k]] <- calPars.tmp[[k]][[1]]
 
       # convert valid_period_start and valid_period_end to POSIXct.
-      calPars[[k]]$valid_period_start <- as.POSIXct(calPars[[k]]$valid_period_start, format="%Y-%m-%dT%H:%M:%OSZ", tz="UTC")
-      calPars[[k]]$valid_period_end <- as.POSIXct(calPars[[k]]$valid_period_end, format="%Y-%m-%dT%H:%M:%OSZ", tz="UTC")
+      calPars[[k]]$valid_period_start <- as.POSIXct(calPars[[k]]$valid_period_start, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+      calPars[[k]]$valid_period_end <- as.POSIXct(calPars[[k]]$valid_period_end, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
 
     }
 

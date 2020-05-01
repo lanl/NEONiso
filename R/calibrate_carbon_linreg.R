@@ -51,6 +51,7 @@
 #' @export
 #'
 #' @importFrom magrittr %>%
+#' @importFrom lubridate %within%
 
 calibrate_carbon_linreg <- function(inname,
                                     outname,
@@ -95,7 +96,7 @@ calibrate_carbon_linreg <- function(inname,
 
   #=======================================================================
   # apply calibration routines
-  #======================================================================= 
+  #=======================================================================
   # bind together, and cleanup.
   #### OMIT FOR ERROR PROPOAGATION.
   stds <- do.call(rbind, list(high_rs, med_rs))
@@ -108,18 +109,18 @@ calibrate_carbon_linreg <- function(inname,
     stds[is.na(stds)] <- NA
 
     # change class of time variables from charatcter to posixct.
-    stds$d13C_obs_btime <- as.POSIXct(stds$d13C_obs_btime, 
-                                      format = "%Y-%m-%dT%H:%M:%OSZ", 
+    stds$d13C_obs_btime <- as.POSIXct(stds$d13C_obs_btime,
+                                      format = "%Y-%m-%dT%H:%M:%OSZ",
                                       tz = "UTC")
-    stds$d13C_obs_etime <- as.POSIXct(stds$d13C_obs_etime, 
-                                      format = "%Y-%m-%dT%H:%M:%OSZ", 
+    stds$d13C_obs_etime <- as.POSIXct(stds$d13C_obs_etime,
+                                      format = "%Y-%m-%dT%H:%M:%OSZ",
                                       tz = "UTC")
-    
-    stds$d13C_ref_btime <- as.POSIXct(stds$d13C_ref_btime, 
-                                      format = "%Y-%m-%dT%H:%M:%OSZ", 
+
+    stds$d13C_ref_btime <- as.POSIXct(stds$d13C_ref_btime,
+                                      format = "%Y-%m-%dT%H:%M:%OSZ",
                                       tz = "UTC")
-    stds$d13C_ref_etime <- as.POSIXct(stds$d13C_ref_etime, 
-                                      format = "%Y-%m-%dT%H:%M:%OSZ", 
+    stds$d13C_ref_etime <- as.POSIXct(stds$d13C_ref_etime,
+                                      format = "%Y-%m-%dT%H:%M:%OSZ",
                                       tz = "UTC")
 
     # reorder data frame
@@ -130,14 +131,14 @@ calibrate_carbon_linreg <- function(inname,
 
     period_id <- 1
     tdiffs <- c(diff(stds$d13C_obs_btime), 0)
-    # enforce units of tdiffs to be seconds, otherwise it 
+    # enforce units of tdiffs to be seconds, otherwise it
     # will occasionally be minutes and produce incorrect output.
     units(tdiffs) <- "secs"
 
     for (i in 1:nrow(stds)) {
       stds$cal_period[i] <- period_id
       if (tdiffs[i] >= time.diff.between.standards) {
-        period_id = period_id + 1
+        period_id <- period_id + 1
       }
     }
 
@@ -147,12 +148,10 @@ calibrate_carbon_linreg <- function(inname,
     delta_cal_slopes <- vector()
     delta_cal_ints   <- vector()
     delta_cal_rsq    <- vector()
-    calDelUcrt    <- vector()
 
     co2_cal_slopes <- vector()
     co2_cal_ints   <- vector()
     co2_cal_rsq    <- vector()
-    calCO2Ucrt    <- vector()
 
     for (i in 2:max(stds$cal_period)) {
       # subset data.
@@ -165,8 +164,8 @@ calibrate_carbon_linreg <- function(inname,
         dplyr::filter(d13C_obs_var < 5 & abs(CO2_obs_mean - CO2_ref_mean) < 10)
 
       if (length(unique(cal.subset$std_name)) >= 2 & # at least 2 stds present
-          !all(is.na(cal.subset$d13C_obs_mean)) & # ensure that not all observational values are missing
-          !all(is.na(cal.subset$d13C_ref_mean))) { # ensure that not all reference values are missing.
+          !all(is.na(cal.subset$d13C_obs_mean)) & # not all obs vals missing
+          !all(is.na(cal.subset$d13C_ref_mean))) { # not all ref vals missing
 
         # model to calibrate delta 13C values.
         tmpmod <- lm(d13C_ref_mean ~ d13C_obs_mean, data = cal.subset)
@@ -174,10 +173,10 @@ calibrate_carbon_linreg <- function(inname,
         delta_cal_slopes[i - 1] <- coef(tmpmod)[[2]]
         delta_cal_ints[i - 1] <- coef(tmpmod)[[1]]
         delta_cal_rsq[i - 1] <- summary(tmpmod)$r.squared
-        
+
         # model to calibrate delta 13C values.
         tmpmod <- lm(CO2_ref_mean ~ CO2_obs_mean, data = cal.subset)
-        
+
         co2_cal_slopes[i - 1] <- coef(tmpmod)[[2]]
         co2_cal_ints[i - 1] <- coef(tmpmod)[[1]]
         co2_cal_rsq[i - 1] <- summary(tmpmod)$r.squared
@@ -202,7 +201,7 @@ calibrate_carbon_linreg <- function(inname,
       dplyr::group_by(cal_period) %>%
       dplyr::summarize(etime = max(c(d13C_obs_etime, d13C_ref_etime)))
 
-    # loop through times, assign beginning, ending value. 
+    # loop through times, assign beginning, ending value.
     # max etime should be just fine.
     starttimes <- vector()
     endtimes <- vector()
@@ -213,17 +212,17 @@ calibrate_carbon_linreg <- function(inname,
     }
 
     # output dataframe giving valid time range, slopes, intercepts, rsquared.
-    out <- data.frame(start = as.POSIXct(starttimes, 
-                                       tz = "UTC", 
+    out <- data.frame(start = as.POSIXct(starttimes,
+                                       tz = "UTC",
                                        origin = "1970-01-01"),
-                      end = as.POSIXct(endtimes, 
-                                     tz = "UTC", 
+                      end = as.POSIXct(endtimes,
+                                     tz = "UTC",
                                      origin = "1970-01-01"),
-                      d13C_slope = delta_cal_slopes, 
-                      d13C_intercept = delta_cal_ints, 
+                      d13C_slope = delta_cal_slopes,
+                      d13C_intercept = delta_cal_ints,
                       d13C_r2 = delta_cal_rsq,
                       co2_slope = co2_cal_slopes,
-                      co2_intercept = co2_cal_ints, 
+                      co2_intercept = co2_cal_ints,
                       co2_r2 = co2_cal_rsq)
 
   } else {
@@ -348,24 +347,33 @@ calibrate_carbon_linreg <- function(inname,
   if (nrow(low$dlta13CCo2) > 1) {
     for (i in 1:(nrow(low$dlta13CCo2) - 1)) { # use n-1 because the standards are bracketing
 
-      # determine which row calibration point is in. 
+      # determine which row calibration point is in.
       int <- lubridate::interval(out$start, out$end)
       cal_id <- which(low$dlta13CCo2$timeBgn[i] %within% int)
 
-      if (!length(cal_id) == 0) {
+      if (low$dlta13CCo2$numSamp >= 200) {
+        if (!length(cal_id) == 0) {
 
-        if (!is.na(out$d13C_r2[cal_id]) & !is.na(out$co2_r2[cal_id]) &
-            out$d13C_r2[cal_id] > r2_thres & out$co2_r2[cal_id] > r2_thres) {
+          if (!is.na(out$d13C_r2[cal_id]) & !is.na(out$co2_r2[cal_id]) &
+              out$d13C_r2[cal_id] > r2_thres & out$co2_r2[cal_id] > r2_thres) {
 
-          low$dlta13CCo2$mean_cal[i] <- out$d13C_intercept[cal_id] +
-            out$d13C_slope[cal_id] * low$dlta13CCo2$mean[i]
+            low$dlta13CCo2$mean_cal[i] <- out$d13C_intercept[cal_id] +
+              out$d13C_slope[cal_id] * low$dlta13CCo2$mean[i]
 
-          low$rtioMoleDryCo2$mean_cal[i] <- out$co2_intercept[cal_id] +
-            out$co2_slope[cal_id] * low$rtioMoleDryCo2$mean[i]
+            low$rtioMoleDryCo2$mean_cal[i] <- out$co2_intercept[cal_id] +
+              out$co2_slope[cal_id] * low$rtioMoleDryCo2$mean[i]
+
+          } else {
+
+            low$dlta13CCo2$mean_cal[i] <- NA
+            low$rtioMoleDryCo2$mean_cal[i] <- NA
+          }
+
         } else {
 
           low$dlta13CCo2$mean_cal[i] <- NA
           low$rtioMoleDryCo2$mean_cal[i] <- NA
+
         }
 
       } else {
@@ -379,8 +387,6 @@ calibrate_carbon_linreg <- function(inname,
 
   # convert time back to NEON format.
   low$dlta13CCo2$timeBgn <- convert_POSIXct_to_NEONhdf5_time(low$dlta13CCo2$timeBgn)
-
-  print(low$dlta13CCo2$mean_cal)
 
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(low), function(x) {
@@ -405,7 +411,7 @@ calibrate_carbon_linreg <- function(inname,
   # calibrate standards using value for corresponding calibration period.
   med$dlta13CCo2$mean_cal <- med$dlta13CCo2$mean
   med$dlta13CCo2$mean_cal <- as.numeric(NA)
-  
+
   med$rtioMoleDryCo2$mean_cal <- med$rtioMoleDryCo2$mean
 
   # convert start times to POSIXct.
@@ -416,20 +422,28 @@ calibrate_carbon_linreg <- function(inname,
   if (nrow(med$dlta13CCo2) > 1) {
     for (i in 1:(nrow(med$dlta13CCo2) - 1)) { # use n-1 because the standards are bracketing
 
-      # determine which row calibration point is in. 
+      # determine which row calibration point is in.
       int <- lubridate::interval(out$start, out$end)
       cal_id <- which(med$dlta13CCo2$timeBgn[i] %within% int)
 
       # check to make sure cal_id exists.
-      if (!length(cal_id) == 0) {
-        if (!is.na(out$d13C_r2[cal_id]) & !is.na(out$co2_r2[cal_id]) &
-            out$d13C_r2[cal_id] > r2_thres & out$co2_r2[cal_id] > r2_thres) {
+      if (med$dlta13CCo2$numSamp >= 200) {
+        if (!length(cal_id) == 0) {
+          if (!is.na(out$d13C_r2[cal_id]) & !is.na(out$co2_r2[cal_id]) &
+              out$d13C_r2[cal_id] > r2_thres & out$co2_r2[cal_id] > r2_thres) {
 
-          med$dlta13CCo2$mean_cal[i] <- out$d13C_intercept[cal_id] +
-            out$d13C_slope[cal_id] * med$dlta13CCo2$mean[i]
+            med$dlta13CCo2$mean_cal[i] <- out$d13C_intercept[cal_id] +
+              out$d13C_slope[cal_id] * med$dlta13CCo2$mean[i]
 
-          med$rtioMoleDryCo2$mean_cal[i] <- out$co2_intercept[cal_id] +
-            out$co2_slope[cal_id] * med$rtioMoleDryCo2$mean[i]
+            med$rtioMoleDryCo2$mean_cal[i] <- out$co2_intercept[cal_id] +
+              out$co2_slope[cal_id] * med$rtioMoleDryCo2$mean[i]
+          } else {
+
+            med$dlta13CCo2$mean_cal[i] <- NA
+            med$rtioMoleDryCo2$mean_cal[i] <- NA
+
+          }
+
         } else {
 
           med$dlta13CCo2$mean_cal[i] <- NA
@@ -486,15 +500,22 @@ calibrate_carbon_linreg <- function(inname,
       cal_id <- which(high$dlta13CCo2$timeBgn[i] %within% int)
 
       # check to make sure cal_id exists.
-      if (!length(cal_id) == 0) {
-        if (!is.na(out$d13C_r2[cal_id]) & !is.na(out$co2_r2[cal_id]) &
-            out$d13C_r2[cal_id] > r2_thres & out$co2_r2[cal_id] > r2_thres) {
+      if (high$dlta13CCo2$numSamp >= 200) {
+        if (!length(cal_id) == 0) {
+          if (!is.na(out$d13C_r2[cal_id]) & !is.na(out$co2_r2[cal_id]) &
+              out$d13C_r2[cal_id] > r2_thres & out$co2_r2[cal_id] > r2_thres) {
 
-          high$dlta13CCo2$mean_cal[i] <- out$d13C_intercept[cal_id] +
-            out$d13C_slope[cal_id] * high$dlta13CCo2$mean[i]
+            high$dlta13CCo2$mean_cal[i] <- out$d13C_intercept[cal_id] +
+              out$d13C_slope[cal_id] * high$dlta13CCo2$mean[i]
 
-          high$rtioMoleDryCo2$mean_cal[i] <- out$co2_intercept[cal_id] +
-            out$co2_slope[cal_id] * high$rtioMoleDryCo2$mean[i]
+            high$rtioMoleDryCo2$mean_cal[i] <- out$co2_intercept[cal_id] +
+              out$co2_slope[cal_id] * high$rtioMoleDryCo2$mean[i]
+
+          } else {
+            high$dlta13CCo2$mean_cal[i] <- NA
+            high$rtioMoleDryCo2$mean_cal[i] <- NA
+
+          }
 
         } else {
 
@@ -502,9 +523,7 @@ calibrate_carbon_linreg <- function(inname,
           high$rtioMoleDryCo2$mean_cal[i] <- NA
 
         }
-
       } else {
-
         high$dlta13CCo2$mean_cal[i] <- NA
         high$rtioMoleDryCo2$mean_cal[i] <- NA
 

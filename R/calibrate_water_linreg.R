@@ -1,5 +1,5 @@
 #' calibrate_water_linreg
-#' 
+#'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
 #' @param site Four-letter NEON code for site being processed.
@@ -19,18 +19,18 @@ calibrate_water_linreg <- function(inname,
                                    time.diff.betweeen.standards = 1800,
                                    interpolate.missing.cals = TRUE,
                                    interpolation.method = "LWMA") {
-  
+
   # print status.
   print("Processing water calibration data...")
-  
+
   # load file, get calibration data.
   wiso <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoH2o"))
-  
+
   # extract standards data.
   high <- wiso$h2oHigh_03m
   med <- wiso$h2oMed_03m
   low <- wiso$h2oLow_03m
-  
+
   # attempt to pull relevent data out to a single dataframe.
   high_rs <- data.frame(d18O_meas_mean = high$dlta18OH2o$mean, 
                         d18O_meas_var = high$dlta18OH2o$vari,
@@ -52,10 +52,10 @@ calibrate_water_linreg <- function(inname,
                         d2H_ref_n = high$dlta2HH2oRefe$numSamp,
                         d2H_ref_btime = high$dlta2HH2oRefe$timeBgn,
                         d2H_ref_etime = high$dlta2HH2oRefe$timeEnd)
-  
+
   high_rs <- high_rs %>%
     mutate(std_name = "high")
-  
+
   med_rs <- data.frame(d18O_meas_mean = med$dlta18OH2o$mean,
                        d18O_meas_var = med$dlta18OH2o$vari,
                        d18O_meas_n = med$dlta18OH2o$numSamp,
@@ -76,10 +76,10 @@ calibrate_water_linreg <- function(inname,
                        d2H_ref_n = med$dlta2HH2oRefe$numSamp,
                        d2H_ref_btime = med$dlta2HH2oRefe$timeBgn,
                        d2H_ref_etime = med$dlta2HH2oRefe$timeEnd)
-  
+
   med_rs <- med_rs %>%
     mutate(std_name = "med")
-  
+
   low_rs <- data.frame(d18O_meas_mean = low$dlta18OH2o$mean,
                        d18O_meas_var = low$dlta18OH2o$vari,
                        d18O_meas_n = low$dlta18OH2o$numSamp,
@@ -100,75 +100,75 @@ calibrate_water_linreg <- function(inname,
                        d2H_ref_n = low$dlta2HH2oRefe$numSamp,
                        d2H_ref_btime = low$dlta2HH2oRefe$timeBgn,
                        d2H_ref_etime = low$dlta2HH2oRefe$timeEnd)
-  
+
   low_rs <- low_rs %>%
     mutate(std_name = "low")
-  
+
   # add fix for NEON standard swap.
   low_rs <- swap_standard_isotoperatios(low_rs)
-  
+
   #--------------------------------------------------------------
   # Ensure there are the same number of standard measurements for each standard.
   #--------------------------------------------------------------
-  
+
   # 191024 rpf - prior versions of this have just sliced out the first observation per day.
-  # however, the most common cause of multiple standards to be analyzed per day is a 
+  # however, the most common cause of multiple standards to be analyzed per day is a
   # malfunctioning valve in the manifold that causes the same standard gas to register as multiple
   # peaks. each peak is shorter, higher variance, and doesn't allow even the CO2 concentration
   # to stabilize. until further notice, i suggest removing these standards altogether.
   # code below has been modified to achieve this.
-  # 200103 rpf - copying over this code from carbon script to fix the same bug present in 
+  # 200103 rpf - copying over this code from carbon script to fix the same bug present in
   # the water isotope code. modify slightly to account for the fact that we expect more than
   # 1 row per day. commented out 
-  
+
   high_rs <- high_rs %>%
     mutate(dom = day(d18O_meas_btime)) %>% # get day of month
     group_by(dom) %>%
     filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
     slice(tail(row_number(), 3)) %>%
     ungroup()
-  
+
   med_rs <- med_rs %>%
     mutate(dom = day(d18O_meas_btime)) %>% # get day of month
     group_by(dom) %>%
     filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
     slice(tail(row_number(), 3)) %>%
     ungroup()
-  
+
   low_rs <- low_rs %>%
     mutate(dom = day(d18O_meas_btime)) %>% # get day of month
     group_by(dom) %>%
     filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>% # check to make sure peak sufficiently long, then slice off single.
     slice(tail(row_number(), 3)) %>%
     ungroup()
-  
+
   # bind together, and cleanup.
   stds <- do.call(rbind, list(high_rs, med_rs, low_rs))
-  
+
   #rm(high_rs,med_rs,low_rs,high,med,low)
-  
+
   # replace NaNs with NA
   # rpf note on 181121 - what does this line actually do? Seems tautological.
   # rpf note 181126 - is.na() also returns NaN as NA, so this does actually do what first
   # comment indicates.
   stds[is.na(stds)] <- NA
-  
+
   #-----------------------------------------------------------
   # CALIBRATE WATER ISOTOPE VALUES
-  
+
   # change class of time variables from charatcter to posixct.
   stds$d18O_meas_btime <- as.POSIXct(stds$d18O_meas_btime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
   stds$d18O_meas_etime <- as.POSIXct(stds$d18O_meas_etime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  
+
   stds$d18O_ref_btime <- as.POSIXct(stds$d18O_ref_btime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
   stds$d18O_ref_etime <- as.POSIXct(stds$d18O_ref_etime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  
+
   stds$d2H_meas_btime <- as.POSIXct(stds$d2H_meas_btime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
   stds$d2H_meas_etime <- as.POSIXct(stds$d2H_meas_etime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  
+
   stds$d2H_ref_btime <- as.POSIXct(stds$d2H_ref_btime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
   stds$d2H_ref_etime <- as.POSIXct(stds$d2H_ref_etime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  
+
   # reorder data frame
   stds <- stds[order(stds$d18O_meas_btime), ]
 
@@ -180,7 +180,9 @@ calibrate_water_linreg <- function(inname,
   for (i in 1:nrow(stds)) {
     stds$cal_period[i] <- period_id
 
-    if (tdiffs[i] >= time.diff.betweeen.standards) {period_id = period_id + 1}
+    if (tdiffs[i] >= time.diff.betweeen.standards) {
+      period_id = period_id + 1
+    }
   }
 
   # okay, now run calibrations...
@@ -197,21 +199,21 @@ calibrate_water_linreg <- function(inname,
 
   for (i in 2:max(stds$cal_period)) {
     # check to see if data exist.
-    cal.subset <- stds[which(stds$cal_period==i | stds$cal_period==(i-1)), ]
-  
+    cal.subset <- stds[which(stds$cal_period == i | stds$cal_period == (i - 1)), ]
+
     # check to see if sum of is.na() on oxygen data = nrow of oxygen data
     if (sum(is.na(cal.subset$d18O_meas_mean)) < nrow(cal.subset) &
         sum(is.na(cal.subset$d18O_ref_mean)) < nrow(cal.subset)) {
       tmp <- lm(d18O_ref_mean ~ d18O_meas_mean, data = cal.subset)
 
-      oxy_cal_slopes[i-1] <- coef(tmp)[[2]]
-      oxy_cal_ints[i-1] <- coef(tmp)[[1]]
-      oxy_cal_rsq[i-1] <- summary(tmp)$r.squared  
+      oxy_cal_slopes[i - 1] <- coef(tmp)[[2]]
+      oxy_cal_ints[i - 1] <- coef(tmp)[[1]]
+      oxy_cal_rsq[i - 1] <- summary(tmp)$r.squared
 
     } else { # all are missing
-      oxy_cal_slopes[i-1] <- NA
-      oxy_cal_ints[i-1] <- NA
-      oxy_cal_rsq[i-1] <- NA 
+      oxy_cal_slopes[i - 1] <- NA
+      oxy_cal_ints[i - 1] <- NA
+      oxy_cal_rsq[i - 1] <- NA
     }
 
     # HYDROGEN
@@ -235,7 +237,7 @@ calibrate_water_linreg <- function(inname,
   # make dataframe of calibration data.
   # TODO: add hydrogen data in here...
   times <- stds %>%
-    select(d18O_meas_btime, d18O_meas_etime, d18O_ref_btime, d18O_ref_etime, 
+    select(d18O_meas_btime, d18O_meas_etime, d18O_ref_btime, d18O_ref_etime,
            d2H_meas_btime, d2H_meas_etime, d2H_ref_btime, d2H_ref_etime, cal_period) %>%
     group_by(cal_period) %>%
     summarize(etime = max(c(d18O_meas_etime, d18O_ref_etime, d2H_meas_etime, d2H_ref_etime)))
@@ -279,10 +281,10 @@ calibrate_water_linreg <- function(inname,
         print(paste0(100*sum(replaced.vals)/length(replaced.vals), "% of values filled w/ LWMA"))
 
         # linear weighted moving average chosen.
-        out$o.slope <- imputeTS::na_ma(out$o.slope,  weighting = "linear") 
+        out$o.slope <- imputeTS::na_ma(out$o.slope,  weighting = "linear")
         out$h.slope <- imputeTS::na_ma(out$h.slope,  weighting = "linear")
-        out$o.intercept <- imputeTS::na_ma(out$o.intercept,  weighting = "linear") 
-        out$h.intercept <- imputeTS::na_ma(out$h.intercept,  weighting = "linear") 
+        out$o.intercept <- imputeTS::na_ma(out$o.intercept,  weighting = "linear")
+        out$h.intercept <- imputeTS::na_ma(out$h.intercept,  weighting = "linear")
 
       } else if (interpolation.method == "LOCF") {
 
@@ -298,49 +300,54 @@ calibrate_water_linreg <- function(inname,
   }
 
   var_for_h5 <- out
-  
+
   var_for_h5$start <- convert_POSIXct_to_NEONhdf5_time(var_for_h5$start)
-  
+
   var_for_h5$end <- convert_POSIXct_to_NEONhdf5_time(var_for_h5$end)
-  
+
   var_for_h5$valid_period_start <- var_for_h5$start
   var_for_h5$valid_period_end   <- var_for_h5$end
-  
+
   # remove old vars.
   var_for_h5$start <- var_for_h5$end <- NULL
-  
+
   # okay try to write out to h5 file.
   rhdf5::h5createFile(outname)
   rhdf5::h5createGroup(outname, paste0("/", site))
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01"))
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data"))
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o"))
-  
+
   # okay try to write out to h5 file.
   fid <- rhdf5::H5Fopen(outname)
-  
+
     # copy attributes from source file and write to output file.
   tmp <- rhdf5::h5readAttributes(inname, paste0("/", site))
   attrloc <- rhdf5::H5Gopen(fid, paste0("/", site))
-  
+
   for (i in 1:length(tmp)) { # probably a more rapid way to do this in the future...lapply?
     rhdf5::h5writeAttribute(h5obj = attrloc, attr = tmp[[i]], name = names(tmp)[i])
   }
-  
+
   rhdf5::H5Gclose(attrloc)
-  
+
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o/calData"))
-  h2o.cal.outloc <- rhdf5::H5Gopen(fid, paste0("/", site, "/dp01/data/isoH2o/calData"))
-  
+
+  h2o.cal.outloc <- rhdf5::H5Gopen(fid,
+                                paste0("/", site, "/dp01/data/isoH2o/calData"))
+
   # write out dataset.
-  rhdf5::h5writeDataset.data.frame(obj = var_for_h5, h5loc = h2o.cal.outloc, name = "calRegressions", DataFrameAsCompound = TRUE)
-  
+  rhdf5::h5writeDataset.data.frame(obj = var_for_h5,
+                                   h5loc = h2o.cal.outloc,
+                                   name = "calRegressions",
+                                   DataFrameAsCompound = TRUE)
+
   # close the group and the file
   rhdf5::H5Gclose(h2o.cal.outloc)
-  
+
   #-----------------------------------------
   # write out high/mid/low rs.
-  
+
   #low
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o/h2oLow_cal"))
 
@@ -395,19 +402,19 @@ calibrate_water_linreg <- function(inname,
   Sys.sleep(0.5)
 
   rhdf5::h5closeAll()
-  
+
   fid <- rhdf5::H5Fopen(outname)
-  
+
   # copy attributes from source file and write to output file.
   tmp <- rhdf5::h5readAttributes(inname, paste0("/", site))
   attrloc <- rhdf5::H5Gopen(fid, paste0("/", site))
-  
+
   for (i in 1:length(tmp)) { # probably a more rapid way to do this in the future...lapply?
     rhdf5::h5writeAttribute(h5obj = attrloc, attr = tmp[[i]], name = names(tmp)[i])
   }
-  
+
   rhdf5::H5Gclose(attrloc)
-  
+
   #===========================================================
   # calibrate data for each height.
   #-------------------------------------
