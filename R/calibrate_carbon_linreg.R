@@ -99,7 +99,7 @@ calibrate_carbon_linreg <- function(inname,
   #=======================================================================
   # bind together, and cleanup.
   #### OMIT FOR ERROR PROPOAGATION.
-  stds <- do.call(rbind, list(high_rs, med_rs))
+  stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
 
   if (nrow(stds) > 0) {
     # replace NaNs with NA
@@ -335,58 +335,7 @@ calibrate_carbon_linreg <- function(inname,
   low <- rhdf5::h5read(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2Low_09m"))
 
-  # calibrate standards using value for corresponding calibration period.
-  low$dlta13CCo2$mean_cal <- low$dlta13CCo2$mean
-  low$rtioMoleDryCo2$mean_cal <- low$rtioMoleDryCo2$mean
-
-  # convert start times to POSIXct.
-  low$dlta13CCo2$timeBgn <- as.POSIXct(low$dlta13CCo2$timeBgn,
-                                       format = "%Y-%m-%dT%H:%M:%OSZ",
-                                       tz = "UTC")
-
-  if (nrow(low$dlta13CCo2) > 1) {
-    for (i in 1:(nrow(low$dlta13CCo2) - 1)) { # use n-1 because the standards are bracketing
-
-      # determine which row calibration point is in.
-      int <- lubridate::interval(out$start, out$end)
-      cal_id <- which(low$dlta13CCo2$timeBgn[i] %within% int)
-
-      if (low$dlta13CCo2$numSamp >= 200) {
-        if (!length(cal_id) == 0) {
-
-          if (!is.na(out$d13C_r2[cal_id]) & !is.na(out$co2_r2[cal_id]) &
-              out$d13C_r2[cal_id] > r2_thres & out$co2_r2[cal_id] > r2_thres) {
-
-            low$dlta13CCo2$mean_cal[i] <- out$d13C_intercept[cal_id] +
-              out$d13C_slope[cal_id] * low$dlta13CCo2$mean[i]
-
-            low$rtioMoleDryCo2$mean_cal[i] <- out$co2_intercept[cal_id] +
-              out$co2_slope[cal_id] * low$rtioMoleDryCo2$mean[i]
-
-          } else {
-
-            low$dlta13CCo2$mean_cal[i] <- NA
-            low$rtioMoleDryCo2$mean_cal[i] <- NA
-          }
-
-        } else {
-
-          low$dlta13CCo2$mean_cal[i] <- NA
-          low$rtioMoleDryCo2$mean_cal[i] <- NA
-
-        }
-
-      } else {
-
-        low$dlta13CCo2$mean_cal[i] <- NA
-        low$rtioMoleDryCo2$mean_cal[i] <- NA
-
-      }
-    }
-  }
-
-  # convert time back to NEON format.
-  low$dlta13CCo2$timeBgn <- convert_POSIXct_to_NEONhdf5_time(low$dlta13CCo2$timeBgn)
+  low <- calibrate_standards_carbon(out, low, R_vpdb, f)
 
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(low), function(x) {
@@ -408,61 +357,8 @@ calibrate_carbon_linreg <- function(inname,
   med <- rhdf5::h5read(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
 
-  # calibrate standards using value for corresponding calibration period.
-  med$dlta13CCo2$mean_cal <- med$dlta13CCo2$mean
-  med$dlta13CCo2$mean_cal <- as.numeric(NA)
-
-  med$rtioMoleDryCo2$mean_cal <- med$rtioMoleDryCo2$mean
-
-  # convert start times to POSIXct.
-  med$dlta13CCo2$timeBgn <- as.POSIXct(med$dlta13CCo2$timeBgn,
-                                       format = "%Y-%m-%dT%H:%M:%OSZ",
-                                       tz = "UTC")
-
-  if (nrow(med$dlta13CCo2) > 1) {
-    for (i in 1:(nrow(med$dlta13CCo2) - 1)) { # use n-1 because the standards are bracketing
-
-      # determine which row calibration point is in.
-      int <- lubridate::interval(out$start, out$end)
-      cal_id <- which(med$dlta13CCo2$timeBgn[i] %within% int)
-
-      # check to make sure cal_id exists.
-      if (med$dlta13CCo2$numSamp >= 200) {
-        if (!length(cal_id) == 0) {
-          if (!is.na(out$d13C_r2[cal_id]) & !is.na(out$co2_r2[cal_id]) &
-              out$d13C_r2[cal_id] > r2_thres & out$co2_r2[cal_id] > r2_thres) {
-
-            med$dlta13CCo2$mean_cal[i] <- out$d13C_intercept[cal_id] +
-              out$d13C_slope[cal_id] * med$dlta13CCo2$mean[i]
-
-            med$rtioMoleDryCo2$mean_cal[i] <- out$co2_intercept[cal_id] +
-              out$co2_slope[cal_id] * med$rtioMoleDryCo2$mean[i]
-          } else {
-
-            med$dlta13CCo2$mean_cal[i] <- NA
-            med$rtioMoleDryCo2$mean_cal[i] <- NA
-
-          }
-
-        } else {
-
-          med$dlta13CCo2$mean_cal[i] <- NA
-          med$rtioMoleDryCo2$mean_cal[i] <- NA
-
-        }
-
-      } else {
-
-        med$dlta13CCo2$mean_cal[i] <- NA
-        med$rtioMoleDryCo2$mean_cal[i] <- NA
-
-      }
-    }
-  }
-
-  # convert time back to NEON format.
-  med$dlta13CCo2$timeBgn <- convert_POSIXct_to_NEONhdf5_time(med$dlta13CCo2$timeBgn)
-
+  med <- calibrate_standards_carbon(out, med, R_vpdb, f)
+  
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(med), function(x) {
     rhdf5::h5writeDataset.data.frame(obj = med[[x]],
@@ -483,57 +379,8 @@ calibrate_carbon_linreg <- function(inname,
   high <- rhdf5::h5read(inname,
                         paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
 
-  # calibrate standards using value for corresponding calibration period.
-  high$dlta13CCo2$mean_cal <- high$dlta13CCo2$mean
-  high$rtioMoleDryCo2$mean_cal <- high$rtioMoleDryCo2$mean
-
-  # convert start times to POSIXct.
-  high$dlta13CCo2$timeBgn <- as.POSIXct(high$dlta13CCo2$timeBgn,
-                                       format = "%Y-%m-%dT%H:%M:%OSZ",
-                                       tz = "UTC")
-
-  if (nrow(high$dlta13CCo2) > 1) {
-    for (i in 1:(nrow(high$dlta13CCo2)-1)) { # use n-1 because the standards are bracketing
-
-      # determine which row calibration point is in. 
-      int <- lubridate::interval(out$start, out$end)
-      cal_id <- which(high$dlta13CCo2$timeBgn[i] %within% int)
-
-      # check to make sure cal_id exists.
-      if (high$dlta13CCo2$numSamp >= 200) {
-        if (!length(cal_id) == 0) {
-          if (!is.na(out$d13C_r2[cal_id]) & !is.na(out$co2_r2[cal_id]) &
-              out$d13C_r2[cal_id] > r2_thres & out$co2_r2[cal_id] > r2_thres) {
-
-            high$dlta13CCo2$mean_cal[i] <- out$d13C_intercept[cal_id] +
-              out$d13C_slope[cal_id] * high$dlta13CCo2$mean[i]
-
-            high$rtioMoleDryCo2$mean_cal[i] <- out$co2_intercept[cal_id] +
-              out$co2_slope[cal_id] * high$rtioMoleDryCo2$mean[i]
-
-          } else {
-            high$dlta13CCo2$mean_cal[i] <- NA
-            high$rtioMoleDryCo2$mean_cal[i] <- NA
-
-          }
-
-        } else {
-
-          high$dlta13CCo2$mean_cal[i] <- NA
-          high$rtioMoleDryCo2$mean_cal[i] <- NA
-
-        }
-      } else {
-        high$dlta13CCo2$mean_cal[i] <- NA
-        high$rtioMoleDryCo2$mean_cal[i] <- NA
-
-      }
-    }
-  }
-
-  # convert time back to NEON format.
-  high$dlta13CCo2$timeBgn <- convert_POSIXct_to_NEONhdf5_time(high$dlta13CCo2$timeBgn)
-
+  high <- calibrate_standards_carbon(out, high, R_vpdb, f)
+  
   # loop through each of the variables in list amb.data.list and write out as a dataframe.
   lapply(names(high), function(x) {
     rhdf5::h5writeDataset.data.frame(obj = high[[x]],
@@ -552,21 +399,21 @@ calibrate_carbon_linreg <- function(inname,
   # calibrate data for each height.
   #-------------------------------------
   # extract ambient measurements from ciso
-  # ciso_logical <- grepl(pattern="000", x = names(ciso))
-  # ciso_subset <- ciso[ciso_logical]
-  # 
-  # lapply(names(ciso_subset),
-  #        function(x) {
-  #          calibrate_ambient_carbon_linreg(amb_data_list = ciso_subset[[x]],
-  #                                          caldf = out,
-  #                                          outname = x,
-  #                                          file = outname,
-  #                                          site = site,
-  #                                          r2_thres = r2_thres)
-  # 
-  #          }) # lapply
-  # 
-  # rhdf5::h5closeAll()
+  ciso_logical <- grepl(pattern="000", x = names(ciso))
+  ciso_subset <- ciso[ciso_logical]
+
+  lapply(names(ciso_subset),
+         function(x) {
+           calibrate_ambient_carbon_linreg(amb_data_list = ciso_subset[[x]],
+                                           caldf = out,
+                                           outname = x,
+                                           file = outname,
+                                           site = site,
+                                           r2_thres = r2_thres)
+
+           }) # lapply
+
+  rhdf5::h5closeAll()
   # 
   # # copy over qfqm and ucrt data groups.
   # print("Copying qfqm...")

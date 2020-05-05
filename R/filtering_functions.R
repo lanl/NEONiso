@@ -25,8 +25,9 @@ filter_median_Brock86 <- function(data, width = 7, threshold = 5) {
   spikes <- abs(data - filt) > threshold
 
   # set spikes as missing - consider interpolation in future release?
-  data[data == TRUE] <- NA
+  data[spikes == TRUE] <- NA
 
   # return data vector back
   return(data)
+
 }

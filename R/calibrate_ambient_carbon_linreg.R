@@ -43,8 +43,8 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
     print("Processing carbon ambient data...")
 
     # only working on the d13C of the amb.data.list, so extract just this...
-    d13C_ambdf <- amb.data.list$dlta13CCo2
-    co2_ambdf  <- amb.data.list$rtioMoleDryCo2
+    d13C_ambdf <- amb_data_list$dlta13CCo2
+    co2_ambdf  <- amb_data_list$rtioMoleDryCo2
 
     # ensure that time variables are in POSIXct.
     amb_start_times <- as.POSIXct(d13C_ambdf$timeBgn,
@@ -138,8 +138,8 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
     co2_ambdf$vari <- round(co2_ambdf$vari, digits = 2)
 
     # replace ambdf in amb.data.list, return amb.data.list
-    amb.data.list$dlta13CCo2 <- d13C_ambdf
-    amb.data.list$rtioMoleDryCo2 <- co2_ambdf
+    amb_data_list$dlta13CCo2 <- d13C_ambdf
+    amb_data_list$rtioMoleDryCo2 <- co2_ambdf
 
     # write out dataset to HDF5 file.
     fid <- rhdf5::H5Fopen(file)
@@ -148,7 +148,7 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
                             paste0("/", site, "/dp01/data/isoCo2/", outname))
 
     # loop through each of the variables in list amb.data.list and write out as a dataframe.
-    lapply(names(amb.data.list), function(x) {
+    lapply(names(amb_data_list), function(x) {
       rhdf5::h5writeDataset.data.frame(obj = amb_data_list[[x]],
                                 h5loc = co2.data.outloc,
                                 name = x,
