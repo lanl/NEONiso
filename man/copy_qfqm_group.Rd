@@ -7,7 +7,7 @@
 copy_qfqm_group(data_list, outname, site, file, species)
 }
 \arguments{
-\item{outname}{Output filename. Inhereted from one of the calibrate functions.}
+\item{outname}{Output filename. Inhereted from a calibrate function.}
 
 \item{site}{Four-letter NEON site code.}
 

@@ -2,21 +2,26 @@
 % Please edit documentation in R/carbon_diagnostic_package.R
 \name{carbon_diagnostic_package}
 \alias{carbon_diagnostic_package}
-\title{Title}
+\title{carbon_diagnostic_package.R}
 \usage{
-carbon_diagnostic_package(data_path, plot_path, which.sites = "all")
+carbon_diagnostic_package(data_path, plot_path, which_sites = "all")
 }
 \arguments{
 \item{data_path}{Provide path to where calibrated data from one site live.}
 
-\item{method}{Bowling or linear regression calibration method? (Valid values: Bowling, LinReg)}
+\item{plot_path}{Path to where output pdf plots should be written.}
+
+\item{which_sites}{Which NEON sites to run plots for? Default = all}
 }
 \value{
 
 }
 \description{
-Title
+carbon_diagnostic_package.R
 }
 \examples{
 
+}
+\author{
+Rich Fiorella \email{rich.fiorella@utah.edu}
 }

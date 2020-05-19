@@ -20,7 +20,7 @@ copy_ucrt_group <- function(data_list, outname, site, file, species) {
     co2_data_outloc <- rhdf5::H5Gcreate(fid,
                               paste0("/", site, "/dp01/ucrt/isoCo2/", outname))
 
-    # loop through each of the variables in list amb.data.list and write out as a dataframe.
+    # loop through each variable in amb.data.list and write out as a dataframe
     lapply(names(data_list), function(x) {
       rhdf5::h5writeDataset.data.frame(obj = data_list[[x]],
                                 h5loc = co2_data_outloc,
@@ -32,7 +32,7 @@ copy_ucrt_group <- function(data_list, outname, site, file, species) {
     h2o_data_outloc <- rhdf5::H5Gcreate(fid,
                               paste0("/", site, "/dp01/ucrt/isoH2o/", outname))
 
-    # loop through each of the variables in list amb.data.list and write out as a dataframe.
+    # loop through each variable in amb.data.list and write out as a dataframe.
     lapply(names(data_list), function(x) {
       rhdf5::h5writeDataset.data.frame(obj = data_list[[x]],
                                 h5loc = h2o_data_outloc,

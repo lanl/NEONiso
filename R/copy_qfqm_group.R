@@ -3,7 +3,7 @@
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
 #' @param data.list
-#' @param outname Output filename. Inhereted from one of the calibrate functions.
+#' @param outname Output filename. Inhereted from a calibrate function.
 #' @param site Four-letter NEON site code.
 #' @param file Input filename. Inhereted from one of the calibrate functions.
 #' @param species CO2 or H2O? Same function used for both CO2 and H2O isotopes.

@@ -1,65 +1,65 @@
 # carbon_diagnostic_plots
 
 # 1. monthly plots of reference material measurements.
-cplot_monthly_standards <- function(calData, plot_path, site) {
+cplot_monthly_standards <- function(cal_data, plot_path, site) {
 
   # open plot.
   pdf(paste0(plot_path, "/", "1_monCStds_", site, ".pdf"))
 
   # break data into months.
-  calData$standard[calData$standard == "co2Low"] <- 1
-  calData$standard[calData$standard == "co2Med"] <- 2
-  calData$standard[calData$standard == "co2High"] <- 3
+  cal_data$standard[cal_data$standard == "co2Low"] <- 1
+  cal_data$standard[cal_data$standard == "co2Med"] <- 2
+  cal_data$standard[cal_data$standard == "co2High"] <- 3
 
-  calData$standard <- as.numeric(calData$standard)
+  cal_data$standard <- as.numeric(cal_data$standard)
 
-  calData.xts <- xts::xts(calData[, 3:7], order.by = calData$timeBgn)
-  calData.mon <- split.xts(calData.xts, f = "months")
+  cal_data.xts <- xts::xts(cal_data[, 3:7], order.by = cal_data$timeBgn)
+  cal_data.mon <- split.xts(cal_data.xts, f = "months")
 
-  for (i in 1:length(calData.mon)) {
+  for (i in 1:length(cal_data.mon)) {
     # set up plots.
-    p1 <- ggplot(data = calData.mon[[i]],
-                 aes(x = zoo::index(calData.mon[[i]]),
+    p1 <- ggplot(data = cal_data.mon[[i]],
+                 aes(x = zoo::index(cal_data.mon[[i]]),
                      y = mean13C, col = factor(standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("d13C, obs")
 
-    p2 <- ggplot(data = calData.mon[[i]],
-                 aes(x = zoo::index(calData.mon[[i]]),
+    p2 <- ggplot(data = cal_data.mon[[i]],
+                 aes(x = zoo::index(cal_data.mon[[i]]),
                      y = ref13C, col = factor(standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("d13C, ref")
 
-    p3 <- ggplot(data = calData.mon[[i]],
-                 aes(x = zoo::index(calData.mon[[i]]),
+    p3 <- ggplot(data = cal_data.mon[[i]],
+                 aes(x = zoo::index(cal_data.mon[[i]]),
                      y = mean13C - ref13C, col = factor(standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("d13Cdiff")
 
-    p4 <- ggplot(data = calData.mon[[i]],
-                 aes(x = zoo::index(calData.mon[[i]]),
+    p4 <- ggplot(data = cal_data.mon[[i]],
+                 aes(x = zoo::index(cal_data.mon[[i]]),
                      y = meanCo2, col = factor(standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("[CO2], obs")
 
-    p5 <- ggplot(data = calData.mon[[i]],
-                 aes(x = zoo::index(calData.mon[[i]]),
+    p5 <- ggplot(data = cal_data.mon[[i]],
+                 aes(x = zoo::index(cal_data.mon[[i]]),
                      y = refCo2, col = factor(standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("[CO2], ref")
 
-    p6 <- ggplot(data = calData.mon[[i]],
-                 aes(x = zoo::index(calData.mon[[i]]),
+    p6 <- ggplot(data = cal_data.mon[[i]],
+                 aes(x = zoo::index(cal_data.mon[[i]]),
                      y = meanCo2 - refCo2, col = factor(standard))) +
       geom_point() +
       theme_bw() +
@@ -159,14 +159,6 @@ cplot_monthly_calParameters <- function(calParDf, plot_path, site, method) {
         scale_x_datetime("date") +
         scale_y_continuous("d13C r2")
 
-      # p4 <- ggplot(data = calParDf[[i]], aes(x = valid_period_start, y = calDelUcrt)) +
-      #   geom_point() +
-      #   geom_hline(yintercept = -0.2, col = "red", lty = 2) +
-      #   geom_hline(yintercept = 0.2, col = "red", lty = 2) +
-      #   theme_bw() +
-      #   scale_x_datetime("date") +
-      #   scale_y_continuous("d13C uncertainty")
-
       p5 <- ggplot(data = calParDf[[i]],
                    aes(x = valid_period_start, y = co2_slope)) +
         geom_point() +
@@ -188,15 +180,6 @@ cplot_monthly_calParameters <- function(calParDf, plot_path, site, method) {
         scale_x_datetime("date") +
         scale_y_continuous("co2 r2")
 
-      # p8 <- ggplot(data = calParDf[[i]], aes(x = valid_period_start, y = calCO2Ucrt)) +
-      #   geom_point() +
-      #   geom_hline(yintercept = -0.2, col = "red", lty = 2) +
-      #   geom_hline(yintercept = 0.2, col = "red", lty = 2) +
-      #   theme_bw() +
-      #   scale_x_datetime("date") +
-      #   scale_y_continuous("co2 uncertainty")
-
-      # gridExtra::grid.arrange(p1, p5, p2, p6, p3, p7, p4, p8, nrow = 4, top = site)
       gridExtra::grid.arrange(p1, p5, p2, p6, p3, p7, nrow = 3, top = site)
     } #i
   }# method
@@ -207,41 +190,41 @@ cplot_monthly_calParameters <- function(calParDf, plot_path, site, method) {
 
 #=================================================================
 # 3. monthly plots of ambient measurements.
-cplot_monthly_ambient <- function(ambData, dir_plots, site) {
+cplot_monthly_ambient <- function(amb_data, dir_plots, site) {
 
   # get number of heights.
-  heights <- sort(unique(ambData$height))
+  heights <- sort(unique(amb_data$height))
   nheights <- length(heights)
 
-  # drop level from ambData
-  ambData <- ambData %>%
+  # drop level from amb_data
+  amb_data <- amb_data %>%
     dplyr::select(-level)
 
-  ambData.xts <- xts::xts(ambData[, c(3:5)], order.by = ambData$timeBgn)
+  amb_data.xts <- xts::xts(amb_data[, c(3:5)], order.by = amb_data$timeBgn)
 
-  ambData.mon <- split.xts(ambData.xts, f = "months")
+  amb_data.mon <- split.xts(amb_data.xts, f = "months")
 
   # open plot.
   pdf(paste0(dir_plots, "/", "3_monCAmb_", site, ".pdf"))
 
-  for (k in 1:length(ambData.mon)) {
+  for (k in 1:length(amb_data.mon)) {
 
     for (j in 1:nheights) {
 
-      ambData_height <- subset(ambData.mon[[k]], height == heights[j])
+      amb_data_height <- subset(amb_data.mon[[k]], height == heights[j])
 
       # take out of xts format
-      ambData_df <- as.data.frame(cbind(zoo::index(ambData_height),
-                                        zoo::coredata(ambData_height)))
-      names(ambData_df) <- c("timeBgn", "mean13C", "meanCo2", "height")
+      amb_data_df <- as.data.frame(cbind(zoo::index(amb_data_height),
+                                        zoo::coredata(amb_data_height)))
+      names(amb_data_df) <- c("timeBgn", "mean13C", "meanCo2", "height")
 
       # convert timeBgn back to posixct
-      ambData_df$timeBgn <- as.POSIXct(ambData_df$timeBgn,
+      amb_data_df$timeBgn <- as.POSIXct(amb_data_df$timeBgn,
                                        origin = "1970-01-01")
 
       #make a plot of this data.
       assign(paste0("p", 2 * j - 1), {
-        ggplot(data = ambData_df, aes(x = timeBgn, y = mean13C)) +
+        ggplot(data = amb_data_df, aes(x = timeBgn, y = mean13C)) +
           geom_line() +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
@@ -249,7 +232,7 @@ cplot_monthly_ambient <- function(ambData, dir_plots, site) {
         })
 
       assign(paste0("p", 2 * j), {
-        ggplot(data = ambData_df, aes(x = timeBgn, y = meanCo2)) +
+        ggplot(data = amb_data_df, aes(x = timeBgn, y = meanCo2)) +
           geom_line() +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
@@ -264,7 +247,7 @@ cplot_monthly_ambient <- function(ambData, dir_plots, site) {
 
     gridExtra::grid.arrange(grobs = plots, ncol = 2)
 
-    rm(plots, plot.list, ambData_height)
+    rm(plots, plot.list, amb_data_height)
     rm(list = ls(pattern = "^p"))
 
   } # k
@@ -275,44 +258,44 @@ cplot_monthly_ambient <- function(ambData, dir_plots, site) {
 
 #========================================================
 # 4. monthly plots of reference material measurements.
-cplot_fullts_standards <- function(calData, plot_path, site) {
+cplot_fullts_standards <- function(cal_data, plot_path, site) {
 
   # open plot.
   pdf(paste0(plot_path, "/", "4_tsCStds_", site, ".pdf"))
 
   #   # set up plots.
-  p1 <- ggplot(data = calData, aes(x = timeBgn, y = mean13C, col = standard)) +
+  p1 <- ggplot(data = cal_data, aes(x = timeBgn, y = mean13C, col = standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d13C, obs")
 
-  p2 <- ggplot(data = calData, aes(x = timeBgn, y = ref13C, col = standard)) +
+  p2 <- ggplot(data = cal_data, aes(x = timeBgn, y = ref13C, col = standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d13C, ref")
 
-  p3 <- ggplot(data = calData,
+  p3 <- ggplot(data = cal_data,
                aes(x = timeBgn, y = mean13C - ref13C, col = standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d13Cdiff")
 
-  p4 <- ggplot(data = calData, aes(x = timeBgn, y = meanCo2, col = standard)) +
+  p4 <- ggplot(data = cal_data, aes(x = timeBgn, y = meanCo2, col = standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("[CO2], obs")
 
-  p5 <- ggplot(data = calData, aes(x = timeBgn, y = refCo2, col = standard)) +
+  p5 <- ggplot(data = cal_data, aes(x = timeBgn, y = refCo2, col = standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("[CO2], ref")
 
-  p6 <- ggplot(data = calData,
+  p6 <- ggplot(data = cal_data,
                aes(x = timeBgn, y = meanCo2 - refCo2, col = standard)) +
     geom_point() +
     theme_bw() +
@@ -400,14 +383,6 @@ cplot_fullts_calParameters <- function(calParDf, plot_path, site, method) {
       scale_x_datetime("date") +
       scale_y_continuous("d13C r2")
 
-    # p4 <- ggplot(data = calParDf, aes(x = valid_period_start, y = calDelUcrt)) +
-    #   geom_point() +
-    #   geom_hline(yintercept = -0.2, col = "red", lty = 2) +
-    #   geom_hline(yintercept = 0.2, col = "red", lty = 2) +
-    #   theme_bw() +
-    #   scale_x_datetime("date") +
-    #   scale_y_continuous("d13C uncertainty")
-
     p5 <- ggplot(data = calParDf,
                  aes(x = valid_period_start, y = co2_slope)) +
       geom_point() +
@@ -429,15 +404,6 @@ cplot_fullts_calParameters <- function(calParDf, plot_path, site, method) {
       scale_x_datetime("date") +
       scale_y_continuous("co2 r2")
 
-    # p8 <- ggplot(data = calParDf, aes(x = valid_period_start, y = calCO2Ucrt)) +
-    #   geom_point() +
-    #   geom_hline(yintercept = -0.2, col = "red", lty = 2) +
-    #   geom_hline(yintercept = 0.2, col = "red", lty = 2) +
-    #   theme_bw() +
-    #   scale_x_datetime("date") +
-    #   scale_y_continuous("co2 uncertainty")
-
-    # gridExtra::grid.arrange(p1, p5, p2, p6, p3, p7, p4, p8, nrow = 4, top = site)
     gridExtra::grid.arrange(p1, p5, p2, p6, p3, p7, nrow = 3, top = site)
   }
 
@@ -447,20 +413,20 @@ cplot_fullts_calParameters <- function(calParDf, plot_path, site, method) {
 
 #=================================================================
 # 6. timeseries plots of ambient measurements.
-cplot_fullts_ambient <- function(ambData, dir_plots, site) {
+cplot_fullts_ambient <- function(amb_data, dir_plots, site) {
 
   # get number of heights.
-  heights <- sort(unique(ambData$height))
+  heights <- sort(unique(amb_data$height))
   nheights <- length(heights)
 
   for (j in 1:nheights) {
 
-    ambData_height <- ambData %>%
+    amb_data_height <- amb_data %>%
       dplyr::filter(height == heights[j])
 
     # make a plot of this data.
     assign(paste0("p", 2 * j - 1), {
-      ggplot(data = ambData_height, aes(x = timeBgn, y = mean13C)) +
+      ggplot(data = amb_data_height, aes(x = timeBgn, y = mean13C)) +
         geom_line() +
         theme_bw() +
         scale_y_continuous(name = paste("Height:", heights[j], "m")) +
@@ -468,7 +434,7 @@ cplot_fullts_ambient <- function(ambData, dir_plots, site) {
       })
 
     assign(paste0("p", 2 * j), {
-      ggplot(data = ambData_height, aes(x = timeBgn, y = meanCo2)) +
+      ggplot(data = amb_data_height, aes(x = timeBgn, y = meanCo2)) +
         geom_line() +
         theme_bw() +
         scale_y_continuous(name = paste("Height:", heights[j], "m")) +
@@ -491,45 +457,45 @@ cplot_fullts_ambient <- function(ambData, dir_plots, site) {
 #=================================================================
 # 7. empirical density functions of reference materials and isotopologues.
 
-cplot_standard_distributions <- function(calData, plot_path, site) {
+cplot_standard_distributions <- function(cal_data, plot_path, site) {
 
   # define f and R
   f <- 0.00474
   R <- 0.0111797
 
   # calculate 12CO2 and 13CO2 from d13C and CO2.
-  if (!all(is.na(calData$refCo2)) & !all(is.na(calData$ref13C))) {
+  if (!all(is.na(cal_data$refCo2)) & !all(is.na(cal_data$ref13C))) {
 
-    calData$c12 <- (1 - f) * calData$refCo2 /
-      (1 + R * (1 + calData$ref13C / 1000))
+    cal_data$c12 <- (1 - f) * cal_data$refCo2 /
+      (1 + R * (1 + cal_data$ref13C / 1000))
 
-    calData$c13 <- (1 - f) * calData$refCo2 - calData$c12
+    cal_data$c13 <- (1 - f) * cal_data$refCo2 - cal_data$c12
 
   } else {
-    calData$c12 <- NA
-    calData$c13 <- NA
+    cal_data$c12 <- NA
+    cal_data$c13 <- NA
   }
 
   # make plots of the distribution of each variable.
-  p1 <- ggplot(data = calData, aes(x = c12, y = ..density..)) +
+  p1 <- ggplot(data = cal_data, aes(x = c12, y = ..density..)) +
     geom_histogram(binwidth = 1) +
     theme_bw() +
     scale_y_continuous("Frequency") +
     scale_x_continuous("12CO2 mixing ratio, ppm")
 
-  p2 <- ggplot(data = calData, aes(x = c13, y = ..density..)) +
+  p2 <- ggplot(data = cal_data, aes(x = c13, y = ..density..)) +
     geom_histogram(binwidth = 0.01) +
     theme_bw() +
     scale_y_continuous("Frequency") +
     scale_x_continuous("13CO2 mixing ratio, ppm")
 
-  p3 <- ggplot(data = calData, aes(x = ref13C, y = ..density..)) +
+  p3 <- ggplot(data = cal_data, aes(x = ref13C, y = ..density..)) +
     geom_histogram(binwidth = 0.1) +
     theme_bw() +
     scale_y_continuous("Frequency") +
     scale_x_continuous("d13C")
 
-  p4 <- ggplot(data = calData, aes(x = refCo2, y = ..density..)) +
+  p4 <- ggplot(data = cal_data, aes(x = refCo2, y = ..density..)) +
     geom_histogram(binwidth = 1) +
     theme_bw() +
     scale_y_continuous("Frequency") +
