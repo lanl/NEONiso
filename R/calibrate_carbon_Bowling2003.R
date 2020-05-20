@@ -170,8 +170,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
 
   # merge standards back to a single df.
   stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
-  #stds <- do.call(rbind, list(low_rs, med_rs))
-  
+
   # reorder to be in chronological time.
   stds <- stds[order(stds$d13C_obs_btime), ]
 
@@ -214,7 +213,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
       #---------------------------------------------
       # do some light validation of these points.
       cal_subset <- cal_subset %>%
-        filter(d13C_obs_var < 5 & 
+        filter(d13C_obs_var < 5 &
                  abs(CO2_obs_mean - CO2_ref_mean) < 10 &
                  abs(d13C_obs_mean - d13C_ref_mean) < 5)
 
@@ -388,7 +387,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
 
   med <- calibrate_standards_carbon(out, med, R_vpdb, f)
-  
+
   # loop through each variable in amb.data.list and write out as a dataframe.
   lapply(names(med), function(x) {
     rhdf5::h5writeDataset.data.frame(obj = med[[x]],
@@ -410,7 +409,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
                         paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
 
   high <- calibrate_standards_carbon(out, high, R_vpdb, f)
-  
+
   # loop through each variable amb.data.list and write out as a dataframe.
   lapply(names(high), function(x) {
     rhdf5::h5writeDataset.data.frame(obj = high[[x]],
@@ -430,18 +429,19 @@ calibrate_carbon_Bowling2003 <- function(inname,
   # extract ambient measurements from ciso
   ciso_logical <- grepl(pattern = "000", x = names(ciso))
   ciso_subset <- ciso[ciso_logical]
-  
+
   lapply(names(ciso_subset),
          function(x) {
-           calibrate_ambient_carbon_Bowling2003(amb_data_list = ciso_subset[[x]],
-                                                caldf = out,
-                                                outname = x,
-                                                file = outname,
-                                                site = site,
-                                                filter_data = filter_ambient,
-                                                force_to_end = force_cal_to_end,
-                                                force_to_beginning = force_cal_to_beginning,
-                                                r2_thres = r2_thres)
+           calibrate_ambient_carbon_Bowling2003(
+             amb_data_list = ciso_subset[[x]],
+             caldf = out,
+             outname = x,
+             file = outname,
+             site = site,
+             filter_data = filter_ambient,
+             force_to_end = force_cal_to_end,
+             force_to_beginning = force_cal_to_beginning,
+             r2_thres = r2_thres)
          }
   )
 
