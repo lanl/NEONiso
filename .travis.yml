@@ -1,5 +1,6 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
 language: R
+r: 3.2.4
 cache: packages
 bioc_packages: rhdf5
