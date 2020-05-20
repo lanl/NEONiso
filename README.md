@@ -1,5 +1,9 @@
 # NEONiso
 
+<!-- badges: start -->
+  [![Travis build status](https://travis-ci.org/SPATIAL-Lab/NEONiso.svg?branch=master)](https://travis-ci.org/SPATIAL-Lab/NEONiso)
+  <!-- badges: end -->
+
 Author: Rich Fiorella \
 Last Updated: Jan 13, 2020.
 
