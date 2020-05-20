@@ -454,7 +454,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/isoCo2"))
 
   lapply(names(qfqm), function(x) {
-    copy_qfqm_group(data.list = qfqm[[x]],
+    copy_qfqm_group(data_list = qfqm[[x]],
                     outname = x,
                     file = outname,
                     site = site,
@@ -469,7 +469,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/isoCo2"))
 
   lapply(names(ucrt), function(x) {
-    copy_ucrt_group(data.list = ucrt[[x]],
+    copy_ucrt_group(data_list = ucrt[[x]],
                     outname = x,
                     file = outname,
                     site = site,
