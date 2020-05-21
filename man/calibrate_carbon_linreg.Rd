@@ -35,10 +35,42 @@ nothing to the workspace, but creates a new output file of
         calibrated carbon isotope data.
 }
 \description{
-
+This function will calibrate NEON carbon isotope data using an ordinary
+least squares linear regression between measured and reference d13C values.
+Correction equation is determined by regressing the reference values on
+the measured values, and uses this equation to calibrate the ambient data.
+In brief, this function takes the following steps:
 }
 \details{
+\enumerate{
+  \item Extracts calibration data from uncalibrated file.
+  \item Basic QA/QC on each calibration data point, where the following
+        factors must be true:
+  \itemize{
+    \item Calibration "peak" must have >= 200 data points, to remove some
+          observed issues with gas manifold valves.
+    \item Calibration "peak" must not be missing.
+    \item Only one value per day meeting these criteria are selected.
+  }
+  \item Calibration periods are defined to bracket a sample of ambient data.
+        In many cases, this will be one day bracketed by measurements of
+       reference materials immediately before after this period.
+  \item Determine the slope, intercept, and r^2 of a regression of each
+        calibration period. Calibration error is estimated using
+        the difference between the model-predicted reference value of each
+        standard compared to the "known" reference value
+        for the "medium" standard only. As this bracketing calibration may
+        use two measurements of the medium standard, only the maximum
+        difference value is retained as the more conservative approach.
 
+  \item Regression parameters are written to a dataset in a new output file
+        under \code{/site/dp01/data/isoCo2/calData/calRegressions}
+  \item Regression equations are applied ambient data,
+        and written to same new output file.
+}
+
+The qfqm and ucrt folders are also copied over from the original file,
+and are unchanged.
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}

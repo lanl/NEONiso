@@ -7,6 +7,8 @@
 copy_qfqm_group(data_list, outname, site, file, species)
 }
 \arguments{
+\item{data_list}{List of groups to retrieve qfqm data from.}
+
 \item{outname}{Output filename. Inhereted from a calibrate function.}
 
 \item{site}{Four-letter NEON site code.}

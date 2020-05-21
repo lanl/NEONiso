@@ -5,6 +5,7 @@
 #' Correction equation is determined by regressing the reference values on
 #' the measured values, and uses this equation to calibrate the ambient data.
 #' In brief, this function takes the following steps:
+#' 
 #' \enumerate{
 #'   \item Extracts calibration data from uncalibrated file.
 #'   \item Basic QA/QC on each calibration data point, where the following
@@ -31,6 +32,7 @@
 #'   \item Regression equations are applied ambient data,
 #'         and written to same new output file.
 #' }
+#' 
 #' The qfqm and ucrt folders are also copied over from the original file,
 #' and are unchanged.
 #'
