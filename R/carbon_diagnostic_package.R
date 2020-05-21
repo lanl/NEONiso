@@ -69,8 +69,8 @@ carbon_diagnostic_package <- function(data_path,
   } else {
 
     # check to see if *is* a neon site.
-    neon_sites <- c(NEONiso:::terrestrial_core_sites(),
-                    NEONiso:::terrestrial_relocatable_sites())
+    neon_sites <- c(terrestrial_core_sites(),
+                    terrestrial_relocatable_sites())
 
     if (!(which_sites %in% neon_sites)) {
 
@@ -291,9 +291,9 @@ carbon_diagnostic_package <- function(data_path,
     if (which.plots == 1 | which.plots == 7 | which.plots == 9) {
   
       print("Plot 1")
-      NEONiso:::cplot_monthly_standards(calData,
-                                        out_folder,
-                                        unq_sites[i])
+      cplot_monthly_standards(calData,
+                              out_folder,
+                              unq_sites[i])
 
     }
 
@@ -301,10 +301,10 @@ carbon_diagnostic_package <- function(data_path,
     if (which.plots == 2 | which.plots == 7 | which.plots == 9) {
 
       print("Plot 2")
-      NEONiso:::cplot_monthly_calParameters(calParsMon,
-                                            out_folder,
-                                            unq_sites[i],
-                                            method)
+      cplot_monthly_calParameters(calParsMon,
+                                  out_folder,
+                                  unq_sites[i],
+                                  method)
 
     } # if
 
@@ -313,9 +313,9 @@ carbon_diagnostic_package <- function(data_path,
     if (which.plots == 3 | which.plots == 7 | which.plots == 9) {
 
       print("Plot 3")
-      NEONiso:::cplot_monthly_ambient(ambData,
-                                      out_folder,
-                                      unq_sites[i])
+      cplot_monthly_ambient(ambData,
+                            out_folder,
+                            unq_sites[i])
 
     } # if
 
@@ -323,9 +323,9 @@ carbon_diagnostic_package <- function(data_path,
     if (which.plots == 4 | which.plots == 8 | which.plots == 9) {
 
       print("Plot 4")
-      NEONiso:::cplot_fullts_standards(calData,
-                                       out_folder,
-                                       unq_sites[i])
+      cplot_fullts_standards(calData,
+                             out_folder,
+                             unq_sites[i])
 
     } # if
 
@@ -333,10 +333,10 @@ carbon_diagnostic_package <- function(data_path,
     if (which.plots == 5 | which.plots == 8 | which.plots == 9) {
 
       print("Plot 5")
-      NEONiso:::cplot_fullts_calParameters(calPars,
-                                           out_folder,
-                                           unq_sites[i],
-                                           method)
+      cplot_fullts_calParameters(calPars,
+                                 out_folder,
+                                 unq_sites[i],
+                                 method)
 
     } # if
 
@@ -344,9 +344,9 @@ carbon_diagnostic_package <- function(data_path,
     if (which.plots == 6 | which.plots == 8 | which.plots == 9) {
 
       print("Plot 6")
-      NEONiso:::cplot_fullts_ambient(ambData,
-                                     out_folder,
-                                     unq_sites[i])
+      cplot_fullts_ambient(ambData,
+                           out_folder,
+                           unq_sites[i])
 
     } # if
 
@@ -354,9 +354,9 @@ carbon_diagnostic_package <- function(data_path,
     if (which.plots == 10 | which.plots == 8 | which.plots == 9) {
 
       print("Plot 10")
-      NEONiso:::cplot_standard_distributions(calData,
-                                             out_folder,
-                                             unq_sites[i])
+      cplot_standard_distributions(calData,
+                                   out_folder,
+                                   unq_sites[i])
 
 
     } # if
