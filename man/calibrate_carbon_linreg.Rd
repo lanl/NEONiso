@@ -21,14 +21,18 @@ calibrate_carbon_linreg(
 
 \item{site}{Four-letter NEON code for site being processed. (character)}
 
-\item{force.cal.to.beginning}{Extend first calibration to
-the beginning of the file?}
-
-\item{time.diff.between.standards}{Time (in seconds) required between
+\item{time_diff_between_standards}{Time (in seconds) required between
 consecutive standard measurements.
 Used to define a calibration "period."}
 
-\item{force.cal.to.end}{Extend last calibration to the end of the file?}
+\item{force_cal_to_beginning}{Extend first calibration to
+the beginning of the file?}
+
+\item{force_cal_to_end}{Extend last calibration to the end of the file?}
+
+\item{r2_thres}{Minimum r2 threshold of an "acceptable" calibration. Acts to
+remove calibration periods where a measurement error makes
+relationship nonlinear. Default = 0.95}
 }
 \value{
 nothing to the workspace, but creates a new output file of

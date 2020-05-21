@@ -1,12 +1,14 @@
 #' extract_carbon_calibration_data.R
 #'
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#'
 #' @param standard String indicating whether to grab data from the high,
 #'                  medium, or low standard.
-#' @param data.list List containing data, from the /*/dp01/data/
+#' @param data_list List containing data, from the /*/dp01/data/
 #'                  group in NEON HDF5 file.
-#' @param ucrt.list List containing uncertainty data, from the /*/dp01/ucrt/
+#' @param ucrt_list List containing uncertainty data, from the /*/dp01/ucrt/
 #'                  group in NEON HDF5 file.
-#' @param ucrt.source Where from HDF5 file should  variance be extracted from?
+#' @param ucrt_source Where from HDF5 file should  variance be extracted from?
 #'                    (Valid values are "data" and "ucrt")
 #'
 #' @return Returns data frame of required variables.

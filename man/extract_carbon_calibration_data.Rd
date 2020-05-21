@@ -12,16 +12,16 @@ extract_carbon_calibration_data(
 )
 }
 \arguments{
+\item{data_list}{List containing data, from the /*/dp01/data/
+group in NEON HDF5 file.}
+
+\item{ucrt_list}{List containing uncertainty data, from the /*/dp01/ucrt/
+group in NEON HDF5 file.}
+
 \item{standard}{String indicating whether to grab data from the high,
 medium, or low standard.}
 
-\item{data.list}{List containing data, from the /*/dp01/data/
-group in NEON HDF5 file.}
-
-\item{ucrt.list}{List containing uncertainty data, from the /*/dp01/ucrt/
-group in NEON HDF5 file.}
-
-\item{ucrt.source}{Where from HDF5 file should  variance be extracted from?
+\item{ucrt_source}{Where from HDF5 file should  variance be extracted from?
 (Valid values are "data" and "ucrt")}
 }
 \value{
@@ -29,4 +29,7 @@ Returns data frame of required variables.
 }
 \description{
 extract_carbon_calibration_data.R
+}
+\author{
+Rich Fiorella \email{rich.fiorella@utah.edu}
 }

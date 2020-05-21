@@ -47,6 +47,10 @@ if \code{interpolate.missing.cals == TRUE}. (character)}
 \item{filter_ambient}{Apply the median absolute deviation filter (Brock 86)
 to remove impulse spikes in output ambient data?
 (logical; default true)}
+
+\item{r2_thres}{Minimum r2 threshold of an "acceptable" calibration. Acts to
+remove calibration periods where a measurement error makes
+relationship nonlinear. Default = 0.95}
 }
 \value{
 Returns nothing to the workspace, but creates a new output HDF5

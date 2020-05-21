@@ -41,12 +41,15 @@
 #' @param site Four-letter NEON code for site being processed. (character)
 #' @param inname Name of the input file. (character)
 #' @param outname Name of the output file. (character)
-#' @param force.cal.to.beginning Extend first calibration to
+#' @param force_cal_to_beginning Extend first calibration to
 #'                               the beginning of the file?
-#' @param time.diff.between.standards Time (in seconds) required between
+#' @param time_diff_between_standards Time (in seconds) required between
 #'              consecutive standard measurements.
 #'              Used to define a calibration "period."
-#' @param force.cal.to.end Extend last calibration to the end of the file?
+#' @param force_cal_to_end Extend last calibration to the end of the file?
+#' @param r2_thres Minimum r2 threshold of an "acceptable" calibration. Acts to
+#'            remove calibration periods where a measurement error makes
+#'            relationship nonlinear. Default = 0.95
 #'
 #' @return nothing to the workspace, but creates a new output file of
 #'         calibrated carbon isotope data.

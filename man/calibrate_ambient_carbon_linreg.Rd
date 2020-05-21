@@ -2,7 +2,7 @@
 % Please edit documentation in R/calibrate_ambient_carbon_linreg.R
 \name{calibrate_ambient_carbon_linreg}
 \alias{calibrate_ambient_carbon_linreg}
-\title{calibrate_ambient_carbon_isotopes}
+\title{calibrate_ambient_carbon_linreg}
 \usage{
 calibrate_ambient_carbon_linreg(
   amb_data_list,
@@ -16,6 +16,9 @@ calibrate_ambient_carbon_linreg(
 )
 }
 \arguments{
+\item{amb_data_list}{List containing an ambient d13C dataset.
+Will include all variables in 000_0x0_xxm. (character)}
+
 \item{caldf}{Calibration data frame containing gain and offset values for
 12C and 13C isotopologues.}
 
@@ -27,16 +30,13 @@ calibrate_ambient_carbon_linreg(
 \item{file}{Output file name. Inherited from
 \code{calibrate_ambient_carbon_linreg}}
 
-\item{amb.data.list}{List containing an ambient d13C dataset.
-Will include all variables in 000_0x0_xxm. (character)}
-
-\item{force.to.end}{In given month, calibrate ambient data later than last
+\item{force_to_end}{In given month, calibrate ambient data later than last
 calibration, using the last calibration? (default true)}
 
-\item{force.to.beginning}{In given month, calibrate ambient data before than
+\item{force_to_beginning}{In given month, calibrate ambient data before than
 first calibration, using the first calibration? (default true)}
 
-\item{r2.thres}{Minimum r2 value for calibration to be considered "good" and
+\item{r2_thres}{Minimum r2 value for calibration to be considered "good" and
 applied to ambient data.}
 }
 \value{
@@ -44,7 +44,7 @@ Nothing to environment; returns calibrated ambient observations to
     the output file. This function is not designed to be called on its own.
 }
 \description{
-calibrate_ambient_carbon_isotopes
+calibrate_ambient_carbon_linreg
 }
 \examples{
 
