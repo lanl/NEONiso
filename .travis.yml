@@ -4,4 +4,3 @@ language: R
 r: 3.6.3
 cache: packages
 bioc_packages: rhdf5
-warnings_as_errors: false
