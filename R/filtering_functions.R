@@ -16,6 +16,7 @@
 #' @export
 #'
 #' @examples
+#' @importFrom zoo rollapply
 filter_median_Brock86 <- function(data, width = 7, threshold = 5) {
 
   # get rolling median of data.
