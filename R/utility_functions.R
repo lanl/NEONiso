@@ -18,23 +18,27 @@
 #'         matching NEON time variable format.
 #'
 #'
-#'
+#' @import lubridate
 convert_POSIXct_to_NEONhdf5_time <- function(intime) {
 
   # convert from POSIXct to
   # a time in YYmmddTHH:MM:SSSZ format used by NEON hdf5 files.
-  outtime <- as.character(paste0(year(intime), "-",
-                ifelse(month(intime) < 10,
-                       paste0("0", month(intime)), month(intime)), "-",
-                ifelse(day(intime) < 10,
-                       paste0("0", day(intime)), day(intime)), "T",
-                ifelse(hour(intime) < 10,
-                       paste0("0", hour(intime)), hour(intime)), ":",
-                ifelse(minute(intime) < 10,
-                       paste0("0", minute(intime)), minute(intime)), ":",
-                ifelse(second(intime) < 10,
-                       paste0("0", second(intime), ".000Z"),
-                       paste0(second(intime), ".000Z"))))
+  outtime <- as.character(paste0(lubridate::year(intime), "-",
+                ifelse(lubridate::month(intime) < 10,
+                       paste0("0", lubridate::month(intime)),
+                       lubridate::month(intime)), "-",
+                ifelse(lubridate::day(intime) < 10,
+                       paste0("0", lubridate::day(intime)),
+                       lubridate::day(intime)), "T",
+                ifelse(lubridate::hour(intime) < 10,
+                       paste0("0", lubridate::hour(intime)),
+                       lubridate::hour(intime)), ":",
+                ifelse(lubridate::minute(intime) < 10,
+                       paste0("0", lubridate::minute(intime)),
+                       lubridate::minute(intime)), ":",
+                ifelse(lubridate::second(intime) < 10,
+                       paste0("0", lubridate::second(intime), ".000Z"),
+                       paste0(lubridate::second(intime), ".000Z"))))
 
   return(outtime)
 }

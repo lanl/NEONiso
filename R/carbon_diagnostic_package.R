@@ -15,6 +15,8 @@
 #' @import ggplot2
 #' @import gridExtra
 #' @import xts
+#' @importFrom grDevices dev.off pdf
+#' @importFrom utils menu
 #'
 carbon_diagnostic_package <- function(data_path,
                                       plot_path,
