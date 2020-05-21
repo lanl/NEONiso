@@ -1,7 +1,7 @@
 Package: NEONiso
 Type: Package
 Title: Download, calibrate, and analyze NEON Atmospheric Isotope Flux Data
-Version: 0.1.0
+Version: 0.1
 Author: Rich Fiorella
 Maintainer: Rich Fiorella <rich.fiorella@utah.edu>
 Depends: 
@@ -9,8 +9,7 @@ Depends:
 Description: This package provides functions for downloading,
     calibrating, and analyzing NEON data, with a particular focus
     on the atmospheric isotope and eddy covariance data.
-License: Until further notice, please do not distribute outside of the SPATIAL Group
-    and immediate collaborators on the NEON Transpiration Grant.
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.0
