@@ -65,7 +65,7 @@
 #'
 #' @importFrom magrittr %>%
 #' @importFrom lubridate %within%
-#'
+#' @importFrom stats lm coef
 calibrate_carbon_Bowling2003 <- function(inname,
                                          outname,
                                          site,
@@ -216,7 +216,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
       #---------------------------------------------
       # do some light validation of these points.
       cal_subset <- cal_subset %>%
-        filter(d13C_obs_var < 5 &
+        dplyr::filter(d13C_obs_var < 5 &
                  abs(CO2_obs_mean - CO2_ref_mean) < 10 &
                  abs(d13C_obs_mean - d13C_ref_mean) < 5)
 
@@ -224,14 +224,14 @@ calibrate_carbon_Bowling2003 <- function(inname,
           !all(is.na(cal_subset$d13C_obs_mean)) & # not all obs missing
           !all(is.na(cal_subset$d13C_ref_mean))) { # not all ref missing
 
-        tmpmod12C <- lm(conc12CCO2_ref ~ conc12CCO2_obs, data = cal_subset)
-        tmpmod13C <- lm(conc13CCO2_ref ~ conc13CCO2_obs, data = cal_subset)
+        tmpmod12C <- stats::lm(conc12CCO2_ref ~ conc12CCO2_obs, data = cal_subset)
+        tmpmod13C <- stats::lm(conc13CCO2_ref ~ conc13CCO2_obs, data = cal_subset)
 
         # calculate gain and offset values.
-        gain12C[i - 1]   <- coef(tmpmod12C)[[2]]
-        gain13C[i - 1]   <- coef(tmpmod13C)[[2]]
-        offset12C[i - 1] <- coef(tmpmod12C)[[1]]
-        offset13C[i - 1] <- coef(tmpmod13C)[[1]]
+        gain12C[i - 1]   <- stats::coef(tmpmod12C)[[2]]
+        gain13C[i - 1]   <- stats::coef(tmpmod13C)[[2]]
+        offset12C[i - 1] <- stats::coef(tmpmod12C)[[1]]
+        offset13C[i - 1] <- stats::coef(tmpmod13C)[[1]]
 
         # extract r2
         r2_12C[i - 1] <- summary(tmpmod12C)$r.squared
@@ -250,10 +250,10 @@ calibrate_carbon_Bowling2003 <- function(inname,
 
     # make dataframe of calibration data.
     times <- stds %>%
-      select(d13C_obs_btime, d13C_obs_etime, d13C_ref_btime,
+      dplyr::select(d13C_obs_btime, d13C_obs_etime, d13C_ref_btime,
              d13C_ref_etime, cal_period) %>%
-      group_by(cal_period) %>%
-      summarize(etime = max(c(d13C_obs_etime, d13C_ref_etime)))
+      dplyr::group_by(cal_period) %>%
+      dplyr::summarize(etime = max(c(d13C_obs_etime, d13C_ref_etime)))
 
     # loop through times, assign begin/end values
     starttimes <- vector()

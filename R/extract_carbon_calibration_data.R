@@ -69,7 +69,7 @@ extract_carbon_calibration_data <- function(data_list, ucrt_list,
 
   # add standard name
   std_df <- std_df %>%
-    mutate(std_name = standard)
+    dplyr::mutate(std_name = standard)
 
   # return standard data frame.
   return(std_df)

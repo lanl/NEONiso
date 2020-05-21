@@ -18,7 +18,6 @@
 #'         matching NEON time variable format.
 #'
 #'
-#' @import lubridate
 convert_POSIXct_to_NEONhdf5_time <- function(intime) {
 
   # convert from POSIXct to

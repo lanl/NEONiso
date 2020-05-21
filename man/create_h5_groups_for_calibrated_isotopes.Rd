@@ -18,9 +18,6 @@ Nothing to the workspace, but adds new groups to
 \description{
 create_h5_groups_for_calibrated_isotopes
 }
-\examples{
-
-}
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
 }

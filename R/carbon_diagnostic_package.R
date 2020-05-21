@@ -12,9 +12,6 @@
 #' @examples
 #'
 #' @importFrom magrittr %>%
-#' @import ggplot2
-#' @import gridExtra
-#' @import xts
 #' @importFrom grDevices dev.off pdf
 #' @importFrom utils menu
 #'
@@ -95,7 +92,7 @@ carbon_diagnostic_package <- function(data_path,
   yrmn   <- sapply(slist.tmp, "[[", 8)
 
   # validate sitecd. if single site was given, should have 1 unique value.
-  if (which.sites != "all") {
+  if (which_sites != "all") {
 
     # check to see if length(unique(sitecd)) == 1
     if (length(unique(sitecd)) != 1) {
@@ -290,7 +287,7 @@ carbon_diagnostic_package <- function(data_path,
     #--------------------------------------------------------------
 
     # 1. Raw calibration data - monthly
-    if (which.plots == 1 | which.plots == 7 | which.plots == 9) {
+    if (which_plots == 1 | which_plots == 7 | which_plots == 9) {
   
       print("Plot 1")
       cplot_monthly_standards(calData,
@@ -300,7 +297,7 @@ carbon_diagnostic_package <- function(data_path,
     }
 
     # 5. Calibration parameters - timeseries
-    if (which.plots == 2 | which.plots == 7 | which.plots == 9) {
+    if (which_plots == 2 | which_plots == 7 | which_plots == 9) {
 
       print("Plot 2")
       cplot_monthly_calParameters(calParsMon,
@@ -312,7 +309,7 @@ carbon_diagnostic_package <- function(data_path,
 
 
     # 3. calibrated ambient data - timeseries
-    if (which.plots == 3 | which.plots == 7 | which.plots == 9) {
+    if (which_plots == 3 | which_plots == 7 | which_plots == 9) {
 
       print("Plot 3")
       cplot_monthly_ambient(ambData,
@@ -322,7 +319,7 @@ carbon_diagnostic_package <- function(data_path,
     } # if
 
     # 4. Raw calibration data - timeseries
-    if (which.plots == 4 | which.plots == 8 | which.plots == 9) {
+    if (which_plots == 4 | which_plots == 8 | which_plots == 9) {
 
       print("Plot 4")
       cplot_fullts_standards(calData,
@@ -332,7 +329,7 @@ carbon_diagnostic_package <- function(data_path,
     } # if
 
     # 5. Calibration parameters - timeseries
-    if (which.plots == 5 | which.plots == 8 | which.plots == 9) {
+    if (which_plots == 5 | which_plots == 8 | which_plots == 9) {
 
       print("Plot 5")
       cplot_fullts_calParameters(calPars,
@@ -343,7 +340,7 @@ carbon_diagnostic_package <- function(data_path,
     } # if
 
     # 6. calibrated ambient data - timeseries
-    if (which.plots == 6 | which.plots == 8 | which.plots == 9) {
+    if (which_plots == 6 | which_plots == 8 | which_plots == 9) {
 
       print("Plot 6")
       cplot_fullts_ambient(ambData,
@@ -353,7 +350,7 @@ carbon_diagnostic_package <- function(data_path,
     } # if
 
     # 6. calibrated ambient data - timeseries
-    if (which.plots == 10 | which.plots == 8 | which.plots == 9) {
+    if (which_plots == 10 | which_plots == 8 | which_plots == 9) {
 
       print("Plot 10")
       cplot_standard_distributions(calData,
