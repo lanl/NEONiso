@@ -2,6 +2,9 @@
 
 <!-- badges: start -->
   [![Travis build status](https://travis-ci.org/SPATIAL-Lab/NEONiso.svg?branch=master)](https://travis-ci.org/SPATIAL-Lab/NEONiso)
+  
+  [![DOI](https://zenodo.org/badge/188347333.svg)](https://zenodo.org/badge/latestdoi/188347333)
+  
   <!-- badges: end -->
 
 Author: Rich Fiorella \
