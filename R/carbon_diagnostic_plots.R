@@ -1,5 +1,7 @@
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @import ggplot2
+#' @noRd
 # carbon_diagnostic_plots
-
 # 1. monthly plots of reference material measurements.
 cplot_monthly_standards <- function(cal_data, plot_path, site) {
 
@@ -14,7 +16,7 @@ cplot_monthly_standards <- function(cal_data, plot_path, site) {
   cal_data$standard <- as.numeric(cal_data$standard)
 
   cal_data.xts <- xts::xts(cal_data[, 3:7], order.by = cal_data$timeBgn)
-  cal_data.mon <- split.xts(cal_data.xts, f = "months")
+  cal_data.mon <- xts::split.xts(cal_data.xts, f = "months")
 
   for (i in 1:length(cal_data.mon)) {
     # set up plots.
@@ -202,7 +204,7 @@ cplot_monthly_ambient <- function(amb_data, dir_plots, site) {
 
   amb_data.xts <- xts::xts(amb_data[, c(3:5)], order.by = amb_data$timeBgn)
 
-  amb_data.mon <- split.xts(amb_data.xts, f = "months")
+  amb_data.mon <- xts::split.xts(amb_data.xts, f = "months")
 
   # open plot.
   pdf(paste0(dir_plots, "/", "3_monCAmb_", site, ".pdf"))

@@ -148,7 +148,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   # removing these standards. code below has been modified to achieve this.
 
   high_rs <- high_rs %>%
-    dplyr::mutate(dom = day(d13C_obs_btime)) %>% # get day of month
+    dplyr::mutate(dom = lubridate::day(d13C_obs_btime)) %>% # get day of month
     dplyr::group_by(dom) %>%
     # check to make sure peak sufficiently long, then slice off single.
     dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>%
@@ -156,7 +156,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
     dplyr::ungroup()
 
   med_rs <- med_rs %>%
-    dplyr::mutate(dom = day(d13C_obs_btime)) %>% # get day of month
+    dplyr::mutate(dom = lubridate::day(d13C_obs_btime)) %>% # get day of month
     dplyr::group_by(dom) %>%
     # check to make sure peak sufficiently long, then slice off single.
     dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>%
@@ -164,7 +164,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
     dplyr::ungroup()
 
   low_rs <- low_rs %>%
-    dplyr::mutate(dom = day(d13C_obs_btime)) %>% # get day of month
+    dplyr::mutate(dom = lubridate::day(d13C_obs_btime)) %>% # get day of month
     dplyr::group_by(dom) %>%
     # check to make sure peak sufficiently long, then slice off single.
     dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>%
