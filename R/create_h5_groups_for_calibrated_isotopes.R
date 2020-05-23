@@ -10,8 +10,7 @@
 #' @export
 #'
 #' @examples
-#'
-#' @import rhdf5
+#
 create_h5_groups_for_calibrated_isotopes <- function(file, site) {
   # folder structure generally:
   # sitename/dp01iso/data/{isoH2o,isoCo2}/{each tower level, cal data}

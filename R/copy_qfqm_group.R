@@ -2,7 +2,7 @@
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param data.list
+#' @param data_list List of groups to retrieve qfqm data from.
 #' @param outname Output filename. Inhereted from a calibrate function.
 #' @param site Four-letter NEON site code.
 #' @param file Input filename. Inhereted from one of the calibrate functions.

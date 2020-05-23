@@ -55,6 +55,9 @@
 #' @param filter_ambient Apply the median absolute deviation filter (Brock 86)
 #'            to remove impulse spikes in output ambient data?
 #'            (logical; default true)
+#' @param r2_thres Minimum r2 threshold of an "acceptable" calibration. Acts to
+#'            remove calibration periods where a measurement error makes
+#'            relationship nonlinear. Default = 0.95
 #'
 #' @return Returns nothing to the workspace, but creates a new output HDF5
 #'         file containing calibrated carbon isotope values.
@@ -62,7 +65,7 @@
 #'
 #' @importFrom magrittr %>%
 #' @importFrom lubridate %within%
-#'
+#' @importFrom stats lm coef
 calibrate_carbon_Bowling2003 <- function(inname,
                                          outname,
                                          site,
@@ -145,7 +148,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   # removing these standards. code below has been modified to achieve this.
 
   high_rs <- high_rs %>%
-    dplyr::mutate(dom = day(d13C_obs_btime)) %>% # get day of month
+    dplyr::mutate(dom = lubridate::day(d13C_obs_btime)) %>% # get day of month
     dplyr::group_by(dom) %>%
     # check to make sure peak sufficiently long, then slice off single.
     dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>%
@@ -153,7 +156,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
     dplyr::ungroup()
 
   med_rs <- med_rs %>%
-    dplyr::mutate(dom = day(d13C_obs_btime)) %>% # get day of month
+    dplyr::mutate(dom = lubridate::day(d13C_obs_btime)) %>% # get day of month
     dplyr::group_by(dom) %>%
     # check to make sure peak sufficiently long, then slice off single.
     dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>%
@@ -161,7 +164,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
     dplyr::ungroup()
 
   low_rs <- low_rs %>%
-    dplyr::mutate(dom = day(d13C_obs_btime)) %>% # get day of month
+    dplyr::mutate(dom = lubridate::day(d13C_obs_btime)) %>% # get day of month
     dplyr::group_by(dom) %>%
     # check to make sure peak sufficiently long, then slice off single.
     dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>%
@@ -170,8 +173,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
 
   # merge standards back to a single df.
   stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
-  #stds <- do.call(rbind, list(low_rs, med_rs))
-  
+
   # reorder to be in chronological time.
   stds <- stds[order(stds$d13C_obs_btime), ]
 
@@ -214,7 +216,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
       #---------------------------------------------
       # do some light validation of these points.
       cal_subset <- cal_subset %>%
-        filter(d13C_obs_var < 5 & 
+        dplyr::filter(d13C_obs_var < 5 &
                  abs(CO2_obs_mean - CO2_ref_mean) < 10 &
                  abs(d13C_obs_mean - d13C_ref_mean) < 5)
 
@@ -222,14 +224,14 @@ calibrate_carbon_Bowling2003 <- function(inname,
           !all(is.na(cal_subset$d13C_obs_mean)) & # not all obs missing
           !all(is.na(cal_subset$d13C_ref_mean))) { # not all ref missing
 
-        tmpmod12C <- lm(conc12CCO2_ref ~ conc12CCO2_obs, data = cal_subset)
-        tmpmod13C <- lm(conc13CCO2_ref ~ conc13CCO2_obs, data = cal_subset)
+        tmpmod12C <- stats::lm(conc12CCO2_ref ~ conc12CCO2_obs, data = cal_subset)
+        tmpmod13C <- stats::lm(conc13CCO2_ref ~ conc13CCO2_obs, data = cal_subset)
 
         # calculate gain and offset values.
-        gain12C[i - 1]   <- coef(tmpmod12C)[[2]]
-        gain13C[i - 1]   <- coef(tmpmod13C)[[2]]
-        offset12C[i - 1] <- coef(tmpmod12C)[[1]]
-        offset13C[i - 1] <- coef(tmpmod13C)[[1]]
+        gain12C[i - 1]   <- stats::coef(tmpmod12C)[[2]]
+        gain13C[i - 1]   <- stats::coef(tmpmod13C)[[2]]
+        offset12C[i - 1] <- stats::coef(tmpmod12C)[[1]]
+        offset13C[i - 1] <- stats::coef(tmpmod13C)[[1]]
 
         # extract r2
         r2_12C[i - 1] <- summary(tmpmod12C)$r.squared
@@ -248,10 +250,10 @@ calibrate_carbon_Bowling2003 <- function(inname,
 
     # make dataframe of calibration data.
     times <- stds %>%
-      select(d13C_obs_btime, d13C_obs_etime, d13C_ref_btime,
+      dplyr::select(d13C_obs_btime, d13C_obs_etime, d13C_ref_btime,
              d13C_ref_etime, cal_period) %>%
-      group_by(cal_period) %>%
-      summarize(etime = max(c(d13C_obs_etime, d13C_ref_etime)))
+      dplyr::group_by(cal_period) %>%
+      dplyr::summarize(etime = max(c(d13C_obs_etime, d13C_ref_etime)))
 
     # loop through times, assign begin/end values
     starttimes <- vector()
@@ -388,7 +390,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
 
   med <- calibrate_standards_carbon(out, med, R_vpdb, f)
-  
+
   # loop through each variable in amb.data.list and write out as a dataframe.
   lapply(names(med), function(x) {
     rhdf5::h5writeDataset.data.frame(obj = med[[x]],
@@ -410,7 +412,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
                         paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
 
   high <- calibrate_standards_carbon(out, high, R_vpdb, f)
-  
+
   # loop through each variable amb.data.list and write out as a dataframe.
   lapply(names(high), function(x) {
     rhdf5::h5writeDataset.data.frame(obj = high[[x]],
@@ -430,18 +432,19 @@ calibrate_carbon_Bowling2003 <- function(inname,
   # extract ambient measurements from ciso
   ciso_logical <- grepl(pattern = "000", x = names(ciso))
   ciso_subset <- ciso[ciso_logical]
-  
+
   lapply(names(ciso_subset),
          function(x) {
-           calibrate_ambient_carbon_Bowling2003(amb_data_list = ciso_subset[[x]],
-                                                caldf = out,
-                                                outname = x,
-                                                file = outname,
-                                                site = site,
-                                                filter_data = filter_ambient,
-                                                force_to_end = force_cal_to_end,
-                                                force_to_beginning = force_cal_to_beginning,
-                                                r2_thres = r2_thres)
+           calibrate_ambient_carbon_Bowling2003(
+             amb_data_list = ciso_subset[[x]],
+             caldf = out,
+             outname = x,
+             file = outname,
+             site = site,
+             filter_data = filter_ambient,
+             force_to_end = force_cal_to_end,
+             force_to_beginning = force_cal_to_beginning,
+             r2_thres = r2_thres)
          }
   )
 
@@ -454,7 +457,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/isoCo2"))
 
   lapply(names(qfqm), function(x) {
-    copy_qfqm_group(data.list = qfqm[[x]],
+    copy_qfqm_group(data_list = qfqm[[x]],
                     outname = x,
                     file = outname,
                     site = site,
@@ -469,7 +472,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/isoCo2"))
 
   lapply(names(ucrt), function(x) {
-    copy_ucrt_group(data.list = ucrt[[x]],
+    copy_ucrt_group(data_list = ucrt[[x]],
                     outname = x,
                     file = outname,
                     site = site,

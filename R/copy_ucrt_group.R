@@ -1,13 +1,15 @@
-#' Title
+#' copy_ucrt_group
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param data.list
-#' @param outname
-#' @param site
-#' @param file
+#' @param outname Output file name.
+#' @param site NEON 4-letter site code.
+#' @param file Input file name.
+#' @param data_list List of groups to retrieve ucrt data from.
+#' @param species H2O or CO2.
 #'
-#' @return
+#' @return Nothing to the workspace, but copies ucrt group from input file to
+#'         output file.
 #' @export
 #'
 copy_ucrt_group <- function(data_list, outname, site, file, species) {
