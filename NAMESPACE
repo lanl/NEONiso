@@ -2,9 +2,11 @@
 
 export(calibrate_ambient_carbon_Bowling2003)
 export(calibrate_ambient_carbon_linreg)
+export(calibrate_ambient_water_linreg)
 export(calibrate_carbon_Bowling2003)
 export(calibrate_carbon_linreg)
 export(calibrate_standards_carbon)
+export(calibrate_water_linreg)
 export(carbon_diagnostic_package)
 export(copy_qfqm_group)
 export(copy_ucrt_group)

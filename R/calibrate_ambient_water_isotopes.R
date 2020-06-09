@@ -2,7 +2,7 @@
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param amb.data.list
+#' @param amb_data_list
 #' @param caldf
 #' @param outname
 #' @param site
@@ -15,9 +15,6 @@
 #'
 #' @examples
 calibrate_ambient_water_linreg <- function(amb_data_list, caldf, outname, site, file, force_to_end = TRUE, force_to_beginning = TRUE) {
-  
-  # required libraries
-  require(rhdf5)
   
   # print status.
   print("Processing water ambient data...")
@@ -66,7 +63,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list, caldf, outname, site, 
     
   }
   
-  # replace ambdf in amb.data.list
+  # replace ambdf in amb_data_list
   amb_data_list$dlta18OH2o <- oxydf
   
   #-------------------------------------------------------
@@ -106,7 +103,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list, caldf, outname, site, 
     hyddf$max_cal[var_inds_in_calperiod[[i]]] <- hyddf$max[var_inds_in_calperiod[[i]]] * caldf$h.slope[i] + caldf$h.intercept[i]
   }
   
-  # replace ambdf in amb.data.list
+  # replace ambdf in amb_data_list
   amb_data_list$dlta2HH2o <- hyddf
   
   #-----------------------------------------------------------
@@ -116,8 +113,8 @@ calibrate_ambient_water_linreg <- function(amb_data_list, caldf, outname, site, 
   print(outname)
   h2o_data_outloc <- rhdf5::H5Gcreate(fid, paste0("/", site, "/dp01/data/isoH2o/", outname))
   
-  # loop through each of the variables in list amb.data.list and write out as a dataframe.
-  lapply(names(amb.data.list), function(x) {
+  # loop through each of the variables in list amb_data_list and write out as a dataframe.
+  lapply(names(amb_data_list), function(x) {
     rhdf5::h5writeDataset.data.frame(obj = amb_data_list[[x]],
                                      h5loc = h2o_data_outloc,
                                      name = x,
