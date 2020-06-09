@@ -254,50 +254,50 @@ calibrate_water_linreg <- function(inname,
   # output dataframe giving valid time range, slopes, intercepts, rsquared.
   out <- data.frame(start = as.POSIXct(starttimes, tz = "UTC", origin = "1970-01-01"),
                     end = as.POSIXct(endtimes, tz = "UTC", origin = "1970-01-01"),
-                    o.slope = oxy_cal_slopes, o.intercept = oxy_cal_ints, o.r2 = oxy_cal_rsq,
-                    h.slope = hyd_cal_slopes, h.intercept = hyd_cal_ints, h.r2 = hyd_cal_rsq)
+                    o_slope = oxy_cal_slopes, o_intercept = oxy_cal_ints, o_r2 = oxy_cal_rsq,
+                    h_slope = hyd_cal_slopes, h_intercept = hyd_cal_ints, h_r2 = hyd_cal_rsq)
   
   
   #--------------------------------------------------------------------
   # perform interpolation, if requested.
   
-  if (interpolate.missing.cals == TRUE) {
-    
-    # need to filter out poor values.
-    out$o.slope[out$o.r2 < 0.9] <- NA
-    out$o.intercept[out$o.r2 < 0.9] <- NA
-    out$o.r2[out$o.r2 < 0.9] <- NA
-    out$h.slope[out$h.r2 < 0.9] <- NA
-    out$h.intercept[out$h.r2 < 0.9] <- NA
-    out$h.slope[out$h.r2 < 0.9] <- NA
-    
-    if (sum(!is.na(out$o.slope)) > 5 & sum(!is.na(out$o.slope)) > 5) {
-      
-      # check to determine which method to use.
-      if (interpolation.method == "LWMA") {
-        # save a vector of which values have been replaced!
-        replaced.vals <- ifelse(is.na(out$o.slope), 1, 0)
-        
-        print(paste0(100*sum(replaced.vals)/length(replaced.vals), "% of values filled w/ LWMA"))
-        
-        # linear weighted moving average chosen.
-        out$o.slope <- imputeTS::na_ma(out$o.slope,  weighting = "linear")
-        out$h.slope <- imputeTS::na_ma(out$h.slope,  weighting = "linear")
-        out$o.intercept <- imputeTS::na_ma(out$o.intercept,  weighting = "linear")
-        out$h.intercept <- imputeTS::na_ma(out$h.intercept,  weighting = "linear")
-        
-      } else if (interpolation.method == "LOCF") {
-        
-        stop("LOCF not activated yet.")
-      } else {
-        stop("Interpolation method not recognized. Valid values currently are LOCF or LWMA, others to come if requested.")
-      }
-    } else {
-      # set replaced.vals as 0, since none were replaced.
-      print("Too many values are missing, so do not interpolate...")
-      replaced.vals <- rep(0,nrow(out))
-    }
-  }
+  # if (interpolate.missing.cals == TRUE) {
+  #   
+  #   # need to filter out poor values.
+  #   out$o.slope[out$o.r2 < 0.9] <- NA
+  #   out$o.intercept[out$o.r2 < 0.9] <- NA
+  #   out$o.r2[out$o.r2 < 0.9] <- NA
+  #   out$h.slope[out$h.r2 < 0.9] <- NA
+  #   out$h.intercept[out$h.r2 < 0.9] <- NA
+  #   out$h.slope[out$h.r2 < 0.9] <- NA
+  #   
+  #   if (sum(!is.na(out$o.slope)) > 5 & sum(!is.na(out$o.slope)) > 5) {
+  #     
+  #     # check to determine which method to use.
+  #     if (interpolation.method == "LWMA") {
+  #       # save a vector of which values have been replaced!
+  #       replaced.vals <- ifelse(is.na(out$o.slope), 1, 0)
+  #       
+  #       print(paste0(100*sum(replaced.vals)/length(replaced.vals), "% of values filled w/ LWMA"))
+  #       
+  #       # linear weighted moving average chosen.
+  #       out$o.slope <- imputeTS::na_ma(out$o.slope,  weighting = "linear")
+  #       out$h.slope <- imputeTS::na_ma(out$h.slope,  weighting = "linear")
+  #       out$o.intercept <- imputeTS::na_ma(out$o.intercept,  weighting = "linear")
+  #       out$h.intercept <- imputeTS::na_ma(out$h.intercept,  weighting = "linear")
+  #       
+  #     } else if (interpolation.method == "LOCF") {
+  #       
+  #       stop("LOCF not activated yet.")
+  #     } else {
+  #       stop("Interpolation method not recognized. Valid values currently are LOCF or LWMA, others to come if requested.")
+  #     }
+  #   } else {
+  #     # set replaced.vals as 0, since none were replaced.
+  #     print("Too many values are missing, so do not interpolate...")
+  #     replaced.vals <- rep(0,nrow(out))
+  #   }
+  # }
   
   var_for_h5 <- out
   
@@ -345,57 +345,79 @@ calibrate_water_linreg <- function(inname,
   # close the group and the file
   rhdf5::H5Gclose(h2o.cal.outloc)
   
-  #-----------------------------------------
-  # write out high/mid/low rs.
-  
+  #---------------------------------------------
+  #---------------------------------------------
+  # copy high/mid/low standard data from input file.
+  #---------------------------------------------
+  #---------------------------------------------
   #low
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o/h2oLow_cal"))
+  rhdf5::h5createGroup(outname,
+                       paste0("/", site, "/dp01/data/isoH2o/h2oLow_09m"))
   
-  low.outloc <- rhdf5::H5Gopen(fid, paste0("/", site, "/dp01/data/isoH2o/h2oLow_cal"))
+  low_outloc <- rhdf5::H5Gopen(fid,
+                               paste0("/", site, "/dp01/data/isoH2o/h2oLow_09m"))
   
-  # check to see if there are any data; if not, fill w/ row of NAs.
-  if (nrow(low_rs) < 1) {
-    low_rs[1, ] <- rep(NA, ncol(low_rs))
-  }
+  low <- rhdf5::h5read(inname,
+                       paste0("/", site, "/dp01/data/isoH2o/h2oLow_09m"))
   
-  rhdf5::h5writeDataset.data.frame(obj = low_rs, h5loc = low.outloc,
-                                   name = "wisoStds",
-                                   DataFrameAsCompound = TRUE)
+  low <- calibrate_standards_water(out, low)
   
-  rhdf5::H5Gclose(low.outloc)
+  # loop through each of the variables in list amb.data.list
+  # and write out as a dataframe.
+  lapply(names(low), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = low[[x]],
+                                     h5loc = low_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)})
+  
+  rhdf5::H5Gclose(low_outloc)
   
   #------------------------------------------------------------
   #medium
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o/h2oMed_cal"))
+  rhdf5::h5createGroup(outname,
+                       paste0("/", site, "/dp01/data/isoH2o/h2oMed_09m"))
   
-  med.outloc <- rhdf5::H5Gopen(fid, paste0("/", site, "/dp01/data/isoH2o/h2oMed_cal"))
+  med_outloc <- rhdf5::H5Gopen(fid,
+                               paste0("/", site, "/dp01/data/isoH2o/h2oMed_09m"))
   
-  if (nrow(med_rs) < 1) {
-    med_rs[1, ] <- rep(NA, ncol(med_rs))
-  }
+  med <- rhdf5::h5read(inname,
+                       paste0("/", site, "/dp01/data/isoH2o/h2oMed_09m"))
   
-  rhdf5::h5writeDataset.data.frame(obj = med_rs, h5loc = med.outloc,
-                                   name = "wisoStds",
-                                   DataFrameAsCompound = TRUE)
+  med <- calibrate_standards_water(out, med)
   
-  rhdf5::H5Gclose(med.outloc)
+  # loop through each of the variables in list amb.data.list
+  # and write out as a dataframe.
+  lapply(names(med), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = med[[x]],
+                                     h5loc = med_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)})
+  
+  rhdf5::H5Gclose(med_outloc)
   
   #------------------------------------------------------------
   #high
+  rhdf5::h5createGroup(outname,
+                       paste0("/", site, "/dp01/data/isoH2o/h2oHigh_09m"))
   
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o/h2oHigh_cal"))
+  high_outloc <- rhdf5::H5Gopen(fid,
+                                paste0("/", site, "/dp01/data/isoH2o/h2oHigh_09m"))
   
-  high.outloc <- rhdf5::H5Gopen(fid, paste0("/", site, "/dp01/data/isoH2o/h2oHigh_cal"))
+  high <- rhdf5::h5read(inname,
+                        paste0("/", site, "/dp01/data/isoH2o/h2oHigh_09m"))
   
-  if (nrow(high_rs) < 1) {
-    high_rs[1, ] <- rep(NA, ncol(med_rs))
-  }
+  high <- calibrate_standards_water(out, high)
   
-  rhdf5::h5writeDataset.data.frame(obj = high_rs, h5loc = high.outloc,
-                                   name = "wisoStds",
-                                   DataFrameAsCompound  =  TRUE)
+  # loop through each of the variables in list amb.data.list
+  # and write out as a dataframe.
+  lapply(names(high), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = high[[x]],
+                                     h5loc = high_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)})
   
-  rhdf5::H5Gclose(high.outloc)
+  rhdf5::H5Gclose(high_outloc)
+  
   
   # close the group and the file
   rhdf5::H5Fclose(fid)

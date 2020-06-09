@@ -89,7 +89,7 @@ terrestrial_relocatable_sites <- function() {
 
 water_isotope_sites <- function() {
 
-  # relocatable sites as of 190523.
+  # water isotope sites as of 200608.
 
   wiso_sites <- c("BONA", "CLBJ", "CPER", "GUAN", "HARV", "KONZ",
                   "NIWO", "ONAQ", "ORNL", "OSBS", "PUUM", "SCBI",
