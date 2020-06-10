@@ -114,30 +114,34 @@ water_diagnostic_package <- function(data_path,
 
     print(paste("Processing data for site:", unq_sites[i]))
 
-    o18_obs_data <- neonUtilities::stackEddy(paste0(site_path, unq_sites[i]),
+    o18_amb_data <- neonUtilities::stackEddy(paste0(site_path, unq_sites[i]),
                                              level = "dp01",
                                              var = "dlta18OH2o",
+                                             avg = 9)
+    h2_amb_data <- neonUtilities::stackEddy(paste0(site_path, unq_sites[i]),
+                                            level = "dp01",
+                                            var = "dlta2HH2o",
+                                            avg = 9)
+    h2o_amb_data <- neonUtilities::stackEddy(paste0(site_path, unq_sites[i]),
+                                             level = "dp01",
+                                             var = "rtioMoleWetH2o",
                                              avg = 9)
     o18_ref_data <- neonUtilities::stackEddy(paste0(site_path, unq_sites[i]),
                                              level = "dp01",
                                              var = "dlta18OH2oRefe",
-                                             avg = 9)
-    h2_obs_data <- neonUtilities::stackEddy(paste0(site_path, unq_sites[i]),
-                                             level = "dp01",
-                                             var = "dlta2HH2o",
-                                             avg = 9)
+                                             avg = 3)
     h2_ref_data <- neonUtilities::stackEddy(paste0(site_path, unq_sites[i]),
                                              level = "dp01",
                                              var = "dlta2HH2oRefe",
-                                             avg = 9)
-    h2o_obs_data <- neonUtilities::stackEddy(paste0(site_path, unq_sites[i]),
+                                             avg = 3)
+    o18_obs_data <- neonUtilities::stackEddy(paste0(site_path, unq_sites[i]),
+                                             level = "dp01",
+                                             var = "dlta18OH2o",
+                                             avg = 3)
+    h2_obs_data <- neonUtilities::stackEddy(paste0(site_path, unq_sites[i]),
                                             level = "dp01",
-                                            var = "rtioMoleWetH2o",
-                                            avg = 9)
-    h2o_ref_data <- neonUtilities::stackEddy(paste0(site_path, unq_sites[i]),
-                                            level = "dp01",
-                                            var = "rtioMoleWetH2oRefe",
-                                            avg = 9)
+                                            var = "dlta2HH2o",
+                                            avg = 3)
     
     #-----------------------------------------------------
     # select data a little more cleverly.
@@ -171,36 +175,18 @@ water_diagnostic_package <- function(data_path,
       dplyr::filter(verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh")) %>%
       dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta12H2o.mean, verticalPosition) %>%
+                    data.isoH2o.dlta2HH2o.mean, verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    mean2H = data.isoH2o.dlta12H2o.mean,
+                    mean2H = data.isoH2o.dlta2HH2o.mean,
                     standard = verticalPosition)
     
     calData[[4]] <- h2_ref_data[[1]] %>%
       dplyr::filter(verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh")) %>%
       dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta12H2oRefe.mean, verticalPosition) %>%
+                    data.isoH2o.dlta2HH2oRefe.mean, verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
                     ref2H = data.isoH2o.dlta2HH2oRefe.mean,
-                    standard = verticalPosition)
-
-    calData[[3]] <- h2o_obs_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
-                      c("h2oLow", "h2oMed", "h2oHigh")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.rtioMoleWetH2o.mean, verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    meanH2o = data.isoH2o.rtioMoleWetH2o.mean,
-                    standard = verticalPosition)
-
-    calData[[4]] <- h2o_ref_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
-                      c("h2oLow", "h2oMed", "h2oHigh")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.rtioMoleWetH2oRefe.mean, verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    refH2o = data.isoH2o.rtioMoleWetH2oRefe.mean,
                     standard = verticalPosition)
 
     calData <- Reduce(
@@ -213,6 +199,7 @@ water_diagnostic_package <- function(data_path,
     calData$timeEnd <- as.POSIXct(calData$timeEnd,
                                   format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
 
+    print(str(calData))
     #=========================
     # 2. CALIBRATION PARAMETERS
 
@@ -249,7 +236,8 @@ water_diagnostic_package <- function(data_path,
 
     # bind together before putting into plotting scripts.
     calPars <- do.call(rbind, calPars)
-
+    
+    print(str(calPars))
     #=========================
     # 3. AMBIENT DATA
 
@@ -260,7 +248,7 @@ water_diagnostic_package <- function(data_path,
     attrs <- rhdf5::h5readAttributes(flist[1], unq_sites[i])
     heights <- as.numeric(attrs$DistZaxsLvlMeasTow)
 
-    ambData[[1]] <- o18_obs_data[[1]] %>%
+    ambData[[1]] <- o18_amb_data[[1]] %>%
       dplyr::filter(verticalPosition %in%
                c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
       dplyr::select(timeBgn, timeEnd,
@@ -269,7 +257,7 @@ water_diagnostic_package <- function(data_path,
                     mean18O = data.isoH2o.dlta18OH2o.mean,
                     level = verticalPosition)
     
-    ambData[[2]] <- h2_obs_data[[1]] %>%
+    ambData[[2]] <- h2_amb_data[[1]] %>%
       dplyr::filter(verticalPosition %in%
                       c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
       dplyr::select(timeBgn, timeEnd,
@@ -279,7 +267,7 @@ water_diagnostic_package <- function(data_path,
                     level = verticalPosition)
     
 
-    ambData[[3]] <- h2o_obs_data[[1]] %>%
+    ambData[[3]] <- h2o_amb_data[[1]] %>%
       dplyr::filter(verticalPosition %in%
                c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
       dplyr::select(timeBgn, timeEnd, data.isoH2o.rtioMoleWetH2o.mean,
@@ -309,6 +297,8 @@ water_diagnostic_package <- function(data_path,
                                   format = "%Y-%m-%dT%H:%M:%OSZ",
                                   tz = "UTC")
 
+    print(str(ambData))
+    
     #--------------------------------------------------------------
     #--------------------------------------------------------------
     # PLOTTING SCRIPTS LIVE BELOW.
@@ -318,21 +308,20 @@ water_diagnostic_package <- function(data_path,
     # 1. Raw calibration data - monthly
     if (which_plots == 1 | which_plots == 7 | which_plots == 9) {
   
-      # print("Plot 1")
-      # cplot_monthly_standards(calData,
-      #                         out_folder,
-      #                         unq_sites[i])
+      print("Plot 1")
+      wplot_monthly_standards(calData,
+                              out_folder,
+                              unq_sites[i])
 
     }
 
     # 5. Calibration parameters - timeseries
     if (which_plots == 2 | which_plots == 7 | which_plots == 9) {
 
-      # print("Plot 2")
-      # cplot_monthly_calParameters(calParsMon,
-      #                             out_folder,
-      #                             unq_sites[i],
-      #                             method)
+      print("Plot 2")
+      wplot_monthly_calParameters(calParsMon,
+                                  out_folder,
+                                  unq_sites[i])
 
     } # if
 
@@ -340,52 +329,40 @@ water_diagnostic_package <- function(data_path,
     # 3. calibrated ambient data - timeseries
     if (which_plots == 3 | which_plots == 7 | which_plots == 9) {
 
-      # print("Plot 3")
-      # cplot_monthly_ambient(ambData,
-      #                       out_folder,
-      #                       unq_sites[i])
+      print("Plot 3")
+      wplot_monthly_ambient(ambData,
+                            out_folder,
+                            unq_sites[i])
 
     } # if
 
     # 4. Raw calibration data - timeseries
     if (which_plots == 4 | which_plots == 8 | which_plots == 9) {
 
-      # print("Plot 4")
-      # cplot_fullts_standards(calData,
-      #                        out_folder,
-      #                        unq_sites[i])
+      print("Plot 4")
+      wplot_fullts_standards(calData,
+                             out_folder,
+                             unq_sites[i])
 
     } # if
 
     # 5. Calibration parameters - timeseries
     if (which_plots == 5 | which_plots == 8 | which_plots == 9) {
 
-      # print("Plot 5")
-      # cplot_fullts_calParameters(calPars,
-      #                            out_folder,
-      #                            unq_sites[i],
-      #                            method)
+      print("Plot 5")
+      wplot_fullts_calParameters(calPars,
+                                 out_folder,
+                                 unq_sites[i])
 
     } # if
 
     # 6. calibrated ambient data - timeseries
     if (which_plots == 6 | which_plots == 8 | which_plots == 9) {
 
-      # print("Plot 6")
-      # cplot_fullts_ambient(ambData,
-      #                      out_folder,
-      #                      unq_sites[i])
-
-    } # if
-
-    # 6. calibrated ambient data - timeseries
-    if (which_plots == 10 | which_plots == 8 | which_plots == 9) {
-
-      # print("Plot 10")
-      # cplot_standard_distributions(calData,
-      #                              out_folder,
-      #                              unq_sites[i])
-
+      print("Plot 6")
+      wplot_fullts_ambient(ambData,
+                           out_folder,
+                           unq_sites[i])
 
     } # if
 
