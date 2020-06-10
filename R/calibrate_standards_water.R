@@ -62,11 +62,11 @@ calibrate_standards_water <- function(cal_df,
         
         if (!length(cal_id) == 0) {
           
-          if (!is.na(cal_df$o.r2[cal_id]) &
-              cal_df$o.r2[cal_id] > r2_thres) {
+          if (!is.na(cal_df$o_r2[cal_id]) &
+              cal_df$o_r2[cal_id] > r2_thres) {
             
-            ref_df$dlta18OH2o$mean_cal[i] <- cal_df$o.intercept[cal_id] +
-              cal_df$o.slope[cal_id] * ref_df$dlta18OH2o$mean[i]
+            ref_df$dlta18OH2o$mean_cal[i] <- cal_df$o_intercept[cal_id] +
+              cal_df$o_slope[cal_id] * ref_df$dlta18OH2o$mean[i]
             
           } else {
             

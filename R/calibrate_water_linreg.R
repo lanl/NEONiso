@@ -142,122 +142,133 @@ calibrate_water_linreg <- function(inname,
     slice(tail(row_number(), 3)) %>%
     ungroup()
   
+  #=======================================================================
+  # apply calibration routines
+  #=======================================================================
   # bind together, and cleanup.
+  #### OMIT FOR ERROR PROPOAGATION.
   stds <- do.call(rbind, list(high_rs, med_rs, low_rs))
   
-  #rm(high_rs,med_rs,low_rs,high,med,low)
-  
-  # replace NaNs with NA
-  # rpf note on 181121 - what does this line actually do? Seems tautological.
-  # rpf note 181126 - is.na() also returns NaN as NA, so this does actually do what first
-  # comment indicates.
-  stds[is.na(stds)] <- NA
-  
-  #-----------------------------------------------------------
-  # CALIBRATE WATER ISOTOPE VALUES
-  
-  # change class of time variables from charatcter to posixct.
-  stds$d18O_meas_btime <- as.POSIXct(stds$d18O_meas_btime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  stds$d18O_meas_etime <- as.POSIXct(stds$d18O_meas_etime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  
-  stds$d18O_ref_btime <- as.POSIXct(stds$d18O_ref_btime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  stds$d18O_ref_etime <- as.POSIXct(stds$d18O_ref_etime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  
-  stds$d2H_meas_btime <- as.POSIXct(stds$d2H_meas_btime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  stds$d2H_meas_etime <- as.POSIXct(stds$d2H_meas_etime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  
-  stds$d2H_ref_btime <- as.POSIXct(stds$d2H_ref_btime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  stds$d2H_ref_etime <- as.POSIXct(stds$d2H_ref_etime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  
-  # reorder data frame
-  stds <- stds[order(stds$d18O_meas_btime), ]
-  
-  # assign a vector corresponding to calibration period.
-  stds$cal_period <- stds$d18O_meas_n
-  
-  period_id <- 1
-  tdiffs <- c(diff(stds$d18O_meas_btime), 0)
-  for (i in 1:nrow(stds)) {
-    stds$cal_period[i] <- period_id
+  if (nrow(stds) > 0) {
+    # replace NaNs with NA
+    # rpf note on 181121 - what does this line actually do? Seems tautological.
+    # rpf note 181126 - is.na() also returns NaN as NA, so this does actually do what first
+    # comment indicates.
+    stds[is.na(stds)] <- NA
     
-    if (tdiffs[i] >= time.diff.betweeen.standards) {
-      period_id = period_id + 1
-    }
-  }
-  
-  # okay, now run calibrations...
-  #------------------------------
-  
-  # create output variables.
-  oxy_cal_slopes <- vector()
-  oxy_cal_ints   <- vector()
-  oxy_cal_rsq    <- vector()
-  
-  hyd_cal_slopes <- vector()
-  hyd_cal_ints   <- vector()
-  hyd_cal_rsq    <- vector()
-  
-  for (i in 2:max(stds$cal_period)) {
-    # check to see if data exist.
-    cal.subset <- stds[which(stds$cal_period == i | stds$cal_period == (i - 1)), ]
+    #-----------------------------------------------------------
+    # CALIBRATE WATER ISOTOPE VALUES
     
-    # check to see if sum of is.na() on oxygen data = nrow of oxygen data
-    if (sum(is.na(cal.subset$d18O_meas_mean)) < nrow(cal.subset) &
-        sum(is.na(cal.subset$d18O_ref_mean)) < nrow(cal.subset)) {
-      tmp <- lm(d18O_ref_mean ~ d18O_meas_mean, data = cal.subset)
+    # change class of time variables from charatcter to posixct.
+    stds$d18O_meas_btime <- as.POSIXct(stds$d18O_meas_btime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+    stds$d18O_meas_etime <- as.POSIXct(stds$d18O_meas_etime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+    
+    stds$d18O_ref_btime <- as.POSIXct(stds$d18O_ref_btime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+    stds$d18O_ref_etime <- as.POSIXct(stds$d18O_ref_etime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+    
+    stds$d2H_meas_btime <- as.POSIXct(stds$d2H_meas_btime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+    stds$d2H_meas_etime <- as.POSIXct(stds$d2H_meas_etime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+    
+    stds$d2H_ref_btime <- as.POSIXct(stds$d2H_ref_btime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+    stds$d2H_ref_etime <- as.POSIXct(stds$d2H_ref_etime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+    
+    # reorder data frame
+    stds <- stds[order(stds$d18O_meas_btime), ]
+    
+    # assign a vector corresponding to calibration period.
+    stds$cal_period <- stds$d18O_meas_n
+    
+    period_id <- 1
+    tdiffs <- c(diff(stds$d18O_meas_btime), 0)
+    for (i in 1:nrow(stds)) {
+      stds$cal_period[i] <- period_id
       
-      oxy_cal_slopes[i - 1] <- coef(tmp)[[2]]
-      oxy_cal_ints[i - 1] <- coef(tmp)[[1]]
-      oxy_cal_rsq[i - 1] <- summary(tmp)$r.squared
-      
-    } else { # all are missing
-      oxy_cal_slopes[i - 1] <- NA
-      oxy_cal_ints[i - 1] <- NA
-      oxy_cal_rsq[i - 1] <- NA
+      if (tdiffs[i] >= time.diff.betweeen.standards) {
+        period_id = period_id + 1
+      }
     }
     
-    # HYDROGEN
+    # okay, now run calibrations...
+    #------------------------------
     
-    # check to see if sum of is.na() on oxygen data = nrow of oxygen data
-    if (sum(is.na(cal.subset$d2H_meas_mean)) < nrow(cal.subset) &
-        sum(is.na(cal.subset$d2H_ref_mean)) < nrow(cal.subset)) {
-      tmp <- lm(d2H_ref_mean ~ d2H_meas_mean, data = cal.subset)
+    # create output variables.
+    oxy_cal_slopes <- vector()
+    oxy_cal_ints   <- vector()
+    oxy_cal_rsq    <- vector()
+    
+    hyd_cal_slopes <- vector()
+    hyd_cal_ints   <- vector()
+    hyd_cal_rsq    <- vector()
+    
+    for (i in 2:max(stds$cal_period)) {
+      # check to see if data exist.
+      cal.subset <- stds[which(stds$cal_period == i | stds$cal_period == (i - 1)), ]
       
-      hyd_cal_slopes[i - 1] <- coef(tmp)[[2]]
-      hyd_cal_ints[i - 1] <- coef(tmp)[[1]]
-      hyd_cal_rsq[i - 1] <- summary(tmp)$r.squared  
+      # check to see if sum of is.na() on oxygen data = nrow of oxygen data
+      if (sum(is.na(cal.subset$d18O_meas_mean)) < nrow(cal.subset) &
+          sum(is.na(cal.subset$d18O_ref_mean)) < nrow(cal.subset)) {
+        tmp <- lm(d18O_ref_mean ~ d18O_meas_mean, data = cal.subset)
+        
+        oxy_cal_slopes[i - 1] <- coef(tmp)[[2]]
+        oxy_cal_ints[i - 1] <- coef(tmp)[[1]]
+        oxy_cal_rsq[i - 1] <- summary(tmp)$r.squared
+        
+      } else { # all are missing
+        oxy_cal_slopes[i - 1] <- NA
+        oxy_cal_ints[i - 1] <- NA
+        oxy_cal_rsq[i - 1] <- NA
+      }
       
-    } else { # all are missing
-      hyd_cal_slopes[i - 1] <- NA
-      hyd_cal_ints[i - 1] <- NA
-      hyd_cal_rsq[i - 1] <- NA 
+      # HYDROGEN
+      
+      # check to see if sum of is.na() on oxygen data = nrow of oxygen data
+      if (sum(is.na(cal.subset$d2H_meas_mean)) < nrow(cal.subset) &
+          sum(is.na(cal.subset$d2H_ref_mean)) < nrow(cal.subset)) {
+        tmp <- lm(d2H_ref_mean ~ d2H_meas_mean, data = cal.subset)
+        
+        hyd_cal_slopes[i - 1] <- coef(tmp)[[2]]
+        hyd_cal_ints[i - 1] <- coef(tmp)[[1]]
+        hyd_cal_rsq[i - 1] <- summary(tmp)$r.squared  
+        
+      } else { # all are missing
+        hyd_cal_slopes[i - 1] <- NA
+        hyd_cal_ints[i - 1] <- NA
+        hyd_cal_rsq[i - 1] <- NA 
+      }
     }
+    
+    # make dataframe of calibration data.
+    times <- stds %>%
+      select(d18O_meas_btime, d18O_meas_etime, d18O_ref_btime, d18O_ref_etime,
+             d2H_meas_btime, d2H_meas_etime, d2H_ref_btime, d2H_ref_etime, cal_period) %>%
+      group_by(cal_period) %>%
+      summarize(etime = max(c(d18O_meas_etime, d18O_ref_etime, d2H_meas_etime, d2H_ref_etime)))
+    
+    # loop through times, assign beginning, ending value. max etime should be just fine.
+    starttimes <- vector()
+    endtimes <- vector()
+    
+    for (i in 1:length(oxy_cal_slopes)) {
+      starttimes[i] <- times$etime[i]
+      endtimes[i] <- times$etime[i + 1]
+    }
+    
+    # output dataframe giving valid time range, slopes, intercepts, rsquared.
+    out <- data.frame(start = as.POSIXct(starttimes, tz = "UTC", origin = "1970-01-01"),
+                      end = as.POSIXct(endtimes, tz = "UTC", origin = "1970-01-01"),
+                      o_slope = as.numeric(oxy_cal_slopes),
+                      o_intercept = as.numeric(oxy_cal_ints),
+                      o_r2 = as.numeric(oxy_cal_rsq),
+                      h_slope = as.numeric(hyd_cal_slopes),
+                      h_intercept = as.numeric(hyd_cal_ints),
+                      h_r2 = as.numeric(hyd_cal_rsq))
+    
+  } else {
+    out <- data.frame(start = as.POSIXct(starttimes, tz = "UTC", origin = "1970-01-01"),
+                      end = as.POSIXct(endtimes, tz = "UTC", origin = "1970-01-01"),
+                      o_slope = as.numeric(NA), o_intercept = as.numeric(NA), o_r2 = as.numeric(NA),
+                      h_slope = as.numeric(NA), h_intercept = as.numeric(NA), h_r2 = as.numeric(NA))
   }
-  
-  # make dataframe of calibration data.
-  # TODO: add hydrogen data in here...
-  times <- stds %>%
-    select(d18O_meas_btime, d18O_meas_etime, d18O_ref_btime, d18O_ref_etime,
-           d2H_meas_btime, d2H_meas_etime, d2H_ref_btime, d2H_ref_etime, cal_period) %>%
-    group_by(cal_period) %>%
-    summarize(etime = max(c(d18O_meas_etime, d18O_ref_etime, d2H_meas_etime, d2H_ref_etime)))
-  
-  # loop through times, assign beginning, ending value. max etime should be just fine.
-  starttimes <- vector()
-  endtimes <- vector()
-  
-  for (i in 1:length(oxy_cal_slopes)) {
-    starttimes[i] <- times$etime[i]
-    endtimes[i] <- times$etime[i + 1]
-  }
-  
-  # output dataframe giving valid time range, slopes, intercepts, rsquared.
-  out <- data.frame(start = as.POSIXct(starttimes, tz = "UTC", origin = "1970-01-01"),
-                    end = as.POSIXct(endtimes, tz = "UTC", origin = "1970-01-01"),
-                    o_slope = oxy_cal_slopes, o_intercept = oxy_cal_ints, o_r2 = oxy_cal_rsq,
-                    h_slope = hyd_cal_slopes, h_intercept = hyd_cal_ints, h_r2 = hyd_cal_rsq)
-  
-  
   #--------------------------------------------------------------------
   # perform interpolation, if requested.
   
@@ -298,6 +309,34 @@ calibrate_water_linreg <- function(inname,
   #     replaced.vals <- rep(0,nrow(out))
   #   }
   # }
+  
+  # check to ensure there are 6 columns.   
+  # add slope, intercept, r2 columns if missing.
+  if (!("o_slope" %in% names(out))) {
+    out$o_slope <- as.numeric(rep(NA, length(out$start)))
+  }
+  if (!("o_intercept" %in% names(out))) {
+    out$o_intercept <- as.numeric(rep(NA, length(out$start)))
+  }
+  if (!("o_r2" %in% names(out))) {
+    out$o_r2 <- as.numeric(rep(NA, length(out$start)))
+  }
+  if (!("h_slope" %in% names(out))) {
+    out$h_slope <- as.numeric(rep(NA, length(out$start)))
+  }
+  if (!("h_intercept" %in% names(out))) {
+    out$h_intercept <- as.numeric(rep(NA, length(out$start)))
+  }
+  if (!("h_r2" %in% names(out))) {
+    out$h_r2 <- as.numeric(rep(NA, length(out$start)))
+  }
+  
+  print(str(out))
+  
+  # ensure there are 8 columns in out!
+  if (ncol(out) != 8) {
+    stop("Wrong number of columns in out.")
+  }
   
   var_for_h5 <- out
   
@@ -352,13 +391,13 @@ calibrate_water_linreg <- function(inname,
   #---------------------------------------------
   #low
   rhdf5::h5createGroup(outname,
-                       paste0("/", site, "/dp01/data/isoH2o/h2oLow_09m"))
+                       paste0("/", site, "/dp01/data/isoH2o/h2oLow_03m"))
   
   low_outloc <- rhdf5::H5Gopen(fid,
-                               paste0("/", site, "/dp01/data/isoH2o/h2oLow_09m"))
+                               paste0("/", site, "/dp01/data/isoH2o/h2oLow_03m"))
   
   low <- rhdf5::h5read(inname,
-                       paste0("/", site, "/dp01/data/isoH2o/h2oLow_09m"))
+                       paste0("/", site, "/dp01/data/isoH2o/h2oLow_03m"))
   
   low <- calibrate_standards_water(out, low)
   
@@ -375,13 +414,13 @@ calibrate_water_linreg <- function(inname,
   #------------------------------------------------------------
   #medium
   rhdf5::h5createGroup(outname,
-                       paste0("/", site, "/dp01/data/isoH2o/h2oMed_09m"))
+                       paste0("/", site, "/dp01/data/isoH2o/h2oMed_03m"))
   
   med_outloc <- rhdf5::H5Gopen(fid,
-                               paste0("/", site, "/dp01/data/isoH2o/h2oMed_09m"))
+                               paste0("/", site, "/dp01/data/isoH2o/h2oMed_03m"))
   
   med <- rhdf5::h5read(inname,
-                       paste0("/", site, "/dp01/data/isoH2o/h2oMed_09m"))
+                       paste0("/", site, "/dp01/data/isoH2o/h2oMed_03m"))
   
   med <- calibrate_standards_water(out, med)
   
@@ -398,13 +437,13 @@ calibrate_water_linreg <- function(inname,
   #------------------------------------------------------------
   #high
   rhdf5::h5createGroup(outname,
-                       paste0("/", site, "/dp01/data/isoH2o/h2oHigh_09m"))
+                       paste0("/", site, "/dp01/data/isoH2o/h2oHigh_03m"))
   
   high_outloc <- rhdf5::H5Gopen(fid,
-                                paste0("/", site, "/dp01/data/isoH2o/h2oHigh_09m"))
+                                paste0("/", site, "/dp01/data/isoH2o/h2oHigh_03m"))
   
   high <- rhdf5::h5read(inname,
-                        paste0("/", site, "/dp01/data/isoH2o/h2oHigh_09m"))
+                        paste0("/", site, "/dp01/data/isoH2o/h2oHigh_03m"))
   
   high <- calibrate_standards_water(out, high)
   

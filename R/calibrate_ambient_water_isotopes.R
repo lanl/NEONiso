@@ -57,9 +57,9 @@ calibrate_ambient_water_linreg <- function(amb_data_list, caldf, outname, site, 
   oxydf$min_cal  <- oxydf$min 
   
   for (i in 1:length(var_inds_in_calperiod)) {
-    oxydf$mean_cal[var_inds_in_calperiod[[i]]] <- oxydf$mean[var_inds_in_calperiod[[i]]] * caldf$o.slope[i] + caldf$o.intercept[i]
-    oxydf$min_cal[var_inds_in_calperiod[[i]]] <- oxydf$min[var_inds_in_calperiod[[i]]] * caldf$o.slope[i] + caldf$o.intercept[i]
-    oxydf$max_cal[var_inds_in_calperiod[[i]]] <- oxydf$max[var_inds_in_calperiod[[i]]] * caldf$o.slope[i] + caldf$o.intercept[i]
+    oxydf$mean_cal[var_inds_in_calperiod[[i]]] <- oxydf$mean[var_inds_in_calperiod[[i]]] * caldf$o_slope[i] + caldf$o_intercept[i]
+    oxydf$min_cal[var_inds_in_calperiod[[i]]] <- oxydf$min[var_inds_in_calperiod[[i]]] * caldf$o_slope[i] + caldf$o_intercept[i]
+    oxydf$max_cal[var_inds_in_calperiod[[i]]] <- oxydf$max[var_inds_in_calperiod[[i]]] * caldf$o_slope[i] + caldf$o_intercept[i]
     
   }
   
@@ -98,9 +98,9 @@ calibrate_ambient_water_linreg <- function(amb_data_list, caldf, outname, site, 
   hyddf$min_cal  <- hyddf$min 
   
   for (i in 1:length(var_inds_in_calperiod)) {
-    hyddf$mean_cal[var_inds_in_calperiod[[i]]] <- hyddf$mean[var_inds_in_calperiod[[i]]] * caldf$h.slope[i] + caldf$h.intercept[i]
-    hyddf$min_cal[var_inds_in_calperiod[[i]]] <- hyddf$min[var_inds_in_calperiod[[i]]] * caldf$h.slope[i] + caldf$h.intercept[i]
-    hyddf$max_cal[var_inds_in_calperiod[[i]]] <- hyddf$max[var_inds_in_calperiod[[i]]] * caldf$h.slope[i] + caldf$h.intercept[i]
+    hyddf$mean_cal[var_inds_in_calperiod[[i]]] <- hyddf$mean[var_inds_in_calperiod[[i]]] * caldf$h_slope[i] + caldf$h_intercept[i]
+    hyddf$min_cal[var_inds_in_calperiod[[i]]] <- hyddf$min[var_inds_in_calperiod[[i]]] * caldf$h_slope[i] + caldf$h_intercept[i]
+    hyddf$max_cal[var_inds_in_calperiod[[i]]] <- hyddf$max[var_inds_in_calperiod[[i]]] * caldf$h_slope[i] + caldf$h_intercept[i]
   }
   
   # replace ambdf in amb_data_list
