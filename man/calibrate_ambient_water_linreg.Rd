@@ -48,8 +48,6 @@ calibrate_ambient_water_isotopes
 }
 \examples{
 
- @importFrom magrittr \%>\%
- 
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}

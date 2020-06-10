@@ -32,7 +32,7 @@
 #'
 #' @examples
 #' 
-#'  @importFrom magrittr %>%
+#' @importFrom magrittr %>%
 #'  
 calibrate_ambient_water_linreg <- function(amb_data_list,
                                            caldf,
