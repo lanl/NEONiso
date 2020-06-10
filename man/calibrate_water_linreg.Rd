@@ -8,9 +8,7 @@ calibrate_water_linreg(
   inname,
   outname,
   site,
-  time.diff.betweeen.standards = 1800,
-  interpolate.missing.cals = TRUE,
-  interpolation.method = "LWMA"
+  time_diff_betweeen_standards = 1800
 )
 }
 \arguments{
@@ -20,17 +18,17 @@ calibrate_water_linreg(
 
 \item{site}{Four-letter NEON code for site being processed.}
 
-\item{time.diff.betweeen.standards}{Time (in seconds) required between consecutive standard measurements.}
-
-\item{force.cal.to.beginning}{Extend first calibration to the beginning of the file? (Default true)}
-
-\item{force.cal.to.end}{Extend last calibration to the end of the file? (Detault true)}
+\item{time_diff_betweeen_standards}{Time (in seconds) required between consecutive standard measurements.}
 }
 \value{
-
+nothing to the workspace, but creates a new output file of
+        calibrated carbon isotope data.
 }
 \description{
 calibrate_water_linreg
+}
+\examples{
+
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}

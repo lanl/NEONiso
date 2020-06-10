@@ -3,22 +3,22 @@
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
 #' @param site Four-letter NEON code for site being processed.
-#' @param time.diff.betweeen.standards Time (in seconds) required between consecutive standard measurements.
+#' @param time_diff_betweeen_standards Time (in seconds) required between consecutive standard measurements.
 #' @param inname Name of the input file.
 #' @param outname Name of the output file.
-#' @param force.cal.to.beginning Extend first calibration to the beginning of the file? (Default true)
-#' @param force.cal.to.end Extend last calibration to the end of the file? (Detault true)
 #'
-#' @return
+#' @return nothing to the workspace, but creates a new output file of
+#'         calibrated carbon isotope data.
 #' @export
 #'
 #' @examples
+#' 
+#' @importFrom magrittr %>%
+#' @importFrom lubridate %within%
 calibrate_water_linreg <- function(inname,
                                    outname,
                                    site,
-                                   time.diff.betweeen.standards = 1800,
-                                   interpolate.missing.cals = TRUE,
-                                   interpolation.method = "LWMA") {
+                                   time_diff_betweeen_standards = 1800) {
   
   # print status.
   print("Processing water calibration data...")
@@ -183,7 +183,7 @@ calibrate_water_linreg <- function(inname,
     for (i in 1:nrow(stds)) {
       stds$cal_period[i] <- period_id
       
-      if (tdiffs[i] >= time.diff.betweeen.standards) {
+      if (tdiffs[i] >= time_diff_betweeen_standards) {
         period_id = period_id + 1
       }
     }
@@ -202,12 +202,12 @@ calibrate_water_linreg <- function(inname,
     
     for (i in 2:max(stds$cal_period)) {
       # check to see if data exist.
-      cal.subset <- stds[which(stds$cal_period == i | stds$cal_period == (i - 1)), ]
+      cal_subset <- stds[which(stds$cal_period == i | stds$cal_period == (i - 1)), ]
       
       # check to see if sum of is.na() on oxygen data = nrow of oxygen data
-      if (sum(is.na(cal.subset$d18O_meas_mean)) < nrow(cal.subset) &
-          sum(is.na(cal.subset$d18O_ref_mean)) < nrow(cal.subset)) {
-        tmp <- lm(d18O_ref_mean ~ d18O_meas_mean, data = cal.subset)
+      if (sum(is.na(cal_subset$d18O_meas_mean)) < nrow(cal_subset) &
+          sum(is.na(cal_subset$d18O_ref_mean)) < nrow(cal_subset)) {
+        tmp <- lm(d18O_ref_mean ~ d18O_meas_mean, data = cal_subset)
         
         oxy_cal_slopes[i - 1] <- coef(tmp)[[2]]
         oxy_cal_ints[i - 1] <- coef(tmp)[[1]]
@@ -222,9 +222,9 @@ calibrate_water_linreg <- function(inname,
       # HYDROGEN
       
       # check to see if sum of is.na() on oxygen data = nrow of oxygen data
-      if (sum(is.na(cal.subset$d2H_meas_mean)) < nrow(cal.subset) &
-          sum(is.na(cal.subset$d2H_ref_mean)) < nrow(cal.subset)) {
-        tmp <- lm(d2H_ref_mean ~ d2H_meas_mean, data = cal.subset)
+      if (sum(is.na(cal_subset$d2H_meas_mean)) < nrow(cal_subset) &
+          sum(is.na(cal_subset$d2H_ref_mean)) < nrow(cal_subset)) {
+        tmp <- lm(d2H_ref_mean ~ d2H_meas_mean, data = cal_subset)
         
         hyd_cal_slopes[i - 1] <- coef(tmp)[[2]]
         hyd_cal_ints[i - 1] <- coef(tmp)[[1]]
@@ -372,12 +372,12 @@ calibrate_water_linreg <- function(inname,
   
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o/calData"))
   
-  h2o.cal.outloc <- rhdf5::H5Gopen(fid,
+  h2o_cal_outloc <- rhdf5::H5Gopen(fid,
                                    paste0("/", site, "/dp01/data/isoH2o/calData"))
   
   # write out dataset.
   rhdf5::h5writeDataset.data.frame(obj = var_for_h5,
-                                   h5loc = h2o.cal.outloc,
+                                   h5loc = h2o_cal_outloc,
                                    name = "calRegressions",
                                    DataFrameAsCompound = TRUE)
   
