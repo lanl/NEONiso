@@ -2,19 +2,46 @@
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param amb_data_list
-#' @param caldf
-#' @param outname
-#' @param site
-#' @param file
-#' @param force.to.end
-#' @param force.to.beginning
+#' Function called by \code{calibrate_ambient_water_linreg} to apply
+#' slope and intercept parameters to the ambient datasets (000_0x0_09m and
+#' 000_0x0_30m) to correct to the VSMOW scale.
+#' This function should generally not be used independently,
+#' but should be used with \code{calibrate_ambient_water_linreg}.
+#' Note that in this version *NO CORRECTION FOR HUMIDITY* is performed.
+#' Use with caution.
 #'
-#' @return
+#' @param amb_data_list List containing ambient d18O/d2H datasets.
+#'             Will include all variables in 000_0x0_xxm. (character)
+#' @param caldf Calibration data frame containing slope and intercept values
+#'             for d18O and d2H values.
+#' @param outname Output variable name. Inherited from
+#'             \code{calibrate_ambient_water_linreg}
+#' @param site Four-letter NEON code corersponding to site being processed.
+#' @param file Output file name. Inherited from
+#'             \code{calibrate_ambient_water_linreg}
+#' @param force_to_end In given month, calibrate ambient data later than last
+#'             calibration, using the last calibration? (default true)
+#' @param force_to_beginning In given month, calibrate ambient data before than
+#'             first calibration, using the first calibration? (default true)
+#' @param r2_thres Minimum r2 value for calibration to be considered "good" and
+#'             applied to ambient data.
+#'
+#' @return Nothing to environment; returns calibrated ambient observations to
+#'     the output file. This function is not designed to be called on its own.
 #' @export
 #'
 #' @examples
-calibrate_ambient_water_linreg <- function(amb_data_list, caldf, outname, site, file, force_to_end = TRUE, force_to_beginning = TRUE) {
+#' 
+#'  @importFrom magrittr %>%
+#'  
+calibrate_ambient_water_linreg <- function(amb_data_list,
+                                           caldf,
+                                           outname,
+                                           site,
+                                           file,
+                                           force_to_end = TRUE, 
+                                           force_to_beginning = TRUE,
+                                           r2_thres = 0.95) {
   
   # print status.
   print("Processing water ambient data...")

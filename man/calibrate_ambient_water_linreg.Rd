@@ -11,18 +11,54 @@ calibrate_ambient_water_linreg(
   site,
   file,
   force_to_end = TRUE,
-  force_to_beginning = TRUE
+  force_to_beginning = TRUE,
+  r2_thres = 0.95
 )
 }
 \arguments{
-\item{force.to.beginning}{}
+\item{amb_data_list}{List containing ambient d18O/d2H datasets.
+Will include all variables in 000_0x0_xxm. (character)}
+
+\item{caldf}{Calibration data frame containing slope and intercept values
+for d18O and d2H values.}
+
+\item{outname}{Output variable name. Inherited from
+\code{calibrate_ambient_water_linreg}}
+
+\item{site}{Four-letter NEON code corersponding to site being processed.}
+
+\item{file}{Output file name. Inherited from
+\code{calibrate_ambient_water_linreg}}
+
+\item{force_to_end}{In given month, calibrate ambient data later than last
+calibration, using the last calibration? (default true)}
+
+\item{force_to_beginning}{In given month, calibrate ambient data before than
+first calibration, using the first calibration? (default true)}
+
+\item{r2_thres}{Minimum r2 value for calibration to be considered "good" and
+applied to ambient data.}
 }
 \value{
-
+Nothing to environment; returns calibrated ambient observations to
+    the output file. This function is not designed to be called on its own.
 }
 \description{
 calibrate_ambient_water_isotopes
 }
+\examples{
+
+ @importFrom magrittr \%>\%
+ 
+}
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
+
+Function called by \code{calibrate_ambient_water_linreg} to apply
+slope and intercept parameters to the ambient datasets (000_0x0_09m and
+000_0x0_30m) to correct to the VSMOW scale.
+This function should generally not be used independently,
+but should be used with \code{calibrate_ambient_water_linreg}.
+Note that in this version *NO CORRECTION FOR HUMIDITY* is performed.
+Use with caution.
 }
