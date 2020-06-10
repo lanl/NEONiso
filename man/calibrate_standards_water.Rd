@@ -15,12 +15,6 @@ calibrate_standards_water(cal_df, ref_df, r2_thres = 0.95)
 calibrate standards data. Default is 0.95. Calibrated reference
 gas measurements occuring during calibration periods
 with r2 values less than \code{r2_thres} will be marked NA.}
-
-\item{R_vpdb}{Ratio of 13C to 12C in Vienna Pee Dee Belemnite, inhereted
-from the script calling this function.}
-
-\item{f}{Fraction of CO2 isotopologues that are not 12CO2 or 13CO2. 
-Inhereted from script calling this function.}
 }
 \value{
 
