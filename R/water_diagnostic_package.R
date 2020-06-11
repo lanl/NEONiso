@@ -27,7 +27,7 @@ water_diagnostic_package <- function(data_path,
   # all of these should be queried when running this function.
 
   # query re: calibration plots
-  print("This function makes diagnostic plots of calibrated NEON water isotope data.")
+  print("This function makes diagnostic plots of NEON water isotope data.")
 
   #-------------------------------------------------------
   # query for which plots.
@@ -199,7 +199,6 @@ water_diagnostic_package <- function(data_path,
     calData$timeEnd <- as.POSIXct(calData$timeEnd,
                                   format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
 
-    print(str(calData))
     #=========================
     # 2. CALIBRATION PARAMETERS
 
@@ -220,11 +219,11 @@ water_diagnostic_package <- function(data_path,
 
       # convert valid_period_start and valid_period_end to POSIXct.
       calPars[[k]]$valid_period_start <- as.POSIXct(calPars[[k]]$valid_period_start,
-                                                    format = "%Y-%m-%dT%H:%M:%OSZ",
-                                                    tz = "UTC")
+                                            format = "%Y-%m-%dT%H:%M:%OSZ",
+                                            tz = "UTC")
       calPars[[k]]$valid_period_end <- as.POSIXct(calPars[[k]]$valid_period_end,
-                                                  format = "%Y-%m-%dT%H:%M:%OSZ",
-                                                  tz = "UTC")
+                                            format = "%Y-%m-%dT%H:%M:%OSZ",
+                                            tz = "UTC")
 
     }
 
@@ -236,8 +235,7 @@ water_diagnostic_package <- function(data_path,
 
     # bind together before putting into plotting scripts.
     calPars <- do.call(rbind, calPars)
-    
-    print(str(calPars))
+
     #=========================
     # 3. AMBIENT DATA
 
@@ -252,18 +250,18 @@ water_diagnostic_package <- function(data_path,
       dplyr::filter(verticalPosition %in%
                c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
       dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta18OH2o.mean, verticalPosition) %>%
+                    data.isoH2o.dlta18OH2o.mean_cal, verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    mean18O = data.isoH2o.dlta18OH2o.mean,
+                    mean18O = data.isoH2o.dlta18OH2o.mean_cal,
                     level = verticalPosition)
     
     ambData[[2]] <- h2_amb_data[[1]] %>%
       dplyr::filter(verticalPosition %in%
-                      c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
+               c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
       dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta2HH2o.mean, verticalPosition) %>%
+                    data.isoH2o.dlta2HH2o.mean_cal, verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    mean2H = data.isoH2o.dlta2HH2o.mean,
+                    mean2H = data.isoH2o.dlta2HH2o.mean_cal,
                     level = verticalPosition)
     
 
@@ -297,8 +295,7 @@ water_diagnostic_package <- function(data_path,
                                   format = "%Y-%m-%dT%H:%M:%OSZ",
                                   tz = "UTC")
 
-    print(str(ambData))
-    
+
     #--------------------------------------------------------------
     #--------------------------------------------------------------
     # PLOTTING SCRIPTS LIVE BELOW.
