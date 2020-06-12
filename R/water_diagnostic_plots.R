@@ -21,57 +21,55 @@ wplot_monthly_standards <- function(cal_data, plot_path, site) {
                      y = mean18O, col = factor(standard))) +
       geom_point() +
       theme_bw() +
-      scale_x_datetime("date", date_labels = "%m-%d-%Y") +
-      scale_y_continuous("d18O, obs") +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      scale_x_datetime("date", date_labels = "%m-%d") +
+      scale_y_continuous("d18O, obs")
 
     p2 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
                      y = ref18O, col = factor(standard))) +
       geom_point() +
       theme_bw() +
-      scale_x_datetime("date", date_labels = "%m-%d-%Y") +
-      scale_y_continuous("d18O, ref") +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      scale_x_datetime("date", date_labels = "%m-%d") +
+      scale_y_continuous("d18O, ref")
 
     p3 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
                      y = mean18O - ref18O, col = factor(standard))) +
       geom_point() +
       theme_bw() +
-      scale_x_datetime("date", date_labels = "%m-%d-%Y") +
-      scale_y_continuous("d18Odiff") +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      scale_x_datetime("date", date_labels = "%m-%d") +
+      scale_y_continuous("d18Odiff")
 
     p4 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
                      y = mean2H, col = factor(standard))) +
       geom_point() +
       theme_bw() +
-      scale_x_datetime("date", date_labels = "%m-%d-%Y") +
-      scale_y_continuous("d2H, obs") +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      scale_x_datetime("date", date_labels = "%m-%d") +
+      scale_y_continuous("d2H, obs")
 
     p5 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
                      y = ref2H, col = factor(standard))) +
       geom_point() +
       theme_bw() +
-      scale_x_datetime("date", date_labels = "%m-%d-%Y") +
-      scale_y_continuous("d2H, ref") +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      scale_x_datetime("date", date_labels = "%m-%d") +
+      scale_y_continuous("d2H, ref")
 
     p6 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
                      y = mean2H - ref2H, col = factor(standard))) +
       geom_point() +
       theme_bw() +
-      scale_x_datetime("date", date_labels = "%m-%d-%Y") +
-      scale_y_continuous("d2H, diff") +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      scale_x_datetime("date", date_labels = "%m-%d") +
+      scale_y_continuous("d2H, diff")
 
     # add plot to file.
-    gridExtra::grid.arrange(p1, p2, p3, p4, p5, p6, nrow = 6, top = site)
+    gridExtra::grid.arrange(p1, p2, p3, p4, p5, p6, nrow = 6,
+      top = paste0(site, " - ",
+                   lubridate::month(zoo::index(cal_data.mon[[i]])[1]),
+                   "-",
+                   lubridate::year(zoo::index(cal_data.mon[[i]])[1])))
   }
 
   dev.off()
@@ -93,51 +91,51 @@ wplot_monthly_calParameters <- function(calParDf, plot_path, site) {
                  aes(x = valid_period_start, y = o_slope)) +
       geom_point() +
       theme_bw() +
-      scale_x_datetime("date", date_labels = "%m-%d-%Y") +
-      scale_y_continuous("d18O slope") +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      scale_x_datetime("date") +
+      scale_y_continuous("d18O slope")
     
     p2 <- ggplot(data = calParDf[[i]],
                  aes(x = valid_period_start, y = o_intercept)) +
       geom_point() +
       theme_bw() +
-      scale_x_datetime("date", date_labels = "%m-%d-%Y") +
-      scale_y_continuous("d18O intercept") +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      scale_x_datetime("date") +
+      scale_y_continuous("d18O intercept")
     
     p3 <- ggplot(data = calParDf[[i]],
                  aes(x = valid_period_start, y = o_r2)) +
       geom_point() +
       theme_bw() +
-      scale_x_datetime("date", date_labels = "%m-%d-%Y") +
-      scale_y_continuous("d18O r2") +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      scale_x_datetime("date") +
+      scale_y_continuous("d18O r2")
     
     p4 <- ggplot(data = calParDf[[i]],
                  aes(x = valid_period_start, y = h_slope)) +
       geom_point() +
       theme_bw() +
-      scale_x_datetime("date", date_labels = "%m-%d-%Y") +
-      scale_y_continuous("d2H slope") +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      scale_x_datetime("date") +
+      scale_y_continuous("d2H slope")
     
     p5 <- ggplot(data = calParDf[[i]],
                  aes(x = valid_period_start, y = h_intercept)) +
       geom_point() +
       theme_bw() +
-      scale_x_datetime("date", date_labels = "%m-%d-%Y") +
-      scale_y_continuous("d2H intercept") +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      scale_x_datetime("date") +
+      scale_y_continuous("d2H intercept")
     
     p6 <- ggplot(data = calParDf[[i]],
                  aes(x = valid_period_start, y = h_r2)) +
       geom_point() +
       theme_bw() +
-      scale_x_datetime("date", date_labels = "%m-%d-%Y") +
-      scale_y_continuous("d2H r2") +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      scale_x_datetime("date") +
+      scale_y_continuous("d2H r2")
     
-    gridExtra::grid.arrange(p1, p4, p2, p5, p3, p6, nrow = 3, top = site)
+    gridExtra::grid.arrange(p1, p4, p2, p5, p3, p6, nrow = 3,
+            top = paste0(site, " - ",
+                         lubridate::month(as.POSIXct(calParDf[[i]]$valid_period_start[1],
+                                                     origin = "1970-01-01")),
+                         "-",
+                         lubridate::year(as.POSIXct(calParDf[[i]]$valid_period_start[1],
+                                                    origin = "1970-01-01"))))
   } #i
 
   dev.off()
@@ -185,8 +183,7 @@ wplot_monthly_ambient <- function(amb_data, dir_plots, site) {
             geom_line() +
             theme_bw() +
             scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-            scale_x_datetime(name = "Time", date_labels = "%m-%d-%Y") +
-            theme(axis.text.x = element_text(angle = 45, hjust = 1))
+            scale_x_datetime(name = "Time")
         })
       } else {
         assign(paste0("p", 3 * j - 2), {
@@ -194,8 +191,7 @@ wplot_monthly_ambient <- function(amb_data, dir_plots, site) {
             geom_line() +
             theme_bw() +
             scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-            scale_x_datetime(name = "Time", date_labels = "%m-%d-%Y") +
-            theme(axis.text.x = element_text(angle = 45, hjust = 1))
+            scale_x_datetime(name = "Time")
         })
       }
 
@@ -205,8 +201,7 @@ wplot_monthly_ambient <- function(amb_data, dir_plots, site) {
             geom_line() +
             theme_bw() +
             scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-            scale_x_datetime(name = "Time", date_labels = "%m-%d-%Y") +
-            theme(axis.text.x = element_text(angle = 45, hjust = 1))
+            scale_x_datetime(name = "Time")
         })
       } else {
         assign(paste0("p", 3 * j - 1), {
@@ -214,8 +209,7 @@ wplot_monthly_ambient <- function(amb_data, dir_plots, site) {
             geom_line() +
             theme_bw() +
             scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-            scale_x_datetime(name = "Time", date_labels = "%m-%d-%Y") +
-            theme(axis.text.x = element_text(angle = 45, hjust = 1))
+            scale_x_datetime(name = "Time")
         })
       }
 
@@ -225,8 +219,7 @@ wplot_monthly_ambient <- function(amb_data, dir_plots, site) {
             geom_line() +
             theme_bw() +
             scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-            scale_x_datetime(name = "Time", date_labels = "%m-%d-%Y") +
-            theme(axis.text.x = element_text(angle = 45, hjust = 1))
+            scale_x_datetime(name = "Time")
         })
       } else {
         assign(paste0("p", 3 * j), {
@@ -234,8 +227,7 @@ wplot_monthly_ambient <- function(amb_data, dir_plots, site) {
             geom_line() +
             theme_bw() +
             scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-            scale_x_datetime(name = "Time", date_labels = "%m-%d-%Y") +
-            theme(axis.text.x = element_text(angle = 45, hjust = 1))
+            scale_x_datetime(name = "Time")
         })
       }
 
@@ -245,7 +237,11 @@ wplot_monthly_ambient <- function(amb_data, dir_plots, site) {
     plot.list <- ls(pattern = "^p")
     plots <- mget(plot.list)
 
-    gridExtra::grid.arrange(grobs = plots, ncol = 3)
+    gridExtra::grid.arrange(grobs = plots, ncol = 3,
+               top = paste0(site, " - ",
+                            lubridate::month(as.POSIXct(amb_data_df$timeBgn[1], origin = "1970-01-01")),
+                            "-",
+                            lubridate::year(as.POSIXct(amb_data_df$timeBgn[1], origin = "1970-01-01"))))
 
     rm(plots, plot.list, amb_data_height)
     rm(list = ls(pattern = "^p"))
@@ -386,8 +382,7 @@ wplot_fullts_ambient <- function(amb_data, dir_plots, site) {
           geom_line() +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-          scale_x_datetime(name = "Time") +
-          theme(axis.text.x = element_text(angle = 45, hjust = 1))
+          scale_x_datetime(name = "Time")
       })
     } else {
       assign(paste0("p", 3 * j - 2), {
@@ -395,8 +390,7 @@ wplot_fullts_ambient <- function(amb_data, dir_plots, site) {
           geom_line() +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-          scale_x_datetime(name = "Time") +
-          theme(axis.text.x = element_text(angle = 45, hjust = 1))
+          scale_x_datetime(name = "Time")
       })
     }
     
@@ -406,8 +400,7 @@ wplot_fullts_ambient <- function(amb_data, dir_plots, site) {
           geom_line() +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-          scale_x_datetime(name = "Time") +
-          theme(axis.text.x = element_text(angle = 45, hjust = 1))
+          scale_x_datetime(name = "Time")
       })
     } else {
       assign(paste0("p", 3 * j - 1), {
@@ -415,8 +408,7 @@ wplot_fullts_ambient <- function(amb_data, dir_plots, site) {
           geom_line() +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-          scale_x_datetime(name = "Time") +
-          theme(axis.text.x = element_text(angle = 45, hjust = 1))
+          scale_x_datetime(name = "Time")
       })
     }
     
@@ -426,8 +418,7 @@ wplot_fullts_ambient <- function(amb_data, dir_plots, site) {
           geom_line() +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-          scale_x_datetime(name = "Time") +
-          theme(axis.text.x = element_text(angle = 45, hjust = 1))
+          scale_x_datetime(name = "Time")
       })
     } else {
       assign(paste0("p", 3 * j), {
@@ -435,8 +426,7 @@ wplot_fullts_ambient <- function(amb_data, dir_plots, site) {
           geom_line() +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-          scale_x_datetime(name = "Time") +
-          theme(axis.text.x = element_text(angle = 45, hjust = 1))
+          scale_x_datetime(name = "Time")
       })
     }
 

@@ -40,7 +40,6 @@ water_diagnostic_package <- function(data_path,
                         "All Monthly Plots",
                         "All Full Timeseries Plots",
                         "All Plots",
-                        "Reference material distributions",
                         "I've made a huge mistake."),
                       title = "Which plots should be run?")
 
