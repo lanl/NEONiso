@@ -18,7 +18,10 @@
 calibrate_water_linreg <- function(inname,
                                    outname,
                                    site,
-                                   time_diff_betweeen_standards = 1800) {
+                                   time_diff_betweeen_standards = 1800,
+                                   force_cal_to_beginning = TRUE,
+                                   force_cal_to_end = TRUE,
+                                   r2_thres = 0.95) {
   
   # print status.
   print("Processing water calibration data...")
@@ -499,7 +502,11 @@ calibrate_water_linreg <- function(inname,
 
   lapply(names(wiso_subset), 
          function(x){calibrate_ambient_water_linreg(amb_data_list = wiso_subset[[x]],
-                                                    caldf = out, outname = x, file = outname, site = site)})
+                                                    caldf = out,
+                                                    outname = x,
+                                                    file = outname,
+                                                    site = site,
+                                                    r2_thres = r2_thres)})
 
   rhdf5::h5closeAll()
 

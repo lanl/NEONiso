@@ -41,7 +41,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
                                            file,
                                            force_to_end = TRUE,
                                            force_to_beginning = TRUE,
-                                           r2_thres = 0.95) {
+                                           r2_thres) {
 
   # print status.
   print("Processing water ambient data...")
@@ -89,13 +89,23 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   oxydf$min_cal  <- oxydf$min 
 
   for (i in 1:length(var_inds_in_calperiod)) {
-    oxydf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$o_intercept[i] +
-      oxydf$mean[var_inds_in_calperiod[[i]]] * caldf$o_slope[i]
-    oxydf$min_cal[var_inds_in_calperiod[[i]]] <- caldf$o_intercept[i] +
-      oxydf$min[var_inds_in_calperiod[[i]]] * caldf$o_slope[i]
-    oxydf$max_cal[var_inds_in_calperiod[[i]]] <- caldf$o_intercept[i] +
-      oxydf$max[var_inds_in_calperiod[[i]]] * caldf$o_slope[i]
- 
+    if (cal_df$o_r2[i] > r2_thres) {
+
+      oxydf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$o_intercept[i] +
+        oxydf$mean[var_inds_in_calperiod[[i]]] * caldf$o_slope[i]
+      oxydf$min_cal[var_inds_in_calperiod[[i]]] <- caldf$o_intercept[i] +
+        oxydf$min[var_inds_in_calperiod[[i]]] * caldf$o_slope[i]
+      oxydf$max_cal[var_inds_in_calperiod[[i]]] <- caldf$o_intercept[i] +
+        oxydf$max[var_inds_in_calperiod[[i]]] * caldf$o_slope[i]
+
+    } else {
+
+      oxydf$mean_cal[var_inds_in_calperiod[[i]]] <- NA
+      oxydf$min_cal[var_inds_in_calperiod[[i]]]  <- NA
+      oxydf$max_cal[var_inds_in_calperiod[[i]]]  <- NA
+
+    }
+
   }
 
   # replace ambdf in amb_data_list
@@ -137,12 +147,24 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   hyddf$min_cal  <- hyddf$min 
   
   for (i in 1:length(var_inds_in_calperiod)) {
-    hyddf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$h_intercept[i] +
-      hyddf$mean[var_inds_in_calperiod[[i]]] * caldf$h_slope[i]
-    hyddf$min_cal[var_inds_in_calperiod[[i]]] <- caldf$h_intercept[i] +
-      hyddf$min[var_inds_in_calperiod[[i]]] * caldf$h_slope[i]
-    hyddf$max_cal[var_inds_in_calperiod[[i]]] <- caldf$h_intercept[i] +
-      hyddf$max[var_inds_in_calperiod[[i]]] * caldf$h_slope[i]
+    
+    if (caldf$h_r2[i] > r2_thres) {
+
+      hyddf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$h_intercept[i] +
+        hyddf$mean[var_inds_in_calperiod[[i]]] * caldf$h_slope[i]
+      hyddf$min_cal[var_inds_in_calperiod[[i]]] <- caldf$h_intercept[i] +
+        hyddf$min[var_inds_in_calperiod[[i]]] * caldf$h_slope[i]
+      hyddf$max_cal[var_inds_in_calperiod[[i]]] <- caldf$h_intercept[i] +
+        hyddf$max[var_inds_in_calperiod[[i]]] * caldf$h_slope[i]
+
+    } else {
+
+      hyddf$mean_cal[var_inds_in_calperiod[[i]]] <- NA
+      hyddf$min_cal[var_inds_in_calperiod[[i]]] <- NA
+      hyddf$max_cal[var_inds_in_calperiod[[i]]] <- NA
+
+    }
+
   }
 
   # replace ambdf in amb_data_list
