@@ -8,7 +8,10 @@ calibrate_water_linreg(
   inname,
   outname,
   site,
-  time_diff_betweeen_standards = 1800
+  time_diff_betweeen_standards = 1800,
+  force_cal_to_beginning = TRUE,
+  force_cal_to_end = TRUE,
+  r2_thres = 0.95
 )
 }
 \arguments{
@@ -19,6 +22,15 @@ calibrate_water_linreg(
 \item{site}{Four-letter NEON code for site being processed.}
 
 \item{time_diff_betweeen_standards}{Time (in seconds) required between consecutive standard measurements.}
+
+\item{force_cal_to_beginning}{Extend first calibration to
+the beginning of the file?}
+
+\item{force_cal_to_end}{Extend last calibration to the end of the file?}
+
+\item{r2_thres}{Minimum r2 threshold of an "acceptable" calibration. Acts to
+remove calibration periods where a measurement error makes
+relationship nonlinear. Default = 0.95}
 }
 \value{
 nothing to the workspace, but creates a new output file of

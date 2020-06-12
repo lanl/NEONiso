@@ -12,7 +12,7 @@ calibrate_ambient_water_linreg(
   file,
   force_to_end = TRUE,
   force_to_beginning = TRUE,
-  r2_thres = 0.95
+  r2_thres
 )
 }
 \arguments{
