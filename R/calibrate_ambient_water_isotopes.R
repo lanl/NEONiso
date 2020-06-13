@@ -89,7 +89,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   oxydf$min_cal  <- oxydf$min 
 
   for (i in 1:length(var_inds_in_calperiod)) {
-    if (cal_df$o_r2[i] > r2_thres) {
+    if (!is.na(caldf$o_r2[i]) & caldf$o_r2[i] > r2_thres) {
 
       oxydf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$o_intercept[i] +
         oxydf$mean[var_inds_in_calperiod[[i]]] * caldf$o_slope[i]
@@ -148,7 +148,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   
   for (i in 1:length(var_inds_in_calperiod)) {
     
-    if (caldf$h_r2[i] > r2_thres) {
+    if (!is.na(caldf$h_r2[i]) & caldf$h_r2[i] > r2_thres) {
 
       hyddf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$h_intercept[i] +
         hyddf$mean[var_inds_in_calperiod[[i]]] * caldf$h_slope[i]

@@ -406,7 +406,7 @@ calibrate_water_linreg <- function(inname,
                                    DataFrameAsCompound = TRUE)
 
   # close the group and the file
-  rhdf5::H5Gclose(h2o.cal.outloc)
+  rhdf5::H5Gclose(h2o_cal_outloc)
 
   #---------------------------------------------
   #---------------------------------------------
