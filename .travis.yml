@@ -2,8 +2,8 @@
 
 language: R
 r: 
-  -oldrel
-  -release
-  -devel
+  - oldrel
+  - release
+  - devel
 cache: packages
 bioc_packages: rhdf5
