@@ -1,7 +1,7 @@
 #' carbon_diagnostic_package.R
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
-#' 
+#'
 #' @param data_path Provide path to where calibrated data from one site live.
 #' @param which_sites Which NEON sites to run plots for? Default = all
 #' @param plot_path Path to where output pdf plots should be written.
@@ -27,7 +27,7 @@ carbon_diagnostic_package <- function(data_path,
   # all of these should be queried when running this function.
 
   # query re: calibration plots
-  print("This function makes diagnostic plots of calibrated NEON carbon isotope data.")
+  print("This function makes diagnostic plots of NEON carbon isotope data.")
 
   #-------------------------------------------------------
   # query for which plots.
@@ -79,10 +79,9 @@ carbon_diagnostic_package <- function(data_path,
 
       slist <- list.files(paste0(data_path, "/", which_sites), pattern = ".h5")
 
-    } # which_sites %in% neon_sites
-    
-  } # which_sites == "all"
+    } #neon_sites
 
+  } # which_sites "all"
 
   # extract lists of domains, site codes, and year-month combos from file names
   slist.tmp <- strsplit(slist, split = ".", fixed = TRUE)
@@ -110,7 +109,7 @@ carbon_diagnostic_package <- function(data_path,
   # get vector of sites:
   unq_sites <- unique(sitecd)
   site_path <- paste0(data_path, "/")
-  
+
   for (i in 1:length(unq_sites)) {
 
     print(paste("Processing data for site:", unq_sites[i]))
@@ -288,7 +287,7 @@ carbon_diagnostic_package <- function(data_path,
 
     # 1. Raw calibration data - monthly
     if (which_plots == 1 | which_plots == 7 | which_plots == 9) {
-  
+
       print("Plot 1")
       cplot_monthly_standards(calData,
                               out_folder,

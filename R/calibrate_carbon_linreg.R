@@ -5,7 +5,7 @@
 #' Correction equation is determined by regressing the reference values on
 #' the measured values, and uses this equation to calibrate the ambient data.
 #' In brief, this function takes the following steps:
-#' 
+#'
 #' \enumerate{
 #'   \item Extracts calibration data from uncalibrated file.
 #'   \item Basic QA/QC on each calibration data point, where the following
@@ -32,7 +32,7 @@
 #'   \item Regression equations are applied ambient data,
 #'         and written to same new output file.
 #' }
-#' 
+#'
 #' The qfqm and ucrt folders are also copied over from the original file,
 #' and are unchanged.
 #'
@@ -253,7 +253,7 @@ calibrate_carbon_linreg <- function(inname,
                       co2_r2 = as.numeric(NA))
   }
 
-  # check to ensure there are 6 columns.   
+  # check to ensure there are 6 columns.
   # add slope, intercept, r2 columns if missing.
   if (!("d13C_slope" %in% names(out))) {
     out$d13C_slope <- as.numeric(rep(NA, length(out$start)))
@@ -287,7 +287,7 @@ calibrate_carbon_linreg <- function(inname,
   # was solved by enforcing all numeric coolumns to be numeric.
   # *feels super redundant w/ above, but worth a shot i suppose*
   var_for_h5$d13C_slope <- as.numeric(var_for_h5$d13C_slope)
-  var_for_h5$co2_slope <- as.numeric(var_for_h5$co2_slope)  
+  var_for_h5$co2_slope <- as.numeric(var_for_h5$co2_slope)
   var_for_h5$d13C_intercept <- as.numeric(var_for_h5$d13C_intercept)
   var_for_h5$co2_intercept <- as.numeric(var_for_h5$co2_intercept)
   var_for_h5$d13C_r2 <- as.numeric(var_for_h5$d13C_r2)
@@ -393,7 +393,7 @@ calibrate_carbon_linreg <- function(inname,
                         paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
 
   high <- calibrate_standards_carbon(out, high, R_vpdb, f)
-  
+
   # loop through each of the variables in list amb.data.list
   # and write out as a dataframe.
   lapply(names(high), function(x) {
@@ -408,7 +408,7 @@ calibrate_carbon_linreg <- function(inname,
   rhdf5::H5Fclose(fid)
   Sys.sleep(0.5)
 
-  rhdf5::h5closeAll()  
+  rhdf5::h5closeAll()
 
   # calibrate data for each height.
   #-------------------------------------

@@ -14,10 +14,10 @@ calibrate_standards_carbon(cal_df, ref_df, R_vpdb, f, r2_thres = 0.95)
 \item{R_vpdb}{Ratio of 13C to 12C in Vienna Pee Dee Belemnite, inhereted
 from the script calling this function.}
 
-\item{f}{Fraction of CO2 isotopologues that are not 12CO2 or 13CO2. 
+\item{f}{Fraction of CO2 isotopologues that are not 12CO2 or 13CO2.
 Inhereted from script calling this function.}
 
-\item{r2_thres}{Threshold for calibration regression to be used to 
+\item{r2_thres}{Threshold for calibration regression to be used to
 calibrate standards data. Default is 0.95. Calibrated reference
 gas measurements occuring during calibration periods
 with r2 values less than \code{r2_thres} will be marked NA.}
