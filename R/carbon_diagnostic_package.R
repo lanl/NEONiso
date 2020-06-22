@@ -244,18 +244,22 @@ carbon_diagnostic_package <- function(data_path,
       dplyr::filter(verticalPosition %in%
                c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
       dplyr::select(timeBgn, timeEnd,
-                    data.isoCo2.dlta13CCo2.mean, verticalPosition) %>%
+                    data.isoCo2.dlta13CCo2.mean,
+                    data.isoCo2.dlta13CCo2.mean_cal,
+                    verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    mean13C = data.isoCo2.dlta13CCo2.mean,
+                    mean13C = data.isoCo2.dlta13CCo2.mean_cal,
+                    ucal13C = data.isoCo2.dlta13CCo2.mean,
                     level = verticalPosition)
 
     ambData[[2]] <- co2_obs_data[[1]] %>%
       dplyr::filter(verticalPosition %in%
                c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
       dplyr::select(timeBgn, timeEnd, data.isoCo2.rtioMoleDryCo2.mean,
-                    verticalPosition) %>%
+                    data.isoCo2.rtioMoleDryCo2.mean_cal, verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    meanCo2 = data.isoCo2.rtioMoleDryCo2.mean,
+                    meanCo2 = data.isoCo2.rtioMoleDryCo2.mean_cal,
+                    ucalCo2 = data.isoCo2.rtioMoleDryCo2.mean,
                     level = verticalPosition)
 
     ambData <- Reduce(function(x, y)
