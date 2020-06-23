@@ -9,6 +9,7 @@ cplot_monthly_standards <- function(cal_data, plot_path, site) {
   pdf(paste0(plot_path, "/", "1_monCStds_", site, ".pdf"))
 
   # break data into months.
+  cal_data$standard <- as.character(cal_data$standard)
   cal_data$standard[cal_data$standard == "co2Low"] <- 1
   cal_data$standard[cal_data$standard == "co2Med"] <- 2
   cal_data$standard[cal_data$standard == "co2High"] <- 3
@@ -194,6 +195,7 @@ cplot_monthly_calParameters <- function(calParDf, plot_path, site, method) {
 # 3. monthly plots of ambient measurements.
 cplot_monthly_ambient <- function(amb_data, dir_plots, site) {
 
+  print(str(amb_data))
   # get number of heights.
   heights <- sort(unique(amb_data$height))
   nheights <- length(heights)
@@ -202,7 +204,7 @@ cplot_monthly_ambient <- function(amb_data, dir_plots, site) {
   amb_data <- amb_data %>%
     dplyr::select(-level)
 
-  amb_data.xts <- xts::xts(amb_data[, c(3:5)], order.by = amb_data$timeBgn)
+  amb_data.xts <- xts::xts(amb_data[, c(3:7)], order.by = amb_data$timeBgn)
 
   amb_data.mon <- xts::split.xts(amb_data.xts, f = "months")
 
@@ -218,28 +220,53 @@ cplot_monthly_ambient <- function(amb_data, dir_plots, site) {
       # take out of xts format
       amb_data_df <- as.data.frame(cbind(zoo::index(amb_data_height),
                                         zoo::coredata(amb_data_height)))
-      names(amb_data_df) <- c("timeBgn", "mean13C", "meanCo2", "height")
+      names(amb_data_df) <- c("timeBgn", "ucal13C", "mean13C",
+                              "ucalCo2", "meanCo2", "height")
 
       # convert timeBgn back to posixct
       amb_data_df$timeBgn <- as.POSIXct(amb_data_df$timeBgn,
                                        origin = "1970-01-01")
 
       #make a plot of this data.
-      assign(paste0("p", 2 * j - 1), {
-        ggplot(data = amb_data_df, aes(x = timeBgn, y = mean13C)) +
-          geom_line() +
-          theme_bw() +
-          scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-          scale_x_datetime(name = "Time")
-        })
+      if (2 * j - 1 < 10) {
+        assign(paste0("p0", 2 * j - 1), {
+          ggplot(data = amb_data_df) +
+            geom_line(aes(x = timeBgn, y = ucal13C), col = "black") +
+            geom_line(aes(x = timeBgn, y = mean13C), col = "red") +
+            theme_bw() +
+            scale_y_continuous(name = paste("Height:", heights[j], "m")) +
+            scale_x_datetime(name = "Time")
+        })  
+      } else {
+        assign(paste0("p", 2 * j - 1), {
+          ggplot(data = amb_data_df) +
+            geom_line(aes(x = timeBgn, y = ucal13C), col = "black") +
+            geom_line(aes(x = timeBgn, y = mean13C), col = "red") +
+            theme_bw() +
+            scale_y_continuous(name = paste("Height:", heights[j], "m")) +
+            scale_x_datetime(name = "Time")
+        })  
+      }
 
-      assign(paste0("p", 2 * j), {
-        ggplot(data = amb_data_df, aes(x = timeBgn, y = meanCo2)) +
-          geom_line() +
-          theme_bw() +
-          scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-          scale_x_datetime(name = "Time")
+      if (2 * j < 10) {
+        assign(paste0("p0", 2 * j), {
+          ggplot(data = amb_data_df) +
+            geom_line(aes(x = timeBgn, y = ucalCo2), col = "black") +
+            geom_line(aes(x = timeBgn, y = meanCo2), col = "red") +
+            theme_bw() +
+            scale_y_continuous(name = paste("Height:", heights[j], "m")) +
+            scale_x_datetime(name = "Time")
         })
+      } else {
+        assign(paste0("p", 2 * j), {
+          ggplot(data = amb_data_df) +
+            geom_line(aes(x = timeBgn, y = ucalCo2), col = "black") +
+            geom_line(aes(x = timeBgn, y = meanCo2), col = "red") +
+            theme_bw() +
+            scale_y_continuous(name = paste("Height:", heights[j], "m")) +
+            scale_x_datetime(name = "Time")
+        })
+      }
 
     } # j
 
@@ -427,21 +454,44 @@ cplot_fullts_ambient <- function(amb_data, dir_plots, site) {
       dplyr::filter(height == heights[j])
 
     # make a plot of this data.
-    assign(paste0("p", 2 * j - 1), {
-      ggplot(data = amb_data_height, aes(x = timeBgn, y = mean13C)) +
-        geom_line() +
-        theme_bw() +
-        scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-        scale_x_datetime(name = "Time")
+    if (2 * j - 1 < 10) {
+      assign(paste0("p0", 2 * j - 1), {
+        ggplot(data = amb_data_height) +
+          geom_line(aes(x = timeBgn, y = ucal13C), col = "black") +
+          geom_line(aes(x = timeBgn, y = mean13C), col = "red") +
+          theme_bw() +
+          scale_y_continuous(name = paste("Height:", heights[j], "m")) +
+          scale_x_datetime(name = "Time")
       })
+    } else {
+      assign(paste0("p", 2 * j - 1), {
+        ggplot(data = amb_data_height) +
+          geom_line(aes(x = timeBgn, y = ucal13C), col = "black") +
+          geom_line(aes(x = timeBgn, y = mean13C), col = "red") +
+          theme_bw() +
+          scale_y_continuous(name = paste("Height:", heights[j], "m")) +
+          scale_x_datetime(name = "Time")
+      })
+    }
 
-    assign(paste0("p", 2 * j), {
-      ggplot(data = amb_data_height, aes(x = timeBgn, y = meanCo2)) +
-        geom_line() +
-        theme_bw() +
-        scale_y_continuous(name = paste("Height:", heights[j], "m")) +
-        scale_x_datetime(name = "Time")
+    if (2 * j < 10) {
+      assign(paste0("p0", 2 * j), {
+        ggplot(data = amb_data_height) +
+          geom_line(aes(x = timeBgn, y = ucalCo2), col = "black") +
+          geom_line(aes(x = timeBgn, y = meanCo2), col = "red") +
+          theme_bw() +
+          scale_y_continuous(name = paste("Height:", heights[j], "m")) +
+          scale_x_datetime(name = "Time")
       })
+    } else { 
+      assign(paste0("p", 2 * j), {
+        ggplot(data = amb_data_height) +
+          geom_line(aes(x = timeBgn, y = ucalCo2), col = "black") +
+          geom_line(aes(x = timeBgn, y = meanCo2), col = "red") +
+          theme_bw() +
+          scale_y_continuous(name = paste("Height:", heights[j], "m")) +
+          scale_x_datetime(name = "Time")
+      })}
 
   }
 

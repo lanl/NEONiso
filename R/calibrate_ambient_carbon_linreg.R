@@ -54,7 +54,8 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
                                 format = "%Y-%m-%dT%H:%M:%OSZ",
                                 tz = "UTC")
 
-    # if force.to.end and/or force.to.beginning are true, match out$start[1] to min(amb time)
+    # if force.to.end and/or force.to.beginning are true,
+    # match out$start[1] to min(amb time)
     # and/or out$end[nrow] to max(amb time)
 
     if (force_to_end == TRUE) {
@@ -147,7 +148,7 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
     co2.data.outloc <- rhdf5::H5Gcreate(fid,
                             paste0("/", site, "/dp01/data/isoCo2/", outname))
 
-    # loop through each of the variables in list amb.data.list and write out as a dataframe.
+    # loop through variables in amb.data.list and write out as a dataframe.
     lapply(names(amb_data_list), function(x) {
       rhdf5::h5writeDataset.data.frame(obj = amb_data_list[[x]],
                                 h5loc = co2.data.outloc,

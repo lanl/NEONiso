@@ -99,3 +99,69 @@ water_isotope_sites <- function() {
   return(wiso_sites)
 
 }
+
+#' manage_local_EC_archive
+#' 
+#' Utility function to help retrieve new EC data and/or prune duplicates,
+#' as NEON provisions new data or reprovisions data for an existing site 
+#' and month.
+#'
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#'
+#' @param file_dir Specify the root directory where the local EC store is kept.
+#' @param get Pull down data from NEON API that does not exist locally?
+#' @param trim Search through local holdings, and remove older file where 
+#'             there are duplicates?
+#'
+#' @return
+#' @export
+#'
+#' @examples
+manage_local_EC_archive <- function(file_dir,
+                                    get = TRUE,
+                                    trim = FALSE) {
+  
+  # list the files in file_dir
+  files <- list.files(path = file_dir,
+                      pattern = "*.h5",
+                      recursive = TRUE,
+                      full.names = TRUE)
+  
+  #need to extract sites, months from file names.
+  file_pieces <- strsplit(files, split = ".", fixed = TRUE)
+  
+  #Unless there's a very unusual file path, the 
+  #site name should be element 3 of resulting list, 
+  #and site year/month should be element 8. We'll
+  #also want element 10, which is either 'h5' in the old
+  #file naming convention, or is the publication date/time.
+  
+  sites <- sapply(file_pieces, "[[", 3)
+  yrmn  <- sapply(file_pieces, "[[", 8)
+  fdiff <- sapply(file_pieces, "[[", 10)
+  
+  print(head(sites))
+  print(head(yrmn))
+  print(head(fdiff))
+
+  site_list <- unique(sites)
+  
+  for (i in seq_along(site_list)) {
+    # get list of files where site == site[i]
+    isite <- sites == site_list[i]
+    
+    # check to see if there are duplicates of yrmn
+    yrmn_isite <- yrmn[isite]
+    
+    # test to see if there are any duplicates
+    if (sum(duplicated(yrmn_isite) > 0)) {
+      
+      # get list of duplicated months
+      print(paste(site_list[i],yrmn_isite[duplicated(yrmn_isite) | duplicated(yrmn_isite, fromLast = TRUE)]))
+    }
+
+    
+  }
+  
+}
+

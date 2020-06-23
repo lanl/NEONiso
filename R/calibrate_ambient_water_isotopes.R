@@ -31,9 +31,8 @@
 #' @export
 #'
 #' @examples
-#' 
+#'
 #' @importFrom magrittr %>%
-#'  
 calibrate_ambient_water_linreg <- function(amb_data_list,
                                            caldf,
                                            outname,
@@ -56,7 +55,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   #-------------------------------------------------------
   # oxygen.
   #-------------------------------------------------------
-  # ensure that time variables are in POSIXct. 
+  # ensure that time variables are in POSIXct.
   # (note: these should be the same for 18O and 2H?)
   amb_start_times <- as.POSIXct(oxydf$timeBgn,
                                 format = "%Y-%m-%dT%H:%M:%OSZ",
@@ -79,14 +78,14 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   var_inds_in_calperiod <- list()
 
   for (i in 1:nrow(caldf)) {
-    int <- interval(caldf$start[i], caldf$end[i])
+    int <- lubridate::interval(caldf$start[i], caldf$end[i])
     var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
   }
 
   # calibrate data at this height.
   oxydf$mean_cal <- oxydf$mean
   oxydf$max_cal  <- oxydf$max
-  oxydf$min_cal  <- oxydf$min 
+  oxydf$min_cal  <- oxydf$min
 
   for (i in 1:length(var_inds_in_calperiod)) {
     if (!is.na(caldf$o_r2[i]) & caldf$o_r2[i] > r2_thres) {
@@ -123,7 +122,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   amb_end_times <- as.POSIXct(hyddf$timeEnd,
                               format = "%Y-%m-%dT%H:%M:%OSZ",
                               tz = "UTC")
-  
+
   # if force.to.end and/or force.to.beginning are true,
   # match out$start[1] to min(amb time) and/or out$end[nrow] to max(amb time)
 
@@ -144,10 +143,10 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
 
   hyddf$mean_cal <- hyddf$mean
   hyddf$max_cal  <- hyddf$max
-  hyddf$min_cal  <- hyddf$min 
-  
+  hyddf$min_cal  <- hyddf$min
+
   for (i in 1:length(var_inds_in_calperiod)) {
-    
+
     if (!is.na(caldf$h_r2[i]) & caldf$h_r2[i] > r2_thres) {
 
       hyddf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$h_intercept[i] +
@@ -184,7 +183,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
                                      h5loc = h2o_data_outloc,
                                      name = x,
                                      DataFrameAsCompound = TRUE)})
-  
+
   # close all open handles.
   rhdf5::h5closeAll()
 }

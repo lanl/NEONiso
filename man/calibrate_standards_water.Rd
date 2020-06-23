@@ -11,7 +11,7 @@ calibrate_standards_water(cal_df, ref_df, r2_thres = 0.95)
 
 \item{ref_df}{Data.frame containing reference gas measurements}
 
-\item{r2_thres}{Threshold for calibration regression to be used to 
+\item{r2_thres}{Threshold for calibration regression to be used to
 calibrate standards data. Default is 0.95. Calibrated reference
 gas measurements occuring during calibration periods
 with r2 values less than \code{r2_thres} will be marked NA.}

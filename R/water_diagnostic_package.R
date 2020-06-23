@@ -1,7 +1,7 @@
 #' water_diagnostic_package.R
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
-#' 
+#'
 #' @param data_path Provide path to where calibrated data from one site live.
 #' @param which_sites Which NEON sites to run plots for? Default = all
 #' @param plot_path Path to where output pdf plots should be written.
@@ -37,6 +37,7 @@ water_diagnostic_package <- function(data_path,
                         "Raw Calibration data - Full Timeseries",
                         "Calibration Parametrs - Full Timeseries",
                         "Atmospheric Measurements - Full Timeseries",
+                        "Calibration data inc. d-excess - Full Timeseries",
                         "All Monthly Plots",
                         "All Full Timeseries Plots",
                         "All Plots",
@@ -77,9 +78,9 @@ water_diagnostic_package <- function(data_path,
 
       slist <- list.files(paste0(data_path, "/", which_sites), pattern = ".h5")
 
-    } # which_sites %in% neon_sites
-    
-  } # which_sites == "all"
+    } # neon_sites
+
+  } # which_sites "all"
 
 
   # extract lists of domains, site codes, and year-month combos from file names
@@ -108,7 +109,7 @@ water_diagnostic_package <- function(data_path,
   # get vector of sites:
   unq_sites <- unique(sitecd)
   site_path <- paste0(data_path, "/")
-  
+
   for (i in 1:length(unq_sites)) {
 
     print(paste("Processing data for site:", unq_sites[i]))
@@ -141,7 +142,7 @@ water_diagnostic_package <- function(data_path,
                                             level = "dp01",
                                             var = "dlta2HH2o",
                                             avg = 3)
-    
+
     #-----------------------------------------------------
     # select data a little more cleverly.
 
@@ -169,7 +170,7 @@ water_diagnostic_package <- function(data_path,
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
                     ref18O = data.isoH2o.dlta18OH2oRefe.mean,
                     standard = verticalPosition)
-    
+
     calData[[3]] <- h2_obs_data[[1]] %>%
       dplyr::filter(verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh")) %>%
@@ -178,7 +179,7 @@ water_diagnostic_package <- function(data_path,
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
                     mean2H = data.isoH2o.dlta2HH2o.mean,
                     standard = verticalPosition)
-    
+
     calData[[4]] <- h2_ref_data[[1]] %>%
       dplyr::filter(verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh")) %>%
@@ -226,9 +227,6 @@ water_diagnostic_package <- function(data_path,
 
     }
 
-    # determine method (HARDCODED: ONLY ONE METHOD FOR WATER)
-    method <- "LinReg"
-
     # save a monthly version for plotting scripts.
     calParsMon <- calPars
 
@@ -249,20 +247,25 @@ water_diagnostic_package <- function(data_path,
       dplyr::filter(verticalPosition %in%
                c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
       dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta18OH2o.mean_cal, verticalPosition) %>%
+                    data.isoH2o.dlta18OH2o.mean_cal,
+                    data.isoH2o.dlta18OH2o.mean,
+                    verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
                     mean18O = data.isoH2o.dlta18OH2o.mean_cal,
+                    ucal18O = data.isoH2o.dlta18OH2o.mean,
                     level = verticalPosition)
-    
+
     ambData[[2]] <- h2_amb_data[[1]] %>%
       dplyr::filter(verticalPosition %in%
                c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
       dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta2HH2o.mean_cal, verticalPosition) %>%
+                    data.isoH2o.dlta2HH2o.mean_cal,
+                    data.isoH2o.dlta2HH2o.mean,
+                    verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
                     mean2H = data.isoH2o.dlta2HH2o.mean_cal,
+                    ucal2H = data.isoH2o.dlta2HH2o.mean,
                     level = verticalPosition)
-    
 
     ambData[[3]] <- h2o_amb_data[[1]] %>%
       dplyr::filter(verticalPosition %in%
@@ -294,6 +297,7 @@ water_diagnostic_package <- function(data_path,
                                   format = "%Y-%m-%dT%H:%M:%OSZ",
                                   tz = "UTC")
 
+    print(str(ambData))
 
     #--------------------------------------------------------------
     #--------------------------------------------------------------
@@ -302,8 +306,8 @@ water_diagnostic_package <- function(data_path,
     #--------------------------------------------------------------
 
     # 1. Raw calibration data - monthly
-    if (which_plots == 1 | which_plots == 7 | which_plots == 9) {
-  
+    if (which_plots == 1 | which_plots == 8 | which_plots == 10) {
+
       print("Plot 1")
       wplot_monthly_standards(calData,
                               out_folder,
@@ -312,7 +316,7 @@ water_diagnostic_package <- function(data_path,
     }
 
     # 5. Calibration parameters - timeseries
-    if (which_plots == 2 | which_plots == 7 | which_plots == 9) {
+    if (which_plots == 2 | which_plots == 8 | which_plots == 10) {
 
       print("Plot 2")
       wplot_monthly_calParameters(calParsMon,
@@ -321,9 +325,8 @@ water_diagnostic_package <- function(data_path,
 
     } # if
 
-
     # 3. calibrated ambient data - timeseries
-    if (which_plots == 3 | which_plots == 7 | which_plots == 9) {
+    if (which_plots == 3 | which_plots == 8 | which_plots == 10) {
 
       print("Plot 3")
       wplot_monthly_ambient(ambData,
@@ -333,7 +336,7 @@ water_diagnostic_package <- function(data_path,
     } # if
 
     # 4. Raw calibration data - timeseries
-    if (which_plots == 4 | which_plots == 8 | which_plots == 9) {
+    if (which_plots == 4 | which_plots == 9 | which_plots == 10) {
 
       print("Plot 4")
       wplot_fullts_standards(calData,
@@ -343,7 +346,7 @@ water_diagnostic_package <- function(data_path,
     } # if
 
     # 5. Calibration parameters - timeseries
-    if (which_plots == 5 | which_plots == 8 | which_plots == 9) {
+    if (which_plots == 5 | which_plots == 9 | which_plots == 10) {
 
       print("Plot 5")
       wplot_fullts_calParameters(calPars,
@@ -353,10 +356,20 @@ water_diagnostic_package <- function(data_path,
     } # if
 
     # 6. calibrated ambient data - timeseries
-    if (which_plots == 6 | which_plots == 8 | which_plots == 9) {
+    if (which_plots == 6 | which_plots == 9 | which_plots == 10) {
 
       print("Plot 6")
       wplot_fullts_ambient(ambData,
+                           out_folder,
+                           unq_sites[i])
+
+    } # if
+
+    # 6. calibrated ambient data - timeseries
+    if (which_plots == 7 | which_plots == 9 | which_plots == 10) {
+
+      print("Plot 7")
+      wplot_fullts_dxsdiag(calData,
                            out_folder,
                            unq_sites[i])
 

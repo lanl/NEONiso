@@ -1,7 +1,7 @@
 #' carbon_diagnostic_package.R
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
-#' 
+#'
 #' @param data_path Provide path to where calibrated data from one site live.
 #' @param which_sites Which NEON sites to run plots for? Default = all
 #' @param plot_path Path to where output pdf plots should be written.
@@ -27,7 +27,7 @@ carbon_diagnostic_package <- function(data_path,
   # all of these should be queried when running this function.
 
   # query re: calibration plots
-  print("This function makes diagnostic plots of calibrated NEON carbon isotope data.")
+  print("This function makes diagnostic plots of NEON carbon isotope data.")
 
   #-------------------------------------------------------
   # query for which plots.
@@ -79,10 +79,9 @@ carbon_diagnostic_package <- function(data_path,
 
       slist <- list.files(paste0(data_path, "/", which_sites), pattern = ".h5")
 
-    } # which_sites %in% neon_sites
-    
-  } # which_sites == "all"
+    } #neon_sites
 
+  } # which_sites "all"
 
   # extract lists of domains, site codes, and year-month combos from file names
   slist.tmp <- strsplit(slist, split = ".", fixed = TRUE)
@@ -110,7 +109,7 @@ carbon_diagnostic_package <- function(data_path,
   # get vector of sites:
   unq_sites <- unique(sitecd)
   site_path <- paste0(data_path, "/")
-  
+
   for (i in 1:length(unq_sites)) {
 
     print(paste("Processing data for site:", unq_sites[i]))
@@ -245,18 +244,22 @@ carbon_diagnostic_package <- function(data_path,
       dplyr::filter(verticalPosition %in%
                c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
       dplyr::select(timeBgn, timeEnd,
-                    data.isoCo2.dlta13CCo2.mean, verticalPosition) %>%
+                    data.isoCo2.dlta13CCo2.mean,
+                    data.isoCo2.dlta13CCo2.mean_cal,
+                    verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    mean13C = data.isoCo2.dlta13CCo2.mean,
+                    mean13C = data.isoCo2.dlta13CCo2.mean_cal,
+                    ucal13C = data.isoCo2.dlta13CCo2.mean,
                     level = verticalPosition)
 
     ambData[[2]] <- co2_obs_data[[1]] %>%
       dplyr::filter(verticalPosition %in%
                c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
       dplyr::select(timeBgn, timeEnd, data.isoCo2.rtioMoleDryCo2.mean,
-                    verticalPosition) %>%
+                    data.isoCo2.rtioMoleDryCo2.mean_cal, verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    meanCo2 = data.isoCo2.rtioMoleDryCo2.mean,
+                    meanCo2 = data.isoCo2.rtioMoleDryCo2.mean_cal,
+                    ucalCo2 = data.isoCo2.rtioMoleDryCo2.mean,
                     level = verticalPosition)
 
     ambData <- Reduce(function(x, y)
@@ -288,7 +291,7 @@ carbon_diagnostic_package <- function(data_path,
 
     # 1. Raw calibration data - monthly
     if (which_plots == 1 | which_plots == 7 | which_plots == 9) {
-  
+
       print("Plot 1")
       cplot_monthly_standards(calData,
                               out_folder,

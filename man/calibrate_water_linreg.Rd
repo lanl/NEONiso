@@ -21,7 +21,8 @@ calibrate_water_linreg(
 
 \item{site}{Four-letter NEON code for site being processed.}
 
-\item{time_diff_betweeen_standards}{Time (in seconds) required between consecutive standard measurements.}
+\item{time_diff_betweeen_standards}{Time (in seconds) required between
+consecutive standard measurements.}
 
 \item{force_cal_to_beginning}{Extend first calibration to
 the beginning of the file?}
