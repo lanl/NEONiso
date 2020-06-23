@@ -9,6 +9,7 @@ cplot_monthly_standards <- function(cal_data, plot_path, site) {
   pdf(paste0(plot_path, "/", "1_monCStds_", site, ".pdf"))
 
   # break data into months.
+  cal_data$standard <- as.character(cal_data$standard)
   cal_data$standard[cal_data$standard == "co2Low"] <- 1
   cal_data$standard[cal_data$standard == "co2Med"] <- 2
   cal_data$standard[cal_data$standard == "co2High"] <- 3
@@ -194,6 +195,7 @@ cplot_monthly_calParameters <- function(calParDf, plot_path, site, method) {
 # 3. monthly plots of ambient measurements.
 cplot_monthly_ambient <- function(amb_data, dir_plots, site) {
 
+  print(str(amb_data))
   # get number of heights.
   heights <- sort(unique(amb_data$height))
   nheights <- length(heights)
@@ -218,7 +220,8 @@ cplot_monthly_ambient <- function(amb_data, dir_plots, site) {
       # take out of xts format
       amb_data_df <- as.data.frame(cbind(zoo::index(amb_data_height),
                                         zoo::coredata(amb_data_height)))
-      names(amb_data_df) <- c("timeBgn", "mean13C", "meanCo2", "height")
+      names(amb_data_df) <- c("timeBgn", "ucal13C", "mean13C",
+                              "ucalCo2", "meanCo2", "height")
 
       # convert timeBgn back to posixct
       amb_data_df$timeBgn <- as.POSIXct(amb_data_df$timeBgn,
