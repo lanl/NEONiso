@@ -100,13 +100,18 @@ water_isotope_sites <- function() {
 
 }
 
-#' Title
+#' manage_local_EC_archive
+#' 
+#' Utility function to help retrieve new EC data and/or prune duplicates,
+#' as NEON provisions new data or reprovisions data for an existing site 
+#' and month.
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param file_dir 
-#' @param get 
-#' @param trim 
+#' @param file_dir Specify the root directory where the local EC store is kept.
+#' @param get Pull down data from NEON API that does not exist locally?
+#' @param trim Search through local holdings, and remove older file where 
+#'             there are duplicates?
 #'
 #' @return
 #' @export

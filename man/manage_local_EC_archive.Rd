@@ -2,22 +2,25 @@
 % Please edit documentation in R/utility_functions.R
 \name{manage_local_EC_archive}
 \alias{manage_local_EC_archive}
-\title{Title}
+\title{manage_local_EC_archive}
 \usage{
 manage_local_EC_archive(file_dir, get = TRUE, trim = FALSE)
 }
 \arguments{
-\item{file_dir}{}
+\item{file_dir}{Specify the root directory where the local EC store is kept.}
 
-\item{get}{}
+\item{get}{Pull down data from NEON API that does not exist locally?}
 
-\item{trim}{}
+\item{trim}{Search through local holdings, and remove older file where 
+there are duplicates?}
 }
 \value{
 
 }
 \description{
-Title
+Utility function to help retrieve new EC data and/or prune duplicates,
+as NEON provisions new data or reprovisions data for an existing site 
+and month.
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
