@@ -102,6 +102,8 @@ water_isotope_sites <- function() {
 
 #' Title
 #'
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#'
 #' @param file_dir 
 #' @param get 
 #' @param trim 
@@ -140,7 +142,20 @@ manage_local_EC_archive <- function(file_dir,
   site_list <- unique(sites)
   
   for (i in seq_along(site_list)) {
-    print(i)
+    # get list of files where site == site[i]
+    isite <- sites == site_list[i]
+    
+    # check to see if there are duplicates of yrmn
+    yrmn_isite <- yrmn[isite]
+    
+    # test to see if there are any duplicates
+    if (sum(duplicated(yrmn_isite) > 0)) {
+      
+      # get list of duplicated months
+      print(paste(site_list[i],yrmn_isite[duplicated(yrmn_isite) | duplicated(yrmn_isite, fromLast = TRUE)]))
+    }
+
+    
   }
   
 }
