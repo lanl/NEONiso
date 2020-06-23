@@ -99,3 +99,49 @@ water_isotope_sites <- function() {
   return(wiso_sites)
 
 }
+
+#' Title
+#'
+#' @param file_dir 
+#' @param get 
+#' @param trim 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+manage_local_EC_archive <- function(file_dir,
+                                    get = TRUE,
+                                    trim = FALSE) {
+  
+  # list the files in file_dir
+  files <- list.files(path = file_dir,
+                      pattern = "*.h5",
+                      recursive = TRUE,
+                      full.names = TRUE)
+  
+  #need to extract sites, months from file names.
+  file_pieces <- strsplit(files, split = ".", fixed = TRUE)
+  
+  #Unless there's a very unusual file path, the 
+  #site name should be element 3 of resulting list, 
+  #and site year/month should be element 8. We'll
+  #also want element 10, which is either 'h5' in the old
+  #file naming convention, or is the publication date/time.
+  
+  sites <- sapply(file_pieces, "[[", 3)
+  yrmn  <- sapply(file_pieces, "[[", 8)
+  fdiff <- sapply(file_pieces, "[[", 10)
+  
+  print(head(sites))
+  print(head(yrmn))
+  print(head(fdiff))
+
+  site_list <- unique(sites)
+  
+  for (i in seq_along(site_list)) {
+    print(i)
+  }
+  
+}
+
