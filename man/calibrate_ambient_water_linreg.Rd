@@ -25,7 +25,7 @@ for d18O and d2H values.}
 \item{outname}{Output variable name. Inherited from
 \code{calibrate_ambient_water_linreg}}
 
-\item{site}{Four-letter NEON code corersponding to site being processed.}
+\item{site}{Four-letter NEON code corresponding to site being processed.}
 
 \item{file}{Output file name. Inherited from
 \code{calibrate_ambient_water_linreg}}

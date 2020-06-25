@@ -1,5 +1,28 @@
 #' calibrate_water_linreg
 #'
+#' This function uses NEON validation data to apply drift corrections to
+#' measured ambient water isotope ratios. In brief, ambient water isotope
+#' ratios are calibrated by generating regressions using reference water
+#' measurements bracketing an ambient period. Three reference waters are
+#' measured once per day, with several injections per reference water.
+#' Due to memory effects, only the last three are used currently to generate
+#' calibration equations. Regressions between measured d18O and d2H values
+#' and NEON-provisioned known reference values are generated, and used to
+#' calibrate the period of ambient measurements between them if the r2 of
+#' the regression is greater than a threshold value (by default, this is 0.95).
+#' Most of this function deals with selecting the appropriate calibration data
+#' and determining calibration quality. This function also contains a wrapper
+#' for \code{calibrate_ambient_water_linreg}, which calibrates the ambient
+#' water data using the calibration parameters generated in this function.
+#' This function also copies over data in the qfqm and ucrt hdf5 data groups.
+#'
+#' *IMPORTANT NOTE* Currently this function does not apply a correction for
+#' humidity dependence of Picarro isotopic measurements. This is because the
+#' data to implement these corrections is not yet publicly available.
+#' Caution is suggested when analyzing data at low humidities, below ~5000 ppm,
+#' with likely higher biases at lower humidity values. This is expected to be
+#' added in Q3 of 2020.
+#'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
 #' @param site Four-letter NEON code for site being processed.

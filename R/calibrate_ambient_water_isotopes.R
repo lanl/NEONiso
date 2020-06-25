@@ -16,7 +16,7 @@
 #'             for d18O and d2H values.
 #' @param outname Output variable name. Inherited from
 #'             \code{calibrate_ambient_water_linreg}
-#' @param site Four-letter NEON code corersponding to site being processed.
+#' @param site Four-letter NEON code corresponding to site being processed.
 #' @param file Output file name. Inherited from
 #'             \code{calibrate_ambient_water_linreg}
 #' @param force_to_end In given month, calibrate ambient data later than last
