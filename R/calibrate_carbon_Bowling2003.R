@@ -3,14 +3,13 @@
 #' Use the gain-and-offset style calibration approach detailed in
 #' Bowling et al. 2003 AFM. Wen et al. 2013 compared several different carbon
 #' isotope calibration techniques and found this to be the superior method
-#' under most circumstances. In brief, this method takes two of the measurement
-#' and reference CO2 and d13C values for two of the three daily reference
-#' materials to define a correction equation that defines gain and offset
-#' parameters to correct the observations to the VPDB scale. These gain and
-#' offset parameters are analagous to regression slope and intercepts, but
-#' jointly correct for CO2 concentration dependence and place d13C values on
-#' the VPDB scale. Gain and offset parameters are determined independently for
-#' each major isotopologue (12CO2 and 13CO2). For the two reference materials
+#' under most circumstances. In brief, this method estimates gain and offset
+#' parameters using linear regression on 12CO2 and 13CO2 isotopologues
+#' separately. These gain and offset parameters are analogous to regression
+#' slope and intercepts, but jointly correct for CO2 concentration dependence
+#' and place d13C values on the VPDB scale. Gain and offset parameters are 
+#' determined independently for each major isotopologue (12CO2 and 13CO2).
+#' For the two reference materials
 #' selected, the gain and offset parameters are defined by:
 #'
 #' \deqn{G = (X_{2,ref}-X_{1,ref})/(X_{2,meas}-X_{1,meas})}
@@ -23,8 +22,8 @@
 #' \itemize{
 #'   \item Measured CO2 concentrations were within 10 ppm
 #'         of known "reference" concentrations.
-#'   \item Variance of the CO2 concentration in standard peak was < 2 ppm.
-#'   \item Measured d13C value must be within 3 per mil
+#'   \item Variance of the CO2 concentration in standard peak was < 5 ppm.
+#'   \item Measured d13C value must be within 5 per mil
 #'         of known "reference" d13C value.
 #' }
 #' The first two criteria are intended to filter out periods where there is
