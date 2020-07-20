@@ -25,6 +25,7 @@
 #'             first calibration, using the first calibration? (default true)
 #' @param r2_thres Minimum r2 value for calibration to be considered "good" and
 #'             applied to ambient data.
+#' @param filter_data Apply a median filter to output ambient data? inherited.
 #'
 #' @return Nothing to environment; returns calibrated ambient observations to
 #'     the output file. This function is not designed to be called on its own.
@@ -38,8 +39,9 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
                                            outname,
                                            site,
                                            file,
-                                           force_to_end = TRUE,
-                                           force_to_beginning = TRUE,
+                                           filter_data,
+                                           force_to_end,
+                                           force_to_beginning,
                                            r2_thres) {
 
   # print status.
@@ -106,6 +108,13 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
     }
 
   }
+  
+  # apply median filter to data
+  if (filter_data == TRUE) {
+    oxydf$mean_cal <- filter_median_Brock86(oxydf$mean_cal)
+    oxydf$min_cal      <- filter_median_Brock86(oxydf$min_cal)
+    oxydf$max_cal      <- filter_median_Brock86(oxydf$max_cal)
+  }
 
   # replace ambdf in amb_data_list
   amb_data_list$dlta18OH2o <- oxydf
@@ -166,6 +175,13 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
 
   }
 
+  # apply median filter to data
+  if (filter_data == TRUE) {
+    hyddf$mean_cal <- filter_median_Brock86(hyddf$mean_cal)
+    hyddf$min_cal  <- filter_median_Brock86(hyddf$min_cal)
+    hyddf$max_cal  <- filter_median_Brock86(hyddf$max_cal)
+  }
+  
   # replace ambdf in amb_data_list
   amb_data_list$dlta2HH2o <- hyddf
 

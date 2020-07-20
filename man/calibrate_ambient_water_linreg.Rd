@@ -10,8 +10,9 @@ calibrate_ambient_water_linreg(
   outname,
   site,
   file,
-  force_to_end = TRUE,
-  force_to_beginning = TRUE,
+  filter_data,
+  force_to_end,
+  force_to_beginning,
   r2_thres
 )
 }
@@ -29,6 +30,8 @@ for d18O and d2H values.}
 
 \item{file}{Output file name. Inherited from
 \code{calibrate_ambient_water_linreg}}
+
+\item{filter_data}{Apply a median filter to output ambient data? inherited.}
 
 \item{force_to_end}{In given month, calibrate ambient data later than last
 calibration, using the last calibration? (default true)}

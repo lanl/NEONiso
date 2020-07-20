@@ -9,6 +9,7 @@ calibrate_water_linreg(
   outname,
   site,
   time_diff_betweeen_standards = 1800,
+  filter_data = TRUE,
   force_cal_to_beginning = TRUE,
   force_cal_to_end = TRUE,
   r2_thres = 0.95
@@ -23,6 +24,9 @@ calibrate_water_linreg(
 
 \item{time_diff_betweeen_standards}{Time (in seconds) required between
 consecutive standard measurements.}
+
+\item{filter_data}{Apply median absolute deviation filter from Brock 86 to
+remove impulse spikes?}
 
 \item{force_cal_to_beginning}{Extend first calibration to
 the beginning of the file?}

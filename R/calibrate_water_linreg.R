@@ -36,6 +36,8 @@
 #' @param r2_thres Minimum r2 threshold of an "acceptable" calibration. Acts to
 #'            remove calibration periods where a measurement error makes
 #'            relationship nonlinear. Default = 0.95
+#' @param filter_data Apply median absolute deviation filter from Brock 86 to
+#'             remove impulse spikes?
 #'
 #' @return nothing to the workspace, but creates a new output file of
 #'         calibrated carbon isotope data.
@@ -49,6 +51,7 @@ calibrate_water_linreg <- function(inname,
                                    outname,
                                    site,
                                    time_diff_betweeen_standards = 1800,
+                                   filter_data = TRUE,
                                    force_cal_to_beginning = TRUE,
                                    force_cal_to_end = TRUE,
                                    r2_thres = 0.95) {
@@ -556,6 +559,9 @@ calibrate_water_linreg <- function(inname,
                                                     outname = x,
                                                     file = outname,
                                                     site = site,
+                                                    filter_data = filter_data,
+                                                    force_to_end = force_cal_to_end,
+                                                    force_to_beginning = force_cal_to_beginning,
                                                     r2_thres = r2_thres)})
 
   rhdf5::h5closeAll()
