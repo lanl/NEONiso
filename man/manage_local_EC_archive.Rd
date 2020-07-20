@@ -19,8 +19,9 @@ there are duplicates?}
 }
 \description{
 Utility function to help retrieve new EC data and/or prune duplicates,
-as NEON provisions new data or reprovisions data for an existing site 
-and month.
+as NEON provisions new data or re-provisions data for an existing site 
+and month. NOTE: CURRENTLY ONLY THE TRIM FUNCTIONALITY HAS BEEN ADDED.
+IT IS TURNED OFF BY DEFAULT, AND MUST BE MANUALLY INVOKED WITH trim=TRUE
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
