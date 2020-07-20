@@ -4,7 +4,7 @@
 \alias{manage_local_EC_archive}
 \title{manage_local_EC_archive}
 \usage{
-manage_local_EC_archive(file_dir, get = TRUE, trim = FALSE)
+manage_local_EC_archive(file_dir, get = TRUE, trim = FALSE, dry_run = TRUE)
 }
 \arguments{
 \item{file_dir}{Specify the root directory where the local EC store is kept.}
@@ -13,6 +13,9 @@ manage_local_EC_archive(file_dir, get = TRUE, trim = FALSE)
 
 \item{trim}{Search through local holdings, and remove older file where 
 there are duplicates?}
+
+\item{dry_run}{List files identified as duplicates, but do not actually 
+delete them? Default true to prevent unintended data loss.}
 }
 \value{
 
@@ -21,7 +24,9 @@ there are duplicates?}
 Utility function to help retrieve new EC data and/or prune duplicates,
 as NEON provisions new data or re-provisions data for an existing site 
 and month. NOTE: CURRENTLY ONLY THE TRIM FUNCTIONALITY HAS BEEN ADDED.
-IT IS TURNED OFF BY DEFAULT, AND MUST BE MANUALLY INVOKED WITH trim=TRUE
+IT IS TURNED OFF BY DEFAULT, AND MUST BE MANUALLY INVOKED WITH trim=TRUE.
+Also, note that dry_run must be FALSE in order to actually delete files.
+Defaults true to protect against unintended data loss.
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}

@@ -105,7 +105,9 @@ water_isotope_sites <- function() {
 #' Utility function to help retrieve new EC data and/or prune duplicates,
 #' as NEON provisions new data or re-provisions data for an existing site 
 #' and month. NOTE: CURRENTLY ONLY THE TRIM FUNCTIONALITY HAS BEEN ADDED.
-#' IT IS TURNED OFF BY DEFAULT, AND MUST BE MANUALLY INVOKED WITH trim=TRUE
+#' IT IS TURNED OFF BY DEFAULT, AND MUST BE MANUALLY INVOKED WITH trim=TRUE.
+#' Also, note that dry_run must be FALSE in order to actually delete files.
+#' Defaults true to protect against unintended data loss.
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
@@ -113,6 +115,8 @@ water_isotope_sites <- function() {
 #' @param get Pull down data from NEON API that does not exist locally?
 #' @param trim Search through local holdings, and remove older file where 
 #'             there are duplicates?
+#' @param dry_run List files identified as duplicates, but do not actually 
+#'             delete them? Default true to prevent unintended data loss.
 #'
 #' @return
 #' @export
@@ -120,7 +124,8 @@ water_isotope_sites <- function() {
 #' @examples
 manage_local_EC_archive <- function(file_dir,
                                     get = TRUE,
-                                    trim = FALSE) {
+                                    trim = FALSE,
+                                    dry_run = TRUE) {
 
   if (trim == TRUE) {
     # list the files in file_dir
@@ -176,7 +181,9 @@ manage_local_EC_archive <- function(file_dir,
         if (!is.null(dup_candidates) & any(fdiff_isite[dups] == 'h5')) {
           h5files <- fdiff_isite[dups] == 'h5'
           print(paste('Removing:',dup_candidates[h5files]))
-          file.remove(dup_candidates[h5files]) # remove files.
+          if (!dry_run) {
+            file.remove(dup_candidates[h5files]) # remove files.
+          }
         } else { # none are simply h5, so need to determine which is the most recent file.
           for (i in 1:length(unique(dup_yrmn))) {
             # get times associated w/ particular duplicate.
@@ -186,7 +193,9 @@ manage_local_EC_archive <- function(file_dir,
             dups_yrmn <- dup_candidates[(dup_yrmn == unique(dup_yrmn)[i]) & (h5_times != max(h5_times))]
             # print which files to remove
             print(paste('Removing:',dups_yrmn))
-            file.remove(dups_yrmn)
+            if (!dry_run) {
+              file.remove(dups_yrmn)
+            }
           }
         }
       }
