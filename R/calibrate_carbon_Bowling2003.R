@@ -171,8 +171,9 @@ calibrate_carbon_Bowling2003 <- function(inname,
     dplyr::ungroup()
 
   # merge standards back to a single df.
-  stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
-
+  #stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
+  stds <- rbind(med_rs, high_rs)
+  
   # reorder to be in chronological time.
   stds <- stds[order(stds$d13C_obs_btime), ]
 
@@ -449,6 +450,35 @@ calibrate_carbon_Bowling2003 <- function(inname,
 
   rhdf5::h5closeAll()
 
+  # copy irga data??
+  cirga <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/co2Stor"))
+  
+  #copy over irga data
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/co2Stor"))
+  
+  copy_irga_groups <- function(data_list, outname, site, file) {
+    fid <- rhdf5::H5Fopen(file)
+    
+    data_outloc <- rhdf5::H5Gcreate(fid,
+                          paste0("/", site, "/dp01/data/co2Stor", outname))
+
+    # loop through variables and copy to out.
+    lapply(names(data_list), function(x) {
+      rhdf5::h5writeDataset.data.frame(obj = data_list[[x]],
+                                       h5loc = data_outloc,
+                                       name = x,
+                                       DataFrameAsCompound = TRUE)
+    })
+  }
+  
+  lapply(names(cirga), function(x) {
+    copy_irga_groups(data_list = cirga[[x]],
+                    outname = x,
+                    file = outname,
+                    site = site)})
+  
+  rhdf5::h5closeAll()
+  
   print("Copying qfqm...")
   # copy over ucrt and qfqm groups as well.
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/"))

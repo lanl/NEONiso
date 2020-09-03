@@ -195,7 +195,6 @@ cplot_monthly_calParameters <- function(calParDf, plot_path, site, method) {
 # 3. monthly plots of ambient measurements.
 cplot_monthly_ambient <- function(amb_data, dir_plots, site) {
 
-  print(str(amb_data))
   # get number of heights.
   heights <- sort(unique(amb_data$height))
   nheights <- length(heights)

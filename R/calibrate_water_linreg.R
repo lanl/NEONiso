@@ -47,6 +47,8 @@
 #'
 #' @importFrom magrittr %>%
 #' @importFrom lubridate %within%
+#' @importFrom utils tail
+#' @import dplyr
 calibrate_water_linreg <- function(inname,
                                    outname,
                                    site,
@@ -162,7 +164,7 @@ calibrate_water_linreg <- function(inname,
     mutate(dom = day(d18O_meas_btime)) %>% # get day of month
     group_by(dom) %>%
     filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>%
-    slice(tail(row_number(), 3)) %>%
+    slice(utils::tail(row_number(), 3)) %>%
     ungroup()
 
   med_rs <- med_rs %>%
