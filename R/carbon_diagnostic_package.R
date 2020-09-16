@@ -41,11 +41,13 @@ carbon_diagnostic_package <- function(data_path,
                         "All Full Timeseries Plots",
                         "All Plots",
                         "Reference material distributions",
+                        "CO2 Measurement Variance - Full Timeseries",
+                        "d13C Measurement Variance - Full Timeseries",
                         "I've made a huge mistake."),
                       title = "Which plots should be run?")
 
   # allow graceful exit if want to stop.
-  if (which_plots == 11) {
+  if (which_plots == 13) {
 
     stop()
 
@@ -283,6 +285,42 @@ carbon_diagnostic_package <- function(data_path,
                                   format = "%Y-%m-%dT%H:%M:%OSZ",
                                   tz = "UTC")
 
+    # 4. All data (only needed if which_plots includes variances.)
+    
+    print("Extracting variance data..")
+    
+    varData <- list()
+    
+    attrs <- rhdf5::h5readAttributes(flist[1], unq_sites[i])
+    heights <- as.numeric(attrs$DistZaxsLvlMeasTow)
+    
+    varData[[1]] <- c13_obs_data[[1]] %>%
+      dplyr::select(timeBgn, timeEnd,
+                    data.isoCo2.dlta13CCo2.vari,
+                    verticalPosition) %>%
+      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
+                    vari13C = data.isoCo2.dlta13CCo2.vari,
+                    level = verticalPosition)
+    
+    varData[[2]] <- co2_obs_data[[1]] %>%
+      dplyr::select(timeBgn, timeEnd,
+                    data.isoCo2.rtioMoleDryCo2.vari,
+                    verticalPosition) %>%
+      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
+                    variCo2 = data.isoCo2.rtioMoleDryCo2.vari,
+                    level = verticalPosition)
+    
+    varData <- Reduce(function(x, y)
+      merge(x, y, by = c("timeBgn", "timeEnd", "level")), varData)
+    
+    # convert times to POSIXct.
+    varData$timeBgn <- as.POSIXct(varData$timeBgn,
+                                  format = "%Y-%m-%dT%H:%M:%OSZ",
+                                  tz = "UTC")
+    varData$timeEnd <- as.POSIXct(varData$timeEnd,
+                                  format = "%Y-%m-%dT%H:%M:%OSZ",
+                                  tz = "UTC")
+    
     #--------------------------------------------------------------
     #--------------------------------------------------------------
     # PLOTTING SCRIPTS LIVE BELOW.
@@ -352,7 +390,7 @@ carbon_diagnostic_package <- function(data_path,
 
     } # if
 
-    # 6. calibrated ambient data - timeseries
+    # 6. standard distributions
     if (which_plots == 10 | which_plots == 8 | which_plots == 9) {
 
       print("Plot 10")
@@ -363,5 +401,26 @@ carbon_diagnostic_package <- function(data_path,
 
     } # if
 
+    # 7. timeseries of measurement variance - could help ID time issue.
+    if (which_plots == 11 | which_plots == 9) {
+      
+      print("Plot 11")
+      co2_variance_timeseries(varData,
+                              out_folder,
+                              unq_sites[i])
+      
+      
+    } # if
+    
+    # 8. timeseries of measurement variance - could help ID time issue.
+    if (which_plots == 12 | which_plots == 9) {
+      
+      print("Plot 12")
+      c13_variance_timeseries(varData,
+                              out_folder,
+                              unq_sites[i])
+      
+      
+    } # if
   } # for unq_sites
 } # function

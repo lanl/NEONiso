@@ -556,5 +556,91 @@ cplot_standard_distributions <- function(cal_data, plot_path, site) {
   pdf(paste0(plot_path, "/", "7_refDist_", site, ".pdf"))
   gridExtra::grid.arrange(p1, p2, p3, p4, ncol = 2, top = site)
   dev.off()
+}
 
+#=================================================================
+# 8. plot variance of co2 measurements.
+
+co2_variance_timeseries <- function(var_data, dir_plots, site) {
+  
+  levels <- unique(var_data$level)
+  
+  for (j in 1:length(unique(levels))) {
+    
+    var_data_height <- var_data %>%
+      dplyr::filter(level == levels[j])
+    
+    # make a plot of this data.
+    if (2 * j - 1 < 10) {
+      assign(paste0("p0", 2 * j - 1), {
+        ggplot(data = var_data_height) +
+          geom_point(aes(x = timeBgn, y = variCo2), col = "black") +
+          theme_bw() +
+          scale_y_continuous(name = levels[j]) +
+          scale_x_datetime(name = "Time")
+      })
+    } else {
+      assign(paste0("p", 2 * j - 1), {
+        ggplot(data = var_data_height) +
+          geom_line(aes(x = timeBgn, y = variCo2), col = "black") +
+          theme_bw() +
+          scale_y_continuous(name = levels[j]) +
+          scale_x_datetime(name = "Time")
+      })
+    }
+  }
+  
+  # generate list of grobs.
+  plot.list <- ls(pattern = "^p")
+  plots <- mget(plot.list)
+  
+  # open plot.
+  pdf(paste0(dir_plots, "/", "8_tsCo2Var_", site, ".pdf"))
+  gridExtra::grid.arrange(grobs = plots, ncol = 1, top = site)
+  dev.off()
+  
+}
+
+#=================================================================
+# 9. plot variance of co2 measurements.
+
+c13_variance_timeseries <- function(var_data, dir_plots, site) {
+  
+  levels <- unique(var_data$level)
+  print(levels)
+  
+  for (j in 1:length(unique(levels))) {
+    
+    var_data_height <- var_data %>%
+      dplyr::filter(level == levels[j])
+    
+    # make a plot of this data.
+    if (2 * j - 1 < 10) {
+      assign(paste0("p0", 2 * j - 1), {
+        ggplot(data = var_data_height) +
+          geom_point(aes(x = timeBgn, y = vari13C), col = "black") +
+          theme_bw() +
+          scale_y_continuous(name = levels[j]) +
+          scale_x_datetime(name = "Time")
+      })
+    } else {
+      assign(paste0("p", 2 * j - 1), {
+        ggplot(data = var_data_height) +
+          geom_line(aes(x = timeBgn, y = vari13C), col = "black") +
+          theme_bw() +
+          scale_y_continuous(name = levels[j]) +
+          scale_x_datetime(name = "Time")
+      })
+    }
+  }
+  
+    # generate list of grobs.
+    plot.list <- ls(pattern = "^p")
+    plots <- mget(plot.list)
+    
+    # open plot.
+    pdf(paste0(dir_plots, "/", "9_ts13CVar_", site, ".pdf"))
+    gridExtra::grid.arrange(grobs = plots, ncol = 1, top = site)
+    dev.off()
+    
 }
