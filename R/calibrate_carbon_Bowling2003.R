@@ -451,16 +451,16 @@ calibrate_carbon_Bowling2003 <- function(inname,
   rhdf5::h5closeAll()
 
   # copy irga data??
-  cirga <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/co2Stor"))
-  
+  cirga <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/co2Stor/"))
+
   #copy over irga data
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/co2Stor"))
-  
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/co2Stor/"))
+
   copy_irga_groups <- function(data_list, outname, site, file) {
     fid <- rhdf5::H5Fopen(file)
-    
+
     data_outloc <- rhdf5::H5Gcreate(fid,
-                          paste0("/", site, "/dp01/data/co2Stor", outname))
+                          paste0("/", site, "/dp01/data/co2Stor/", outname))
 
     # loop through variables and copy to out.
     lapply(names(data_list), function(x) {
@@ -470,13 +470,13 @@ calibrate_carbon_Bowling2003 <- function(inname,
                                        DataFrameAsCompound = TRUE)
     })
   }
-  
+
   lapply(names(cirga), function(x) {
     copy_irga_groups(data_list = cirga[[x]],
                     outname = x,
                     file = outname,
                     site = site)})
-  
+
   rhdf5::h5closeAll()
   
   print("Copying qfqm...")
