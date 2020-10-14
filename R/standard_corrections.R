@@ -1,4 +1,4 @@
-#' Title
+#' swap_standard_isotoperatios
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
@@ -27,3 +27,19 @@ swap_standard_isotoperatios <- function(std_frame, dxs_thres = 500) {
   # return fixed dataframe
   return(std_frame)
 }
+
+#' correct_carbon_ref_cval
+#'
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#'
+#' @param std_frame Standard data frame to perform swap on.
+#' @param site NEON four letter site code.
+#'
+#' @noRd
+
+correct_carbon_ref_cval <- function(std_frame,site) {
+
+  # return fixed dataframe
+  return(std_frame)
+}
+
