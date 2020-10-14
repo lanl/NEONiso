@@ -57,6 +57,9 @@
 #' @param r2_thres Minimum r2 threshold of an "acceptable" calibration. Acts to
 #'            remove calibration periods where a measurement error makes
 #'            relationship nonlinear. Default = 0.95
+#' @param correct_refData NEON has indicated there are a few instances where
+#'            reported d13C or CO2 reference values are wrong. If set to true,
+#'            correct known incorrect values. 
 #'
 #' @return Returns nothing to the workspace, but creates a new output HDF5
 #'         file containing calibrated carbon isotope values.
@@ -75,7 +78,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
                                          interpolation.method = "LWMA",
                                          ucrt.source = "data",
                                          filter_ambient = TRUE,
-                                         r2_thres = 0.95) {
+                                         r2_thres = 0.95,
+                                         correct_refData = TRUE) {
 
   #------------------------------------------------------------
   # Print some information before starting data processing
@@ -171,8 +175,15 @@ calibrate_carbon_Bowling2003 <- function(inname,
     dplyr::ungroup()
 
   # merge standards back to a single df.
-  #stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
-  stds <- rbind(med_rs, high_rs)
+  stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
+  #stds <- rbind(med_rs, high_rs)
+  
+  if (correct_refData == TRUE) {
+    
+    # do some work to correct the reference data frame
+    stds <- correct_carbon_ref_cval(stds,site)
+    
+  }
   
   # reorder to be in chronological time.
   stds <- stds[order(stds$d13C_obs_btime), ]
