@@ -127,6 +127,98 @@ manage_local_EC_archive <- function(file_dir,
                                     trim = FALSE,
                                     dry_run = TRUE) {
 
+  if (get == TRUE) {
+    
+    # script to pull down EC data files.
+    data_product <- "DP4.00200.001"
+    neon_api_address <- "http://data.neonscience.org/api/v0/products/"
+    
+    # make copy of site list available to this function
+    csites <- NEONiso:::terrestrial_core_sites()
+    rsites <- NEONiso:::terrestrial_relocatable_sites()
+    
+    # see what sites have data
+    data_request <- httr::GET(paste0(neon_api_address, data_product))
+    # parse JSON object into an R list
+    available <- httr::content(data_request, as = "parsed")
+    # get number of sites.
+    nsites <- length(available$data$siteCodes)
+    
+    # loop through sites, and download data.
+    for (i in 1:nsites) {
+      # get site name
+      site_name <- available$data$siteCodes[[i]]$siteCode
+      
+      # check to see if site [i] is a core/relocatable site
+      if (!(site_name %in% csites | site_name %in% rsites)) {
+        print(paste("Site name", site_name,
+                    "is not a core or relocatable site...skipping..."))
+        next
+      } else {
+        print(paste("Checking site:", site_name))
+      }
+
+      # get a vector of site months available for site i
+      site_months <- unlist(available$data$siteCodes[[i]]$availableMonths)
+
+      # okay, check to see if data folder exists for site, otherwise create.
+      ifelse(!dir.exists(paste0(file_dir, site_name)),
+             dir.create(paste0(file_dir, site_name)), FALSE)
+      
+      # okay - now loop through months and get the data files.
+      if (!is.null(length(site_months))) {
+        
+        for (j in 1:length(site_months)) {
+          
+          # re-query api w/ given site code and month.
+          sitemonth_urls_json <- httr::GET(
+            unlist(available$data$siteCodes[[i]]$availableDataUrls[j]))
+          
+          # list files returned.
+          sitemonth_urls_parsed <- httr::content(sitemonth_urls_json,
+                                                 as = "parsed")
+          
+          # extract just file names and URLs
+          fnames <- sapply(sitemonth_urls_parsed$data$files, "[[", "name")
+          furls  <- sapply(sitemonth_urls_parsed$data$files, "[[", "url")
+          
+          # get basic zipfile for now, but should kick out to a
+          # function argument later on.
+          fnames_basic <- (grepl("basic", fnames) & grepl("h5.gz", fnames))
+          
+          # check to see if files already exist, and download if missing.
+          dl_names <- fnames[fnames_basic]
+          dl_urls  <- furls[fnames_basic]
+          
+          for (k in 1:length(dl_names)) {
+            print(dl_names[k])
+            if (!length(dl_names[k])==0) {
+              if (!is.na(dl_names[k])) {
+                # check to see if file exists in folder
+                if (file.exists(paste0(file_dir, site_name, "/", dl_names[k]))) {
+                  print(paste(dl_names[k], "exists...skipping..."))
+                  next      
+                } else { #doesn't exist, so download it.
+                  print(paste("Downloading", dl_names[k]))
+                  httr::GET(url = dl_urls[k],
+                            httr::write_disk(paste0(file_dir,
+                                                    site_name,
+                                                    "/",
+                                                    dl_names[k]),
+                                             overwrite = TRUE))
+                  
+                } # if
+              }
+            }            
+          } # k loop
+        } # j loop
+      } # if is.null
+
+      Sys.sleep(100) # need to wait due to API throttling.
+
+    } # i loop
+  } # get branch.
+  
   if (trim == TRUE) {
     # list the files in file_dir
     files <- list.files(path = file_dir,
@@ -203,4 +295,7 @@ manage_local_EC_archive <- function(file_dir,
   } 
 
 }
+
+
+
 
