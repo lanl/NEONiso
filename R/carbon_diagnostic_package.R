@@ -195,8 +195,11 @@ carbon_diagnostic_package <- function(data_path,
     print("Extracting calibration parameters..")
 
     # need to get attributes for this site (i wonder if there's a better way?)
-    flist <- list.files(paste0(site_path, unq_sites[i]), full.names = TRUE)
+    flist <- list.files(paste0(site_path, unq_sites[i]),
+                        pattern = ".h5",
+                        full.names = TRUE)
 
+    print(flist)
     calPars.tmp <- list()
     calPars <- list()
 
