@@ -482,13 +482,13 @@ calibrate_carbon_Bowling2003 <- function(inname,
     })
   }
 
-  lapply(names(cirga), function(x) {
-    copy_irga_groups(data_list = cirga[[x]],
-                    outname = x,
-                    file = outname,
-                    site = site)})
-
-  rhdf5::h5closeAll()
+  # lapply(names(cirga), function(x) {
+  #   copy_irga_groups(data_list = cirga[[x]],
+  #                   outname = x,
+  #                   file = outname,
+  #                   site = site)})
+  # 
+  # rhdf5::h5closeAll()
   
   print("Copying qfqm...")
   # copy over ucrt and qfqm groups as well.
