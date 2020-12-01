@@ -111,8 +111,8 @@ calibrate_carbon_linreg <- function(inname,
   #=======================================================================
   # bind together, and cleanup.
   #### OMIT FOR ERROR PROPOAGATION.
-  #stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
-  stds <- rbind(low_rs, high_rs)
+  stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
+  #stds <- rbind(low_rs, high_rs)
   
   if (correct_refData == TRUE) {
     

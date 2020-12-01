@@ -167,8 +167,8 @@ calibrate_carbon_Bowling2003 <- function(inname,
     dplyr::ungroup()
 
   # merge standards back to a single df.
-  #stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
-  stds <- rbind(low_rs, med_rs)
+  stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
+  #stds <- rbind(high_rs, med_rs)
   
   print(unique(stds$std_name))
   
