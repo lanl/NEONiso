@@ -6,8 +6,7 @@
   <!-- badges: end -->
 
 Author: Rich Fiorella \
-Last Updated: June 2, 2020. \
-Version note for R: package has been tested largely using different R v3.6.x - testing has been done on R v4.0 only with Travis CI (build passes), but R4.0 introduces a few features that may cause a few items here to break. More nuanced testing on R 4.0 will begin in the near future.
+Last Updated: December 1, 2020. \
 
 This repository contains an R package to calibrate NEON atmospheric isotope data. 
 Please report any issues you have, bugs found, or enhancement suggestions as issues to this repository.
@@ -51,12 +50,14 @@ These functions are meant to be applied to a list or vector of uncalibrated data
 that have (currently) only the CO2 and d13C variables instead of the entire data bundle. Development was targeted and 
 tested on monthly basic files, but the functions should also work on the extended data files.
 
-neonUtilities:::stackEddy *should* work on these output files - please file an issue if they do not.
+neonUtilities:::stackEddy *should* work on these output files - please file an issue if it does not.
 
 Vignettes will be developed in the near future to provide a more explicit example of data workflows using this package.
 In the interim, the function documentation for the above functions should help users get started.
 
 ## DATA ALERT:
+[NOTE: THIS SECTION IS OUT OF DATE AND WILL BE REVISED SHORTLY.]
+
 A few notes about data quality issues that persist after calibration-and closing associated issues since I suspect these are unlikely to ever be fixed as they are acquisition issues, not calibration issues: 
 
 1. do not use carbon isotope data from: UNDE from 5/2019-9/2019 (inclusive), SRER from 7/2019, or TEAK from 8 and 9/2018, JORN from 11/2018-07/2019, KONA prior to 12/2017, and 8/2018-3/2019 for MOAB. there appears to be an issue with the manifold.
