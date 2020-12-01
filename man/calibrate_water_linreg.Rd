@@ -66,9 +66,6 @@ Caution is suggested when analyzing data at low humidities, below ~5000 ppm,
 with likely higher biases at lower humidity values. This is expected to be
 added in Q3 of 2020.
 }
-\examples{
-
-}
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
 }

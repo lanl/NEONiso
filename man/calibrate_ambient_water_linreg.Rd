@@ -49,9 +49,6 @@ Nothing to environment; returns calibrated ambient observations to
 \description{
 calibrate_ambient_water_isotopes
 }
-\examples{
-
-}
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
 

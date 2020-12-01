@@ -43,8 +43,6 @@
 #'         calibrated carbon isotope data.
 #' @export
 #'
-#' @examples
-#'
 #' @importFrom magrittr %>%
 #' @importFrom lubridate %within%
 #' @importFrom utils tail

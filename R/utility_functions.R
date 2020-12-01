@@ -117,11 +117,7 @@ water_isotope_sites <- function() {
 #'             there are duplicates?
 #' @param dry_run List files identified as duplicates, but do not actually 
 #'             delete them? Default true to prevent unintended data loss.
-#'
-#' @return
 #' @export
-#'
-#' @examples
 manage_local_EC_archive <- function(file_dir,
                                     get = TRUE,
                                     trim = FALSE,
@@ -134,8 +130,8 @@ manage_local_EC_archive <- function(file_dir,
     neon_api_address <- "http://data.neonscience.org/api/v0/products/"
     
     # make copy of site list available to this function
-    csites <- NEONiso:::terrestrial_core_sites()
-    rsites <- NEONiso:::terrestrial_relocatable_sites()
+    csites <- terrestrial_core_sites()
+    rsites <- terrestrial_relocatable_sites()
     
     # see what sites have data
     data_request <- httr::GET(paste0(neon_api_address, data_product))

@@ -15,7 +15,8 @@ calibrate_carbon_Bowling2003(
   interpolation.method = "LWMA",
   ucrt.source = "data",
   filter_ambient = TRUE,
-  r2_thres = 0.95
+  r2_thres = 0.95,
+  correct_refData = TRUE
 )
 }
 \arguments{
@@ -51,6 +52,10 @@ to remove impulse spikes in output ambient data?
 \item{r2_thres}{Minimum r2 threshold of an "acceptable" calibration. Acts to
 remove calibration periods where a measurement error makes
 relationship nonlinear. Default = 0.95}
+
+\item{correct_refData}{NEON has indicated there are a few instances where
+reported d13C or CO2 reference values are wrong. If set to true,
+correct known incorrect values.}
 }
 \value{
 Returns nothing to the workspace, but creates a new output HDF5

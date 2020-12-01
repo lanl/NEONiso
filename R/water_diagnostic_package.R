@@ -5,11 +5,7 @@
 #' @param data_path Provide path to where calibrated data from one site live.
 #' @param which_sites Which NEON sites to run plots for? Default = all
 #' @param plot_path Path to where output pdf plots should be written.
-#'
-#' @return
 #' @export
-#'
-#' @examples
 #'
 #' @importFrom magrittr %>%
 #' @importFrom grDevices dev.off pdf

@@ -46,9 +46,6 @@ Nothing to environment; returns calibrated ambient observations to
 \description{
 calibrate_ambient_carbon_linreg
 }
-\examples{
-
-}
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
 

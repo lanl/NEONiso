@@ -17,9 +17,6 @@ there are duplicates?}
 \item{dry_run}{List files identified as duplicates, but do not actually 
 delete them? Default true to prevent unintended data loss.}
 }
-\value{
-
-}
 \description{
 Utility function to help retrieve new EC data and/or prune duplicates,
 as NEON provisions new data or re-provisions data for an existing site 

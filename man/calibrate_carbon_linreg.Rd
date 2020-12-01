@@ -11,7 +11,8 @@ calibrate_carbon_linreg(
   time_diff_between_standards = 1800,
   force_cal_to_beginning = TRUE,
   force_cal_to_end = TRUE,
-  r2_thres = 0.95
+  r2_thres = 0.95,
+  correct_refData = TRUE
 )
 }
 \arguments{
@@ -33,6 +34,10 @@ the beginning of the file?}
 \item{r2_thres}{Minimum r2 threshold of an "acceptable" calibration. Acts to
 remove calibration periods where a measurement error makes
 relationship nonlinear. Default = 0.95}
+
+\item{correct_refData}{Should we replace known/suspected incorrect reference
+values in the NEON HDF5 files? If \code{TRUE} (default), then
+corrects values using a function in \code{standard_corrections.R}.}
 }
 \value{
 nothing to the workspace, but creates a new output file of

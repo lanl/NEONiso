@@ -27,8 +27,6 @@
 #'     the output file. This function is not designed to be called on its own.
 #' @export
 #'
-#' @examples
-#'
 #' @importFrom magrittr %>%
 #'
 calibrate_ambient_carbon_linreg <- function(amb_data_list,

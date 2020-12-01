@@ -50,6 +50,9 @@
 #' @param r2_thres Minimum r2 threshold of an "acceptable" calibration. Acts to
 #'            remove calibration periods where a measurement error makes
 #'            relationship nonlinear. Default = 0.95
+#' @param correct_refData Should we replace known/suspected incorrect reference
+#'            values in the NEON HDF5 files? If \code{TRUE} (default), then
+#'            corrects values using a function in \code{standard_corrections.R}.
 #'
 #' @return nothing to the workspace, but creates a new output file of
 #'         calibrated carbon isotope data.
@@ -64,7 +67,8 @@ calibrate_carbon_linreg <- function(inname,
                                     time_diff_between_standards = 1800,
                                     force_cal_to_beginning = TRUE,
                                     force_cal_to_end = TRUE,
-                                    r2_thres = 0.95) {
+                                    r2_thres = 0.95,
+                                    correct_refData = TRUE) {
 
   # print status.
   print("Processing carbon calibration data...")
@@ -111,7 +115,15 @@ calibrate_carbon_linreg <- function(inname,
   # bind together, and cleanup.
   #### OMIT FOR ERROR PROPOAGATION.
   stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
-
+  #stds <- rbind(low_rs, high_rs)
+  
+  if (correct_refData == TRUE) {
+    
+    # do some work to correct the reference data frame
+    stds <- correct_carbon_ref_cval(stds,site)
+    
+  }
+  
   if (nrow(stds) > 0) {
     # replace NaNs with NA
     # rpf note on 181121 - what does this line actually do? Seems tautological
@@ -346,7 +358,9 @@ calibrate_carbon_linreg <- function(inname,
   low <- rhdf5::h5read(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2Low_09m"))
 
-  low <- calibrate_standards_carbon(out, low, R_vpdb, f)
+  low <- calibrate_standards_carbon(out, low, R_vpdb, f,
+                                    correct_bad_refvals = TRUE,
+                                    site = site, refGas = "low")
 
   # loop through each of the variables in list amb.data.list
   # and write out as a dataframe.
@@ -369,7 +383,9 @@ calibrate_carbon_linreg <- function(inname,
   med <- rhdf5::h5read(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
 
-  med <- calibrate_standards_carbon(out, med, R_vpdb, f)
+  med <- calibrate_standards_carbon(out, med, R_vpdb, f,
+                                    correct_bad_refvals = TRUE,
+                                    site = site, refGas = "med")
 
   # loop through each of the variables in list amb.data.list
   # and write out as a dataframe.
@@ -392,7 +408,9 @@ calibrate_carbon_linreg <- function(inname,
   high <- rhdf5::h5read(inname,
                         paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
 
-  high <- calibrate_standards_carbon(out, high, R_vpdb, f)
+  high <- calibrate_standards_carbon(out, high, R_vpdb, f,
+                                     correct_bad_refvals = TRUE,
+                                     site = site, refGas = "high")
 
   # loop through each of the variables in list amb.data.list
   # and write out as a dataframe.
