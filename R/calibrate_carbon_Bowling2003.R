@@ -504,35 +504,35 @@ calibrate_carbon_Bowling2003 <- function(inname,
   # 
   # rhdf5::h5closeAll()
   
-  # print("Copying qfqm...")
-  # # copy over ucrt and qfqm groups as well.
-  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/"))
-  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoCo2"))
-  # qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/isoCo2"))
-  # 
-  # lapply(names(qfqm), function(x) {
-  #   copy_qfqm_group(data_list = qfqm[[x]],
-  #                   outname = x,
-  #                   file = outname,
-  #                   site = site,
-  #                   species = "CO2")})
-  # 
-  # rhdf5::h5closeAll()
-  # 
-  # print("Copying ucrt...")
-  # # now ucrt.
-  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/"))
-  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoCo2"))
-  # ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/isoCo2"))
-  # 
-  # lapply(names(ucrt), function(x) {
-  #   copy_ucrt_group(data_list = ucrt[[x]],
-  #                   outname = x,
-  #                   file = outname,
-  #                   site = site,
-  #                   species = "CO2")})
-  # 
-  # rhdf5::h5closeAll()
+  print("Copying qfqm...")
+  # copy over ucrt and qfqm groups as well.
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoCo2"))
+  qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/isoCo2"))
+
+  lapply(names(qfqm), function(x) {
+    copy_qfqm_group(data_list = qfqm[[x]],
+                    outname = x,
+                    file = outname,
+                    site = site,
+                    species = "CO2")})
+
+  rhdf5::h5closeAll()
+
+  print("Copying ucrt...")
+  # now ucrt.
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoCo2"))
+  ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/isoCo2"))
+
+  lapply(names(ucrt), function(x) {
+    copy_ucrt_group(data_list = ucrt[[x]],
+                    outname = x,
+                    file = outname,
+                    site = site,
+                    species = "CO2")})
+
+  rhdf5::h5closeAll()
 
   Sys.sleep(0.5)
 
