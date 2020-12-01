@@ -4,26 +4,41 @@
 \alias{calibrate_standards_carbon}
 \title{calibrate_standards_carbon}
 \usage{
-calibrate_standards_carbon(cal_df, ref_df, R_vpdb, f, r2_thres = 0.95)
+calibrate_standards_carbon(
+  cal_df,
+  ref_df,
+  R_vpdb,
+  f,
+  r2_thres = 0.95,
+  correct_bad_refvals = FALSE,
+  site,
+  refGas
+)
 }
 \arguments{
 \item{cal_df}{Data.frame containing calibration parameters}
 
 \item{ref_df}{Data.frame containing reference gas measurements}
 
-\item{R_vpdb}{Ratio of 13C to 12C in Vienna Pee Dee Belemnite, inhereted
+\item{R_vpdb}{Ratio of 13C to 12C in Vienna Pee Dee Belemnite, inherited
 from the script calling this function.}
 
 \item{f}{Fraction of CO2 isotopologues that are not 12CO2 or 13CO2.
-Inhereted from script calling this function.}
+Inherited from script calling this function.}
 
 \item{r2_thres}{Threshold for calibration regression to be used to
 calibrate standards data. Default is 0.95. Calibrated reference
-gas measurements occuring during calibration periods
+gas measurements occurring during calibration periods
 with r2 values less than \code{r2_thres} will be marked NA.}
-}
-\value{
 
+\item{correct_bad_refvals}{Should we correct known/suspected incorrect
+reference values in the NEON HDF5 files? (Default = \code{FALSE}).}
+
+\item{site}{Four letter NEON site code.
+Only used if \code{correct_bad_refvals = TRUE}.}
+
+\item{refGas}{One of "low", "med", or "high."
+Only used if \code{correct_bad_refvals = TRUE}.}
 }
 \description{
 calibrate_standards_carbon

@@ -50,6 +50,9 @@
 #' @param r2_thres Minimum r2 threshold of an "acceptable" calibration. Acts to
 #'            remove calibration periods where a measurement error makes
 #'            relationship nonlinear. Default = 0.95
+#' @param correct_refData Should we replace known/suspected incorrect reference
+#'            values in the NEON HDF5 files? If \code{TRUE} (default), then
+#'            corrects values using a function in \code{standard_corrections.R}.
 #'
 #' @return nothing to the workspace, but creates a new output file of
 #'         calibrated carbon isotope data.

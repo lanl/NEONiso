@@ -4,16 +4,21 @@
 #'
 #' @param cal_df Data.frame containing calibration parameters
 #' @param ref_df Data.frame containing reference gas measurements
-#' @param R_vpdb Ratio of 13C to 12C in Vienna Pee Dee Belemnite, inhereted
+#' @param R_vpdb Ratio of 13C to 12C in Vienna Pee Dee Belemnite, inherited
 #'              from the script calling this function.
 #' @param f Fraction of CO2 isotopologues that are not 12CO2 or 13CO2.
-#'          Inhereted from script calling this function.
+#'          Inherited from script calling this function.
 #' @param r2_thres Threshold for calibration regression to be used to
 #'          calibrate standards data. Default is 0.95. Calibrated reference
-#'          gas measurements occuring during calibration periods
+#'          gas measurements occurring during calibration periods
 #'          with r2 values less than \code{r2_thres} will be marked NA.
-#'
-#' @return
+#' @param correct_bad_refvals Should we correct known/suspected incorrect
+#'          reference values in the NEON HDF5 files? (Default = \code{FALSE}).
+#' @param site Four letter NEON site code.
+#'             Only used if \code{correct_bad_refvals = TRUE}.
+#' @param refGas One of "low", "med", or "high."
+#'             Only used if \code{correct_bad_refvals = TRUE}.
+
 #' @export
 calibrate_standards_carbon <- function(cal_df,
                                        ref_df,

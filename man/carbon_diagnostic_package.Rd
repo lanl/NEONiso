@@ -13,14 +13,8 @@ carbon_diagnostic_package(data_path, plot_path, which_sites = "all")
 
 \item{which_sites}{Which NEON sites to run plots for? Default = all}
 }
-\value{
-
-}
 \description{
 carbon_diagnostic_package.R
-}
-\examples{
-
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
