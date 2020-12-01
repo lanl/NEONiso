@@ -6,7 +6,7 @@
   <!-- badges: end -->
 
 Author: Rich Fiorella \
-Last Updated: December 1, 2020. \
+Last Updated: December 1, 2020.
 
 This repository contains an R package to calibrate NEON atmospheric isotope data. 
 Please report any issues you have, bugs found, or enhancement suggestions as issues to this repository.
