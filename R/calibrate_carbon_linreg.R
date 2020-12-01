@@ -64,7 +64,8 @@ calibrate_carbon_linreg <- function(inname,
                                     time_diff_between_standards = 1800,
                                     force_cal_to_beginning = TRUE,
                                     force_cal_to_end = TRUE,
-                                    r2_thres = 0.95) {
+                                    r2_thres = 0.95,
+                                    correct_refData = TRUE) {
 
   # print status.
   print("Processing carbon calibration data...")
@@ -110,8 +111,16 @@ calibrate_carbon_linreg <- function(inname,
   #=======================================================================
   # bind together, and cleanup.
   #### OMIT FOR ERROR PROPOAGATION.
-  stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
-
+  #stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
+  stds <- rbind(low_rs, high_rs)
+  
+  if (correct_refData == TRUE) {
+    
+    # do some work to correct the reference data frame
+    stds <- correct_carbon_ref_cval(stds,site)
+    
+  }
+  
   if (nrow(stds) > 0) {
     # replace NaNs with NA
     # rpf note on 181121 - what does this line actually do? Seems tautological
@@ -346,7 +355,9 @@ calibrate_carbon_linreg <- function(inname,
   low <- rhdf5::h5read(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2Low_09m"))
 
-  low <- calibrate_standards_carbon(out, low, R_vpdb, f)
+  low <- calibrate_standards_carbon(out, low, R_vpdb, f,
+                                    correct_bad_refvals = TRUE,
+                                    site = site, refGas = "low")
 
   # loop through each of the variables in list amb.data.list
   # and write out as a dataframe.
@@ -369,7 +380,9 @@ calibrate_carbon_linreg <- function(inname,
   med <- rhdf5::h5read(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
 
-  med <- calibrate_standards_carbon(out, med, R_vpdb, f)
+  med <- calibrate_standards_carbon(out, med, R_vpdb, f,
+                                    correct_bad_refvals = TRUE,
+                                    site = site, refGas = "med")
 
   # loop through each of the variables in list amb.data.list
   # and write out as a dataframe.
@@ -392,7 +405,9 @@ calibrate_carbon_linreg <- function(inname,
   high <- rhdf5::h5read(inname,
                         paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
 
-  high <- calibrate_standards_carbon(out, high, R_vpdb, f)
+  high <- calibrate_standards_carbon(out, high, R_vpdb, f,
+                                     correct_bad_refvals = TRUE,
+                                     site = site, refGas = "high")
 
   # loop through each of the variables in list amb.data.list
   # and write out as a dataframe.
@@ -429,35 +444,35 @@ calibrate_carbon_linreg <- function(inname,
 
   rhdf5::h5closeAll()
 
-  # copy over qfqm and ucrt data groups.
-  print("Copying qfqm...")
-  # copy over ucrt and qfqm groups as well.
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoCo2"))
-  qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/isoCo2"))
-
-  lapply(names(qfqm), function(x) {
-    copy_qfqm_group(data_list = qfqm[[x]],
-                    outname = x,
-                    file = outname,
-                    site = site,
-                    species = "CO2")})
-
-  rhdf5::h5closeAll()
-
-  print("Copying ucrt...")
-  # now ucrt.
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoCo2"))
-  ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/isoCo2"))
-
-  lapply(names(ucrt), function(x) {
-    copy_ucrt_group(data_list = ucrt[[x]],
-                    outname = x,
-                    file = outname,
-                    site = site,
-                    species = "CO2")})
-
-  rhdf5::h5closeAll()
+  # # copy over qfqm and ucrt data groups.
+  # print("Copying qfqm...")
+  # # copy over ucrt and qfqm groups as well.
+  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/"))
+  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoCo2"))
+  # qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/isoCo2"))
+  # 
+  # lapply(names(qfqm), function(x) {
+  #   copy_qfqm_group(data_list = qfqm[[x]],
+  #                   outname = x,
+  #                   file = outname,
+  #                   site = site,
+  #                   species = "CO2")})
+  # 
+  # rhdf5::h5closeAll()
+  # 
+  # print("Copying ucrt...")
+  # # now ucrt.
+  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/"))
+  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoCo2"))
+  # ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/isoCo2"))
+  # 
+  # lapply(names(ucrt), function(x) {
+  #   copy_ucrt_group(data_list = ucrt[[x]],
+  #                   outname = x,
+  #                   file = outname,
+  #                   site = site,
+  #                   species = "CO2")})
+  # 
+  # rhdf5::h5closeAll()
 
 }

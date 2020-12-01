@@ -122,15 +122,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
                                             tz = "UTC"),
                   d13C_ref_etime = as.POSIXct(d13C_ref_etime,
                                             format = "%Y-%m-%dT%H:%M:%OSZ",
-                                            tz = "UTC")) %>%
-    #------------------------------------------------------------
-    # calculate mole fraction (12CO2 / 13CO2) for ref gases and observed values
-    dplyr::mutate(conc12CCO2_ref = CO2_ref_mean * (1 - f) /
-                    (1 + R_vpdb * (1 + d13C_ref_mean / 1000))) %>%
-    dplyr::mutate(conc13CCO2_ref = CO2_ref_mean * (1 - f) - conc12CCO2_ref) %>%
-    dplyr::mutate(conc12CCO2_obs = CO2_obs_mean * (1 - f) /
-                    (1 + R_vpdb * (1 + d13C_obs_mean / 1000))) %>%
-    dplyr::mutate(conc13CCO2_obs = CO2_obs_mean * (1 - f) - conc12CCO2_obs)
+                                            tz = "UTC"))
 
   # split back out into 3 data frames for each standard.
   low_rs <- dplyr::filter(standards, std_name == "low")
@@ -175,8 +167,10 @@ calibrate_carbon_Bowling2003 <- function(inname,
     dplyr::ungroup()
 
   # merge standards back to a single df.
-  stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
-  #stds <- rbind(med_rs, high_rs)
+  #stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
+  stds <- rbind(low_rs, med_rs)
+  
+  print(unique(stds$std_name))
   
   if (correct_refData == TRUE) {
     
@@ -184,6 +178,16 @@ calibrate_carbon_Bowling2003 <- function(inname,
     stds <- correct_carbon_ref_cval(stds,site)
     
   }
+  
+  stds <- stds %>%
+  #------------------------------------------------------------
+  # calculate mole fraction (12CO2 / 13CO2) for ref gases and observed values
+  dplyr::mutate(conc12CCO2_ref = CO2_ref_mean * (1 - f) /
+                  (1 + R_vpdb * (1 + d13C_ref_mean / 1000))) %>%
+  dplyr::mutate(conc13CCO2_ref = CO2_ref_mean * (1 - f) - conc12CCO2_ref) %>%
+  dplyr::mutate(conc12CCO2_obs = CO2_obs_mean * (1 - f) /
+                    (1 + R_vpdb * (1 + d13C_obs_mean / 1000))) %>%
+  dplyr::mutate(conc13CCO2_obs = CO2_obs_mean * (1 - f) - conc12CCO2_obs)
   
   # reorder to be in chronological time.
   stds <- stds[order(stds$d13C_obs_btime), ]
@@ -378,8 +382,11 @@ calibrate_carbon_Bowling2003 <- function(inname,
   low <- rhdf5::h5read(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2Low_09m"))
 
-  low <- calibrate_standards_carbon(out, low, R_vpdb, f)
-
+#  low <- calibrate_standards_carbon(out, low, R_vpdb, f)
+  low <- calibrate_standards_carbon(out, low, R_vpdb, f,
+                                    correct_bad_refvals = TRUE,
+                                    site = site, refGas = "low")
+  
   # loop through each variable amb.data.list and write out as a dataframe.
   lapply(names(low), function(x) {
     rhdf5::h5writeDataset.data.frame(obj = low[[x]],
@@ -400,7 +407,10 @@ calibrate_carbon_Bowling2003 <- function(inname,
   med <- rhdf5::h5read(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
 
-  med <- calibrate_standards_carbon(out, med, R_vpdb, f)
+#  med <- calibrate_standards_carbon(out, med, R_vpdb, f)
+  med <- calibrate_standards_carbon(out, med, R_vpdb, f,
+                                    correct_bad_refvals = TRUE,
+                                    site = site, refGas = "med")
 
   # loop through each variable in amb.data.list and write out as a dataframe.
   lapply(names(med), function(x) {
@@ -422,8 +432,12 @@ calibrate_carbon_Bowling2003 <- function(inname,
   high <- rhdf5::h5read(inname,
                         paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
 
-  high <- calibrate_standards_carbon(out, high, R_vpdb, f)
-
+  #high <- calibrate_standards_carbon(out, high, R_vpdb, f)
+  high <- calibrate_standards_carbon(out, high, R_vpdb, f,
+                                     correct_bad_refvals = TRUE,
+                                     site = site, refGas = "high")
+  
+  
   # loop through each variable amb.data.list and write out as a dataframe.
   lapply(names(high), function(x) {
     rhdf5::h5writeDataset.data.frame(obj = high[[x]],
@@ -461,26 +475,26 @@ calibrate_carbon_Bowling2003 <- function(inname,
 
   rhdf5::h5closeAll()
 
-  # copy irga data??
-  cirga <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/co2Stor/"))
-
-  #copy over irga data
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/co2Stor/"))
-
-  copy_irga_groups <- function(data_list, outname, site, file) {
-    fid <- rhdf5::H5Fopen(file)
-
-    data_outloc <- rhdf5::H5Gcreate(fid,
-                          paste0("/", site, "/dp01/data/co2Stor/", outname))
-
-    # loop through variables and copy to out.
-    lapply(names(data_list), function(x) {
-      rhdf5::h5writeDataset.data.frame(obj = data_list[[x]],
-                                       h5loc = data_outloc,
-                                       name = x,
-                                       DataFrameAsCompound = TRUE)
-    })
-  }
+  # # copy irga data??
+  # cirga <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/co2Stor/"))
+  # 
+  # #copy over irga data
+  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/co2Stor/"))
+  # 
+  # copy_irga_groups <- function(data_list, outname, site, file) {
+  #   fid <- rhdf5::H5Fopen(file)
+  #   
+  #   data_outloc <- rhdf5::H5Gcreate(fid,
+  #                                   paste0("/", site, "/dp01/data/co2Stor/", outname))
+  #   
+  #   # loop through variables and copy to out.
+  #   lapply(names(data_list), function(x) {
+  #     rhdf5::h5writeDataset.data.frame(obj = data_list[[x]],
+  #                                      h5loc = data_outloc,
+  #                                      name = x,
+  #                                      DataFrameAsCompound = TRUE)
+  #   })
+  # }
 
   # lapply(names(cirga), function(x) {
   #   copy_irga_groups(data_list = cirga[[x]],
@@ -490,35 +504,35 @@ calibrate_carbon_Bowling2003 <- function(inname,
   # 
   # rhdf5::h5closeAll()
   
-  print("Copying qfqm...")
-  # copy over ucrt and qfqm groups as well.
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoCo2"))
-  qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/isoCo2"))
-
-  lapply(names(qfqm), function(x) {
-    copy_qfqm_group(data_list = qfqm[[x]],
-                    outname = x,
-                    file = outname,
-                    site = site,
-                    species = "CO2")})
-
-  rhdf5::h5closeAll()
-
-  print("Copying ucrt...")
-  # now ucrt.
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoCo2"))
-  ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/isoCo2"))
-
-  lapply(names(ucrt), function(x) {
-    copy_ucrt_group(data_list = ucrt[[x]],
-                    outname = x,
-                    file = outname,
-                    site = site,
-                    species = "CO2")})
-
-  rhdf5::h5closeAll()
+  # print("Copying qfqm...")
+  # # copy over ucrt and qfqm groups as well.
+  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/"))
+  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoCo2"))
+  # qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/isoCo2"))
+  # 
+  # lapply(names(qfqm), function(x) {
+  #   copy_qfqm_group(data_list = qfqm[[x]],
+  #                   outname = x,
+  #                   file = outname,
+  #                   site = site,
+  #                   species = "CO2")})
+  # 
+  # rhdf5::h5closeAll()
+  # 
+  # print("Copying ucrt...")
+  # # now ucrt.
+  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/"))
+  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoCo2"))
+  # ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/isoCo2"))
+  # 
+  # lapply(names(ucrt), function(x) {
+  #   copy_ucrt_group(data_list = ucrt[[x]],
+  #                   outname = x,
+  #                   file = outname,
+  #                   site = site,
+  #                   species = "CO2")})
+  # 
+  # rhdf5::h5closeAll()
 
   Sys.sleep(0.5)
 
