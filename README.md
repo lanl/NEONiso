@@ -58,10 +58,5 @@ In the interim, the function documentation for the above functions should help u
 ## DATA ALERT:
 [NOTE: THIS SECTION IS OUT OF DATE AND WILL BE REVISED SHORTLY.]
 
-A few notes about data quality issues that persist after calibration-and closing associated issues since I suspect these are unlikely to ever be fixed as they are acquisition issues, not calibration issues: 
-
-1. do not use carbon isotope data from: UNDE from 5/2019-9/2019 (inclusive), SRER from 7/2019, or TEAK from 8 and 9/2018, JORN from 11/2018-07/2019, KONA prior to 12/2017, and 8/2018-3/2019 for MOAB. there appears to be an issue with the manifold.
-2. Per communications with NEON staff, there may be an issue with data timestamps for HARV (10/2018-07/2019), RMNP (01/2018-07/2018), and NIWO (04/2019-05/2019). The data appear to be high-quality, but their timestamps may be incorrect.
-3. There appears to be a small but persistent long-term trend in the early portions of the record at SRER and ONAQ. It is not currently clear if this is a real feature, or a data issue - this will be updated in the future as the record is more complete.
-4. Several cases exist where there is a prolonged high error in a standard's calibrated d13C and/or CO2 mole fraction. These issues have been raised with NEON, and in some cases may reflect a mismatching between the EC data files and the CalVal reference material database. The current code should automatically remove bad reference values - therefore, this issue shouldn't severely impact current data quality - but we expect that future reprocessing of the NEON EC data will lead to a reduction in sites/periods affected by this issue.
+Several months of data on the NEON data portal have an issue where the Picarro time clock has diverged from the valve manifold time. A fix has been developed, but has not been propagated to the NEON data portal. In the interim, corrected files are available here: https://www.dropbox.com/sh/i9a61g2crv26ess/AADFCT80TPeMz2ayfNsCotg8a?dl=0
 
