@@ -25,7 +25,8 @@ Imports:
     gridExtra,
     ggplot2,
     magrittr,
-    rhdf5
+    rhdf5,
+    R.utils
 Suggests: 
     knitr,
     rmarkdown
