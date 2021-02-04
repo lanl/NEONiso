@@ -113,15 +113,22 @@ water_isotope_sites <- function() {
 #'
 #' @param file_dir Specify the root directory where the local EC store is kept.
 #' @param get Pull down data from NEON API that does not exist locally?
+#' @param unzip_files NEON gzips the hdf5 files, should we unzip any gzipped
+#'             files within file_dir? (Searches recursively)
 #' @param trim Search through local holdings, and remove older file where 
 #'             there are duplicates?
 #' @param dry_run List files identified as duplicates, but do not actually 
 #'             delete them? Default true to prevent unintended data loss.
+#' @param sites Which sites to retrieve data from? Default will be all sites
+#'              with available data, but can specify a single site or a vector
+#'              here.           
 #' @export
 manage_local_EC_archive <- function(file_dir,
                                     get = TRUE,
+                                    unzip_files = TRUE,
                                     trim = FALSE,
-                                    dry_run = TRUE) {
+                                    dry_run = TRUE,
+                                    sites = "all") {
 
   if (get == TRUE) {
     
@@ -150,16 +157,19 @@ manage_local_EC_archive <- function(file_dir,
         print(paste("Site name", site_name,
                     "is not a core or relocatable site...skipping..."))
         next
-      } else {
+      } else if (sites == "all" | site_name %in% sites) {
         print(paste("Checking site:", site_name))
+      } else {
+        print(paste("Site", site_name, "has not been requested...skipping..."))
+        next
       }
 
       # get a vector of site months available for site i
       site_months <- unlist(available$data$siteCodes[[i]]$availableMonths)
 
       # okay, check to see if data folder exists for site, otherwise create.
-      ifelse(!dir.exists(paste0(file_dir, site_name)),
-             dir.create(paste0(file_dir, site_name)), FALSE)
+      ifelse(!dir.exists(paste(file_dir, site_name, sep="/")),
+             dir.create(paste(file_dir, site_name, sep="/")), FALSE)
       
       # okay - now loop through months and get the data files.
       if (!is.null(length(site_months))) {
@@ -214,6 +224,21 @@ manage_local_EC_archive <- function(file_dir,
 
     } # i loop
   } # get branch.
+  
+  # unzip files if requested.
+  if (unzip_files == TRUE) {
+    # list the files in file_dir
+    files <- list.files(path = file_dir,
+                        pattern = "*.gz",
+                        recursive = TRUE,
+                        full.names = TRUE)
+    
+    if (length(files) > 0) {
+      lapply(files, function(x) {
+        R.utils::gunzip(x)
+      })
+    }
+  }
   
   if (trim == TRUE) {
     # list the files in file_dir

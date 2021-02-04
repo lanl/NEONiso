@@ -4,18 +4,32 @@
 \alias{manage_local_EC_archive}
 \title{manage_local_EC_archive}
 \usage{
-manage_local_EC_archive(file_dir, get = TRUE, trim = FALSE, dry_run = TRUE)
+manage_local_EC_archive(
+  file_dir,
+  get = TRUE,
+  unzip_files = TRUE,
+  trim = FALSE,
+  dry_run = TRUE,
+  sites = "all"
+)
 }
 \arguments{
 \item{file_dir}{Specify the root directory where the local EC store is kept.}
 
 \item{get}{Pull down data from NEON API that does not exist locally?}
 
+\item{unzip_files}{NEON gzips the hdf5 files, should we unzip any gzipped
+files within file_dir? (Searches recursively)}
+
 \item{trim}{Search through local holdings, and remove older file where 
 there are duplicates?}
 
 \item{dry_run}{List files identified as duplicates, but do not actually 
 delete them? Default true to prevent unintended data loss.}
+
+\item{sites}{Which sites to retrieve data from? Default will be all sites
+with available data, but can specify a single site or a vector
+here.}
 }
 \description{
 Utility function to help retrieve new EC data and/or prune duplicates,
