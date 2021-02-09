@@ -504,3 +504,30 @@ wplot_fullts_dxsdiag <- function(cal_data, plot_path, site) {
   dev.off()
 
 }
+
+#========================================================
+# 8. monthly plots of reference material measurements.
+wplot_fullts_vari <- function(cal_data, plot_path, site) {
+  
+  # open plot.
+  pdf(paste0(plot_path, "/", "8_tsWStdsVari_", site, ".pdf"))
+  
+  #   # set up plots.
+  p1 <- ggplot(data = cal_data, aes(x = timeBgn, y = vari18O, col = standard)) +
+    geom_point() +
+    theme_bw() +
+    scale_x_datetime("date") +
+    scale_y_continuous("ref d18O variance")
+  
+  p2 <- ggplot(data = cal_data, aes(x = timeBgn, y = vari2H, col = standard)) +
+    geom_point() +
+    theme_bw() +
+    scale_x_datetime("date") +
+    scale_y_continuous("ref d2H variance")
+  
+  # add plot to file.
+  gridExtra::grid.arrange(p1, p2, nrow = 2, top = site)
+  
+  dev.off()
+  
+}

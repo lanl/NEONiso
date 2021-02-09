@@ -34,6 +34,7 @@ water_diagnostic_package <- function(data_path,
                         "Calibration Parametrs - Full Timeseries",
                         "Atmospheric Measurements - Full Timeseries",
                         "Calibration data inc. d-excess - Full Timeseries",
+                        "Calibration data variance",
                         "All Monthly Plots",
                         "All Full Timeseries Plots",
                         "All Plots",
@@ -156,6 +157,7 @@ water_diagnostic_package <- function(data_path,
                     data.isoH2o.dlta18OH2o.mean, verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
                     mean18O = data.isoH2o.dlta18OH2o.mean,
+                    vari18O = data.isoH2o.dlta18OH2o.vari,
                     standard = verticalPosition)
 
     calData[[2]] <- o18_ref_data[[1]] %>%
@@ -165,6 +167,7 @@ water_diagnostic_package <- function(data_path,
                     data.isoH2o.dlta18OH2oRefe.mean, verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
                     ref18O = data.isoH2o.dlta18OH2oRefe.mean,
+                    vari18O = NA,
                     standard = verticalPosition)
 
     calData[[3]] <- h2_obs_data[[1]] %>%
@@ -174,6 +177,7 @@ water_diagnostic_package <- function(data_path,
                     data.isoH2o.dlta2HH2o.mean, verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
                     mean2H = data.isoH2o.dlta2HH2o.mean,
+                    vari2H = data.isoH2o.dlta2HH2o.vari,
                     standard = verticalPosition)
 
     calData[[4]] <- h2_ref_data[[1]] %>%
@@ -183,6 +187,7 @@ water_diagnostic_package <- function(data_path,
                     data.isoH2o.dlta2HH2oRefe.mean, verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
                     ref2H = data.isoH2o.dlta2HH2oRefe.mean,
+                    vari2H = NA,
                     standard = verticalPosition)
 
     calData <- Reduce(
@@ -301,7 +306,7 @@ water_diagnostic_package <- function(data_path,
     #--------------------------------------------------------------
 
     # 1. Raw calibration data - monthly
-    if (which_plots == 1 | which_plots == 8 | which_plots == 10) {
+    if (which_plots == 1 | which_plots == 9 | which_plots == 11) {
 
       print("Plot 1")
       wplot_monthly_standards(calData,
@@ -310,8 +315,8 @@ water_diagnostic_package <- function(data_path,
 
     }
 
-    # 5. Calibration parameters - timeseries
-    if (which_plots == 2 | which_plots == 8 | which_plots == 10) {
+    # 2. Calibration parameters - monthly
+    if (which_plots == 2 | which_plots == 9 | which_plots == 11) {
 
       print("Plot 2")
       wplot_monthly_calParameters(calParsMon,
@@ -320,8 +325,8 @@ water_diagnostic_package <- function(data_path,
 
     } # if
 
-    # 3. calibrated ambient data - timeseries
-    if (which_plots == 3 | which_plots == 8 | which_plots == 10) {
+    # 3. calibrated ambient data - monthly
+    if (which_plots == 3 | which_plots == 9 | which_plots == 11) {
 
       print("Plot 3")
       wplot_monthly_ambient(ambData,
@@ -331,7 +336,7 @@ water_diagnostic_package <- function(data_path,
     } # if
 
     # 4. Raw calibration data - timeseries
-    if (which_plots == 4 | which_plots == 9 | which_plots == 10) {
+    if (which_plots == 4 | which_plots == 10 | which_plots == 11) {
 
       print("Plot 4")
       wplot_fullts_standards(calData,
@@ -341,7 +346,7 @@ water_diagnostic_package <- function(data_path,
     } # if
 
     # 5. Calibration parameters - timeseries
-    if (which_plots == 5 | which_plots == 9 | which_plots == 10) {
+    if (which_plots == 5 | which_plots == 10 | which_plots == 11) {
 
       print("Plot 5")
       wplot_fullts_calParameters(calPars,
@@ -351,7 +356,7 @@ water_diagnostic_package <- function(data_path,
     } # if
 
     # 6. calibrated ambient data - timeseries
-    if (which_plots == 6 | which_plots == 9 | which_plots == 10) {
+    if (which_plots == 6 | which_plots == 10 | which_plots == 11) {
 
       print("Plot 6")
       wplot_fullts_ambient(ambData,
@@ -360,14 +365,24 @@ water_diagnostic_package <- function(data_path,
 
     } # if
 
-    # 6. calibrated ambient data - timeseries
-    if (which_plots == 7 | which_plots == 9 | which_plots == 10) {
+    # 7. calibrated ambient data - w/ d-excess
+    if (which_plots == 7 | which_plots == 10 | which_plots == 11) {
 
       print("Plot 7")
       wplot_fullts_dxsdiag(calData,
                            out_folder,
                            unq_sites[i])
 
+    } # if
+    
+    # 8. calibrated ambient data - w/ variance
+    if (which_plots == 8 | which_plots == 10 | which_plots == 11) {
+      
+      print("Plot 8")
+      wplot_fullts_vari(calData,
+                           out_folder,
+                           unq_sites[i])
+      
     } # if
 
   } # for unq_sites
