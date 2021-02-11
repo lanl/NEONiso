@@ -9,9 +9,13 @@ wplot_monthly_standards <- function(cal_data, plot_path, site) {
   pdf(paste0(plot_path, "/", "1_monWStds_", site, ".pdf"))
 
   # break data into months.
+  cal_data$standard <- as.character(cal_data$standard)
+  cal_data$standard[cal_data$standard == "h2oLow"] <- 1
+  cal_data$standard[cal_data$standard == "h2oMed"] <- 2
+  cal_data$standard[cal_data$standard == "h2oHigh"] <- 3
   cal_data$standard <- as.numeric(cal_data$standard)
 
-  cal_data.xts <- xts::xts(cal_data[, 3:7], order.by = cal_data$timeBgn)
+  cal_data.xts <- xts::xts(cal_data[, 3:9], order.by = cal_data$timeBgn)
   cal_data.mon <- xts::split.xts(cal_data.xts, f = "months")
 
   for (i in 1:length(cal_data.mon)) {

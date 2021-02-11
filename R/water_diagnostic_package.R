@@ -42,7 +42,7 @@ water_diagnostic_package <- function(data_path,
                       title = "Which plots should be run?")
 
   # allow graceful exit if want to stop.
-  if (which_plots == 11) {
+  if (which_plots == 12) {
 
     stop()
 
@@ -154,7 +154,9 @@ water_diagnostic_package <- function(data_path,
       dplyr::filter(verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh")) %>%
       dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta18OH2o.mean, verticalPosition) %>%
+                    data.isoH2o.dlta18OH2o.mean,
+                    data.isoH2o.dlta18OH2o.vari,
+                    verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
                     mean18O = data.isoH2o.dlta18OH2o.mean,
                     vari18O = data.isoH2o.dlta18OH2o.vari,
@@ -164,17 +166,19 @@ water_diagnostic_package <- function(data_path,
       dplyr::filter(verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh")) %>%
       dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta18OH2oRefe.mean, verticalPosition) %>%
+                    data.isoH2o.dlta18OH2oRefe.mean,
+                    verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
                     ref18O = data.isoH2o.dlta18OH2oRefe.mean,
-                    vari18O = NA,
                     standard = verticalPosition)
 
     calData[[3]] <- h2_obs_data[[1]] %>%
       dplyr::filter(verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh")) %>%
       dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta2HH2o.mean, verticalPosition) %>%
+                    data.isoH2o.dlta2HH2o.mean,
+                    data.isoH2o.dlta2HH2o.vari,
+                    verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
                     mean2H = data.isoH2o.dlta2HH2o.mean,
                     vari2H = data.isoH2o.dlta2HH2o.vari,
@@ -184,10 +188,10 @@ water_diagnostic_package <- function(data_path,
       dplyr::filter(verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh")) %>%
       dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta2HH2oRefe.mean, verticalPosition) %>%
+                    data.isoH2o.dlta2HH2oRefe.mean,
+                    verticalPosition) %>%
       dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
                     ref2H = data.isoH2o.dlta2HH2oRefe.mean,
-                    vari2H = NA,
                     standard = verticalPosition)
 
     calData <- Reduce(
