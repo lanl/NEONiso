@@ -7,3 +7,7 @@ r:
   - devel
 cache: packages
 bioc_packages: rhdf5
+r_packages:
+  - covr
+after_success:
+  - Rscript -e 'library(covr); codecov()'
