@@ -26,7 +26,8 @@ Imports:
     ggplot2,
     magrittr,
     rhdf5,
-    R.utils
+    R.utils,
+    data.table
 Suggests: 
     knitr,
     rmarkdown
