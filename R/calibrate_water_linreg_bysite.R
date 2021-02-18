@@ -538,7 +538,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            max  = data.isoH2o.dlta18OH2o.max,
            vari = data.isoH2o.dlta18OH2o.vari,
            numSamp = data.isoH2o.dlta18OH2o.numSamp) %>%
-    mutate(var = "dlta18OH2o")
+    mutate(varname = "dlta18OH2o")
   
   dlta2H_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "dlta2HH2o", avg = 9)
   dlta2HH2o <- dlta2H_list[[site]] %>%
@@ -549,7 +549,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            max  = data.isoH2o.dlta2HH2o.max,
            vari = data.isoH2o.dlta2HH2o.vari,
            numSamp = data.isoH2o.dlta2HH2o.numSamp) %>%
-    mutate(var = "dlta2HH2o")
+    mutate(varname = "dlta2HH2o")
   
   pres_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "pres", avg = 9)
   pres <- pres_list[[site]] %>%
@@ -560,7 +560,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            max  = data.isoH2o.pres.max,
            vari = data.isoH2o.pres.vari,
            numSamp = data.isoH2o.pres.numSamp) %>%
-    mutate(var = "pres")
+    mutate(varname = "pres")
   
   presEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "presEnvHut", avg = 9)
   presEnvHut <- presEnvHut_list[[site]] %>%
@@ -571,7 +571,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            max  = data.isoH2o.presEnvHut.max,
            vari = data.isoH2o.presEnvHut.vari,
            numSamp = data.isoH2o.presEnvHut.numSamp) %>%
-    mutate(var = "presEnvHut")
+    mutate(varname = "presEnvHut")
   
   rhEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rhEnvHut", avg = 9)
   rhEnvHut <- rhEnvHut_list[[site]] %>%
@@ -582,7 +582,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            max  = data.isoH2o.rhEnvHut.max,
            vari = data.isoH2o.rhEnvHut.vari,
            numSamp = data.isoH2o.rhEnvHut.numSamp) %>%
-    mutate(var = "rhEnvHut")
+    mutate(varname = "rhEnvHut")
   
   rtioMoleWetH2o_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rtioMoleWetH2o", avg = 9)
   rtioMoleWetH2o <- rtioMoleWetH2o_list[[site]] %>%
@@ -593,7 +593,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            max  = data.isoH2o.rtioMoleWetH2o.max,
            vari = data.isoH2o.rtioMoleWetH2o.vari,
            numSamp = data.isoH2o.rtioMoleWetH2o.numSamp) %>%
-    mutate(var = "rtioMoleWetH2o")
+    mutate(varname = "rtioMoleWetH2o")
   
   rtioMoleWetH2oEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rtioMoleWetH2oEnvHut", avg = 9)
   rtioMoleWetH2oEnvHut <- rtioMoleWetH2oEnvHut_list[[site]] %>%
@@ -604,7 +604,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            max  = data.isoH2o.rtioMoleWetH2oEnvHut.max,
            vari = data.isoH2o.rtioMoleWetH2oEnvHut.vari,
            numSamp = data.isoH2o.rtioMoleWetH2oEnvHut.numSamp) %>%
-    mutate(var = "rtioMoleWetH2oEnvHut")
+    mutate(varname = "rtioMoleWetH2oEnvHut")
   
   temp_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "temp", avg = 9)
   temp <- temp_list[[site]] %>%
@@ -615,7 +615,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            max  = data.isoH2o.temp.max,
            vari = data.isoH2o.temp.vari,
            numSamp = data.isoH2o.temp.numSamp) %>%
-    mutate(var = "temp")
+    mutate(varname = "temp")
   
   tempEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "tempEnvHut", avg = 9)
   tempEnvHut <- tempEnvHut_list[[site]] %>%
@@ -626,7 +626,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            max  = data.isoH2o.tempEnvHut.max,
            vari = data.isoH2o.tempEnvHut.vari,
            numSamp = data.isoH2o.tempEnvHut.numSamp) %>%
-    mutate(var = "tempEnvHut")
+    mutate(varname = "tempEnvHut")
   
   data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, pres, presEnvHut, rhEnvHut,
                        rtioMoleWetH2o, rtioMoleWetH2oEnvHut, temp, tempEnvHut))
@@ -645,15 +645,13 @@ calibrate_water_linreg_bysite <- function(inpath,
   
   # remove verticalPosition column
   data_by_height <- lapply(data_by_height, function(x){dplyr::select(x,-verticalPosition)})
-  
-  print(str(data_by_height))
-  
-  data_by_height_by_var <- lapply(data_by_height, function(x){base::split(x, factor(x$var))})
+
+  data_by_height_by_var <- lapply(data_by_height, function(x){base::split(x, factor(x$varname))})
 
   # okay, now calibrate the ambient data...
   lapply(names(data_by_height_by_var),
          function(x) {
-           data_by_height_by_var[[x]] <- lapply(data_by_height_by_var[[x]], function(y){dplyr::select(y,-var)})
+           data_by_height_by_var[[x]] <- lapply(data_by_height_by_var[[x]], function(y){dplyr::select(y,-varname)})
            calibrate_ambient_water_linreg(amb_data_list = data_by_height_by_var[[x]],
                                                     caldf = out,
                                                     outname = x,

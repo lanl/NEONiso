@@ -29,4 +29,21 @@ globalVariables(c("CO2_obs_mean","CO2_ref_mean","c12","c13",
                   "data.isoH2o.dlta18OH2oRefe.mean",
                   "data.isoH2o.dlta2HH2o.mean", "data.isoH2o.dlta2HH2o.mean_cal",
                   "data.isoH2o.dlta2HH2oRefe.mean", "data.isoH2o.rtioMoleWetH2o.mean",
-                  "standard", "std_name", "..density..")) # not sure what package ..density.. is from
+                  "standard", "std_name", "..density..", # not sure what package ..density.. is from
+                  # adding in variables from calibrate_water_linreg_bysite
+                  "btime", "periods", "data.isoH2o.dlta18OH2o.min", "data.isoH2o.dlta18OH2o.max",
+                  "data.isoH2o.dlta18OH2o.vari", "data.isoH2o.dlta18OH2o.numSamp", "data.isoH2o.dlta2HH2o.min",
+                  "data.isoH2o.dlta2HH2o.max", "data.isoH2o.dlta2HH2o.mean", "data.isoH2o.dlta2HH2o.vari",
+                  "data.isoH2o.dlta2HH2o.numSamp", "data.isoH2o.pres.max", "data.isoH2o.pres.min",
+                  "data.isoH2o.pres.mean", "data.isoH2o.pres.vari", "data.isoH2o.pres.numSamp",
+                  "data.isoH2o.presEnvHut.max", "data.isoH2o.presEnvHut.min", "data.isoH2o.presEnvHut.mean",
+                  "data.isoH2o.presEnvHut.vari", "data.isoH2o.presEnvHut.numSamp", "data.isoH2o.rhEnvHut.max",
+                  "data.isoH2o.rhEnvHut.min", "data.isoH2o.rhEnvHut.mean", "data.isoH2o.rhEnvHut.vari",
+                  "data.isoH2o.rhEnvHut.numSamp", "data.isoH2o.rtioMoleWetH2o.max", "data.isoH2o.rtioMoleWetH2o.min",
+                  "data.isoH2o.rtioMoleWetH2o.mean", "data.isoH2o.rtioMoleWetH2o.vari", "data.isoH2o.rtioMoleWetH2o.numSamp",
+                  "data.isoH2o.rtioMoleWetH2oEnvHut.max", "data.isoH2o.rtioMoleWetH2oEnvHut.min",
+                  "data.isoH2o.rtioMoleWetH2oEnvHut.mean", "data.isoH2o.rtioMoleWetH2oEnvHut.vari",
+                  "data.isoH2o.rtioMoleWetH2oEnvHut.numSamp", "data.isoH2o.temp.mean", "data.isoH2o.temp.max",
+                  "data.isoH2o.temp.min", "data.isoH2o.temp.vari", "data.isoH2o.temp.numSamp",
+                  "data.isoH2o.tempEnvHut.mean", "data.isoH2o.tempEnvHut.min", "data.isoH2o.tempEnvHut.max",
+                  "data.isoH2o.tempEnvHut.vari", "data.isoH2o.tempEnvHut.numSamp", "vari18O", "vari2H", "varname"))
