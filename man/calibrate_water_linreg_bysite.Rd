@@ -2,17 +2,18 @@
 % Please edit documentation in R/calibrate_water_linreg_bysite.R
 \name{calibrate_water_linreg_bysite}
 \alias{calibrate_water_linreg_bysite}
-\title{calibrate_water_linreg}
+\title{calibrate_water_linreg_bysite}
 \usage{
 calibrate_water_linreg_bysite(
   inpath,
   outpath,
   site,
-  time_diff_betweeen_standards = 1800,
+  calibration_half_width = 14,
   filter_data = TRUE,
   force_cal_to_beginning = TRUE,
   force_cal_to_end = TRUE,
-  r2_thres = 0.95
+  r2_thres = 0.95,
+  slope_tolerance = 9999
 )
 }
 \arguments{
@@ -22,8 +23,10 @@ calibrate_water_linreg_bysite(
 
 \item{site}{Four-letter NEON code for site being processed.}
 
-\item{time_diff_betweeen_standards}{Time (in seconds) required between
-consecutive standard measurements.}
+\item{calibration_half_width}{Determines the range of standard measurements
+to use in determining the calibration regression dataset. Creates
+a moving window that is \code{2*calibration_half_width} days wide.
+Default is set to 14 for a 28 day moving window.}
 
 \item{filter_data}{Apply median absolute deviation filter from Brock 86 to
 remove impulse spikes?}
@@ -36,6 +39,10 @@ the beginning of the file?}
 \item{r2_thres}{Minimum r2 threshold of an "acceptable" calibration. Acts to
 remove calibration periods where a measurement error makes
 relationship nonlinear. Default = 0.95}
+
+\item{slope_tolerance}{How different from 1 should we allow 'passing' regression
+slopes to be? Experimental parameter, off by default
+(e.g., default slope parameter = 9999)}
 }
 \value{
 nothing to the workspace, but creates a new output file of
