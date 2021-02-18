@@ -271,6 +271,17 @@ calibrate_water_linreg_bysite <- function(inpath,
         oxy_cal_ints[i]   <- coef(tmp)[[1]]
         oxy_cal_rsq[i]    <- summary(tmp)$r.squared
         
+        # enforce thresholds. replace regression parameters as NA where they fail.
+        if ((oxy_cal_slopes[i] > (1 + slope_tolerance)) |
+            (oxy_cal_slopes[i] < (1 + slope_tolerance)) |
+            (oxy_cal_rsq[i] < r2_thres)) {
+          
+          # set as NA
+          oxy_cal_slopes[i] <- NA
+          oxy_cal_ints[i]   <- NA
+          oxy_cal_rsq[i]    <- NA
+        }
+        
       } else { # all are missing
         oxy_cal_slopes[i] <- NA
         oxy_cal_ints[i]   <- NA
@@ -288,7 +299,19 @@ calibrate_water_linreg_bysite <- function(inpath,
         hyd_cal_ints[i]   <- coef(tmp)[[1]]
         hyd_cal_rsq[i]    <- summary(tmp)$r.squared
         
+        # enforce thresholds. replace regression parameters where they fail.
+        if ((hyd_cal_slopes[i] > (1 + slope_tolerance)) |
+            (hyd_cal_slopes[i] < (1 + slope_tolerance)) |
+            (hyd_cal_rsq[i] < r2_thres)) {
+          
+          # set as NA
+          hyd_cal_slopes[i] <- NA
+          hyd_cal_ints[i]   <- NA
+          hyd_cal_rsq[i]    <- NA
+        }
+        
       } else { # all are missing
+        
         hyd_cal_slopes[i] <- NA
         hyd_cal_ints[i]   <- NA
         hyd_cal_rsq[i]    <- NA
@@ -338,12 +361,14 @@ calibrate_water_linreg_bysite <- function(inpath,
     out$h_r2 <- as.numeric(rep(NA, length(out$start)))
   }
 
-
   # ensure there are 8 columns in out!
   if (ncol(out) != 8) {
     stop("Wrong number of columns in out.")
   }
 
+
+  
+  
   var_for_h5 <- out
 
   var_for_h5$start <- convert_POSIXct_to_NEONhdf5_time(var_for_h5$start)
