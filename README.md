@@ -14,7 +14,7 @@ This repository contains an R package to calibrate NEON atmospheric isotope data
 Please report any issues you have, bugs found, or enhancement suggestions as issues to this repository.
 
 ## Citation information:
-A manuscript describing the carbon isotope calibration techniques used in this package has just been accepted at JGR-Biogeosciences (doi: 10.1029/2020JG005862). Users of this package should also cite the Zenodo DOI above.
+A manuscript describing the carbon isotope calibration techniques used in this package has just been accepted at JGR-Biogeosciences (doi: 10.1029/2020JG005862). Users of this package should also cite the Zenodo DOI above. If you are interested in using code that should provide data identical to that in the JGR-Biogeosciences paper, please install version 0.3 of the package. 
 
 Please also check to ensure that you are compliant with NEON's data citation policy for any
 products derived from this package: https://www.neonscience.org/data/about-data/data-policies
