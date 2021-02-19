@@ -270,7 +270,7 @@ calibrate_water_linreg_bysite <- function(inpath,
         
         # enforce thresholds. replace regression parameters as NA where they fail.
         if ((oxy_cal_slopes[i] > (1 + slope_tolerance)) |
-            (oxy_cal_slopes[i] < (1 + slope_tolerance)) |
+            (oxy_cal_slopes[i] < (1 - slope_tolerance)) |
             (oxy_cal_rsq[i] < r2_thres)) {
           
           # set as NA
@@ -298,7 +298,7 @@ calibrate_water_linreg_bysite <- function(inpath,
         
         # enforce thresholds. replace regression parameters where they fail.
         if ((hyd_cal_slopes[i] > (1 + slope_tolerance)) |
-            (hyd_cal_slopes[i] < (1 + slope_tolerance)) |
+            (hyd_cal_slopes[i] < (1 - slope_tolerance)) |
             (hyd_cal_rsq[i] < r2_thres)) {
           
           # set as NA
