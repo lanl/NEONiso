@@ -176,10 +176,7 @@ calibrate_water_linreg_bysite <- function(inpath,
   low_rs$periods <- rleidv(low_rs, "time_diff") %/% 2
   
   #return(list(low_rs,med_rs,high_rs))
-  # this section needs to be refactored: had originally assumed there was
-  # only one month. need to restructure to be able to cross years.
-  # there's an additional problem here: what happens if standards cross midnight??
-  
+
   high_rs <- high_rs %>%
     group_by(periods) %>%
     filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>%
@@ -366,9 +363,6 @@ calibrate_water_linreg_bysite <- function(inpath,
     stop("Wrong number of columns in out.")
   }
 
-
-  
-  
   var_for_h5 <- out
 
   var_for_h5$start <- convert_POSIXct_to_NEONhdf5_time(var_for_h5$start)
@@ -386,7 +380,7 @@ calibrate_water_linreg_bysite <- function(inpath,
   # generate file name:
   outname <- paste0(outpath,"/NEON.",site,".wiso.alldata.calibrated.",
                     2*calibration_half_width,"dayWindow.h5")
-  
+
   rhdf5::h5createFile(outname)
   rhdf5::h5createGroup(outname, paste0("/", site))
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01"))
@@ -409,7 +403,6 @@ calibrate_water_linreg_bysite <- function(inpath,
   # 
   # add attributes regarding sloep and r2 thresholds
   
-  
   #rhdf5::H5Gclose(attrloc)
 
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o/calData"))
@@ -425,86 +418,397 @@ calibrate_water_linreg_bysite <- function(inpath,
 
   # close the group and the file
   rhdf5::H5Gclose(h2o_cal_outloc)
-  
+  # 
   #####------------NEED TO PORT OVER TO NEW FUNCTION------------------
+  
+  # stack data available for a given site into a single timeseries.
+  # should probably kick this out to its own function someday.
+
   # #---------------------------------------------
   # #---------------------------------------------
   # # copy high/mid/low standard data from input file.
-  # #----------------------------------------warnin-----
+  # #---------------------------------------------
   # #---------------------------------------------
   # #low
-  # rhdf5::h5createGroup(outname,
-  #                      paste0("/", site, "/dp01/data/isoH2o/h2oLow_03m"))
-  # 
-  # low_outloc <- rhdf5::H5Gopen(fid,
-  #                          paste0("/", site, "/dp01/data/isoH2o/h2oLow_03m"))
-  # 
-  # low <- rhdf5::h5read(inname,
-  #                      paste0("/", site, "/dp01/data/isoH2o/h2oLow_03m"))
-  # 
-  # low <- calibrate_standards_water(out, low)
-  # 
-  # # loop through each of the variables in list amb.data.list
-  # # and write out as a dataframe.
-  # lapply(names(low), function(x) {
-  #   rhdf5::h5writeDataset.data.frame(obj = low[[x]],
-  #                                    h5loc = low_outloc,
-  #                                    name = x,
-  #                                    DataFrameAsCompound = TRUE)})
-  # 
-  # rhdf5::H5Gclose(low_outloc)
+  rhdf5::h5createGroup(outname,
+                       paste0("/", site, "/dp01/data/isoH2o/h2oLow_03m"))
+
+  low_outloc <- rhdf5::H5Gopen(fid,
+                           paste0("/", site, "/dp01/data/isoH2o/h2oLow_03m"))
+  
+
+  dlta18OH2o <- low %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta18OH2o.")) %>%
+    rename(mean = data.isoH2o.dlta18OH2o.mean,
+           min  = data.isoH2o.dlta18OH2o.min,
+           max  = data.isoH2o.dlta18OH2o.max,
+           vari = data.isoH2o.dlta18OH2o.vari,
+           numSamp = data.isoH2o.dlta18OH2o.numSamp) %>%
+    mutate(varname = "dlta18OH2o")
+
+  dlta2HH2o <- low %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta2HH2o.")) %>%
+    rename(mean = data.isoH2o.dlta2HH2o.mean,
+           min  = data.isoH2o.dlta2HH2o.min,
+           max  = data.isoH2o.dlta2HH2o.max,
+           vari = data.isoH2o.dlta2HH2o.vari,
+           numSamp = data.isoH2o.dlta2HH2o.numSamp) %>%
+    mutate(varname = "dlta2HH2o")
+  
+  dlta18OH2oRefe <- low %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta18OH2oRefe.")) %>%
+    rename(mean = data.isoH2o.dlta18OH2oRefe.mean,
+           min  = data.isoH2o.dlta18OH2oRefe.min,
+           max  = data.isoH2o.dlta18OH2oRefe.max,
+           vari = data.isoH2o.dlta18OH2oRefe.vari,
+           numSamp = data.isoH2o.dlta18OH2oRefe.numSamp) %>%
+    mutate(varname = "dlta18OH2oRefe")
+  
+  dlta2HH2oRefe <- low %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta2HH2oRefe.")) %>%
+    rename(mean = data.isoH2o.dlta2HH2oRefe.mean,
+           min  = data.isoH2o.dlta2HH2oRefe.min,
+           max  = data.isoH2o.dlta2HH2oRefe.max,
+           vari = data.isoH2o.dlta2HH2oRefe.vari,
+           numSamp = data.isoH2o.dlta2HH2oRefe.numSamp) %>%
+    mutate(varname = "dlta2HH2oRefe")
+
+  pres <- low %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.pres.")) %>%
+    rename(mean = data.isoH2o.pres.mean,
+           min  = data.isoH2o.pres.min,
+           max  = data.isoH2o.pres.max,
+           vari = data.isoH2o.pres.vari,
+           numSamp = data.isoH2o.pres.numSamp) %>%
+    mutate(varname = "pres")
+  
+  presEnvHut <- low %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.presEnvHut.")) %>%
+    rename(mean = data.isoH2o.presEnvHut.mean,
+           min  = data.isoH2o.presEnvHut.min,
+           max  = data.isoH2o.presEnvHut.max,
+           vari = data.isoH2o.presEnvHut.vari,
+           numSamp = data.isoH2o.presEnvHut.numSamp) %>%
+    mutate(varname = "presEnvHut")
+  
+  rhEnvHut <- low %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.rhEnvHut.")) %>%
+    rename(mean = data.isoH2o.rhEnvHut.mean,
+           min  = data.isoH2o.rhEnvHut.min,
+           max  = data.isoH2o.rhEnvHut.max,
+           vari = data.isoH2o.rhEnvHut.vari,
+           numSamp = data.isoH2o.rhEnvHut.numSamp) %>%
+    mutate(varname = "rhEnvHut")
+  
+  rtioMoleWetH2o <- low %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.rtioMoleWetH2o.")) %>%
+    rename(mean = data.isoH2o.rtioMoleWetH2o.mean,
+           min  = data.isoH2o.rtioMoleWetH2o.min,
+           max  = data.isoH2o.rtioMoleWetH2o.max,
+           vari = data.isoH2o.rtioMoleWetH2o.vari,
+           numSamp = data.isoH2o.rtioMoleWetH2o.numSamp) %>%
+    mutate(varname = "rtioMoleWetH2o")
+  
+  rtioMoleWetH2oEnvHut <- low %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.rtioMoleWetH2oEnvHut.")) %>%
+    rename(mean = data.isoH2o.rtioMoleWetH2oEnvHut.mean,
+           min  = data.isoH2o.rtioMoleWetH2oEnvHut.min,
+           max  = data.isoH2o.rtioMoleWetH2oEnvHut.max,
+           vari = data.isoH2o.rtioMoleWetH2oEnvHut.vari,
+           numSamp = data.isoH2o.rtioMoleWetH2oEnvHut.numSamp) %>%
+    mutate(varname = "rtioMoleWetH2oEnvHut")
+  
+  temp <- low %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.temp.")) %>%
+    rename(mean = data.isoH2o.temp.mean,
+           min  = data.isoH2o.temp.min,
+           max  = data.isoH2o.temp.max,
+           vari = data.isoH2o.temp.vari,
+           numSamp = data.isoH2o.temp.numSamp) %>%
+    mutate(varname = "temp")
+  
+  tempEnvHut <- low %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.tempEnvHut.")) %>%
+    rename(mean = data.isoH2o.tempEnvHut.mean,
+           min  = data.isoH2o.tempEnvHut.min,
+           max  = data.isoH2o.tempEnvHut.max,
+           vari = data.isoH2o.tempEnvHut.vari,
+           numSamp = data.isoH2o.tempEnvHut.numSamp) %>%
+    mutate(varname = "tempEnvHut")
+  
+  data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, dlta18OH2oRefe, dlta2HH2oRefe,
+                                     pres, presEnvHut, rhEnvHut,
+                                     rtioMoleWetH2o, rtioMoleWetH2oEnvHut, temp, tempEnvHut))
+  
+  lowref <- base::split(data_out_all, factor(data_out_all$varname))
+  
+  lowref <- calibrate_standards_water(out, lowref)
+
+  # and write out as a dataframe.
+  lapply(names(lowref), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = lowref[[x]],
+                                     h5loc = low_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)})
+
+  rhdf5::H5Gclose(low_outloc)
   # 
   # #------------------------------------------------------------
   # #medium
-  # rhdf5::h5createGroup(outname,
-  #                      paste0("/", site, "/dp01/data/isoH2o/h2oMed_03m"))
-  # 
-  # med_outloc <- rhdf5::H5Gopen(fid,
-  #                       paste0("/", site, "/dp01/data/isoH2o/h2oMed_03m"))
-  # 
-  # med <- rhdf5::h5read(inname,
-  #                      paste0("/", site, "/dp01/data/isoH2o/h2oMed_03m"))
-  # 
-  # med <- calibrate_standards_water(out, med)
-  # 
-  # # loop through each of the variables in list amb.data.list
-  # # and write out as a dataframe.
-  # lapply(names(med), function(x) {
-  #   rhdf5::h5writeDataset.data.frame(obj = med[[x]],
-  #                                    h5loc = med_outloc,
-  #                                    name = x,
-  #                                    DataFrameAsCompound = TRUE)})
-  # 
-  # rhdf5::H5Gclose(med_outloc)
-  # 
+  rhdf5::h5createGroup(outname,
+                       paste0("/", site, "/dp01/data/isoH2o/h2oMed_03m"))
+  
+  med_outloc <- rhdf5::H5Gopen(fid,
+                               paste0("/", site, "/dp01/data/isoH2o/h2oMed_03m"))
+  
+  dlta18OH2o <- med %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta18OH2o.")) %>%
+    rename(mean = data.isoH2o.dlta18OH2o.mean,
+           min  = data.isoH2o.dlta18OH2o.min,
+           max  = data.isoH2o.dlta18OH2o.max,
+           vari = data.isoH2o.dlta18OH2o.vari,
+           numSamp = data.isoH2o.dlta18OH2o.numSamp) %>%
+    mutate(varname = "dlta18OH2o")
+  
+  dlta2HH2o <- med %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta2HH2o.")) %>%
+    rename(mean = data.isoH2o.dlta2HH2o.mean,
+           min  = data.isoH2o.dlta2HH2o.min,
+           max  = data.isoH2o.dlta2HH2o.max,
+           vari = data.isoH2o.dlta2HH2o.vari,
+           numSamp = data.isoH2o.dlta2HH2o.numSamp) %>%
+    mutate(varname = "dlta2HH2o")
+  
+  dlta18OH2oRefe <- med %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta18OH2oRefe.")) %>%
+    rename(mean = data.isoH2o.dlta18OH2oRefe.mean,
+           min  = data.isoH2o.dlta18OH2oRefe.min,
+           max  = data.isoH2o.dlta18OH2oRefe.max,
+           vari = data.isoH2o.dlta18OH2oRefe.vari,
+           numSamp = data.isoH2o.dlta18OH2oRefe.numSamp) %>%
+    mutate(varname = "dlta18OH2oRefe")
+  
+  dlta2HH2oRefe <- med %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta2HH2oRefe.")) %>%
+    rename(mean = data.isoH2o.dlta2HH2oRefe.mean,
+           min  = data.isoH2o.dlta2HH2oRefe.min,
+           max  = data.isoH2o.dlta2HH2oRefe.max,
+           vari = data.isoH2o.dlta2HH2oRefe.vari,
+           numSamp = data.isoH2o.dlta2HH2oRefe.numSamp) %>%
+    mutate(varname = "dlta2HH2oRefe")
+  
+  pres <- med %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.pres.")) %>%
+    rename(mean = data.isoH2o.pres.mean,
+           min  = data.isoH2o.pres.min,
+           max  = data.isoH2o.pres.max,
+           vari = data.isoH2o.pres.vari,
+           numSamp = data.isoH2o.pres.numSamp) %>%
+    mutate(varname = "pres")
+  
+  presEnvHut <- med %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.presEnvHut.")) %>%
+    rename(mean = data.isoH2o.presEnvHut.mean,
+           min  = data.isoH2o.presEnvHut.min,
+           max  = data.isoH2o.presEnvHut.max,
+           vari = data.isoH2o.presEnvHut.vari,
+           numSamp = data.isoH2o.presEnvHut.numSamp) %>%
+    mutate(varname = "presEnvHut")
+  
+  rhEnvHut <- med %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.rhEnvHut.")) %>%
+    rename(mean = data.isoH2o.rhEnvHut.mean,
+           min  = data.isoH2o.rhEnvHut.min,
+           max  = data.isoH2o.rhEnvHut.max,
+           vari = data.isoH2o.rhEnvHut.vari,
+           numSamp = data.isoH2o.rhEnvHut.numSamp) %>%
+    mutate(varname = "rhEnvHut")
+  
+  rtioMoleWetH2o <- med %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.rtioMoleWetH2o.")) %>%
+    rename(mean = data.isoH2o.rtioMoleWetH2o.mean,
+           min  = data.isoH2o.rtioMoleWetH2o.min,
+           max  = data.isoH2o.rtioMoleWetH2o.max,
+           vari = data.isoH2o.rtioMoleWetH2o.vari,
+           numSamp = data.isoH2o.rtioMoleWetH2o.numSamp) %>%
+    mutate(varname = "rtioMoleWetH2o")
+  
+  rtioMoleWetH2oEnvHut <- med %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.rtioMoleWetH2oEnvHut.")) %>%
+    rename(mean = data.isoH2o.rtioMoleWetH2oEnvHut.mean,
+           min  = data.isoH2o.rtioMoleWetH2oEnvHut.min,
+           max  = data.isoH2o.rtioMoleWetH2oEnvHut.max,
+           vari = data.isoH2o.rtioMoleWetH2oEnvHut.vari,
+           numSamp = data.isoH2o.rtioMoleWetH2oEnvHut.numSamp) %>%
+    mutate(varname = "rtioMoleWetH2oEnvHut")
+  
+  temp <- med %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.temp.")) %>%
+    rename(mean = data.isoH2o.temp.mean,
+           min  = data.isoH2o.temp.min,
+           max  = data.isoH2o.temp.max,
+           vari = data.isoH2o.temp.vari,
+           numSamp = data.isoH2o.temp.numSamp) %>%
+    mutate(varname = "temp")
+  
+  tempEnvHut <- med %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.tempEnvHut.")) %>%
+    rename(mean = data.isoH2o.tempEnvHut.mean,
+           min  = data.isoH2o.tempEnvHut.min,
+           max  = data.isoH2o.tempEnvHut.max,
+           vari = data.isoH2o.tempEnvHut.vari,
+           numSamp = data.isoH2o.tempEnvHut.numSamp) %>%
+    mutate(varname = "tempEnvHut")
+  
+  data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, dlta18OH2oRefe, dlta2HH2oRefe,
+                                     pres, presEnvHut, rhEnvHut,
+                                     rtioMoleWetH2o, rtioMoleWetH2oEnvHut, temp, tempEnvHut))
+  
+  medref <- base::split(data_out_all, factor(data_out_all$varname))
+  
+  medref <- calibrate_standards_water(out, medref)
+  
+  # loop through each of the variables in list amb.data.list
+  # and write out as a dataframe.
+  lapply(names(medref), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = medref[[x]],
+                                     h5loc = med_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)})
+  
+  rhdf5::H5Gclose(med_outloc)
+  
   # #------------------------------------------------------------
   # #high
-  # rhdf5::h5createGroup(outname,
-  #                      paste0("/", site, "/dp01/data/isoH2o/h2oHigh_03m"))
-  # 
-  # high_outloc <- rhdf5::H5Gopen(fid,
-  #                      paste0("/", site, "/dp01/data/isoH2o/h2oHigh_03m"))
-  # 
-  # high <- rhdf5::h5read(inname,
-  #                       paste0("/", site, "/dp01/data/isoH2o/h2oHigh_03m"))
-  # 
-  # high <- calibrate_standards_water(out, high)
-  # 
-  # # loop through each of the variables in list amb.data.list
-  # # and write out as a dataframe.
-  # lapply(names(high), function(x) {
-  #   rhdf5::h5writeDataset.data.frame(obj = high[[x]],
-  #                                    h5loc = high_outloc,
-  #                                    name = x,
-  #                                    DataFrameAsCompound = TRUE)})
-  # 
-  # rhdf5::H5Gclose(high_outloc)
-  # 
-  # # close the group and the file
-  # rhdf5::H5Fclose(fid)
-  # Sys.sleep(0.5)
-  # 
-  # rhdf5::h5closeAll()
+  rhdf5::h5createGroup(outname,
+                       paste0("/", site, "/dp01/data/isoH2o/h2oHigh_03m"))
+
+  high_outloc <- rhdf5::H5Gopen(fid,
+                       paste0("/", site, "/dp01/data/isoH2o/h2oHigh_03m"))
+
+  
+  dlta18OH2o <- high %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta18OH2o.")) %>%
+    rename(mean = data.isoH2o.dlta18OH2o.mean,
+           min  = data.isoH2o.dlta18OH2o.min,
+           max  = data.isoH2o.dlta18OH2o.max,
+           vari = data.isoH2o.dlta18OH2o.vari,
+           numSamp = data.isoH2o.dlta18OH2o.numSamp) %>%
+    mutate(varname = "dlta18OH2o")
+  
+  dlta2HH2o <- high %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta2HH2o.")) %>%
+    rename(mean = data.isoH2o.dlta2HH2o.mean,
+           min  = data.isoH2o.dlta2HH2o.min,
+           max  = data.isoH2o.dlta2HH2o.max,
+           vari = data.isoH2o.dlta2HH2o.vari,
+           numSamp = data.isoH2o.dlta2HH2o.numSamp) %>%
+    mutate(varname = "dlta2HH2o")
+  
+  dlta18OH2oRefe <- high %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta18OH2oRefe.")) %>%
+    rename(mean = data.isoH2o.dlta18OH2oRefe.mean,
+           min  = data.isoH2o.dlta18OH2oRefe.min,
+           max  = data.isoH2o.dlta18OH2oRefe.max,
+           vari = data.isoH2o.dlta18OH2oRefe.vari,
+           numSamp = data.isoH2o.dlta18OH2oRefe.numSamp) %>%
+    mutate(varname = "dlta18OH2oRefe")
+  
+  dlta2HH2oRefe <- high %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta2HH2oRefe.")) %>%
+    rename(mean = data.isoH2o.dlta2HH2oRefe.mean,
+           min  = data.isoH2o.dlta2HH2oRefe.min,
+           max  = data.isoH2o.dlta2HH2oRefe.max,
+           vari = data.isoH2o.dlta2HH2oRefe.vari,
+           numSamp = data.isoH2o.dlta2HH2oRefe.numSamp) %>%
+    mutate(varname = "dlta2HH2oRefe")
+  
+  pres <- high %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.pres.")) %>%
+    rename(mean = data.isoH2o.pres.mean,
+           min  = data.isoH2o.pres.min,
+           max  = data.isoH2o.pres.max,
+           vari = data.isoH2o.pres.vari,
+           numSamp = data.isoH2o.pres.numSamp) %>%
+    mutate(varname = "pres")
+  
+  presEnvHut <- high %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.presEnvHut.")) %>%
+    rename(mean = data.isoH2o.presEnvHut.mean,
+           min  = data.isoH2o.presEnvHut.min,
+           max  = data.isoH2o.presEnvHut.max,
+           vari = data.isoH2o.presEnvHut.vari,
+           numSamp = data.isoH2o.presEnvHut.numSamp) %>%
+    mutate(varname = "presEnvHut")
+  
+  rhEnvHut <- high %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.rhEnvHut.")) %>%
+    rename(mean = data.isoH2o.rhEnvHut.mean,
+           min  = data.isoH2o.rhEnvHut.min,
+           max  = data.isoH2o.rhEnvHut.max,
+           vari = data.isoH2o.rhEnvHut.vari,
+           numSamp = data.isoH2o.rhEnvHut.numSamp) %>%
+    mutate(varname = "rhEnvHut")
+  
+  rtioMoleWetH2o <- high %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.rtioMoleWetH2o.")) %>%
+    rename(mean = data.isoH2o.rtioMoleWetH2o.mean,
+           min  = data.isoH2o.rtioMoleWetH2o.min,
+           max  = data.isoH2o.rtioMoleWetH2o.max,
+           vari = data.isoH2o.rtioMoleWetH2o.vari,
+           numSamp = data.isoH2o.rtioMoleWetH2o.numSamp) %>%
+    mutate(varname = "rtioMoleWetH2o")
+  
+  rtioMoleWetH2oEnvHut <- high %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.rtioMoleWetH2oEnvHut.")) %>%
+    rename(mean = data.isoH2o.rtioMoleWetH2oEnvHut.mean,
+           min  = data.isoH2o.rtioMoleWetH2oEnvHut.min,
+           max  = data.isoH2o.rtioMoleWetH2oEnvHut.max,
+           vari = data.isoH2o.rtioMoleWetH2oEnvHut.vari,
+           numSamp = data.isoH2o.rtioMoleWetH2oEnvHut.numSamp) %>%
+    mutate(varname = "rtioMoleWetH2oEnvHut")
+  
+  temp <- high %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.temp.")) %>%
+    rename(mean = data.isoH2o.temp.mean,
+           min  = data.isoH2o.temp.min,
+           max  = data.isoH2o.temp.max,
+           vari = data.isoH2o.temp.vari,
+           numSamp = data.isoH2o.temp.numSamp) %>%
+    mutate(varname = "temp")
+  
+  tempEnvHut <- high %>%
+    select(timeBgn,timeEnd,starts_with("data.isoH2o.tempEnvHut.")) %>%
+    rename(mean = data.isoH2o.tempEnvHut.mean,
+           min  = data.isoH2o.tempEnvHut.min,
+           max  = data.isoH2o.tempEnvHut.max,
+           vari = data.isoH2o.tempEnvHut.vari,
+           numSamp = data.isoH2o.tempEnvHut.numSamp) %>%
+    mutate(varname = "tempEnvHut")
+  
+  data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, dlta18OH2oRefe, dlta2HH2oRefe,
+                                     pres, presEnvHut, rhEnvHut,
+                                     rtioMoleWetH2o, rtioMoleWetH2oEnvHut, temp, tempEnvHut))
+  
+  highref <- base::split(data_out_all, factor(data_out_all$varname))
+  
+  highref <- calibrate_standards_water(out, highref)
+
+  # loop through each of the variables in list amb.data.list
+  # and write out as a dataframe.
+  lapply(names(highref), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = highref[[x]],
+                                     h5loc = high_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)})
+
+  rhdf5::H5Gclose(high_outloc)
+
+  # close the group and the file
+  rhdf5::H5Fclose(fid)
+  Sys.sleep(0.5)
+
+  rhdf5::h5closeAll()
   # 
   # fid <- rhdf5::H5Fopen(outname)
   # 
@@ -525,10 +829,10 @@ calibrate_water_linreg_bysite <- function(inpath,
   #-------------------------------------
   # stack data to get ambient observations.
   print("stacking ambient data...this may take a while...")
-  
+
   # stack data available for a given site into a single timeseries.
   # should probably kick this out to its own function someday.
-  
+
   dlta18O_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "dlta18OH2o", avg = 9)
   dlta18OH2o <- dlta18O_list[[site]] %>%
     select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
@@ -539,7 +843,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            vari = data.isoH2o.dlta18OH2o.vari,
            numSamp = data.isoH2o.dlta18OH2o.numSamp) %>%
     mutate(varname = "dlta18OH2o")
-  
+
   dlta2H_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "dlta2HH2o", avg = 9)
   dlta2HH2o <- dlta2H_list[[site]] %>%
     select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
@@ -550,7 +854,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            vari = data.isoH2o.dlta2HH2o.vari,
            numSamp = data.isoH2o.dlta2HH2o.numSamp) %>%
     mutate(varname = "dlta2HH2o")
-  
+
   pres_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "pres", avg = 9)
   pres <- pres_list[[site]] %>%
     select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
@@ -561,7 +865,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            vari = data.isoH2o.pres.vari,
            numSamp = data.isoH2o.pres.numSamp) %>%
     mutate(varname = "pres")
-  
+
   presEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "presEnvHut", avg = 9)
   presEnvHut <- presEnvHut_list[[site]] %>%
     select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
@@ -572,7 +876,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            vari = data.isoH2o.presEnvHut.vari,
            numSamp = data.isoH2o.presEnvHut.numSamp) %>%
     mutate(varname = "presEnvHut")
-  
+
   rhEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rhEnvHut", avg = 9)
   rhEnvHut <- rhEnvHut_list[[site]] %>%
     select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
@@ -583,7 +887,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            vari = data.isoH2o.rhEnvHut.vari,
            numSamp = data.isoH2o.rhEnvHut.numSamp) %>%
     mutate(varname = "rhEnvHut")
-  
+
   rtioMoleWetH2o_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rtioMoleWetH2o", avg = 9)
   rtioMoleWetH2o <- rtioMoleWetH2o_list[[site]] %>%
     select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
@@ -594,7 +898,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            vari = data.isoH2o.rtioMoleWetH2o.vari,
            numSamp = data.isoH2o.rtioMoleWetH2o.numSamp) %>%
     mutate(varname = "rtioMoleWetH2o")
-  
+
   rtioMoleWetH2oEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rtioMoleWetH2oEnvHut", avg = 9)
   rtioMoleWetH2oEnvHut <- rtioMoleWetH2oEnvHut_list[[site]] %>%
     select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
@@ -605,7 +909,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            vari = data.isoH2o.rtioMoleWetH2oEnvHut.vari,
            numSamp = data.isoH2o.rtioMoleWetH2oEnvHut.numSamp) %>%
     mutate(varname = "rtioMoleWetH2oEnvHut")
-  
+
   temp_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "temp", avg = 9)
   temp <- temp_list[[site]] %>%
     select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
@@ -616,7 +920,7 @@ calibrate_water_linreg_bysite <- function(inpath,
            vari = data.isoH2o.temp.vari,
            numSamp = data.isoH2o.temp.numSamp) %>%
     mutate(varname = "temp")
-  
+
   tempEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "tempEnvHut", avg = 9)
   tempEnvHut <- tempEnvHut_list[[site]] %>%
     select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
@@ -627,22 +931,22 @@ calibrate_water_linreg_bysite <- function(inpath,
            vari = data.isoH2o.tempEnvHut.vari,
            numSamp = data.isoH2o.tempEnvHut.numSamp) %>%
     mutate(varname = "tempEnvHut")
-  
+
   data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, pres, presEnvHut, rhEnvHut,
                        rtioMoleWetH2o, rtioMoleWetH2oEnvHut, temp, tempEnvHut))
-  
+
   # split first by height
   data_by_height <- base::split(data_out_all, factor(data_out_all$verticalPosition))
-  
+
   # get number of heights
   heights <- unique(data_out_all$verticalPosition)
   names_vector <- vector()
   for (i in 1:length(heights)) {
     names_vector[i] <- paste0("000_0",i,"0_09m")
   }
-  
+
   names(data_by_height) <- names_vector
-  
+
   # remove verticalPosition column
   data_by_height <- lapply(data_by_height, function(x){dplyr::select(x,-verticalPosition)})
 
