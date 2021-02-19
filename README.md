@@ -8,15 +8,13 @@
   <!-- badges: end -->
 
 Author: Rich Fiorella \
-Last Updated: December 1, 2020.
+Last Updated: Febuary 18, 2021.
 
 This repository contains an R package to calibrate NEON atmospheric isotope data. 
 Please report any issues you have, bugs found, or enhancement suggestions as issues to this repository.
 
 ## Citation information:
-A manuscript describing this package is currently under review. Citation information will
-be updated when the paper has been released. In the interim, users of this package must
-cite the Zenodo DOI above.
+A manuscript describing the carbon isotope calibration techniques used in this package has just been accepted at JGR-Biogeosciences (doi: 10.1029/2020JG005862). Users of this package should also cite the Zenodo DOI above. If you are interested in using code that should provide data identical to that in the JGR-Biogeosciences paper, please install version 0.3 of the package. 
 
 Please also check to ensure that you are compliant with NEON's data citation policy for any
 products derived from this package: https://www.neonscience.org/data/about-data/data-policies
@@ -56,6 +54,12 @@ neonUtilities:::stackEddy *should* work on these output files - please file an i
 
 Vignettes will be developed in the near future to provide a more explicit example of data workflows using this package.
 In the interim, the function documentation for the above functions should help users get started.
+
+## Future plans
+There will be two major changes and a minor change coming to this package in the next few months:
+1) We are starting to work on calibration routines for the NEON water isotope products - more info soon.
+2) When development of this package began, neonUtilities::stackEddy did not exist. As a result, we decided to apply calibration routines on monthly files only. The developmetn of the stackEddy function opens up some new possibilities that allow for a more continuous calibration. As a result, we are working on functions that will take advantage of this capability.
+3) (minor change) Unit tests will be added as we have time in order to improve code reliability. code coverage badge is provided for transparancy, but this effort has just begun to spin up.
 
 ## DATA ALERT:
 [NOTE: THIS SECTION IS OUT OF DATE AND WILL BE REVISED SHORTLY.]
