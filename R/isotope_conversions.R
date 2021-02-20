@@ -64,7 +64,7 @@ delta_to_R <- function(data_vector,element) {
   # get standard isotope ratio
   Rstd <- get_Rstd(element)
   #convert R to delta
-  R <- Rstd*(delta/1000 + 1)
+  R <- Rstd*(data_vector/1000 + 1)
   # return delta values
   return(R)
   
