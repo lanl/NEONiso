@@ -268,11 +268,20 @@ calibrate_water_linreg_bysite <- function(inpath,
         oxy_cal_ints[i]   <- coef(tmp)[[1]]
         oxy_cal_rsq[i]    <- summary(tmp)$r.squared
         
+        print(paste(oxy_cal_slopes[i], oxy_cal_ints[i], oxy_cal_rsq[i]))
+        
         # enforce thresholds. replace regression parameters as NA where they fail.
-        if ((oxy_cal_slopes[i] > (1 + slope_tolerance)) |
-            (oxy_cal_slopes[i] < (1 - slope_tolerance)) |
-            (oxy_cal_rsq[i] < r2_thres)) {
-          
+        if (!is.na(oxy_cal_rsq[i])) {
+          if ((oxy_cal_slopes[i] > (1 + slope_tolerance)) |
+              (oxy_cal_slopes[i] < (1 - slope_tolerance)) |
+              (oxy_cal_rsq[i] < r2_thres)) {
+            
+            # set as NA
+            oxy_cal_slopes[i] <- NA
+            oxy_cal_ints[i]   <- NA
+            oxy_cal_rsq[i]    <- NA
+          }
+        } else {
           # set as NA
           oxy_cal_slopes[i] <- NA
           oxy_cal_ints[i]   <- NA
@@ -290,6 +299,7 @@ calibrate_water_linreg_bysite <- function(inpath,
       # check to see if sum of is.na() on oxygen data = nrow of oxygen data
       if (sum(is.na(std_subset$d2H_meas_mean)) < nrow(std_subset) &
           sum(is.na(std_subset$d2H_ref_mean)) < nrow(std_subset)) {
+        
         tmp <- lm(d2H_ref_mean ~ d2H_meas_mean, data = std_subset)
         
         hyd_cal_slopes[i] <- coef(tmp)[[2]]
@@ -297,10 +307,17 @@ calibrate_water_linreg_bysite <- function(inpath,
         hyd_cal_rsq[i]    <- summary(tmp)$r.squared
         
         # enforce thresholds. replace regression parameters where they fail.
-        if ((hyd_cal_slopes[i] > (1 + slope_tolerance)) |
-            (hyd_cal_slopes[i] < (1 - slope_tolerance)) |
-            (hyd_cal_rsq[i] < r2_thres)) {
-          
+        if (!is.na(hyd_cal_rsq[i])) {
+          if ((hyd_cal_slopes[i] > (1 + slope_tolerance)) |
+              (hyd_cal_slopes[i] < (1 - slope_tolerance)) |
+              (hyd_cal_rsq[i] < r2_thres)) {
+            
+            # set as NA
+            hyd_cal_slopes[i] <- NA
+            hyd_cal_ints[i]   <- NA
+            hyd_cal_rsq[i]    <- NA
+          }
+        } else {
           # set as NA
           hyd_cal_slopes[i] <- NA
           hyd_cal_ints[i]   <- NA
