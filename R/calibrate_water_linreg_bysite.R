@@ -408,19 +408,22 @@ calibrate_water_linreg_bysite <- function(inpath,
   fid <- rhdf5::H5Fopen(outname)
 
   #####------------NEED TO PORT OVER TO NEW FUNCTION------------------
-  # # copy attributes from source file and write to output file.
-  # tmp <- rhdf5::h5readAttributes(inname, paste0("/", site))
-  # attrloc <- rhdf5::H5Gopen(fid, paste0("/", site))
-  # 
-  # for (i in 1:length(tmp)) { # probably a more rapid way to do this...lapply?
-  #   rhdf5::h5writeAttribute(h5obj = attrloc,
-  #                           attr = tmp[[i]],
-  #                           name = names(tmp)[i])
-  # }
-  # 
+  # copy attributes from source file and write to output file.
+  # use list of files in inpath to get first file, copy attributes from first file.
+  inname <- list.files(inpath, pattern = '.h5', full.names = TRUE)[[1]]
+  
+  tmp <- rhdf5::h5readAttributes(inname, paste0("/", site))
+  attrloc <- rhdf5::H5Gopen(fid, paste0("/", site))
+
+  for (i in 1:length(tmp)) { # probably a more rapid way to do this...lapply?
+    rhdf5::h5writeAttribute(h5obj = attrloc,
+                            attr = tmp[[i]],
+                            name = names(tmp)[i])
+  }
+
   # add attributes regarding sloep and r2 thresholds
   
-  #rhdf5::H5Gclose(attrloc)
+  rhdf5::H5Gclose(attrloc)
 
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o/calData"))
 
