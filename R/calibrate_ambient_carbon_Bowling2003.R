@@ -64,15 +64,15 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   amb_12CO2 <- amb_13CO2 <- amb_co2
 
   amb_12CO2$mean <- amb_co2$mean * (1 - f) /
-    (1 + R_vpdb * (1 + amb_delta$mean / 1000))
+    (1 + delta_to_R(amb_delta$mean, "carbon"))
   amb_13CO2$mean <- amb_co2$mean * (1 - f) - amb_12CO2$mean
 
   amb_12CO2$min <- amb_co2$min * (1 - f) /
-    (1 + R_vpdb * (1 + amb_delta$min / 1000))
+    (1 + delta_to_R(amb_delta$min, "carbon"))
   amb_13CO2$min <- amb_co2$min * (1 - f) - amb_12CO2$min
 
   amb_12CO2$max <- amb_co2$max * (1 - f) /
-    (1 + R_vpdb * (1 + amb_delta$max / 1000))
+    (1 + delta_to_R(amb_delta$max, "carbon"))
   amb_13CO2$max <- amb_co2$max * (1 - f) - amb_12CO2$max
 
   # ensure that time variables are in POSIXct.
