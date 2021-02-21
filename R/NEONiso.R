@@ -46,4 +46,8 @@ globalVariables(c("CO2_obs_mean","CO2_ref_mean","c12","c13",
                   "data.isoH2o.rtioMoleWetH2oEnvHut.numSamp", "data.isoH2o.temp.mean", "data.isoH2o.temp.max",
                   "data.isoH2o.temp.min", "data.isoH2o.temp.vari", "data.isoH2o.temp.numSamp",
                   "data.isoH2o.tempEnvHut.mean", "data.isoH2o.tempEnvHut.min", "data.isoH2o.tempEnvHut.max",
-                  "data.isoH2o.tempEnvHut.vari", "data.isoH2o.tempEnvHut.numSamp", "vari18O", "vari2H", "varname"))
+                  "data.isoH2o.tempEnvHut.vari", "data.isoH2o.tempEnvHut.numSamp", "vari18O", "vari2H", "varname",
+                  "data.isoH2o.dlta18OH2oRefe.min", "data.isoH2o.dlta18OH2oRefe.max",
+                  "data.isoH2o.dlta18OH2oRefe.vari", "data.isoH2o.dlta18OH2oRefe.numSamp", "data.isoH2o.dlta2HH2oRefe.min",
+                  "data.isoH2o.dlta2HH2oRefe.max", "data.isoH2o.dlta2HH2oRefe.mean", "data.isoH2o.dlta2HH2oRefe.vari",
+                  "data.isoH2o.dlta2HH2oRefe.numSamp"))
