@@ -2,16 +2,16 @@
 # break out functions that are various transformations
 # of isotope ratios and delta values.
 #------------------------------------------------------
-#' Title
+#' get_Rstd
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #' 
-#' @param element 
+#' @param element Which element to return standard ratio - 
+#'        carbon, oxygen, or hydrogen.
 #'
-#' @return
-#' @export
-#'
-#' @examples
+#' @return Heavy-to-light isotope ratio of most common
+#'         stable isotope standard. VMOW for water,
+#'         VPDB for carbon.
 #' 
 get_Rstd <- function(element) {
   # return the standard isotope ratio
@@ -25,17 +25,16 @@ get_Rstd <- function(element) {
   return(R)
 }
 
-#' Title
+#' R_to_delta
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param data_vector 
-#' @param element 
+#' @param data_vector A vector of isotope ratios (e.g., R values).
+#' @param element Which element to return delta values - 
+#'        carbon, oxygen, or hydrogen.
 #'
-#' @return
-#' @export
+#' @return Vector of isotope ratios in delta notation.
 #'
-#' @examples
 R_to_delta <- function(data_vector,element) {
   
   # get standard isotope ratio
@@ -48,17 +47,15 @@ R_to_delta <- function(data_vector,element) {
   return(delta)
 }
 
-#' Title
+#' delta_to_R
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param data_vector 
-#' @param element 
+#' @param data_vector A vector of isotope ratios in delta notation.
+#' @param element Which element to return R values - 
+#'        carbon, oxygen, or hydrogen.
 #'
-#' @return
-#' @export
-#'
-#' @examples
+#' @return Vector of isotope ratios (R values).
 delta_to_R <- function(data_vector,element) {
   
   # get standard isotope ratio

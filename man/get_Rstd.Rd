@@ -2,21 +2,21 @@
 % Please edit documentation in R/isotope_conversions.R
 \name{get_Rstd}
 \alias{get_Rstd}
-\title{Title}
+\title{get_Rstd}
 \usage{
 get_Rstd(element)
 }
 \arguments{
-\item{element}{}
+\item{element}{Which element to return standard ratio - 
+carbon, oxygen, or hydrogen.}
 }
 \value{
-
+Heavy-to-light isotope ratio of most common
+        stable isotope standard. VMOW for water,
+        VPDB for carbon.
 }
 \description{
-Title
-}
-\examples{
-
+get_Rstd
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}

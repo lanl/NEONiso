@@ -2,20 +2,21 @@
 % Please edit documentation in R/isotope_conversions.R
 \name{R_to_delta}
 \alias{R_to_delta}
-\title{Title}
+\title{R_to_delta}
 \usage{
 R_to_delta(data_vector, element)
 }
 \arguments{
-\item{data_vector}{}
+\item{data_vector}{A vector of isotope ratios (e.g., R values).}
 
-\item{element}{}
+\item{element}{Which element to return delta values - 
+carbon, oxygen, or hydrogen.}
 }
 \value{
-
+Vector of isotope ratios in delta notation.
 }
 \description{
-Title
+R_to_delta
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
