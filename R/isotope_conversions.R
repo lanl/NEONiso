@@ -66,3 +66,52 @@ delta_to_R <- function(data_vector,element) {
   return(R)
   
 }
+
+#' calculate_12CO2
+#'
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#'
+#' @param total_co2 Vector of CO2 mole fractions.
+#' @param delta13C Vector of d13C values.
+#' @param f Fraction of CO2 that is not 12CO2 or 13CO2. Assumed fixed
+#'          at 0.00474
+#'
+#' @return Vector of 12CO2 mole fractions.
+#'
+calculate_12CO2 <- function(total_co2,delta13C,f = 0.00474) {
+  
+  # convert delta13C to R13
+  R <- delta_to_R(delta13C, "carbon")
+  
+  # calculate 12CO2 from total CO2 and R
+  light_co2 <- total_co2 * (1 - f) / (1 + R)
+  
+  # return 12co2
+  return(light_co2)
+}
+
+#' calculate_13CO2
+#'
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#'
+#' @param total_co2 Vector of CO2 mole fractions.
+#' @param delta13C Vector of d13C values.
+#' @param f Fraction of CO2 that is not 12CO2 or 13CO2. Assumed fixed
+#'          at 0.00474
+#'          
+#' @return Vector of 13CO2 mole fractions.
+#'
+calculate_13CO2 <- function(total_co2,delta13C,f = 0.00474) {
+  
+  #convert delta13C to R13
+  R <- delta_to_R(delta13C, "carbon")
+  
+  # calculate 13CO2 from total CO2 and R
+  light_co2 <- calculate_12CO2(total_CO2, delta13C)
+  
+  heavy_co2 <- total_co2 * (1-f) - light_co2
+  
+  # return 13co2
+  return(heavy_co2)
+  
+}
