@@ -1,3 +1,7 @@
+#------------------------------------
+# test carbon interconversion functions
+
+load("mlo.Rdata")
 
 ref_data <- data.frame(d2H_ref_mean  = c(-80,-100,-120),
                        d18O_ref_mean = c(-10,-11,-12))
@@ -19,7 +23,7 @@ test_RO    <- delta_to_R(test_vals[3],"oxygen")
 test_RH    <- delta_to_R(test_vals[3],"hydrogen")
 
 test_that("R_to_delta and delta_to_R are invertible", {
-  expect_equal(R_to_delta(delta_to_R(test_vals,"carbon"),"carbon"),test_vals)
+  expect_equal(R_to_delta(delta_to_R(mlo$d13c,"carbon"),"carbon"),mlo$d13c)
   expect_equal(R_to_delta(delta_to_R(test_vals,"oxygen"),"oxygen"),test_vals)
   expect_equal(R_to_delta(delta_to_R(test_vals,"hydrogen"),"hydrogen"),test_vals)
 })
@@ -42,3 +46,10 @@ test_that("delta values are > -1000", {
   expect_gte(R_to_delta(test_RH,"hydrogen"),-1000)
 })
 
+test_that("12co2 calculations work", {
+  expect_equal(calculate_12CO2(mlo$co2,mlo$d13c),mlo$c12_co2, tolerance = 0.01)
+})
+
+test_that("13co2 calculations work", {
+  expect_equal(calculate_13CO2(mlo$co2,mlo$d13c),mlo$c13_co2, tolerance = 0.01)
+})
