@@ -80,6 +80,9 @@ delta_to_R <- function(data_vector,element) {
 #'
 calculate_12CO2 <- function(total_co2,delta13C,f = 0.00474) {
   
+  # note: f technically varies, but this has little impact
+  # on calibration per Griffis et al. 2004.
+  
   # convert delta13C to R13
   R <- delta_to_R(delta13C, "carbon")
   
@@ -102,6 +105,9 @@ calculate_12CO2 <- function(total_co2,delta13C,f = 0.00474) {
 #' @return Vector of 13CO2 mole fractions.
 #'
 calculate_13CO2 <- function(total_co2,delta13C,f = 0.00474) {
+  
+  # note: f technically varies, but this has little impact
+  # on calibration per Griffis et al. 2004.
   
   #convert delta13C to R13
   R <- delta_to_R(delta13C, "carbon")
