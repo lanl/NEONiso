@@ -75,61 +75,11 @@ calibrate_water_linreg_bysite <- function(inpath,
   med  <- subset(wiso_ref[[site]], wiso_ref[[site]]$verticalPosition == 'h2oMed')
   low  <- subset(wiso_ref[[site]], wiso_ref[[site]]$verticalPosition == 'h2oLow')
 
-  # attempt to pull relevent data out to a single dataframe.
-  high_rs <- data.frame(d18O_meas_mean  = high$data.isoH2o.dlta18OH2o.mean,
-                        d18O_meas_var   = high$data.isoH2o.dlta18OH2o.vari,
-                        d18O_meas_n     = high$data.isoH2o.dlta18OH2o.numSamp,
-                        d18O_ref_mean   = high$data.isoH2o.dlta18OH2oRefe.mean,
-                        d18O_ref_var    = high$data.isoH2o.dlta18OH2oRefe.vari,
-                        d18O_ref_n      = high$data.isoH2o.dlta18OH2oRefe.numSamp,
-                        d2H_meas_mean   = high$data.isoH2o.dlta2HH2o.mean,
-                        d2H_meas_var    = high$data.isoH2o.dlta2HH2o.vari,
-                        d2H_meas_n      = high$data.isoH2o.dlta2HH2o.numSamp,
-                        d2H_ref_mean    = high$data.isoH2o.dlta2HH2oRefe.mean,
-                        d2H_ref_var     = high$data.isoH2o.dlta2HH2oRefe.vari,
-                        d2H_ref_n       = high$data.isoH2o.dlta2HH2oRefe.numSamp,
-                        btime           = high$timeBgn,
-                        etime           = high$timeEnd)
-
-  high_rs <- high_rs %>%
-    mutate(std_name = "high")
-   
-  med_rs <- data.frame(d18O_meas_mean   = med$data.isoH2o.dlta18OH2o.mean,
-                       d18O_meas_var    = med$data.isoH2o.dlta18OH2o.vari,
-                       d18O_meas_n      = med$data.isoH2o.dlta18OH2o.numSamp,
-                       d18O_ref_mean    = med$data.isoH2o.dlta18OH2oRefe.mean,
-                       d18O_ref_var     = med$data.isoH2o.dlta18OH2oRefe.vari,
-                       d18O_ref_n       = med$data.isoH2o.dlta18OH2oRefe.numSamp,
-                       d2H_meas_mean    = med$data.isoH2o.dlta2HH2o.mean,
-                       d2H_meas_var     = med$data.isoH2o.dlta2HH2o.vari,
-                       d2H_meas_n       = med$data.isoH2o.dlta2HH2o.numSamp,
-                       d2H_ref_mean     = med$data.isoH2o.dlta2HH2oRefe.mean,
-                       d2H_ref_var      = med$data.isoH2o.dlta2HH2oRefe.vari,
-                       d2H_ref_n        = med$data.isoH2o.dlta2HH2oRefe.numSamp,
-                       btime            = med$timeBgn,
-                       etime            = med$timeEnd)
-
-  med_rs <- med_rs %>%
-    mutate(std_name = "med")
-
-  low_rs <- data.frame(d18O_meas_mean  = low$data.isoH2o.dlta18OH2o.mean,
-                       d18O_meas_var   = low$data.isoH2o.dlta18OH2o.vari,
-                       d18O_meas_n     = low$data.isoH2o.dlta18OH2o.numSamp,
-                       d18O_ref_mean   = low$data.isoH2o.dlta18OH2oRefe.mean,
-                       d18O_ref_var    = low$data.isoH2o.dlta18OH2oRefe.vari,
-                       d18O_ref_n      = low$data.isoH2o.dlta18OH2oRefe.numSamp,
-                       d2H_meas_mean   = low$data.isoH2o.dlta2HH2o.mean,
-                       d2H_meas_var    = low$data.isoH2o.dlta2HH2o.vari,
-                       d2H_meas_n      = low$data.isoH2o.dlta2HH2o.numSamp,
-                       d2H_ref_mean    = low$data.isoH2o.dlta2HH2oRefe.mean,
-                       d2H_ref_var     = low$data.isoH2o.dlta2HH2oRefe.vari,
-                       d2H_ref_n       = low$data.isoH2o.dlta2HH2oRefe.numSamp,
-                       btime           = low$timeBgn,
-                       etime           = low$timeEnd)
-
-  low_rs <- low_rs %>%
-    mutate(std_name = "low")
-
+  # restructure standards data.  
+  high_rs <- extract_water_calibration_data(high, standard = 'high', method = 'by_site')
+  med_rs  <- extract_water_calibration_data(med, standard = 'med', method = 'by_site')
+  low_rs  <- extract_water_calibration_data(low, standard = 'low', method = 'by_site')
+  
   # add fix for NEON standard swap.
   low_rs <- swap_standard_isotoperatios(low_rs)
   med_rs <- swap_standard_isotoperatios(med_rs)
@@ -267,8 +217,6 @@ calibrate_water_linreg_bysite <- function(inpath,
         oxy_cal_slopes[i] <- coef(tmp)[[2]]
         oxy_cal_ints[i]   <- coef(tmp)[[1]]
         oxy_cal_rsq[i]    <- summary(tmp)$r.squared
-        
-        print(paste(oxy_cal_slopes[i], oxy_cal_ints[i], oxy_cal_rsq[i]))
         
         # enforce thresholds. replace regression parameters as NA where they fail.
         if (!is.na(oxy_cal_rsq[i])) {
