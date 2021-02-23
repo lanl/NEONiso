@@ -182,12 +182,10 @@ calibrate_carbon_Bowling2003 <- function(inname,
   stds <- stds %>%
   #------------------------------------------------------------
   # calculate mole fraction (12CO2 / 13CO2) for ref gases and observed values
-  dplyr::mutate(conc12CCO2_ref = CO2_ref_mean * (1 - f) /
-                  (1 + R_vpdb * (1 + d13C_ref_mean / 1000))) %>%
-  dplyr::mutate(conc13CCO2_ref = CO2_ref_mean * (1 - f) - conc12CCO2_ref) %>%
-  dplyr::mutate(conc12CCO2_obs = CO2_obs_mean * (1 - f) /
-                    (1 + R_vpdb * (1 + d13C_obs_mean / 1000))) %>%
-  dplyr::mutate(conc13CCO2_obs = CO2_obs_mean * (1 - f) - conc12CCO2_obs)
+  dplyr::mutate(conc12CCO2_ref = calculate_12CO2(CO2_ref_mean, d13C_ref_mean)) %>%
+  dplyr::mutate(conc13CCO2_ref = calculate_13CO2(CO2_ref_mean, d13C_ref_mean)) %>%
+  dplyr::mutate(conc12CCO2_obs = calculate_12CO2(CO2_obs_mean, d13C_obs_mean)) %>%
+  dplyr::mutate(conc13CCO2_obs = calculate_13CO2(CO2_obs_mean, d13C_obs_mean))
   
   # reorder to be in chronological time.
   stds <- stds[order(stds$d13C_obs_btime), ]
