@@ -107,7 +107,7 @@ calculate_13CO2 <- function(total_co2,delta13C,f = 0.00474) {
   R <- delta_to_R(delta13C, "carbon")
   
   # calculate 13CO2 from total CO2 and R
-  light_co2 <- calculate_12CO2(total_CO2, delta13C)
+  light_co2 <- calculate_12CO2(total_co2, delta13C)
   
   heavy_co2 <- total_co2 * (1-f) - light_co2
   
