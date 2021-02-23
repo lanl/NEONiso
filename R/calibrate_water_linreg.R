@@ -67,81 +67,15 @@ calibrate_water_linreg <- function(inname,
   med <- wiso$h2oMed_03m
   low <- wiso$h2oLow_03m
 
-  # attempt to pull relevent data out to a single dataframe.
-  high_rs <- data.frame(d18O_meas_mean = high$dlta18OH2o$mean,
-                        d18O_meas_var = high$dlta18OH2o$vari,
-                        d18O_meas_n = high$dlta18OH2o$numSamp,
-                        d18O_meas_btime = high$dlta18OH2o$timeBgn,
-                        d18O_meas_etime = high$dlta18OH2o$timeEnd,
-                        d18O_ref_mean = high$dlta18OH2oRefe$mean,
-                        d18O_ref_var = high$dlta18OH2oRefe$vari,
-                        d18O_ref_n = high$dlta18OH2oRefe$numSamp,
-                        d18O_ref_btime = high$dlta18OH2oRefe$timeBgn,
-                        d18O_ref_etime = high$dlta18OH2oRefe$timeEnd,
-                        d2H_meas_mean = high$dlta2HH2o$mean,
-                        d2H_meas_var = high$dlta2HH2o$vari,
-                        d2H_meas_n = high$dlta2HH2o$numSamp,
-                        d2H_meas_btime = high$dlta2HH2o$timeBgn,
-                        d2H_meas_etime = high$dlta2HH2o$timeEnd,
-                        d2H_ref_mean = high$dlta2HH2oRefe$mean,
-                        d2H_ref_var = high$dlta2HH2oRefe$vari,
-                        d2H_ref_n = high$dlta2HH2oRefe$numSamp,
-                        d2H_ref_btime = high$dlta2HH2oRefe$timeBgn,
-                        d2H_ref_etime = high$dlta2HH2oRefe$timeEnd)
-
-  high_rs <- high_rs %>%
-    mutate(std_name = "high")
-
-  med_rs <- data.frame(d18O_meas_mean = med$dlta18OH2o$mean,
-                       d18O_meas_var = med$dlta18OH2o$vari,
-                       d18O_meas_n = med$dlta18OH2o$numSamp,
-                       d18O_meas_btime = med$dlta18OH2o$timeBgn,
-                       d18O_meas_etime = med$dlta18OH2o$timeEnd,
-                       d18O_ref_mean = med$dlta18OH2oRefe$mean,
-                       d18O_ref_var = med$dlta18OH2oRefe$vari,
-                       d18O_ref_n = med$dlta18OH2oRefe$numSamp,
-                       d18O_ref_btime = med$dlta18OH2oRefe$timeBgn,
-                       d18O_ref_etime = med$dlta18OH2oRefe$timeEnd,
-                       d2H_meas_mean = med$dlta2HH2o$mean,
-                       d2H_meas_var = med$dlta2HH2o$vari,
-                       d2H_meas_n = med$dlta2HH2o$numSamp,
-                       d2H_meas_btime = med$dlta2HH2o$timeBgn,
-                       d2H_meas_etime = med$dlta2HH2o$timeEnd,
-                       d2H_ref_mean = med$dlta2HH2oRefe$mean,
-                       d2H_ref_var = med$dlta2HH2oRefe$vari,
-                       d2H_ref_n = med$dlta2HH2oRefe$numSamp,
-                       d2H_ref_btime = med$dlta2HH2oRefe$timeBgn,
-                       d2H_ref_etime = med$dlta2HH2oRefe$timeEnd)
-
-  med_rs <- med_rs %>%
-    mutate(std_name = "med")
-
-  low_rs <- data.frame(d18O_meas_mean = low$dlta18OH2o$mean,
-                       d18O_meas_var = low$dlta18OH2o$vari,
-                       d18O_meas_n = low$dlta18OH2o$numSamp,
-                       d18O_meas_btime = low$dlta18OH2o$timeBgn,
-                       d18O_meas_etime = low$dlta18OH2o$timeEnd,
-                       d18O_ref_mean = low$dlta18OH2oRefe$mean,
-                       d18O_ref_var = low$dlta18OH2oRefe$vari,
-                       d18O_ref_n = low$dlta18OH2oRefe$numSamp,
-                       d18O_ref_btime = low$dlta18OH2oRefe$timeBgn,
-                       d18O_ref_etime = low$dlta18OH2oRefe$timeEnd,
-                       d2H_meas_mean = low$dlta2HH2o$mean,
-                       d2H_meas_var = low$dlta2HH2o$vari,
-                       d2H_meas_n = low$dlta2HH2o$numSamp,
-                       d2H_meas_btime = low$dlta2HH2o$timeBgn,
-                       d2H_meas_etime = low$dlta2HH2o$timeEnd,
-                       d2H_ref_mean = low$dlta2HH2oRefe$mean,
-                       d2H_ref_var = low$dlta2HH2oRefe$vari,
-                       d2H_ref_n = low$dlta2HH2oRefe$numSamp,
-                       d2H_ref_btime = low$dlta2HH2oRefe$timeBgn,
-                       d2H_ref_etime = low$dlta2HH2oRefe$timeEnd)
-
-  low_rs <- low_rs %>%
-    mutate(std_name = "low")
+  # restructure standards data.  
+  high_rs <- extract_water_calibration_data(high, standard = 'high', method = 'by_month')
+  med_rs  <- extract_water_calibration_data(med, standard = 'med', method = 'by_month')
+  low_rs  <- extract_water_calibration_data(low, standard = 'low', method = 'by_month')
 
   # add fix for NEON standard swap.
-  low_rs <- swap_standard_isotoperatios(low_rs)
+  low_rs  <- swap_standard_isotoperatios(low_rs)
+  med_rs  <- swap_standard_isotoperatios(med_rs)
+  high_rs <- swap_standard_isotoperatios(high_rs)
 
   #--------------------------------------------------------------
   # Ensure same number of measurements for each standard
