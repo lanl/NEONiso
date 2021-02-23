@@ -51,8 +51,6 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   # note: f technically varies, but this has little impact
   # on calibration per Griffis et al. 2004.
 
-  R_vpdb <- 0.0111797 # 13C/12C ratio for VPD standard.
-
   # should be able to get a calGainsOffsets object from the H5 file.
 
   # only working on the d13C of the amb_data_list, so extract just this...
@@ -63,17 +61,14 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   # the isotope ratio instead.
   amb_12CO2 <- amb_13CO2 <- amb_co2
 
-  amb_12CO2$mean <- amb_co2$mean * (1 - f) /
-    (1 + delta_to_R(amb_delta$mean, "carbon"))
-  amb_13CO2$mean <- amb_co2$mean * (1 - f) - amb_12CO2$mean
+  amb_12CO2$mean <- calculate_12CO2(amb_co2$mean, amb_delta$mean)
+  amb_13CO2$mean <- calculate_13CO2(amb_co2$mean, amb_delta$mean)
 
-  amb_12CO2$min <- amb_co2$min * (1 - f) /
-    (1 + delta_to_R(amb_delta$min, "carbon"))
-  amb_13CO2$min <- amb_co2$min * (1 - f) - amb_12CO2$min
+  amb_12CO2$min  <- calculate_12CO2(amb_co2$min, amb_delta$min)
+  amb_13CO2$min  <- calculate_13CO2(amb_co2$min, amb_delta$min)
 
-  amb_12CO2$max <- amb_co2$max * (1 - f) /
-    (1 + delta_to_R(amb_delta$max, "carbon"))
-  amb_13CO2$max <- amb_co2$max * (1 - f) - amb_12CO2$max
+  amb_12CO2$max  <- calculate_12CO2(amb_co2$max, amb_delta$max)
+  amb_13CO2$max  <- calculate_13CO2(amb_co2$max, amb_delta$max)
 
   # ensure that time variables are in POSIXct.
   amb_start_times <- as.POSIXct(amb_delta$timeBgn,
@@ -166,10 +161,10 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   }
 
   # output calibrated delta values.
-  amb_delta$mean_cal <- round(1000 * (mean13c / mean12c / R_vpdb - 1), 2)
-  amb_delta$min  <- round(1000 * (min13c / min12c / R_vpdb - 1), 2)
-  amb_delta$max  <- round(1000 * (max13c / max12c / R_vpdb - 1), 2)
-  amb_delta$vari <- round(amb_delta$vari, 2)
+  amb_delta$mean_cal <- round(R_to_delta(mean13c / mean12c,"carbon"), 2)
+  amb_delta$min      <- round(R_to_delta(min13c / min12c, "carbon"), 2)
+  amb_delta$max      <- round(R_to_delta(max13c / max12c, "carbon"), 2)
+  amb_delta$vari     <- round(amb_delta$vari, 2)
 
   # calibrate co2 mole fractions.
   amb_co2$mean_cal <- (mean13c + mean12c) / (1 - f)
