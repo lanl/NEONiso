@@ -4,8 +4,6 @@
 #'
 #' @param cal_df Data.frame containing calibration parameters
 #' @param ref_df Data.frame containing reference gas measurements
-#' @param R_vpdb Ratio of 13C to 12C in Vienna Pee Dee Belemnite, inherited
-#'              from the script calling this function.
 #' @param f Fraction of CO2 isotopologues that are not 12CO2 or 13CO2.
 #'          Inherited from script calling this function.
 #' @param r2_thres Threshold for calibration regression to be used to

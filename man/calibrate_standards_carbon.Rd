@@ -7,8 +7,7 @@
 calibrate_standards_carbon(
   cal_df,
   ref_df,
-  R_vpdb,
-  f,
+  f = 0.00474,
   r2_thres = 0.95,
   correct_bad_refvals = FALSE,
   site,
@@ -19,9 +18,6 @@ calibrate_standards_carbon(
 \item{cal_df}{Data.frame containing calibration parameters}
 
 \item{ref_df}{Data.frame containing reference gas measurements}
-
-\item{R_vpdb}{Ratio of 13C to 12C in Vienna Pee Dee Belemnite, inherited
-from the script calling this function.}
 
 \item{f}{Fraction of CO2 isotopologues that are not 12CO2 or 13CO2.
 Inherited from script calling this function.}
