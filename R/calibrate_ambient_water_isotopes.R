@@ -49,9 +49,6 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   oxydf <- amb_data_list$dlta18OH2o
   hyddf <- amb_data_list$dlta2HH2o
 
-  # 190103 - rpf. need separate processing for oxygen and hydrogen in case
-  # there are a different number of rows between oxygen and hydrogen. not
-  # sure yet why this would arise, but it does appear (e.g., OSBS).
   #-------------------------------------------------------
   # oxygen.
   #-------------------------------------------------------
@@ -109,7 +106,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   
   # apply median filter to data
   if (filter_data == TRUE) {
-    oxydf$mean_cal <- filter_median_Brock86(oxydf$mean_cal)
+    oxydf$mean_cal     <- filter_median_Brock86(oxydf$mean_cal)
     oxydf$min_cal      <- filter_median_Brock86(oxydf$min_cal)
     oxydf$max_cal      <- filter_median_Brock86(oxydf$max_cal)
   }
