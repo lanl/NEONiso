@@ -87,15 +87,6 @@ calibrate_carbon_Bowling2003 <- function(inname,
   print("Processing carbon calibration data...")
   print("Applying method 1: linear regression on 12CO2 and 13CO2 separately.")
   print("Reference: Bowling et al. 2003 AFM")
-  #----------------------------------------------------------
-  # specify a few parameters for the Bowling method.
-
-  f <- 0.00474  # fraction of CO2 isotopomers that aren't 12CO2 or 13CO2
-  # note: f technically varies, but this has little impact
-  # on calibration per Griffis et al. 2004.
-
-  R_vpdb <- 0.0111797 # 13C/12C ratio for VPD standard.
-
   #-----------------------------------------------------------
   # pull all carbon isotope data into a list.
 
@@ -381,7 +372,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2Low_09m"))
 
 #  low <- calibrate_standards_carbon(out, low, R_vpdb, f)
-  low <- calibrate_standards_carbon(out, low, R_vpdb, f,
+  low <- calibrate_standards_carbon(out, low,
                                     correct_bad_refvals = TRUE,
                                     site = site, refGas = "low")
   
@@ -406,7 +397,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
 
 #  med <- calibrate_standards_carbon(out, med, R_vpdb, f)
-  med <- calibrate_standards_carbon(out, med, R_vpdb, f,
+  med <- calibrate_standards_carbon(out, med,
                                     correct_bad_refvals = TRUE,
                                     site = site, refGas = "med")
 
@@ -431,7 +422,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
                         paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
 
   #high <- calibrate_standards_carbon(out, high, R_vpdb, f)
-  high <- calibrate_standards_carbon(out, high, R_vpdb, f,
+  high <- calibrate_standards_carbon(out, high,
                                      correct_bad_refvals = TRUE,
                                      site = site, refGas = "high")
   

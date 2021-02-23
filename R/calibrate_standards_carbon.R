@@ -22,13 +22,15 @@
 #' @export
 calibrate_standards_carbon <- function(cal_df,
                                        ref_df,
-                                       R_vpdb,
-                                       f,
+                                       f = 0.00474,
                                        r2_thres = 0.95,
                                        correct_bad_refvals = FALSE,
                                        site,
                                        refGas) {
 
+  # get R_vpdb
+  R_vpdb <- get_Rstd("carbon")
+  
   # want to implement same tolerances used to generate calibration regression!
   # need to assess the CO2 and d13C tolerances wrt reference values.
 

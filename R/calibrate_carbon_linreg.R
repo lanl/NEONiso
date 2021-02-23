@@ -74,12 +74,6 @@ calibrate_carbon_linreg <- function(inname,
   print("Processing carbon calibration data...")
   print("Applying three-point mixing ratio bracketing interpolation")
 
-  f <- 0.00474  # fraction of CO2 isotopomers that aren't 12CO2 or 13CO2
-  # note: f technically varies, but this has little impact
-  # on calibration per Griffis et al. 2004.
-
-  R_vpdb <- 0.0111797 # 13C/12C ratio for VPD standard.
-
   ciso <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2"))
   ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/isoCo2"))
 
@@ -358,7 +352,7 @@ calibrate_carbon_linreg <- function(inname,
   low <- rhdf5::h5read(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2Low_09m"))
 
-  low <- calibrate_standards_carbon(out, low, R_vpdb, f,
+  low <- calibrate_standards_carbon(out, low,
                                     correct_bad_refvals = TRUE,
                                     site = site, refGas = "low")
 
@@ -383,7 +377,7 @@ calibrate_carbon_linreg <- function(inname,
   med <- rhdf5::h5read(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
 
-  med <- calibrate_standards_carbon(out, med, R_vpdb, f,
+  med <- calibrate_standards_carbon(out, med,
                                     correct_bad_refvals = TRUE,
                                     site = site, refGas = "med")
 
@@ -408,7 +402,7 @@ calibrate_carbon_linreg <- function(inname,
   high <- rhdf5::h5read(inname,
                         paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
 
-  high <- calibrate_standards_carbon(out, high, R_vpdb, f,
+  high <- calibrate_standards_carbon(out, high,
                                      correct_bad_refvals = TRUE,
                                      site = site, refGas = "high")
 
