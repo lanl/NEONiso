@@ -404,106 +404,19 @@ calibrate_water_linreg_bysite <- function(inpath,
   low_outloc <- rhdf5::H5Gopen(fid,
                            paste0("/", site, "/dp01/data/isoH2o/h2oLow_03m"))
   
-
-  dlta18OH2o <- low %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta18OH2o.")) %>%
-    rename(mean = data.isoH2o.dlta18OH2o.mean,
-           min  = data.isoH2o.dlta18OH2o.min,
-           max  = data.isoH2o.dlta18OH2o.max,
-           vari = data.isoH2o.dlta18OH2o.vari,
-           numSamp = data.isoH2o.dlta18OH2o.numSamp) %>%
-    mutate(varname = "dlta18OH2o")
-
-  dlta2HH2o <- low %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta2HH2o.")) %>%
-    rename(mean = data.isoH2o.dlta2HH2o.mean,
-           min  = data.isoH2o.dlta2HH2o.min,
-           max  = data.isoH2o.dlta2HH2o.max,
-           vari = data.isoH2o.dlta2HH2o.vari,
-           numSamp = data.isoH2o.dlta2HH2o.numSamp) %>%
-    mutate(varname = "dlta2HH2o")
-  
-  dlta18OH2oRefe <- low %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta18OH2oRefe.")) %>%
-    rename(mean = data.isoH2o.dlta18OH2oRefe.mean,
-           min  = data.isoH2o.dlta18OH2oRefe.min,
-           max  = data.isoH2o.dlta18OH2oRefe.max,
-           vari = data.isoH2o.dlta18OH2oRefe.vari,
-           numSamp = data.isoH2o.dlta18OH2oRefe.numSamp) %>%
-    mutate(varname = "dlta18OH2oRefe")
-  
-  dlta2HH2oRefe <- low %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta2HH2oRefe.")) %>%
-    rename(mean = data.isoH2o.dlta2HH2oRefe.mean,
-           min  = data.isoH2o.dlta2HH2oRefe.min,
-           max  = data.isoH2o.dlta2HH2oRefe.max,
-           vari = data.isoH2o.dlta2HH2oRefe.vari,
-           numSamp = data.isoH2o.dlta2HH2oRefe.numSamp) %>%
-    mutate(varname = "dlta2HH2oRefe")
-
-  pres <- low %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.pres.")) %>%
-    rename(mean = data.isoH2o.pres.mean,
-           min  = data.isoH2o.pres.min,
-           max  = data.isoH2o.pres.max,
-           vari = data.isoH2o.pres.vari,
-           numSamp = data.isoH2o.pres.numSamp) %>%
-    mutate(varname = "pres")
-  
-  presEnvHut <- low %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.presEnvHut.")) %>%
-    rename(mean = data.isoH2o.presEnvHut.mean,
-           min  = data.isoH2o.presEnvHut.min,
-           max  = data.isoH2o.presEnvHut.max,
-           vari = data.isoH2o.presEnvHut.vari,
-           numSamp = data.isoH2o.presEnvHut.numSamp) %>%
-    mutate(varname = "presEnvHut")
-  
-  rhEnvHut <- low %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.rhEnvHut.")) %>%
-    rename(mean = data.isoH2o.rhEnvHut.mean,
-           min  = data.isoH2o.rhEnvHut.min,
-           max  = data.isoH2o.rhEnvHut.max,
-           vari = data.isoH2o.rhEnvHut.vari,
-           numSamp = data.isoH2o.rhEnvHut.numSamp) %>%
-    mutate(varname = "rhEnvHut")
-  
-  rtioMoleWetH2o <- low %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.rtioMoleWetH2o.")) %>%
-    rename(mean = data.isoH2o.rtioMoleWetH2o.mean,
-           min  = data.isoH2o.rtioMoleWetH2o.min,
-           max  = data.isoH2o.rtioMoleWetH2o.max,
-           vari = data.isoH2o.rtioMoleWetH2o.vari,
-           numSamp = data.isoH2o.rtioMoleWetH2o.numSamp) %>%
-    mutate(varname = "rtioMoleWetH2o")
-  
-  rtioMoleWetH2oEnvHut <- low %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.rtioMoleWetH2oEnvHut.")) %>%
-    rename(mean = data.isoH2o.rtioMoleWetH2oEnvHut.mean,
-           min  = data.isoH2o.rtioMoleWetH2oEnvHut.min,
-           max  = data.isoH2o.rtioMoleWetH2oEnvHut.max,
-           vari = data.isoH2o.rtioMoleWetH2oEnvHut.vari,
-           numSamp = data.isoH2o.rtioMoleWetH2oEnvHut.numSamp) %>%
-    mutate(varname = "rtioMoleWetH2oEnvHut")
-  
-  temp <- low %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.temp.")) %>%
-    rename(mean = data.isoH2o.temp.mean,
-           min  = data.isoH2o.temp.min,
-           max  = data.isoH2o.temp.max,
-           vari = data.isoH2o.temp.vari,
-           numSamp = data.isoH2o.temp.numSamp) %>%
-    mutate(varname = "temp")
-  
-  tempEnvHut <- low %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.tempEnvHut.")) %>%
-    rename(mean = data.isoH2o.tempEnvHut.mean,
-           min  = data.isoH2o.tempEnvHut.min,
-           max  = data.isoH2o.tempEnvHut.max,
-           vari = data.isoH2o.tempEnvHut.vari,
-           numSamp = data.isoH2o.tempEnvHut.numSamp) %>%
-    mutate(varname = "tempEnvHut")
-  
+  # restructure variables to be more suitable for output file.
+  dlta18OH2o           <- restructure_reference_variables(low, "dlta18OH2o")
+  dlta2HH2o            <- restructure_reference_variables(low, "dlta2HH2o")
+  dlta18OH2oRefe       <- restructure_reference_variables(low, "dlta18OH2oRefe")
+  dlta2HH2oRefe        <- restructure_reference_variables(low, "dlta2HH2oRefe")
+  pres                 <- restructure_reference_variables(low, "pres")
+  presEnvHut           <- restructure_reference_variables(low, "presEnvHut")
+  rhEnvHut             <- restructure_reference_variables(low, "rhEnvHut")
+  rtioMoleWetH2o       <- restructure_reference_variables(low, "rtioMoleWetH2o")
+  rtioMoleWetH2oEnvHut <- restructure_reference_variables(low, "rtioMoleWetH2oEnvHut")
+  temp                 <- restructure_reference_variables(low, "temp")
+  tempEnvHut           <- restructure_reference_variables(low, "tempEnvHut")
+    
   data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, dlta18OH2oRefe, dlta2HH2oRefe,
                                      pres, presEnvHut, rhEnvHut,
                                      rtioMoleWetH2o, rtioMoleWetH2oEnvHut, temp, tempEnvHut))
@@ -529,104 +442,18 @@ calibrate_water_linreg_bysite <- function(inpath,
   med_outloc <- rhdf5::H5Gopen(fid,
                                paste0("/", site, "/dp01/data/isoH2o/h2oMed_03m"))
   
-  dlta18OH2o <- med %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta18OH2o.")) %>%
-    rename(mean = data.isoH2o.dlta18OH2o.mean,
-           min  = data.isoH2o.dlta18OH2o.min,
-           max  = data.isoH2o.dlta18OH2o.max,
-           vari = data.isoH2o.dlta18OH2o.vari,
-           numSamp = data.isoH2o.dlta18OH2o.numSamp) %>%
-    mutate(varname = "dlta18OH2o")
-  
-  dlta2HH2o <- med %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta2HH2o.")) %>%
-    rename(mean = data.isoH2o.dlta2HH2o.mean,
-           min  = data.isoH2o.dlta2HH2o.min,
-           max  = data.isoH2o.dlta2HH2o.max,
-           vari = data.isoH2o.dlta2HH2o.vari,
-           numSamp = data.isoH2o.dlta2HH2o.numSamp) %>%
-    mutate(varname = "dlta2HH2o")
-  
-  dlta18OH2oRefe <- med %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta18OH2oRefe.")) %>%
-    rename(mean = data.isoH2o.dlta18OH2oRefe.mean,
-           min  = data.isoH2o.dlta18OH2oRefe.min,
-           max  = data.isoH2o.dlta18OH2oRefe.max,
-           vari = data.isoH2o.dlta18OH2oRefe.vari,
-           numSamp = data.isoH2o.dlta18OH2oRefe.numSamp) %>%
-    mutate(varname = "dlta18OH2oRefe")
-  
-  dlta2HH2oRefe <- med %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta2HH2oRefe.")) %>%
-    rename(mean = data.isoH2o.dlta2HH2oRefe.mean,
-           min  = data.isoH2o.dlta2HH2oRefe.min,
-           max  = data.isoH2o.dlta2HH2oRefe.max,
-           vari = data.isoH2o.dlta2HH2oRefe.vari,
-           numSamp = data.isoH2o.dlta2HH2oRefe.numSamp) %>%
-    mutate(varname = "dlta2HH2oRefe")
-  
-  pres <- med %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.pres.")) %>%
-    rename(mean = data.isoH2o.pres.mean,
-           min  = data.isoH2o.pres.min,
-           max  = data.isoH2o.pres.max,
-           vari = data.isoH2o.pres.vari,
-           numSamp = data.isoH2o.pres.numSamp) %>%
-    mutate(varname = "pres")
-  
-  presEnvHut <- med %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.presEnvHut.")) %>%
-    rename(mean = data.isoH2o.presEnvHut.mean,
-           min  = data.isoH2o.presEnvHut.min,
-           max  = data.isoH2o.presEnvHut.max,
-           vari = data.isoH2o.presEnvHut.vari,
-           numSamp = data.isoH2o.presEnvHut.numSamp) %>%
-    mutate(varname = "presEnvHut")
-  
-  rhEnvHut <- med %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.rhEnvHut.")) %>%
-    rename(mean = data.isoH2o.rhEnvHut.mean,
-           min  = data.isoH2o.rhEnvHut.min,
-           max  = data.isoH2o.rhEnvHut.max,
-           vari = data.isoH2o.rhEnvHut.vari,
-           numSamp = data.isoH2o.rhEnvHut.numSamp) %>%
-    mutate(varname = "rhEnvHut")
-  
-  rtioMoleWetH2o <- med %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.rtioMoleWetH2o.")) %>%
-    rename(mean = data.isoH2o.rtioMoleWetH2o.mean,
-           min  = data.isoH2o.rtioMoleWetH2o.min,
-           max  = data.isoH2o.rtioMoleWetH2o.max,
-           vari = data.isoH2o.rtioMoleWetH2o.vari,
-           numSamp = data.isoH2o.rtioMoleWetH2o.numSamp) %>%
-    mutate(varname = "rtioMoleWetH2o")
-  
-  rtioMoleWetH2oEnvHut <- med %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.rtioMoleWetH2oEnvHut.")) %>%
-    rename(mean = data.isoH2o.rtioMoleWetH2oEnvHut.mean,
-           min  = data.isoH2o.rtioMoleWetH2oEnvHut.min,
-           max  = data.isoH2o.rtioMoleWetH2oEnvHut.max,
-           vari = data.isoH2o.rtioMoleWetH2oEnvHut.vari,
-           numSamp = data.isoH2o.rtioMoleWetH2oEnvHut.numSamp) %>%
-    mutate(varname = "rtioMoleWetH2oEnvHut")
-  
-  temp <- med %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.temp.")) %>%
-    rename(mean = data.isoH2o.temp.mean,
-           min  = data.isoH2o.temp.min,
-           max  = data.isoH2o.temp.max,
-           vari = data.isoH2o.temp.vari,
-           numSamp = data.isoH2o.temp.numSamp) %>%
-    mutate(varname = "temp")
-  
-  tempEnvHut <- med %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.tempEnvHut.")) %>%
-    rename(mean = data.isoH2o.tempEnvHut.mean,
-           min  = data.isoH2o.tempEnvHut.min,
-           max  = data.isoH2o.tempEnvHut.max,
-           vari = data.isoH2o.tempEnvHut.vari,
-           numSamp = data.isoH2o.tempEnvHut.numSamp) %>%
-    mutate(varname = "tempEnvHut")
+  # restructure variables to be more suitable for output file.
+  dlta18OH2o           <- restructure_reference_variables(med, "dlta18OH2o")
+  dlta2HH2o            <- restructure_reference_variables(med, "dlta2HH2o")
+  dlta18OH2oRefe       <- restructure_reference_variables(med, "dlta18OH2oRefe")
+  dlta2HH2oRefe        <- restructure_reference_variables(med, "dlta2HH2oRefe")
+  pres                 <- restructure_reference_variables(med, "pres")
+  presEnvHut           <- restructure_reference_variables(med, "presEnvHut")
+  rhEnvHut             <- restructure_reference_variables(med, "rhEnvHut")
+  rtioMoleWetH2o       <- restructure_reference_variables(med, "rtioMoleWetH2o")
+  rtioMoleWetH2oEnvHut <- restructure_reference_variables(med, "rtioMoleWetH2oEnvHut")
+  temp                 <- restructure_reference_variables(med, "temp")
+  tempEnvHut           <- restructure_reference_variables(med, "tempEnvHut")
   
   data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, dlta18OH2oRefe, dlta2HH2oRefe,
                                      pres, presEnvHut, rhEnvHut,
@@ -654,106 +481,19 @@ calibrate_water_linreg_bysite <- function(inpath,
   high_outloc <- rhdf5::H5Gopen(fid,
                        paste0("/", site, "/dp01/data/isoH2o/h2oHigh_03m"))
 
-  
-  dlta18OH2o <- high %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta18OH2o.")) %>%
-    rename(mean = data.isoH2o.dlta18OH2o.mean,
-           min  = data.isoH2o.dlta18OH2o.min,
-           max  = data.isoH2o.dlta18OH2o.max,
-           vari = data.isoH2o.dlta18OH2o.vari,
-           numSamp = data.isoH2o.dlta18OH2o.numSamp) %>%
-    mutate(varname = "dlta18OH2o")
-  
-  dlta2HH2o <- high %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta2HH2o.")) %>%
-    rename(mean = data.isoH2o.dlta2HH2o.mean,
-           min  = data.isoH2o.dlta2HH2o.min,
-           max  = data.isoH2o.dlta2HH2o.max,
-           vari = data.isoH2o.dlta2HH2o.vari,
-           numSamp = data.isoH2o.dlta2HH2o.numSamp) %>%
-    mutate(varname = "dlta2HH2o")
-  
-  dlta18OH2oRefe <- high %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta18OH2oRefe.")) %>%
-    rename(mean = data.isoH2o.dlta18OH2oRefe.mean,
-           min  = data.isoH2o.dlta18OH2oRefe.min,
-           max  = data.isoH2o.dlta18OH2oRefe.max,
-           vari = data.isoH2o.dlta18OH2oRefe.vari,
-           numSamp = data.isoH2o.dlta18OH2oRefe.numSamp) %>%
-    mutate(varname = "dlta18OH2oRefe")
-  
-  dlta2HH2oRefe <- high %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.dlta2HH2oRefe.")) %>%
-    rename(mean = data.isoH2o.dlta2HH2oRefe.mean,
-           min  = data.isoH2o.dlta2HH2oRefe.min,
-           max  = data.isoH2o.dlta2HH2oRefe.max,
-           vari = data.isoH2o.dlta2HH2oRefe.vari,
-           numSamp = data.isoH2o.dlta2HH2oRefe.numSamp) %>%
-    mutate(varname = "dlta2HH2oRefe")
-  
-  pres <- high %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.pres.")) %>%
-    rename(mean = data.isoH2o.pres.mean,
-           min  = data.isoH2o.pres.min,
-           max  = data.isoH2o.pres.max,
-           vari = data.isoH2o.pres.vari,
-           numSamp = data.isoH2o.pres.numSamp) %>%
-    mutate(varname = "pres")
-  
-  presEnvHut <- high %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.presEnvHut.")) %>%
-    rename(mean = data.isoH2o.presEnvHut.mean,
-           min  = data.isoH2o.presEnvHut.min,
-           max  = data.isoH2o.presEnvHut.max,
-           vari = data.isoH2o.presEnvHut.vari,
-           numSamp = data.isoH2o.presEnvHut.numSamp) %>%
-    mutate(varname = "presEnvHut")
-  
-  rhEnvHut <- high %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.rhEnvHut.")) %>%
-    rename(mean = data.isoH2o.rhEnvHut.mean,
-           min  = data.isoH2o.rhEnvHut.min,
-           max  = data.isoH2o.rhEnvHut.max,
-           vari = data.isoH2o.rhEnvHut.vari,
-           numSamp = data.isoH2o.rhEnvHut.numSamp) %>%
-    mutate(varname = "rhEnvHut")
-  
-  rtioMoleWetH2o <- high %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.rtioMoleWetH2o.")) %>%
-    rename(mean = data.isoH2o.rtioMoleWetH2o.mean,
-           min  = data.isoH2o.rtioMoleWetH2o.min,
-           max  = data.isoH2o.rtioMoleWetH2o.max,
-           vari = data.isoH2o.rtioMoleWetH2o.vari,
-           numSamp = data.isoH2o.rtioMoleWetH2o.numSamp) %>%
-    mutate(varname = "rtioMoleWetH2o")
-  
-  rtioMoleWetH2oEnvHut <- high %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.rtioMoleWetH2oEnvHut.")) %>%
-    rename(mean = data.isoH2o.rtioMoleWetH2oEnvHut.mean,
-           min  = data.isoH2o.rtioMoleWetH2oEnvHut.min,
-           max  = data.isoH2o.rtioMoleWetH2oEnvHut.max,
-           vari = data.isoH2o.rtioMoleWetH2oEnvHut.vari,
-           numSamp = data.isoH2o.rtioMoleWetH2oEnvHut.numSamp) %>%
-    mutate(varname = "rtioMoleWetH2oEnvHut")
-  
-  temp <- high %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.temp.")) %>%
-    rename(mean = data.isoH2o.temp.mean,
-           min  = data.isoH2o.temp.min,
-           max  = data.isoH2o.temp.max,
-           vari = data.isoH2o.temp.vari,
-           numSamp = data.isoH2o.temp.numSamp) %>%
-    mutate(varname = "temp")
-  
-  tempEnvHut <- high %>%
-    select(timeBgn,timeEnd,starts_with("data.isoH2o.tempEnvHut.")) %>%
-    rename(mean = data.isoH2o.tempEnvHut.mean,
-           min  = data.isoH2o.tempEnvHut.min,
-           max  = data.isoH2o.tempEnvHut.max,
-           vari = data.isoH2o.tempEnvHut.vari,
-           numSamp = data.isoH2o.tempEnvHut.numSamp) %>%
-    mutate(varname = "tempEnvHut")
-  
+  # restructure variables to be more suitable for output file.
+  dlta18OH2o           <- restructure_reference_variables(high, "dlta18OH2o")
+  dlta2HH2o            <- restructure_reference_variables(high, "dlta2HH2o")
+  dlta18OH2oRefe       <- restructure_reference_variables(high, "dlta18OH2oRefe")
+  dlta2HH2oRefe        <- restructure_reference_variables(high, "dlta2HH2oRefe")
+  pres                 <- restructure_reference_variables(high, "pres")
+  presEnvHut           <- restructure_reference_variables(high, "presEnvHut")
+  rhEnvHut             <- restructure_reference_variables(high, "rhEnvHut")
+  rtioMoleWetH2o       <- restructure_reference_variables(high, "rtioMoleWetH2o")
+  rtioMoleWetH2oEnvHut <- restructure_reference_variables(high, "rtioMoleWetH2oEnvHut")
+  temp                 <- restructure_reference_variables(high, "temp")
+  tempEnvHut           <- restructure_reference_variables(high, "tempEnvHut")  
+
   data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, dlta18OH2oRefe, dlta2HH2oRefe,
                                      pres, presEnvHut, rhEnvHut,
                                      rtioMoleWetH2o, rtioMoleWetH2oEnvHut, temp, tempEnvHut))
