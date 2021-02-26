@@ -155,11 +155,11 @@ restructure_water_variables <- function(dataframe, varname, mode) {
   # ensure that varname is a string but standard is a data.frame
   if (!is.character(varname)) {
     stop("input argument must a string")
-  } else if (!is.data.frame(dataframe)) {
+  } else if ((!is.data.frame(dataframe) & mode == "reference") | (!is.list(dataframe) & mode == "ambient")) {
     stop("dataframe argument must be a data.frame (reference mode) or list (ambient mode)")
   }
   
-  if (mode != "reference" | mode != "ambient") {
+  if (mode != "reference" & mode != "ambient") {
     stop("Invalid selection to mode argument.")
   } else if (mode == "reference") {
     output <- dataframe %>%
@@ -172,7 +172,7 @@ restructure_water_variables <- function(dataframe, varname, mode) {
       dplyr::mutate(varname = varname)
   } else if (mode == "ambient") {
     output <- dataframe[[1]] %>%
-      dplyr::select(verticalPosition,timeBgn,timeEnd,starts_with(paste0("data.isoH2o",varname,"."))) %>%
+      dplyr::select(verticalPosition,timeBgn,timeEnd,starts_with(paste0("data.isoH2o.",varname,"."))) %>%
       dplyr::filter(!(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch"))) %>%
       dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
                     min  = paste0("data.isoH2o.", varname, ".min"),
