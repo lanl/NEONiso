@@ -405,17 +405,17 @@ calibrate_water_linreg_bysite <- function(inpath,
                            paste0("/", site, "/dp01/data/isoH2o/h2oLow_03m"))
   
   # restructure variables to be more suitable for output file.
-  dlta18OH2o           <- restructure_reference_variables(low, "dlta18OH2o", "reference")
-  dlta2HH2o            <- restructure_reference_variables(low, "dlta2HH2o", "reference")
-  dlta18OH2oRefe       <- restructure_reference_variables(low, "dlta18OH2oRefe", "reference")
-  dlta2HH2oRefe        <- restructure_reference_variables(low, "dlta2HH2oRefe", "reference")
-  pres                 <- restructure_reference_variables(low, "pres", "reference")
-  presEnvHut           <- restructure_reference_variables(low, "presEnvHut", "reference")
-  rhEnvHut             <- restructure_reference_variables(low, "rhEnvHut", "reference")
-  rtioMoleWetH2o       <- restructure_reference_variables(low, "rtioMoleWetH2o", "reference")
-  rtioMoleWetH2oEnvHut <- restructure_reference_variables(low, "rtioMoleWetH2oEnvHut", "reference")
-  temp                 <- restructure_reference_variables(low, "temp", "reference")
-  tempEnvHut           <- restructure_reference_variables(low, "tempEnvHut", "reference")
+  dlta18OH2o           <- restructure_water_variables(low, "dlta18OH2o", "reference")
+  dlta2HH2o            <- restructure_water_variables(low, "dlta2HH2o", "reference")
+  dlta18OH2oRefe       <- restructure_water_variables(low, "dlta18OH2oRefe", "reference")
+  dlta2HH2oRefe        <- restructure_water_variables(low, "dlta2HH2oRefe", "reference")
+  pres                 <- restructure_water_variables(low, "pres", "reference")
+  presEnvHut           <- restructure_water_variables(low, "presEnvHut", "reference")
+  rhEnvHut             <- restructure_water_variables(low, "rhEnvHut", "reference")
+  rtioMoleWetH2o       <- restructure_water_variables(low, "rtioMoleWetH2o", "reference")
+  rtioMoleWetH2oEnvHut <- restructure_water_variables(low, "rtioMoleWetH2oEnvHut", "reference")
+  temp                 <- restructure_water_variables(low, "temp", "reference")
+  tempEnvHut           <- restructure_water_variables(low, "tempEnvHut", "reference")
     
   data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, dlta18OH2oRefe, dlta2HH2oRefe,
                                      pres, presEnvHut, rhEnvHut,
@@ -443,17 +443,17 @@ calibrate_water_linreg_bysite <- function(inpath,
                                paste0("/", site, "/dp01/data/isoH2o/h2oMed_03m"))
   
   # restructure variables to be more suitable for output file.
-  dlta18OH2o           <- restructure_reference_variables(med, "dlta18OH2o", "reference")
-  dlta2HH2o            <- restructure_reference_variables(med, "dlta2HH2o", "reference")
-  dlta18OH2oRefe       <- restructure_reference_variables(med, "dlta18OH2oRefe", "reference")
-  dlta2HH2oRefe        <- restructure_reference_variables(med, "dlta2HH2oRefe", "reference")
-  pres                 <- restructure_reference_variables(med, "pres", "reference")
-  presEnvHut           <- restructure_reference_variables(med, "presEnvHut", "reference")
-  rhEnvHut             <- restructure_reference_variables(med, "rhEnvHut", "reference")
-  rtioMoleWetH2o       <- restructure_reference_variables(med, "rtioMoleWetH2o", "reference")
-  rtioMoleWetH2oEnvHut <- restructure_reference_variables(med, "rtioMoleWetH2oEnvHut", "reference")
-  temp                 <- restructure_reference_variables(med, "temp", "reference")
-  tempEnvHut           <- restructure_reference_variables(med, "tempEnvHut", "reference")
+  dlta18OH2o           <- restructure_water_variables(med, "dlta18OH2o", "reference")
+  dlta2HH2o            <- restructure_water_variables(med, "dlta2HH2o", "reference")
+  dlta18OH2oRefe       <- restructure_water_variables(med, "dlta18OH2oRefe", "reference")
+  dlta2HH2oRefe        <- restructure_water_variables(med, "dlta2HH2oRefe", "reference")
+  pres                 <- restructure_water_variables(med, "pres", "reference")
+  presEnvHut           <- restructure_water_variables(med, "presEnvHut", "reference")
+  rhEnvHut             <- restructure_water_variables(med, "rhEnvHut", "reference")
+  rtioMoleWetH2o       <- restructure_water_variables(med, "rtioMoleWetH2o", "reference")
+  rtioMoleWetH2oEnvHut <- restructure_water_variables(med, "rtioMoleWetH2oEnvHut", "reference")
+  temp                 <- restructure_water_variables(med, "temp", "reference")
+  tempEnvHut           <- restructure_water_variables(med, "tempEnvHut", "reference")
   
   data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, dlta18OH2oRefe, dlta2HH2oRefe,
                                      pres, presEnvHut, rhEnvHut,
@@ -482,17 +482,17 @@ calibrate_water_linreg_bysite <- function(inpath,
                        paste0("/", site, "/dp01/data/isoH2o/h2oHigh_03m"))
 
   # restructure variables to be more suitable for output file.
-  dlta18OH2o           <- restructure_reference_variables(high, "dlta18OH2o", "reference")
-  dlta2HH2o            <- restructure_reference_variables(high, "dlta2HH2o", "reference")
-  dlta18OH2oRefe       <- restructure_reference_variables(high, "dlta18OH2oRefe", "reference")
-  dlta2HH2oRefe        <- restructure_reference_variables(high, "dlta2HH2oRefe", "reference")
-  pres                 <- restructure_reference_variables(high, "pres", "reference")
-  presEnvHut           <- restructure_reference_variables(high, "presEnvHut", "reference")
-  rhEnvHut             <- restructure_reference_variables(high, "rhEnvHut", "reference")
-  rtioMoleWetH2o       <- restructure_reference_variables(high, "rtioMoleWetH2o", "reference")
-  rtioMoleWetH2oEnvHut <- restructure_reference_variables(high, "rtioMoleWetH2oEnvHut", "reference")
-  temp                 <- restructure_reference_variables(high, "temp", "reference")
-  tempEnvHut           <- restructure_reference_variables(high, "tempEnvHut", "reference")  
+  dlta18OH2o           <- restructure_water_variables(high, "dlta18OH2o", "reference")
+  dlta2HH2o            <- restructure_water_variables(high, "dlta2HH2o", "reference")
+  dlta18OH2oRefe       <- restructure_water_variables(high, "dlta18OH2oRefe", "reference")
+  dlta2HH2oRefe        <- restructure_water_variables(high, "dlta2HH2oRefe", "reference")
+  pres                 <- restructure_water_variables(high, "pres", "reference")
+  presEnvHut           <- restructure_water_variables(high, "presEnvHut", "reference")
+  rhEnvHut             <- restructure_water_variables(high, "rhEnvHut", "reference")
+  rtioMoleWetH2o       <- restructure_water_variables(high, "rtioMoleWetH2o", "reference")
+  rtioMoleWetH2oEnvHut <- restructure_water_variables(high, "rtioMoleWetH2oEnvHut", "reference")
+  temp                 <- restructure_water_variables(high, "temp", "reference")
+  tempEnvHut           <- restructure_water_variables(high, "tempEnvHut", "reference")  
 
   data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, dlta18OH2oRefe, dlta2HH2oRefe,
                                      pres, presEnvHut, rhEnvHut,
@@ -542,31 +542,31 @@ calibrate_water_linreg_bysite <- function(inpath,
   # should probably kick this out to its own function someday.
 
   dlta18O_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "dlta18OH2o", avg = 9)
-  dlta18OH2o <- restructure_reference_variables(dlta18O_list, "dlta18OH2o", "ambient")
+  dlta18OH2o <- restructure_water_variables(dlta18O_list, "dlta18OH2o", "ambient")
 
   dlta2H_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "dlta2HH2o", avg = 9)
-  dlta2HH2o <- restructure_reference_variables(dlta2H_list, "dlta2HH2o", "ambient")
+  dlta2HH2o <- restructure_water_variables(dlta2H_list, "dlta2HH2o", "ambient")
 
   pres_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "pres", avg = 9)
-  pres <- restructure_reference_variables(pres_list, "pres", "ambient")
+  pres <- restructure_water_variables(pres_list, "pres", "ambient")
 
   presEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "presEnvHut", avg = 9)
-  presEnvHut <- restructure_reference_variables(presEnvHut_list, "presEnvHut", "ambient")
+  presEnvHut <- restructure_water_variables(presEnvHut_list, "presEnvHut", "ambient")
 
   rhEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rhEnvHut", avg = 9)
-  rhEnvHut <- restructure_reference_variables(rhEnvHut_list, "rhEnvHut", "ambient")
+  rhEnvHut <- restructure_water_variables(rhEnvHut_list, "rhEnvHut", "ambient")
 
   rtioMoleWetH2o_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rtioMoleWetH2o", avg = 9)
-  rtioMoleWetH2o <- restructure_reference_variables(rtioMoleWetH2o_list, "rtioMoleWetH2o", "ambient")
+  rtioMoleWetH2o <- restructure_water_variables(rtioMoleWetH2o_list, "rtioMoleWetH2o", "ambient")
 
   rtioMoleWetH2oEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rtioMoleWetH2oEnvHut", avg = 9)
-  rtioMoleWetH2oEnvHut <- restructure_reference_variables(rtioMoleWetH2oEnvHut_list, "rtioMoleWetH2oEnvHut", "ambient")
+  rtioMoleWetH2oEnvHut <- restructure_water_variables(rtioMoleWetH2oEnvHut_list, "rtioMoleWetH2oEnvHut", "ambient")
 
   temp_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "temp", avg = 9)
-  temp <- restructure_reference_variables(temp_list, "temp", "ambient")
+  temp <- restructure_water_variables(temp_list, "temp", "ambient")
 
   tempEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "tempEnvHut", avg = 9)
-  tempEnvHut <- restructure_reference_variables(tempEnvHut_list, "tempEnvHut", "ambient")
+  tempEnvHut <- restructure_water_variables(tempEnvHut_list, "tempEnvHut", "ambient")
 
   data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, pres, presEnvHut, rhEnvHut,
                        rtioMoleWetH2o, rtioMoleWetH2oEnvHut, temp, tempEnvHut))

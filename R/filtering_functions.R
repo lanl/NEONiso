@@ -15,7 +15,6 @@
 #' @return Returns filtered vector.
 #' @export
 #'
-#' @examples
 #' @importFrom stats median
 filter_median_Brock86 <- function(data, width = 7, threshold = 5) {
 

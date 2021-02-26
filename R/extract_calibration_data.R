@@ -14,7 +14,6 @@
 #' @return Returns data frame of required variables.
 #' @export
 #'
-#' @examples
 extract_carbon_calibration_data <- function(data_list, ucrt_list,
                                             standard, ucrt_source = "data") {
 
@@ -97,7 +96,6 @@ extract_carbon_calibration_data <- function(data_list, ucrt_list,
 #' @return Returns data frame of required variables.
 #' @export
 #'
-#' @examples
 extract_water_calibration_data <- function(data_list, ucrt_list = NULL,
                                            standard, ucrt_source = "data",
                                            method = "by_site") {
