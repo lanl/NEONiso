@@ -11,3 +11,4 @@ Meta
 
 # don't upload any pdfs.
 *.pdf
+inst/doc
