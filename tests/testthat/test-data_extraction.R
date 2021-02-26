@@ -1,8 +1,37 @@
 # test-data_extraction
 
-test_that("extract_water_calibration_data throws errors when it should",{
-  expect_error(extract_water_calibration_data("temp","temp","low",ucrt_source = "ucrt", method = "by_site"))
-  expect_error(extract_water_calibration_data("temp","temp","low",ucrt_source = "ucrt", method = "by_month"))
-  expect_error(extract_water_calibration_data("temp","temp","spork",ucrt_source = "data", method = "by_site"))
-  expect_error(extract_water_calibration_data("temp","temp","spork",ucrt_source = "data", method = "by_month"))
+#----------------------------
+# test carbon function
+
+load("ref_test_data.Rdata")
+load("ref_test_ucrt.Rdata")
+
+test_that("extract_carbon_calibration_data throws errors when it should",{
+  expect_error(extract_carbon_calibration_data(ref_test_data, ref_test_data, "spork", ucrt_source = "data"))
+  expect_error(extract_carbon_calibration_data(ref_test_data, ref_test_ucrt, "spork", ucrt_source = "ucrt"))
 })
+
+test_that("carbon data frames all end up with 15 columns after extract_carbon_calibration_data", {
+  expect_equal(ncol(extract_carbon_calibration_data(ref_test_data, ref_test_data, "low", ucrt_source = "data")), 15)
+  expect_equal(ncol(extract_carbon_calibration_data(ref_test_data, ref_test_data, "med", ucrt_source = "data")), 15)
+  expect_equal(ncol(extract_carbon_calibration_data(ref_test_data, ref_test_data, "high", ucrt_source = "data")), 15)
+  expect_equal(ncol(extract_carbon_calibration_data(ref_test_data, ref_test_ucrt, "low", ucrt_source = "ucrt")), 15)
+  expect_equal(ncol(extract_carbon_calibration_data(ref_test_data, ref_test_ucrt, "med", ucrt_source = "ucrt")), 15)
+  expect_equal(ncol(extract_carbon_calibration_data(ref_test_data, ref_test_ucrt, "high", ucrt_source = "ucrt")), 15)
+})
+
+#test_that("all three standards work correctly in extract_carbon_calibration_data", {
+#expect_
+#})
+
+
+#--------------------
+# test water function
+
+test_that("extract_water_calibration_data throws errors when it should",{
+  expect_error(extract_water_calibration_data("test","test","low",ucrt_source = "ucrt", method = "by_site"))
+  expect_error(extract_water_calibration_data("test","test","low",ucrt_source = "ucrt", method = "by_month"))
+  expect_error(extract_water_calibration_data("test","test","spork",ucrt_source = "data", method = "by_site"))
+  expect_error(extract_water_calibration_data("test","test","spork",ucrt_source = "data", method = "by_month"))
+})
+
