@@ -139,36 +139,48 @@ return(ref_df)
 
 }
 
-
 #-----------------------------------------
-#' restructure_reference_variables
+#' restructure_water_variables
 #'
-#' @param standard Which reference to apply function to? (high, med, low).
-#'                 Needs to be a data.frame.
 #' @param varname Which variable are we applying this function to? There's
 #'                a list of ~10 common ones to write to the hdf5 file.
+#' @param dataframe Input data.frame, from \code{neonUtilities::stackEddy}
+#' @param mode Are we fixing a reference data frame or an ambient data frame?
 #'
 #' @return data.frame formatted for output to hdf5 file.
 #' @export
 #'
-restructure_reference_variables <- function(standard, varname) {
+restructure_water_variables <- function(dataframe, varname, mode) {
   
   # ensure that varname is a string but standard is a data.frame
   if (!is.character(varname)) {
     stop("input argument must a string")
-  } else if (!is.data.frame(standard)) {
-    stop("standard argument must be a data.frame")
+  } else if (!is.data.frame(dataframe)) {
+    stop("dataframe argument must be a data.frame (reference mode) or list (ambient mode)")
   }
   
-  output <- standard %>%
-    dplyr::select(timeBgn,timeEnd,starts_with(paste0("data.isoH2o.",varname,"."))) %>%
-    dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
-                  min  = paste0("data.isoH2o.", varname, ".min"),
-                  max  = paste0("data.isoH2o.", varname, ".max"),
-                  vari = paste0("data.isoH2o.", varname, ".vari"),
-                  numSamp 
-                  = paste0("data.isoH2o.", varname, ".numSamp")) %>%
-    mutate(varname = varname)
+  if (mode != "reference" | mode != "ambient") {
+    stop("Invalid selection to mode argument.")
+  } else if (mode == "reference") {
+    output <- dataframe %>%
+      dplyr::select(timeBgn,timeEnd,starts_with(paste0("data.isoH2o.",varname,"."))) %>%
+      dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
+                    min  = paste0("data.isoH2o.", varname, ".min"),
+                    max  = paste0("data.isoH2o.", varname, ".max"),
+                    vari = paste0("data.isoH2o.", varname, ".vari"),
+                    numSamp = paste0("data.isoH2o.", varname, ".numSamp")) %>%
+      dplyr::mutate(varname = varname)
+  } else if (mode == "ambient") {
+    output <- dataframe[[1]] %>%
+      dplyr::select(verticalPosition,timeBgn,timeEnd,starts_with(paste0("data.isoH2o",varname,"."))) %>%
+      dplyr::filter(!(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch"))) %>%
+      dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
+                    min  = paste0("data.isoH2o.", varname, ".min"),
+                    max  = paste0("data.isoH2o.", varname, ".max"),
+                    vari = paste0("data.isoH2o.", varname, ".vari"),
+                    numSamp = paste0("data.isoH2o.", varname, ".numSamp")) %>%
+      dplyr::mutate(varname = varname)
+  }
   
   return(output)
 }

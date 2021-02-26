@@ -405,17 +405,17 @@ calibrate_water_linreg_bysite <- function(inpath,
                            paste0("/", site, "/dp01/data/isoH2o/h2oLow_03m"))
   
   # restructure variables to be more suitable for output file.
-  dlta18OH2o           <- restructure_reference_variables(low, "dlta18OH2o")
-  dlta2HH2o            <- restructure_reference_variables(low, "dlta2HH2o")
-  dlta18OH2oRefe       <- restructure_reference_variables(low, "dlta18OH2oRefe")
-  dlta2HH2oRefe        <- restructure_reference_variables(low, "dlta2HH2oRefe")
-  pres                 <- restructure_reference_variables(low, "pres")
-  presEnvHut           <- restructure_reference_variables(low, "presEnvHut")
-  rhEnvHut             <- restructure_reference_variables(low, "rhEnvHut")
-  rtioMoleWetH2o       <- restructure_reference_variables(low, "rtioMoleWetH2o")
-  rtioMoleWetH2oEnvHut <- restructure_reference_variables(low, "rtioMoleWetH2oEnvHut")
-  temp                 <- restructure_reference_variables(low, "temp")
-  tempEnvHut           <- restructure_reference_variables(low, "tempEnvHut")
+  dlta18OH2o           <- restructure_reference_variables(low, "dlta18OH2o", "reference")
+  dlta2HH2o            <- restructure_reference_variables(low, "dlta2HH2o", "reference")
+  dlta18OH2oRefe       <- restructure_reference_variables(low, "dlta18OH2oRefe", "reference")
+  dlta2HH2oRefe        <- restructure_reference_variables(low, "dlta2HH2oRefe", "reference")
+  pres                 <- restructure_reference_variables(low, "pres", "reference")
+  presEnvHut           <- restructure_reference_variables(low, "presEnvHut", "reference")
+  rhEnvHut             <- restructure_reference_variables(low, "rhEnvHut", "reference")
+  rtioMoleWetH2o       <- restructure_reference_variables(low, "rtioMoleWetH2o", "reference")
+  rtioMoleWetH2oEnvHut <- restructure_reference_variables(low, "rtioMoleWetH2oEnvHut", "reference")
+  temp                 <- restructure_reference_variables(low, "temp", "reference")
+  tempEnvHut           <- restructure_reference_variables(low, "tempEnvHut", "reference")
     
   data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, dlta18OH2oRefe, dlta2HH2oRefe,
                                      pres, presEnvHut, rhEnvHut,
@@ -443,17 +443,17 @@ calibrate_water_linreg_bysite <- function(inpath,
                                paste0("/", site, "/dp01/data/isoH2o/h2oMed_03m"))
   
   # restructure variables to be more suitable for output file.
-  dlta18OH2o           <- restructure_reference_variables(med, "dlta18OH2o")
-  dlta2HH2o            <- restructure_reference_variables(med, "dlta2HH2o")
-  dlta18OH2oRefe       <- restructure_reference_variables(med, "dlta18OH2oRefe")
-  dlta2HH2oRefe        <- restructure_reference_variables(med, "dlta2HH2oRefe")
-  pres                 <- restructure_reference_variables(med, "pres")
-  presEnvHut           <- restructure_reference_variables(med, "presEnvHut")
-  rhEnvHut             <- restructure_reference_variables(med, "rhEnvHut")
-  rtioMoleWetH2o       <- restructure_reference_variables(med, "rtioMoleWetH2o")
-  rtioMoleWetH2oEnvHut <- restructure_reference_variables(med, "rtioMoleWetH2oEnvHut")
-  temp                 <- restructure_reference_variables(med, "temp")
-  tempEnvHut           <- restructure_reference_variables(med, "tempEnvHut")
+  dlta18OH2o           <- restructure_reference_variables(med, "dlta18OH2o", "reference")
+  dlta2HH2o            <- restructure_reference_variables(med, "dlta2HH2o", "reference")
+  dlta18OH2oRefe       <- restructure_reference_variables(med, "dlta18OH2oRefe", "reference")
+  dlta2HH2oRefe        <- restructure_reference_variables(med, "dlta2HH2oRefe", "reference")
+  pres                 <- restructure_reference_variables(med, "pres", "reference")
+  presEnvHut           <- restructure_reference_variables(med, "presEnvHut", "reference")
+  rhEnvHut             <- restructure_reference_variables(med, "rhEnvHut", "reference")
+  rtioMoleWetH2o       <- restructure_reference_variables(med, "rtioMoleWetH2o", "reference")
+  rtioMoleWetH2oEnvHut <- restructure_reference_variables(med, "rtioMoleWetH2oEnvHut", "reference")
+  temp                 <- restructure_reference_variables(med, "temp", "reference")
+  tempEnvHut           <- restructure_reference_variables(med, "tempEnvHut", "reference")
   
   data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, dlta18OH2oRefe, dlta2HH2oRefe,
                                      pres, presEnvHut, rhEnvHut,
@@ -482,17 +482,17 @@ calibrate_water_linreg_bysite <- function(inpath,
                        paste0("/", site, "/dp01/data/isoH2o/h2oHigh_03m"))
 
   # restructure variables to be more suitable for output file.
-  dlta18OH2o           <- restructure_reference_variables(high, "dlta18OH2o")
-  dlta2HH2o            <- restructure_reference_variables(high, "dlta2HH2o")
-  dlta18OH2oRefe       <- restructure_reference_variables(high, "dlta18OH2oRefe")
-  dlta2HH2oRefe        <- restructure_reference_variables(high, "dlta2HH2oRefe")
-  pres                 <- restructure_reference_variables(high, "pres")
-  presEnvHut           <- restructure_reference_variables(high, "presEnvHut")
-  rhEnvHut             <- restructure_reference_variables(high, "rhEnvHut")
-  rtioMoleWetH2o       <- restructure_reference_variables(high, "rtioMoleWetH2o")
-  rtioMoleWetH2oEnvHut <- restructure_reference_variables(high, "rtioMoleWetH2oEnvHut")
-  temp                 <- restructure_reference_variables(high, "temp")
-  tempEnvHut           <- restructure_reference_variables(high, "tempEnvHut")  
+  dlta18OH2o           <- restructure_reference_variables(high, "dlta18OH2o", "reference")
+  dlta2HH2o            <- restructure_reference_variables(high, "dlta2HH2o", "reference")
+  dlta18OH2oRefe       <- restructure_reference_variables(high, "dlta18OH2oRefe", "reference")
+  dlta2HH2oRefe        <- restructure_reference_variables(high, "dlta2HH2oRefe", "reference")
+  pres                 <- restructure_reference_variables(high, "pres", "reference")
+  presEnvHut           <- restructure_reference_variables(high, "presEnvHut", "reference")
+  rhEnvHut             <- restructure_reference_variables(high, "rhEnvHut", "reference")
+  rtioMoleWetH2o       <- restructure_reference_variables(high, "rtioMoleWetH2o", "reference")
+  rtioMoleWetH2oEnvHut <- restructure_reference_variables(high, "rtioMoleWetH2oEnvHut", "reference")
+  temp                 <- restructure_reference_variables(high, "temp", "reference")
+  tempEnvHut           <- restructure_reference_variables(high, "tempEnvHut", "reference")  
 
   data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, dlta18OH2oRefe, dlta2HH2oRefe,
                                      pres, presEnvHut, rhEnvHut,
@@ -542,103 +542,31 @@ calibrate_water_linreg_bysite <- function(inpath,
   # should probably kick this out to its own function someday.
 
   dlta18O_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "dlta18OH2o", avg = 9)
-  dlta18OH2o <- dlta18O_list[[site]] %>%
-    select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
-    filter(!(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch"))) %>%
-    rename(mean = data.isoH2o.dlta18OH2o.mean,
-           min  = data.isoH2o.dlta18OH2o.min,
-           max  = data.isoH2o.dlta18OH2o.max,
-           vari = data.isoH2o.dlta18OH2o.vari,
-           numSamp = data.isoH2o.dlta18OH2o.numSamp) %>%
-    mutate(varname = "dlta18OH2o")
+  dlta18OH2o <- restructure_reference_variables(dlta18O_list, "dlta18OH2o", "ambient")
 
   dlta2H_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "dlta2HH2o", avg = 9)
-  dlta2HH2o <- dlta2H_list[[site]] %>%
-    select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
-    filter(!(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch"))) %>%
-    rename(mean = data.isoH2o.dlta2HH2o.mean,
-           min  = data.isoH2o.dlta2HH2o.min,
-           max  = data.isoH2o.dlta2HH2o.max,
-           vari = data.isoH2o.dlta2HH2o.vari,
-           numSamp = data.isoH2o.dlta2HH2o.numSamp) %>%
-    mutate(varname = "dlta2HH2o")
+  dlta2HH2o <- restructure_reference_variables(dlta2H_list, "dlta2HH2o", "ambient")
 
   pres_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "pres", avg = 9)
-  pres <- pres_list[[site]] %>%
-    select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
-    filter(!(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch"))) %>%
-    rename(mean = data.isoH2o.pres.mean,
-           min  = data.isoH2o.pres.min,
-           max  = data.isoH2o.pres.max,
-           vari = data.isoH2o.pres.vari,
-           numSamp = data.isoH2o.pres.numSamp) %>%
-    mutate(varname = "pres")
+  pres <- restructure_reference_variables(pres_list, "pres", "ambient")
 
   presEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "presEnvHut", avg = 9)
-  presEnvHut <- presEnvHut_list[[site]] %>%
-    select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
-    filter(!(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch"))) %>%
-    rename(mean = data.isoH2o.presEnvHut.mean,
-           min  = data.isoH2o.presEnvHut.min,
-           max  = data.isoH2o.presEnvHut.max,
-           vari = data.isoH2o.presEnvHut.vari,
-           numSamp = data.isoH2o.presEnvHut.numSamp) %>%
-    mutate(varname = "presEnvHut")
+  presEnvHut <- restructure_reference_variables(presEnvHut_list, "presEnvHut", "ambient")
 
   rhEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rhEnvHut", avg = 9)
-  rhEnvHut <- rhEnvHut_list[[site]] %>%
-    select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
-    filter(!(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch"))) %>%
-    rename(mean = data.isoH2o.rhEnvHut.mean,
-           min  = data.isoH2o.rhEnvHut.min,
-           max  = data.isoH2o.rhEnvHut.max,
-           vari = data.isoH2o.rhEnvHut.vari,
-           numSamp = data.isoH2o.rhEnvHut.numSamp) %>%
-    mutate(varname = "rhEnvHut")
+  rhEnvHut <- restructure_reference_variables(rhEnvHut_list, "rhEnvHut", "ambient")
 
   rtioMoleWetH2o_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rtioMoleWetH2o", avg = 9)
-  rtioMoleWetH2o <- rtioMoleWetH2o_list[[site]] %>%
-    select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
-    filter(!(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch"))) %>%
-    rename(mean = data.isoH2o.rtioMoleWetH2o.mean,
-           min  = data.isoH2o.rtioMoleWetH2o.min,
-           max  = data.isoH2o.rtioMoleWetH2o.max,
-           vari = data.isoH2o.rtioMoleWetH2o.vari,
-           numSamp = data.isoH2o.rtioMoleWetH2o.numSamp) %>%
-    mutate(varname = "rtioMoleWetH2o")
+  rtioMoleWetH2o <- restructure_reference_variables(rtioMoleWetH2o_list, "rtioMoleWetH2o", "ambient")
 
   rtioMoleWetH2oEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rtioMoleWetH2oEnvHut", avg = 9)
-  rtioMoleWetH2oEnvHut <- rtioMoleWetH2oEnvHut_list[[site]] %>%
-    select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
-    filter(!(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch"))) %>%
-    rename(mean = data.isoH2o.rtioMoleWetH2oEnvHut.mean,
-           min  = data.isoH2o.rtioMoleWetH2oEnvHut.min,
-           max  = data.isoH2o.rtioMoleWetH2oEnvHut.max,
-           vari = data.isoH2o.rtioMoleWetH2oEnvHut.vari,
-           numSamp = data.isoH2o.rtioMoleWetH2oEnvHut.numSamp) %>%
-    mutate(varname = "rtioMoleWetH2oEnvHut")
+  rtioMoleWetH2oEnvHut <- restructure_reference_variables(rtioMoleWetH2oEnvHut_list, "rtioMoleWetH2oEnvHut", "ambient")
 
   temp_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "temp", avg = 9)
-  temp <- temp_list[[site]] %>%
-    select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
-    filter(!(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch"))) %>%
-    rename(mean = data.isoH2o.temp.mean,
-           min  = data.isoH2o.temp.min,
-           max  = data.isoH2o.temp.max,
-           vari = data.isoH2o.temp.vari,
-           numSamp = data.isoH2o.temp.numSamp) %>%
-    mutate(varname = "temp")
+  temp <- restructure_reference_variables(temp_list, "temp", "ambient")
 
   tempEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "tempEnvHut", avg = 9)
-  tempEnvHut <- tempEnvHut_list[[site]] %>%
-    select(verticalPosition,timeBgn,timeEnd,contains("data.isoH2o")) %>%
-    filter(!(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch"))) %>%
-    rename(mean = data.isoH2o.tempEnvHut.mean,
-           min  = data.isoH2o.tempEnvHut.min,
-           max  = data.isoH2o.tempEnvHut.max,
-           vari = data.isoH2o.tempEnvHut.vari,
-           numSamp = data.isoH2o.tempEnvHut.numSamp) %>%
-    mutate(varname = "tempEnvHut")
+  tempEnvHut <- restructure_reference_variables(tempEnvHut_list, "tempEnvHut", "ambient")
 
   data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, pres, presEnvHut, rhEnvHut,
                        rtioMoleWetH2o, rtioMoleWetH2oEnvHut, temp, tempEnvHut))
