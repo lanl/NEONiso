@@ -102,19 +102,14 @@ calibrate_carbon_Bowling2003 <- function(inname,
   rm(high_rs, med_rs, low_rs)
 
   # convert times to POSIXct
-  standards <- standards %>%
-    dplyr::mutate(d13C_obs_btime = as.POSIXct(d13C_obs_btime,
-                                            format = "%Y-%m-%dT%H:%M:%OSZ",
-                                            tz = "UTC"),
-                  d13C_obs_etime = as.POSIXct(d13C_obs_etime,
-                                            format = "%Y-%m-%dT%H:%M:%OSZ",
-                                            tz = "UTC"),
-                  d13C_ref_btime = as.POSIXct(d13C_ref_btime,
-                                            format = "%Y-%m-%dT%H:%M:%OSZ",
-                                            tz = "UTC"),
-                  d13C_ref_etime = as.POSIXct(d13C_ref_etime,
-                                            format = "%Y-%m-%dT%H:%M:%OSZ",
-                                            tz = "UTC"))
+  standards$d13C_obs_btime <- as.POSIXct(d13C_obs_btime,
+                                  format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+  standards$d13C_obs_etime <- as.POSIXct(d13C_obs_etime,
+                                  format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+  standards$d13C_ref_btime <- as.POSIXct(d13C_ref_btime,
+                                  format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+  standards$d13C_ref_etime <- as.POSIXct(d13C_ref_etime,
+                                  format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
 
   # split back out into 3 data frames for each standard.
   low_rs <- dplyr::filter(standards, std_name == "low")
@@ -309,12 +304,12 @@ calibrate_carbon_Bowling2003 <- function(inname,
   var_for_h5$valid_period_end   <- var_for_h5$end
 
   # enforce that all other columns are numeric
-  var_for_h5$gain12C <- as.numeric(var_for_h5$gain12C)
-  var_for_h5$gain13C <- as.numeric(var_for_h5$gain13C)
+  var_for_h5$gain12C   <- as.numeric(var_for_h5$gain12C)
+  var_for_h5$gain13C   <- as.numeric(var_for_h5$gain13C)
   var_for_h5$offset12C <- as.numeric(var_for_h5$offset12C)
   var_for_h5$offset13C <- as.numeric(var_for_h5$offset13C)
-  var_for_h5$r2_12C <- as.numeric(var_for_h5$r2_12C)
-  var_for_h5$r2_13C <- as.numeric(var_for_h5$r2_13C)
+  var_for_h5$r2_12C    <- as.numeric(var_for_h5$r2_12C)
+  var_for_h5$r2_13C    <- as.numeric(var_for_h5$r2_13C)
 
   # remove old vars.
   var_for_h5$start <- var_for_h5$end <- NULL
@@ -373,8 +368,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2Low_09m"))
 
 #  low <- calibrate_standards_carbon(out, low, R_vpdb, f)
-  low <- calibrate_standards_carbon(out, low,
-                                    correct_bad_refvals = TRUE,
+  low <- calibrate_standards_carbon(out, low, correct_bad_refvals = TRUE,
                                     site = site, refGas = "low")
   
   # loop through each variable amb.data.list and write out as a dataframe.
@@ -398,8 +392,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2Med_09m"))
 
 #  med <- calibrate_standards_carbon(out, med, R_vpdb, f)
-  med <- calibrate_standards_carbon(out, med,
-                                    correct_bad_refvals = TRUE,
+  med <- calibrate_standards_carbon(out, med, correct_bad_refvals = TRUE,
                                     site = site, refGas = "med")
 
   # loop through each variable in amb.data.list and write out as a dataframe.
@@ -423,8 +416,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
                         paste0("/", site, "/dp01/data/isoCo2/co2High_09m"))
 
   #high <- calibrate_standards_carbon(out, high, R_vpdb, f)
-  high <- calibrate_standards_carbon(out, high,
-                                     correct_bad_refvals = TRUE,
+  high <- calibrate_standards_carbon(out, high, correct_bad_refvals = TRUE,
                                      site = site, refGas = "high")
   
   
