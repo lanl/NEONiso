@@ -101,6 +101,7 @@ calibrate_carbon_Bowling2003 <- function(inname,
   standards <- do.call(rbind, list(low_rs, med_rs, high_rs))
   rm(high_rs, med_rs, low_rs)
 
+  # convert times to POSIXct
   standards <- standards %>%
     dplyr::mutate(d13C_obs_btime = as.POSIXct(d13C_obs_btime,
                                             format = "%Y-%m-%dT%H:%M:%OSZ",

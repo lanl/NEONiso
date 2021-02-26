@@ -45,12 +45,6 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
                                                  r2_thres) {
 
   #-----------------------------------------------------------
-  # specify a few parameters for the Bowling method.
-
-  f <- 0.00474  # fraction of CO2 isotopomers that aren't 12CO2 or 13CO2
-  # note: f technically varies, but this has little impact
-  # on calibration per Griffis et al. 2004.
-
   # should be able to get a calGainsOffsets object from the H5 file.
 
   # only working on the d13C of the amb_data_list, so extract just this...
@@ -167,7 +161,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   amb_delta$vari     <- round(amb_delta$vari, 2)
 
   # calibrate co2 mole fractions.
-  amb_co2$mean_cal <- (mean13c + mean12c) / (1 - f)
+  amb_co2$mean_cal <- (mean13c + mean12c) / (1 - 0.00474)
 
   # apply median filter to data
   if (filter_data == TRUE) {
