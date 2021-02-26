@@ -1,3 +1,10 @@
+# test time conversion function
+test_that("convert_POSIXct_to_NEONhdf5_time returns a string 24 characters long", {
+  expect_type(convert_POSIXct_to_NEONhdf5_time(Sys.time()), "character")
+  expect_equal(nchar(convert_POSIXct_to_NEONhdf5_time(Sys.time())), 24)
+})
+
+
 test_that("site retrieval functions return vector of strings", {
   expect_type(terrestrial_core_sites(), "character")
   expect_type(terrestrial_relocatable_sites(), "character")

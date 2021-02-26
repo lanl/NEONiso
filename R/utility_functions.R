@@ -36,8 +36,8 @@ convert_POSIXct_to_NEONhdf5_time <- function(intime) {
                        paste0("0", lubridate::minute(intime)),
                        lubridate::minute(intime)), ":",
                 ifelse(lubridate::second(intime) < 10,
-                       paste0("0", lubridate::second(intime), ".000Z"),
-                       paste0(lubridate::second(intime), ".000Z"))))
+                       paste0("0", floor(lubridate::second(intime)), ".000Z"),
+                       paste0(floor(lubridate::second(intime)), ".000Z"))))
 
   return(outtime)
 }
