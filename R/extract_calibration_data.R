@@ -109,7 +109,7 @@ extract_water_calibration_data <- function(data_list, ucrt_list = NULL,
       stop("ucrt data handling not added yet...please change ucrt_source to 'data'")
       
     } else if (ucrt_source == "data") {
-    
+      
       if (standard == "high") {
         data <- subset(data_list, data_list$verticalPosition == 'h2oHigh')
       } else if (standard == "med") {
@@ -119,7 +119,7 @@ extract_water_calibration_data <- function(data_list, ucrt_list = NULL,
       } else {
         stop()
       }
-        
+      
       std_df  <- data.frame(d18O_meas_mean  = data_list$data.isoH2o.dlta18OH2o.mean,
                             d18O_meas_var   = data_list$data.isoH2o.dlta18OH2o.vari,
                             d18O_meas_n     = data_list$data.isoH2o.dlta18OH2o.numSamp,
@@ -134,7 +134,8 @@ extract_water_calibration_data <- function(data_list, ucrt_list = NULL,
                             d2H_ref_n       = data_list$data.isoH2o.dlta2HH2oRefe.numSamp,
                             btime           = data_list$timeBgn,
                             etime           = data_list$timeEnd)
-    }
+    } # ucrt source
+    
   } else if (method == "by_month") {
     
     if (standard == "high") {
@@ -156,26 +157,26 @@ extract_water_calibration_data <- function(data_list, ucrt_list = NULL,
       
     } else if (ucrt_source == "data") {
       
-      std_df <- data.frame(d18O_meas_mean = data_list$dlta18OH2o$mean,
-                           d18O_meas_var = data_list$dlta18OH2o$vari,
-                           d18O_meas_n = data_list$dlta18OH2o$numSamp,
-                           d18O_meas_btime = data_list$dlta18OH2o$timeBgn,
-                           d18O_meas_etime = data_list$dlta18OH2o$timeEnd,
-                           d18O_ref_mean = data_list$dlta18OH2oRefe$mean,
-                           d18O_ref_var = data_list$dlta18OH2oRefe$vari,
-                           d18O_ref_n = data_list$dlta18OH2oRefe$numSamp,
-                           d18O_ref_btime = data_list$dlta18OH2oRefe$timeBgn,
-                           d18O_ref_etime = data_list$dlta18OH2oRefe$timeEnd,
-                           d2H_meas_mean = data_list$dlta2HH2o$mean,
-                           d2H_meas_var = data_list$dlta2HH2o$vari,
-                           d2H_meas_n = data_list$dlta2HH2o$numSamp,
-                           d2H_meas_btime = data_list$dlta2HH2o$timeBgn,
-                           d2H_meas_etime = data_list$dlta2HH2o$timeEnd,
-                           d2H_ref_mean = data_list$dlta2HH2oRefe$mean,
-                           d2H_ref_var = data_list$dlta2HH2oRefe$vari,
-                           d2H_ref_n = data_list$dlta2HH2oRefe$numSamp,
-                           d2H_ref_btime = data_list$dlta2HH2oRefe$timeBgn,
-                           d2H_ref_etime = data_list$dlta2HH2oRefe$timeEnd)
+      std_df <- data.frame(d18O_meas_mean = data$dlta18OH2o$mean,
+                           d18O_meas_var = data$dlta18OH2o$vari,
+                           d18O_meas_n = data$dlta18OH2o$numSamp,
+                           d18O_meas_btime = data$dlta18OH2o$timeBgn,
+                           d18O_meas_etime = data$dlta18OH2o$timeEnd,
+                           d18O_ref_mean = data$dlta18OH2oRefe$mean,
+                           d18O_ref_var = data$dlta18OH2oRefe$vari,
+                           d18O_ref_n = data$dlta18OH2oRefe$numSamp,
+                           d18O_ref_btime = data$dlta18OH2oRefe$timeBgn,
+                           d18O_ref_etime = data$dlta18OH2oRefe$timeEnd,
+                           d2H_meas_mean = data$dlta2HH2o$mean,
+                           d2H_meas_var = data$dlta2HH2o$vari,
+                           d2H_meas_n = data$dlta2HH2o$numSamp,
+                           d2H_meas_btime = data$dlta2HH2o$timeBgn,
+                           d2H_meas_etime = data$dlta2HH2o$timeEnd,
+                           d2H_ref_mean = data$dlta2HH2oRefe$mean,
+                           d2H_ref_var = data$dlta2HH2oRefe$vari,
+                           d2H_ref_n = data$dlta2HH2oRefe$numSamp,
+                           d2H_ref_btime = data$dlta2HH2oRefe$timeBgn,
+                           d2H_ref_etime = data$dlta2HH2oRefe$timeEnd)
     }
   } else {
     stop("no other methods have been coded")

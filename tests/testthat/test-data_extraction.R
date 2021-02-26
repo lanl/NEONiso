@@ -28,10 +28,23 @@ test_that("carbon data frames all end up with 15 columns after extract_carbon_ca
 #--------------------
 # test water function
 
+load("ref_wat_data.Rdata")
+load("ref_wat_ucrt.Rdata")
+
 test_that("extract_water_calibration_data throws errors when it should",{
-  expect_error(extract_water_calibration_data("test","test","low",ucrt_source = "ucrt", method = "by_site"))
-  expect_error(extract_water_calibration_data("test","test","low",ucrt_source = "ucrt", method = "by_month"))
-  expect_error(extract_water_calibration_data("test","test","spork",ucrt_source = "data", method = "by_site"))
-  expect_error(extract_water_calibration_data("test","test","spork",ucrt_source = "data", method = "by_month"))
+  expect_error(extract_water_calibration_data(ref_wat_data,ref_wat_ucrt,"low",ucrt_source = "ucrt", method = "by_site"))
+  expect_error(extract_water_calibration_data(ref_wat_data,ref_wat_ucrt,"low",ucrt_source = "ucrt", method = "by_month")) # passes, but doesn't hit the right line?
+  expect_error(extract_water_calibration_data(ref_wat_data,ref_wat_data,"spork",ucrt_source = "data", method = "by_site"))
+  expect_error(extract_water_calibration_data(ref_wat_data,ref_wat_data,"spork",ucrt_source = "data", method = "by_month"))
+  expect_error(extract_water_calibration_data(ref_wat_data,ref_wat_data,"spork",ucrt_source = "data", method = "by_cheese"))
+})
+
+test_that("water data frames have correct number of columns after extract_carbon_calibration_data", {
+#  expect_equal(ncol(extract_water_calibration_data(ref_wat_data,NULL,"low",ucrt_source = "data", method = "by_site")),15)
+#  expect_equal(ncol(extract_water_calibration_data(ref_wat_data,NULL,"med",ucrt_source = "data", method = "by_site")),15)
+#  expect_equal(ncol(extract_water_calibration_data(ref_wat_data,NULL,"high",ucrt_source = "data", method = "by_site")),15)
+  expect_equal(ncol(extract_water_calibration_data(ref_wat_data,NULL,"low",ucrt_source = "data", method = "by_month")),21)
+  expect_equal(ncol(extract_water_calibration_data(ref_wat_data,NULL,"med",ucrt_source = "data", method = "by_month")),21)
+  expect_equal(ncol(extract_water_calibration_data(ref_wat_data,NULL,"high",ucrt_source = "data", method = "by_month")),21)
 })
 

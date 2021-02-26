@@ -62,15 +62,10 @@ calibrate_water_linreg <- function(inname,
   # load file, get calibration data.
   wiso <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoH2o"))
 
-  # extract standards data.
-  high <- wiso$h2oHigh_03m
-  med <- wiso$h2oMed_03m
-  low <- wiso$h2oLow_03m
-
-  # restructure standards data.  
-  high_rs <- extract_water_calibration_data(high, standard = 'high', method = 'by_month')
-  med_rs  <- extract_water_calibration_data(med, standard = 'med', method = 'by_month')
-  low_rs  <- extract_water_calibration_data(low, standard = 'low', method = 'by_month')
+  # extract and restructure standards data.  
+  high_rs <- extract_water_calibration_data(wiso$h2oHigh_03m, standard = 'high', method = 'by_month')
+  med_rs  <- extract_water_calibration_data(wiso$h2oMed_03m,  standard = 'med',  method = 'by_month')
+  low_rs  <- extract_water_calibration_data(wiso$h2oLow_03m,  standard = 'low',  method = 'by_month')
 
   # add fix for NEON standard swap.
   low_rs  <- swap_standard_isotoperatios(low_rs)
