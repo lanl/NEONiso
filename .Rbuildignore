@@ -4,3 +4,5 @@
 ^Meta$
 ^\.travis\.yml$
 ^.github$
+^\.github$
+^codecov\.yml$
