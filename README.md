@@ -3,10 +3,7 @@
 <!-- badges: start -->
   [![DOI](https://zenodo.org/badge/188347333.svg)](https://zenodo.org/badge/latestdoi/188347333)
   [![R-CMD-check](https://github.com/SPATIAL-Lab/NEONiso/workflows/R-CMD-check/badge.svg)](https://github.com/SPATIAL-Lab/NEONiso/actions)
-  [![codecov](https://codecov.io/gh/SPATIAL-Lab/NEONiso/branch/master/graph/badge.svg?token=ZHDFEU5NZW)](https://codecov.io/gh/SPATIAL-Lab/NEONiso)
-  
-
-[![Codecov test coverage](https://codecov.io/gh/SPATIAL-Lab/NEONiso/branch/master/graph/badge.svg)](https://codecov.io/gh/SPATIAL-Lab/NEONiso?branch=master)
+  [![Codecov test coverage](https://codecov.io/gh/SPATIAL-Lab/NEONiso/branch/master/graph/badge.svg)](https://codecov.io/gh/SPATIAL-Lab/NEONiso?branch=master)
 <!-- badges: end -->
 
 Author: Rich Fiorella \
