@@ -87,23 +87,17 @@ calibrate_water_linreg_bysite <- function(inpath,
   
   # convert times in these data.frames (btime and etime) to posixct
   low_rs$btime <- as.POSIXct(low_rs$btime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
+                           format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
   low_rs$etime <- as.POSIXct(low_rs$etime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
+                           format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
   med_rs$btime <- as.POSIXct(med_rs$btime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
+                           format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
   med_rs$etime <- as.POSIXct(med_rs$etime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
+                           format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
   high_rs$btime <- as.POSIXct(high_rs$btime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
+                           format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
   high_rs$etime <- as.POSIXct(high_rs$etime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
+                           format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
   
   #--------------------------------------------------------------
   # Ensure same number of measurements for each standard

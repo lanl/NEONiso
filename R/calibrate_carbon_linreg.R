@@ -127,18 +127,14 @@ calibrate_carbon_linreg <- function(inname,
 
     # change class of time variables from charatcter to posixct.
     stds$d13C_obs_btime <- as.POSIXct(stds$d13C_obs_btime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ",
-                                      tz = "UTC")
+                              format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
     stds$d13C_obs_etime <- as.POSIXct(stds$d13C_obs_etime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ",
-                                      tz = "UTC")
+                              format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
 
     stds$d13C_ref_btime <- as.POSIXct(stds$d13C_ref_btime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ",
-                                      tz = "UTC")
+                              format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
     stds$d13C_ref_etime <- as.POSIXct(stds$d13C_ref_etime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ",
-                                      tz = "UTC")
+                              format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
 
     # reorder data frame
     stds <- stds[order(stds$d13C_obs_btime), ]

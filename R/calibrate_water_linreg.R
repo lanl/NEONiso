@@ -126,32 +126,24 @@ calibrate_water_linreg <- function(inname,
 
     # change class of time variables from charatcter to posixct.
     stds$d18O_meas_btime <- as.POSIXct(stds$d18O_meas_btime,
-                                       format = "%Y-%m-%dT%H:%M:%OSZ",
-                                       tz = "UTC")
+                                       format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
     stds$d18O_meas_etime <- as.POSIXct(stds$d18O_meas_etime,
-                                       format = "%Y-%m-%dT%H:%M:%OSZ",
-                                       tz = "UTC")
+                                       format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
 
     stds$d18O_ref_btime <- as.POSIXct(stds$d18O_ref_btime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ",
-                                      tz = "UTC")
+                                      format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
     stds$d18O_ref_etime <- as.POSIXct(stds$d18O_ref_etime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ",
-                                      tz = "UTC")
+                                      format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
 
     stds$d2H_meas_btime <- as.POSIXct(stds$d2H_meas_btime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ",
-                                      tz = "UTC")
+                                      format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
     stds$d2H_meas_etime <- as.POSIXct(stds$d2H_meas_etime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ",
-                                      tz = "UTC")
+                                      format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
 
     stds$d2H_ref_btime <- as.POSIXct(stds$d2H_ref_btime,
-                                     format = "%Y-%m-%dT%H:%M:%OSZ",
-                                     tz = "UTC")
+                                     format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
     stds$d2H_ref_etime <- as.POSIXct(stds$d2H_ref_etime,
-                                     format = "%Y-%m-%dT%H:%M:%OSZ",
-                                     tz = "UTC")
+                                     format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
 
     # reorder data frame
     stds <- stds[order(stds$d18O_meas_btime), ]
