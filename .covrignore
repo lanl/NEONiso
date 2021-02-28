@@ -1,2 +1,3 @@
-water_diagnostic_plots.R
-carbon_diagnostic_plots.R
+R/water_diagnostic_plots.R
+R/carbon_diagnostic_plots.R
+
