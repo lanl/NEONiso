@@ -260,6 +260,10 @@ manage_local_EC_archive <- function(file_dir,
     yrmn  <- sapply(file_pieces, "[[", 8)
     fdiff <- sapply(file_pieces, "[[", 10)
     
+    # print(head(sites))
+    # print(head(yrmn))
+    # print(head(fdiff))
+    
     site_list <- unique(sites)
     
     for (i in seq_along(site_list)) {

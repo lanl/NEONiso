@@ -46,9 +46,11 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
 
     # ensure that time variables are in POSIXct.
     amb_start_times <- as.POSIXct(d13C_ambdf$timeBgn,
-                          format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+                                  format = "%Y-%m-%dT%H:%M:%OSZ",
+                                  tz = "UTC")
     amb_end_times <- as.POSIXct(d13C_ambdf$timeEnd,
-                        format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+                                format = "%Y-%m-%dT%H:%M:%OSZ",
+                                tz = "UTC")
 
     # if force.to.end and/or force.to.beginning are true,
     # match out$start[1] to min(amb time)
@@ -138,20 +140,20 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
     amb_data_list$dlta13CCo2 <- d13C_ambdf
     amb_data_list$rtioMoleDryCo2 <- co2_ambdf
 
-    # # write out dataset to HDF5 file.
-    # fid <- rhdf5::H5Fopen(file)
-    # 
-    # co2.data.outloc <- rhdf5::H5Gcreate(fid,
-    #                         paste0("/", site, "/dp01/data/isoCo2/", outname))
-    # 
-    # # loop through variables in amb.data.list and write out as a dataframe.
-    # lapply(names(amb_data_list), function(x) {
-    #   rhdf5::h5writeDataset.data.frame(obj = amb_data_list[[x]],
-    #                             h5loc = co2.data.outloc,
-    #                             name = x,
-    #                             DataFrameAsCompound = TRUE)})
-    # 
-    # # close all open handles.
-    # rhdf5::h5closeAll()
+    # write out dataset to HDF5 file.
+    fid <- rhdf5::H5Fopen(file)
+
+    co2.data.outloc <- rhdf5::H5Gcreate(fid,
+                            paste0("/", site, "/dp01/data/isoCo2/", outname))
+
+    # loop through variables in amb.data.list and write out as a dataframe.
+    lapply(names(amb_data_list), function(x) {
+      rhdf5::h5writeDataset.data.frame(obj = amb_data_list[[x]],
+                                h5loc = co2.data.outloc,
+                                name = x,
+                                DataFrameAsCompound = TRUE)})
+
+    # close all open handles.
+    rhdf5::h5closeAll()
 
 }
