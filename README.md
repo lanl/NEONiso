@@ -3,6 +3,7 @@
 <!-- badges: start -->
   [![DOI](https://zenodo.org/badge/188347333.svg)](https://zenodo.org/badge/latestdoi/188347333)
   
+[![R-CMD-check](https://github.com/SPATIAL-Lab/NEONiso/workflows/R-CMD-check/badge.svg)](https://github.com/SPATIAL-Lab/NEONiso/actions)
 <!-- badges: end -->
 
 Author: Rich Fiorella \
