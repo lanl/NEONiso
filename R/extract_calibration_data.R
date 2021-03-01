@@ -70,6 +70,16 @@ extract_carbon_calibration_data <- function(data_list, ucrt_list,
   std_df <- std_df %>%
     dplyr::mutate(std_name = standard)
 
+  #convert times to posixct
+  std_df$d13C_obs_btime <- as.POSIXct(std_df$d13C_obs_btime,
+                                      format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+  std_df$d13C_obs_etime <- as.POSIXct(std_df$d13C_obs_etime,
+                                      format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+  std_df$d13C_ref_btime <- as.POSIXct(std_df$d13C_ref_btime,
+                                      format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+  std_df$d13C_ref_etime <- as.POSIXct(std_df$d13C_ref_etime,
+                                      format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+  
   # return standard data frame.
   return(std_df)
 
@@ -132,6 +142,14 @@ extract_water_calibration_data <- function(data_list, ucrt_list = NULL,
                             d2H_ref_n       = data_list$data.isoH2o.dlta2HH2oRefe.numSamp,
                             btime           = data_list$timeBgn,
                             etime           = data_list$timeEnd)
+      
+      #convert times to posixct
+      std_df$btime <- as.POSIXct(std_df$btime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+      std_df$etime <- as.POSIXct(std_df$etime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+      
+      #kludge fix here - need to fix time variables in a future release!!
+      std_df$d18O_meas_btime <- std_df$btime
+
     } # ucrt source
     
   } else if (method == "by_month") {
@@ -155,26 +173,56 @@ extract_water_calibration_data <- function(data_list, ucrt_list = NULL,
       
     } else if (ucrt_source == "data") {
       
-      std_df <- data.frame(d18O_meas_mean = data$dlta18OH2o$mean,
-                           d18O_meas_var = data$dlta18OH2o$vari,
-                           d18O_meas_n = data$dlta18OH2o$numSamp,
-                           d18O_meas_btime = data$dlta18OH2o$timeBgn,
-                           d18O_meas_etime = data$dlta18OH2o$timeEnd,
-                           d18O_ref_mean = data$dlta18OH2oRefe$mean,
-                           d18O_ref_var = data$dlta18OH2oRefe$vari,
-                           d18O_ref_n = data$dlta18OH2oRefe$numSamp,
-                           d18O_ref_btime = data$dlta18OH2oRefe$timeBgn,
-                           d18O_ref_etime = data$dlta18OH2oRefe$timeEnd,
-                           d2H_meas_mean = data$dlta2HH2o$mean,
-                           d2H_meas_var = data$dlta2HH2o$vari,
-                           d2H_meas_n = data$dlta2HH2o$numSamp,
-                           d2H_meas_btime = data$dlta2HH2o$timeBgn,
-                           d2H_meas_etime = data$dlta2HH2o$timeEnd,
-                           d2H_ref_mean = data$dlta2HH2oRefe$mean,
-                           d2H_ref_var = data$dlta2HH2oRefe$vari,
-                           d2H_ref_n = data$dlta2HH2oRefe$numSamp,
-                           d2H_ref_btime = data$dlta2HH2oRefe$timeBgn,
-                           d2H_ref_etime = data$dlta2HH2oRefe$timeEnd)
+      std_df <- data.frame(d18O_meas_mean = data_list$dlta18OH2o$mean,
+                           d18O_meas_var = data_list$dlta18OH2o$vari,
+                           d18O_meas_n = data_list$dlta18OH2o$numSamp,
+                           d18O_meas_btime = data_list$dlta18OH2o$timeBgn,
+                           d18O_meas_etime = data_list$dlta18OH2o$timeEnd,
+                           d18O_ref_mean = data_list$dlta18OH2oRefe$mean,
+                           d18O_ref_var = data_list$dlta18OH2oRefe$vari,
+                           d18O_ref_n = data_list$dlta18OH2oRefe$numSamp,
+                           d18O_ref_btime = data_list$dlta18OH2oRefe$timeBgn,
+                           d18O_ref_etime = data_list$dlta18OH2oRefe$timeEnd,
+                           d2H_meas_mean = data_list$dlta2HH2o$mean,
+                           d2H_meas_var = data_list$dlta2HH2o$vari,
+                           d2H_meas_n = data_list$dlta2HH2o$numSamp,
+                           d2H_meas_btime = data_list$dlta2HH2o$timeBgn,
+                           d2H_meas_etime = data_list$dlta2HH2o$timeEnd,
+                           d2H_ref_mean = data_list$dlta2HH2oRefe$mean,
+                           d2H_ref_var = data_list$dlta2HH2oRefe$vari,
+                           d2H_ref_n = data_list$dlta2HH2oRefe$numSamp,
+                           d2H_ref_btime = data_list$dlta2HH2oRefe$timeBgn,
+                           d2H_ref_etime = data_list$dlta2HH2oRefe$timeEnd)
+      
+      # change class of time variables from charatcter to posixct.
+      std_df$d18O_meas_btime <- as.POSIXct(std_df$d18O_meas_btime,
+                                         format = "%Y-%m-%dT%H:%M:%OSZ",
+                                         tz = "UTC")
+      std_df$d18O_meas_etime <- as.POSIXct(std_df$d18O_meas_etime,
+                                         format = "%Y-%m-%dT%H:%M:%OSZ",
+                                         tz = "UTC")
+
+      std_df$d18O_ref_btime <- as.POSIXct(std_df$d18O_ref_btime,
+                                        format = "%Y-%m-%dT%H:%M:%OSZ",
+                                        tz = "UTC")
+      std_df$d18O_ref_etime <- as.POSIXct(std_df$d18O_ref_etime,
+                                        format = "%Y-%m-%dT%H:%M:%OSZ",
+                                        tz = "UTC")
+
+      std_df$d2H_meas_btime <- as.POSIXct(std_df$d2H_meas_btime,
+                                        format = "%Y-%m-%dT%H:%M:%OSZ",
+                                        tz = "UTC")
+      std_df$d2H_meas_etime <- as.POSIXct(std_df$d2H_meas_etime,
+                                        format = "%Y-%m-%dT%H:%M:%OSZ",
+                                        tz = "UTC")
+
+      std_df$d2H_ref_btime <- as.POSIXct(std_df$d2H_ref_btime,
+                                       format = "%Y-%m-%dT%H:%M:%OSZ",
+                                       tz = "UTC")
+      std_df$d2H_ref_etime <- as.POSIXct(std_df$d2H_ref_etime,
+                                       format = "%Y-%m-%dT%H:%M:%OSZ",
+                                       tz = "UTC")
+      
     }
   } else {
     stop("no other methods have been coded")

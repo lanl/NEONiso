@@ -9,6 +9,9 @@ terrestrial_core_sites()
 \description{
 Return a vector listing NEON core terrestrial sites.
 }
+\examples{
+terrestrial_core_sites()
+}
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
 }

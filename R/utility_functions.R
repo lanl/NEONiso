@@ -17,7 +17,7 @@
 #' @return Returns character version of POSIXct object
 #'         matching NEON time variable format.
 #'
-#'
+
 convert_POSIXct_to_NEONhdf5_time <- function(intime) {
 
   # convert from POSIXct to
@@ -48,7 +48,9 @@ convert_POSIXct_to_NEONhdf5_time <- function(intime) {
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-
+#' @export
+#' @examples 
+#' terrestrial_core_sites()
 terrestrial_core_sites <- function() {
 
   # core sites as of 190523.
@@ -66,6 +68,10 @@ terrestrial_core_sites <- function() {
 #' Return a vector listing NEON core terrestrial sites.
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' 
+#' @export
+#' @examples 
+#' terrestrial_relocatable_sites()
 
 terrestrial_relocatable_sites <- function() {
 
@@ -86,6 +92,10 @@ terrestrial_relocatable_sites <- function() {
 #' Return a vector listing NEON sites measuring water vapor isotope ratios.
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' 
+#' @export
+#' @examples 
+#' water_isotope_sites()
 
 water_isotope_sites <- function() {
 
@@ -104,10 +114,7 @@ water_isotope_sites <- function() {
 #' 
 #' Utility function to help retrieve new EC data and/or prune duplicates,
 #' as NEON provisions new data or re-provisions data for an existing site 
-#' and month. NOTE: CURRENTLY ONLY THE TRIM FUNCTIONALITY HAS BEEN ADDED.
-#' IT IS TURNED OFF BY DEFAULT, AND MUST BE MANUALLY INVOKED WITH trim=TRUE.
-#' Also, note that dry_run must be FALSE in order to actually delete files.
-#' Defaults true to protect against unintended data loss.
+#' and month.
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
@@ -123,6 +130,19 @@ water_isotope_sites <- function() {
 #'              with available data, but can specify a single site or a vector
 #'              here.           
 #' @export
+#' 
+#' @examples 
+#' \donttest{
+#' # get all files from NEON S3 buckets
+#' manage_local_EC_archive("~/Desktop/",get = TRUE, unzip_files = TRUE, sites = "PUUM")
+#' # as NEON reprocesses, duplicate files can build up locally. to remove:
+#' # determine 'duplicates'
+#' manage_local_EC_archive("~/Desktop/", get = FALSE, unzip_files = FALSE, 
+#'                         trim = TRUE, sites = "PUUM") 
+#' # remove duplicates
+#' manage_local_EC_archive("~/Desktop/", get = FALSE, unzip_files = FALSE,
+#'                         trim = TRUE, dry_run = FALSE, sites = "PUUM") 
+#' }
 manage_local_EC_archive <- function(file_dir,
                                     get = TRUE,
                                     unzip_files = TRUE,

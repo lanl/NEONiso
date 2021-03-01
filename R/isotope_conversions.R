@@ -13,6 +13,12 @@
 #'         stable isotope standard. VMOW for water,
 #'         VPDB for carbon.
 #' 
+#' @export
+#' @examples
+#' get_Rstd('carbon') # returns 0.0111797
+#' get_Rstd('oxygen') # returns 2005.2e-6
+#' get_Rstd('hydrogen') # returns 155.76e-6
+#' 
 get_Rstd <- function(element) {
   # return the standard isotope ratio
   if (element == "carbon") {
@@ -29,19 +35,22 @@ get_Rstd <- function(element) {
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param data_vector A vector of isotope ratios (e.g., R values).
+#' @param R_values A vector of isotope ratios (e.g., R values).
 #' @param element Which element to return delta values - 
 #'        carbon, oxygen, or hydrogen.
 #'
 #' @return Vector of isotope ratios in delta notation.
 #'
-R_to_delta <- function(data_vector,element) {
+#' @export
+#' @examples 
+#' R_to_delta(R_values = 2005.20e-6, element = 'oxygen') # returns 0.
+R_to_delta <- function(R_values,element) {
   
   # get standard isotope ratio
   Rstd <- get_Rstd(element)
   
   #convert R to delta
-  delta <- 1000*(data_vector/Rstd - 1)
+  delta <- 1000*(R_values/Rstd - 1)
   
   # return delta values
   return(delta)
@@ -51,17 +60,22 @@ R_to_delta <- function(data_vector,element) {
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param data_vector A vector of isotope ratios in delta notation.
+#' @param delta_values A vector of isotope ratios in delta notation.
 #' @param element Which element to return R values - 
 #'        carbon, oxygen, or hydrogen.
 #'
 #' @return Vector of isotope ratios (R values).
-delta_to_R <- function(data_vector,element) {
+#' 
+#' @export
+#' @examples 
+#' delta_to_R(delta_values = 0, element = 'oxygen') # returns 2005.2e-6 for VSMOW.
+#' 
+delta_to_R <- function(delta_values,element) {
   
   # get standard isotope ratio
   Rstd <- get_Rstd(element)
   #convert R to delta
-  R <- Rstd*(data_vector/1000 + 1)
+  R <- Rstd*(delta_values/1000 + 1)
   # return delta values
   return(R)
   
@@ -77,6 +91,10 @@ delta_to_R <- function(data_vector,element) {
 #'          at 0.00474
 #'
 #' @return Vector of 12CO2 mole fractions.
+#' 
+#' @export
+#' @examples
+#' calculate_12CO2(total_co2 = 410, delta13C = -8.5)
 #'
 calculate_12CO2 <- function(total_co2,delta13C,f = 0.00474) {
   
@@ -103,6 +121,10 @@ calculate_12CO2 <- function(total_co2,delta13C,f = 0.00474) {
 #'          at 0.00474
 #'          
 #' @return Vector of 13CO2 mole fractions.
+#' 
+#' @export
+#' @examples
+#' calculate_13CO2(total_co2 = 410, delta13C = -8.5)
 #'
 calculate_13CO2 <- function(total_co2,delta13C,f = 0.00474) {
   

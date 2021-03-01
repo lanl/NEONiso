@@ -20,6 +20,10 @@ Vector of 13CO2 mole fractions.
 \description{
 calculate_13CO2
 }
+\examples{
+calculate_13CO2(total_co2 = 410, delta13C = -8.5)
+
+}
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
 }

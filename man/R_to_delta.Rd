@@ -4,10 +4,10 @@
 \alias{R_to_delta}
 \title{R_to_delta}
 \usage{
-R_to_delta(data_vector, element)
+R_to_delta(R_values, element)
 }
 \arguments{
-\item{data_vector}{A vector of isotope ratios (e.g., R values).}
+\item{R_values}{A vector of isotope ratios (e.g., R values).}
 
 \item{element}{Which element to return delta values - 
 carbon, oxygen, or hydrogen.}
@@ -17,6 +17,9 @@ Vector of isotope ratios in delta notation.
 }
 \description{
 R_to_delta
+}
+\examples{
+R_to_delta(R_values = 2005.20e-6, element = 'oxygen') # returns 0.
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}

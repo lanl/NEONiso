@@ -34,10 +34,20 @@ here.}
 \description{
 Utility function to help retrieve new EC data and/or prune duplicates,
 as NEON provisions new data or re-provisions data for an existing site 
-and month. NOTE: CURRENTLY ONLY THE TRIM FUNCTIONALITY HAS BEEN ADDED.
-IT IS TURNED OFF BY DEFAULT, AND MUST BE MANUALLY INVOKED WITH trim=TRUE.
-Also, note that dry_run must be FALSE in order to actually delete files.
-Defaults true to protect against unintended data loss.
+and month.
+}
+\examples{
+\donttest{
+# get all files from NEON S3 buckets
+manage_local_EC_archive("~/Desktop/",get = TRUE, unzip_files = TRUE, sites = "PUUM")
+# as NEON reprocesses, duplicate files can build up locally. to remove:
+# determine 'duplicates'
+manage_local_EC_archive("~/Desktop/", get = FALSE, unzip_files = FALSE, 
+                        trim = TRUE, sites = "PUUM") 
+# remove duplicates
+manage_local_EC_archive("~/Desktop/", get = FALSE, unzip_files = FALSE,
+                        trim = TRUE, dry_run = FALSE, sites = "PUUM") 
+}
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
