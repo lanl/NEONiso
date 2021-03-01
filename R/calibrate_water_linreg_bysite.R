@@ -85,26 +85,6 @@ calibrate_water_linreg_bysite <- function(inpath,
   med_rs <- swap_standard_isotoperatios(med_rs)
   high_rs <- swap_standard_isotoperatios(high_rs)
   
-  # convert times in these data.frames (btime and etime) to posixct
-  low_rs$btime <- as.POSIXct(low_rs$btime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
-  low_rs$etime <- as.POSIXct(low_rs$etime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
-  med_rs$btime <- as.POSIXct(med_rs$btime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
-  med_rs$etime <- as.POSIXct(med_rs$etime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
-  high_rs$btime <- as.POSIXct(high_rs$btime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
-  high_rs$etime <- as.POSIXct(high_rs$etime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
-  
   #--------------------------------------------------------------
   # Ensure same number of measurements for each standard
   #--------------------------------------------------------------
@@ -125,26 +105,13 @@ calibrate_water_linreg_bysite <- function(inpath,
     mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
   low_rs$periods <- rleidv(low_rs, "time_diff") %/% 2
   
-  #return(list(low_rs,med_rs,high_rs))
-
-  high_rs <- high_rs %>%
-    group_by(.data$periods) %>%
-    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
-    slice_tail(n = 3) %>%
-    ungroup()
-
-  med_rs <- med_rs %>%
-    group_by(.data$periods) %>%
-    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
-    slice_tail(n = 3) %>%
-    ungroup()
-
-  low_rs <- low_rs %>%
-    group_by(.data$periods) %>%
-    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
-    slice_tail(n = 3) %>%
-    ungroup()
-
+  #---------------------------------------------------------------
+  # Select which validation data to carry through to calibration
+  #---------------------------------------------------------------
+  high_rs <- select_daily_reference_data(high_rs, analyte = 'h2o')
+  med_rs  <- select_daily_reference_data(med_rs, analyte = 'h2o')
+  low_rs  <- select_daily_reference_data(low_rs, analyte = 'h2o')
+  
   #=======================================================================
   # apply calibration routines
   #=======================================================================

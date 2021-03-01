@@ -81,27 +81,12 @@ calibrate_carbon_linreg <- function(inname,
   med_rs  <- extract_carbon_calibration_data(ciso, ucrt, "med")
   low_rs  <- extract_carbon_calibration_data(ciso, ucrt, "low")
 
-  # cut out period where there appears to be a valve malfunction.
-  high_rs <- high_rs %>%
-    dplyr::mutate(dom = lubridate::day(.data$d13C_obs_btime)) %>%
-    dplyr::group_by(.data$dom) %>%
-    dplyr::filter(.data$d13C_obs_n > 200 | is.na(.data$d13C_obs_n)) %>%
-    dplyr::slice(1) %>%
-    dplyr::ungroup()
-
-  med_rs <- med_rs %>%
-    dplyr::mutate(dom = lubridate::day(.data$d13C_obs_btime)) %>%
-    dplyr::group_by(.data$dom) %>%
-    dplyr::filter(.data$d13C_obs_n > 200 | is.na(.data$d13C_obs_n)) %>%
-    dplyr::slice(1) %>%
-    dplyr::ungroup()
-
-  low_rs <- low_rs %>%
-    dplyr::mutate(dom = lubridate::day(.data$d13C_obs_btime)) %>%
-    dplyr::group_by(.data$dom) %>%
-    dplyr::filter(.data$d13C_obs_n > 200 | is.na(.data$d13C_obs_n)) %>%
-    dplyr::slice(1) %>%
-    dplyr::ungroup()
+  #---------------------------------------------------------------
+  # Select which validation data to carry through to calibration
+  #---------------------------------------------------------------
+  high_rs <- select_daily_reference_data(high_rs, analyte = 'co2')
+  med_rs  <- select_daily_reference_data(med_rs, analyte = 'co2')
+  low_rs  <- select_daily_reference_data(low_rs, analyte = 'co2')
 
   #=======================================================================
   # apply calibration routines
@@ -124,21 +109,6 @@ calibrate_carbon_linreg <- function(inname,
     # rpf note 181126 - is.na() also returns NaN as NA, so this does actually
     # do what first comment indicates.
     stds[is.na(stds)] <- NA
-
-    # change class of time variables from charatcter to posixct.
-    stds$d13C_obs_btime <- as.POSIXct(stds$d13C_obs_btime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ",
-                                      tz = "UTC")
-    stds$d13C_obs_etime <- as.POSIXct(stds$d13C_obs_etime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ",
-                                      tz = "UTC")
-
-    stds$d13C_ref_btime <- as.POSIXct(stds$d13C_ref_btime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ",
-                                      tz = "UTC")
-    stds$d13C_ref_etime <- as.POSIXct(stds$d13C_ref_etime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ",
-                                      tz = "UTC")
 
     # reorder data frame
     stds <- stds[order(stds$d13C_obs_btime), ]

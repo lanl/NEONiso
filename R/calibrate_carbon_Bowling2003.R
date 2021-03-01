@@ -96,68 +96,17 @@ calibrate_carbon_Bowling2003 <- function(inname,
   high_rs <- extract_carbon_calibration_data(ciso, ucrt, "high")
   med_rs  <- extract_carbon_calibration_data(ciso, ucrt, "med")
   low_rs  <- extract_carbon_calibration_data(ciso, ucrt, "low")
-
-  # combine data frames, calc. derived variables, and then separate back out
-  standards <- do.call(rbind, list(low_rs, med_rs, high_rs))
-  rm(high_rs, med_rs, low_rs)
-
-  # convert times to POSIXct
-  standards$d13C_obs_btime <- as.POSIXct(standards$d13C_obs_btime,
-                                  format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  standards$d13C_obs_etime <- as.POSIXct(standards$d13C_obs_etime,
-                                  format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  standards$d13C_ref_btime <- as.POSIXct(standards$d13C_ref_btime,
-                                  format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  standards$d13C_ref_etime <- as.POSIXct(standards$d13C_ref_etime,
-                                  format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-
-  # split back out into 3 data frames for each standard.
-  low_rs  <- dplyr::filter(standards, .data$std_name == "low")
-  med_rs  <- dplyr::filter(standards, .data$std_name == "med")
-  high_rs <- dplyr::filter(standards, .data$std_name == "high")
-
-  rm(standards)
-
-  #--------------------------------------------------------------
-  # Ensure there are the same number of measurements for each standard
-  #--------------------------------------------------------------
-  # 191024 rpf - prior versions of this have just sliced out the first
-  # observation per day. however, the most common cause of multiple
-  # standards to be analyzed per day is a malfunctioning valve in the
-  # manifold that causes the same standard gas to register as multiple
-  # peaks. each peak is shorter, higher variance, and doesn't allow even
-  # the CO2 concentration to stabilize. until further notice, i suggest
-  # removing these standards. code below has been modified to achieve this.
-
-  high_rs <- high_rs %>%
-    dplyr::mutate(dom = lubridate::day(.data$d13C_obs_btime)) %>% # get day of month
-    dplyr::group_by(.data$dom) %>%
-    # check to make sure peak sufficiently long, then slice off single.
-    dplyr::filter(.data$d13C_obs_n > 200 | is.na(.data$d13C_obs_n)) %>%
-    dplyr::slice(1) %>%
-    dplyr::ungroup()
-
-  med_rs <- med_rs %>%
-    dplyr::mutate(dom = lubridate::day(.data$d13C_obs_btime)) %>% # get day of month
-    dplyr::group_by(.data$dom) %>%
-    # check to make sure peak sufficiently long, then slice off single.
-    dplyr::filter(.data$d13C_obs_n > 200 | is.na(.data$d13C_obs_n)) %>%
-    dplyr::slice(1) %>%
-    dplyr::ungroup()
-
-  low_rs <- low_rs %>%
-    dplyr::mutate(dom = lubridate::day(.data$d13C_obs_btime)) %>% # get day of month
-    dplyr::group_by(.data$dom) %>%
-    # check to make sure peak sufficiently long, then slice off single.
-    dplyr::filter(.data$d13C_obs_n > 200 | is.na(.data$d13C_obs_n)) %>%
-    dplyr::slice(1) %>%
-    dplyr::ungroup()
-
+  
+  #---------------------------------------------------------------
+  # Select which validation data to carry through to calibration
+  #---------------------------------------------------------------
+  high_rs <- select_daily_reference_data(high_rs, analyte = 'co2')
+  med_rs  <- select_daily_reference_data(med_rs, analyte = 'co2')
+  low_rs  <- select_daily_reference_data(low_rs, analyte = 'co2')
+  
   # merge standards back to a single df.
   stds <- do.call(rbind, list(low_rs, med_rs, high_rs))
   #stds <- rbind(high_rs, med_rs)
-  
-  print(unique(stds$std_name))
   
   if (correct_refData == TRUE) {
     

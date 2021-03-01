@@ -1,0 +1,62 @@
+# process_calibration_data
+# functions to help select and filter validation data.
+
+#' select_daily_reference_data
+#'
+#' @param standard_df Input reference data frame.
+#' @param analyte Are we calibrating CO2 and H2O?
+#' (Use argument 'co2' or 'h2o', or else function will throw error)
+#' @param min_nobs Minimum number of high-frequency
+#' observations to define a peak. If not supplied,
+#' defaults are 200 for \code{analyte = 'co2'} or 30 for
+#' \code{analyte = 'h2o'}
+#'
+#' @return Smaller data.frame where only the reference data selected
+#' to use in the calibration routines is returned. Assumes that we are
+#' calibrating on a daily basis, and not on a longer time scale. Data
+#' are selected based on two criteria: cannot be missing, and must be 
+#' at least a certain number of high-frequency observations in order to
+#' qualify as a valid measurement. For the water system, this function
+#' also keeps only the last three injections for each reference water
+#' per day. 
+#' @export
+#'
+#' @examples
+select_daily_reference_data <- function(standard_df, analyte, min_nobs=NA) {
+  
+  # set default min_nobs based on analyte if not user supplied
+  if (is.na(min_nobs)) {
+    # set to 200 if co2, 30 if water.
+    min_nobs <- ifelse(analyte == "co2", 200, 30) 
+  }
+  
+  if (analyte == "co2") {
+    
+    standard_df <- standard_df %>%
+      dplyr::mutate(dom = lubridate::day(.data$d13C_obs_btime)) %>% # get day of month
+      dplyr::group_by(.data$dom) %>%
+      # check to make sure peak sufficiently long, then slice off single.
+      dplyr::filter(.data$d13C_obs_n > min_nobs | is.na(.data$d13C_obs_n)) %>%
+      dplyr::slice(1) %>%
+      dplyr::ungroup() %>%
+      dplyr::select(-dom)
+    
+  } else if (analyte == "h2o") {
+    
+    standard_df <- standard_df %>%
+      dplyr::mutate(dom = lubridate::day(.data$d18O_meas_btime)) %>% # get day of month
+      dplyr::group_by(.data$dom) %>%
+      dplyr::filter(.data$d18O_meas_n > min_nobs | is.na(.data$d18O_meas_n)) %>%
+      dplyr::slice(tail(row_number(), 3)) %>%
+      dplyr::ungroup() %>%
+      dplyr::select(-dom)
+    
+  } else {
+    
+    stop("invalid analyte selected in select_reference_data. please change to 'co2' or 'h2o'")
+
+  }
+
+  return(standard_df)
+  
+}

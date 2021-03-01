@@ -66,47 +66,18 @@ calibrate_water_linreg <- function(inname,
   high_rs <- extract_water_calibration_data(wiso$h2oHigh_03m, standard = 'high', method = 'by_month')
   med_rs  <- extract_water_calibration_data(wiso$h2oMed_03m,  standard = 'med',  method = 'by_month')
   low_rs  <- extract_water_calibration_data(wiso$h2oLow_03m,  standard = 'low',  method = 'by_month')
-
+  
   # add fix for NEON standard swap.
   low_rs  <- swap_standard_isotoperatios(low_rs)
   med_rs  <- swap_standard_isotoperatios(med_rs)
   high_rs <- swap_standard_isotoperatios(high_rs)
 
-  #--------------------------------------------------------------
-  # Ensure same number of measurements for each standard
-  #--------------------------------------------------------------
-
-  # 191024 rpf - prior versions of this have just sliced out the first
-  # observation per day. however, the most common cause of multiple standards
-  # to be analyzed per day is a malfunctioning valve in the manifold that
-  # causes the same standard gas to register as multiple
-  # peaks. each peak is shorter, higher variance, and doesn't allow even the
-  # CO2 concentration to stabilize. until further notice, i suggest removing
-  # these standards altogether. code below has been modified to achieve this.
-  # 200103 rpf - copying over this code from carbon script to fix the same bug
-  # present in the water isotope code. modify slightly to account for our
-  # expectation of more than 1 row per day.
-
-  high_rs <- high_rs %>%
-    mutate(dom = lubridate::day(.data$d18O_meas_btime)) %>% # get day of month
-    group_by(.data$dom) %>%
-    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
-    slice(utils::tail(row_number(), 3)) %>%
-    ungroup()
-
-  med_rs <- med_rs %>%
-    mutate(dom = lubridate::day(.data$d18O_meas_btime)) %>% # get day of month
-    group_by(.data$dom) %>%
-    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
-    slice(tail(row_number(), 3)) %>%
-    ungroup()
-
-  low_rs <- low_rs %>%
-    mutate(dom = lubridate::day(.data$d18O_meas_btime)) %>% # get day of month
-    group_by(.data$dom) %>%
-    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
-    slice(tail(row_number(), 3)) %>%
-    ungroup()
+  #---------------------------------------------------------------
+  # Select which validation data to carry through to calibration
+  #---------------------------------------------------------------
+  high_rs <- select_daily_reference_data(high_rs, analyte = 'h2o')
+  med_rs  <- select_daily_reference_data(med_rs, analyte = 'h2o')
+  low_rs  <- select_daily_reference_data(low_rs, analyte = 'h2o')
 
   #=======================================================================
   # apply calibration routines
@@ -123,36 +94,6 @@ calibrate_water_linreg <- function(inname,
 
     #-----------------------------------------------------------
     # CALIBRATE WATER ISOTOPE VALUES
-
-    # change class of time variables from charatcter to posixct.
-    stds$d18O_meas_btime <- as.POSIXct(stds$d18O_meas_btime,
-                                       format = "%Y-%m-%dT%H:%M:%OSZ",
-                                       tz = "UTC")
-    stds$d18O_meas_etime <- as.POSIXct(stds$d18O_meas_etime,
-                                       format = "%Y-%m-%dT%H:%M:%OSZ",
-                                       tz = "UTC")
-
-    stds$d18O_ref_btime <- as.POSIXct(stds$d18O_ref_btime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ",
-                                      tz = "UTC")
-    stds$d18O_ref_etime <- as.POSIXct(stds$d18O_ref_etime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ",
-                                      tz = "UTC")
-
-    stds$d2H_meas_btime <- as.POSIXct(stds$d2H_meas_btime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ",
-                                      tz = "UTC")
-    stds$d2H_meas_etime <- as.POSIXct(stds$d2H_meas_etime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ",
-                                      tz = "UTC")
-
-    stds$d2H_ref_btime <- as.POSIXct(stds$d2H_ref_btime,
-                                     format = "%Y-%m-%dT%H:%M:%OSZ",
-                                     tz = "UTC")
-    stds$d2H_ref_etime <- as.POSIXct(stds$d2H_ref_etime,
-                                     format = "%Y-%m-%dT%H:%M:%OSZ",
-                                     tz = "UTC")
-
     # reorder data frame
     stds <- stds[order(stds$d18O_meas_btime), ]
 
@@ -161,6 +102,8 @@ calibrate_water_linreg <- function(inname,
 
     period_id <- 1
     tdiffs <- c(diff(stds$d18O_meas_btime), 0)
+    
+    print(tdiffs)
     for (i in 1:nrow(stds)) {
       stds$cal_period[i] <- period_id
 
@@ -169,6 +112,8 @@ calibrate_water_linreg <- function(inname,
       }
     }
 
+    print(tdiffs)
+    
     # okay, now run calibrations...
     #------------------------------
 
