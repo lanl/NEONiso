@@ -1,9 +1,9 @@
 # NEONiso
 
 <!-- badges: start -->
-  [![DOI](https://zenodo.org/badge/188347333.svg)](https://zenodo.org/badge/latestdoi/188347333)
-  
+[![DOI](https://zenodo.org/badge/188347333.svg)](https://zenodo.org/badge/latestdoi/188347333)
 [![R-CMD-check](https://github.com/SPATIAL-Lab/NEONiso/workflows/R-CMD-check/badge.svg)](https://github.com/SPATIAL-Lab/NEONiso/actions)
+[![codecov](https://codecov.io/gh/SPATIAL-Lab/NEONiso/branch/master/graph/badge.svg?token=ZHDFEU5NZW)](https://codecov.io/gh/SPATIAL-Lab/NEONiso)
 <!-- badges: end -->
 
 Author: Rich Fiorella \
@@ -13,7 +13,7 @@ This repository contains an R package to calibrate NEON atmospheric isotope data
 Please report any issues you have, bugs found, or enhancement suggestions as issues to this repository.
 
 ## Citation information:
-A manuscript describing the carbon isotope calibration techniques used in this package has just been accepted at JGR-Biogeosciences (doi: 10.1029/2020JG005862). Users of this package should also cite the Zenodo DOI above. If you are interested in using code that should provide data identical to that in the JGR-Biogeosciences paper, please install version 0.3 of the package. 
+A manuscript describing the carbon isotope calibration techniques used in this package has just been accepted at JGR-Biogeosciences (doi: [10.1029/2020JG005862](https://doi.org/10.1029/2020JG005862)). Users of this package should also cite the Zenodo DOI above. If you are interested in using code that should provide data identical to that in the JGR-Biogeosciences paper, please install version 0.3 of the package. 
 
 Please also check to ensure that you are compliant with NEON's data citation policy for any
 products derived from this package: https://www.neonscience.org/data/about-data/data-policies
