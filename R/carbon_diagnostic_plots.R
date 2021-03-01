@@ -23,7 +23,7 @@ cplot_monthly_standards <- function(cal_data, plot_path, site) {
     # set up plots.
     p1 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
-                     y = mean13C, col = factor(standard))) +
+                     y = .data$mean13C, col = factor(.data$standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
@@ -31,7 +31,7 @@ cplot_monthly_standards <- function(cal_data, plot_path, site) {
 
     p2 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
-                     y = ref13C, col = factor(standard))) +
+                     y = .data$ref13C, col = factor(.data$standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
@@ -39,7 +39,7 @@ cplot_monthly_standards <- function(cal_data, plot_path, site) {
 
     p3 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
-                     y = mean13C - ref13C, col = factor(standard))) +
+                     y = .data$mean13C - .data$ref13C, col = factor(.data$standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
@@ -47,7 +47,7 @@ cplot_monthly_standards <- function(cal_data, plot_path, site) {
 
     p4 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
-                     y = meanCo2, col = factor(standard))) +
+                     y = .data$meanCo2, col = factor(.data$standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
@@ -55,7 +55,7 @@ cplot_monthly_standards <- function(cal_data, plot_path, site) {
 
     p5 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
-                     y = refCo2, col = factor(standard))) +
+                     y = .data$refCo2, col = factor(.data$standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
@@ -63,7 +63,7 @@ cplot_monthly_standards <- function(cal_data, plot_path, site) {
 
     p6 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
-                     y = meanCo2 - refCo2, col = factor(standard))) +
+                     y = .data$meanCo2 - .data$refCo2, col = factor(.data$standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
@@ -91,42 +91,42 @@ cplot_monthly_calParameters <- function(calParDf, plot_path, site, method) {
 
       # need to plot: gain12C, gain13C, offset12C, offset13C.
       p1 <- ggplot(data = calParDf[[i]],
-                   aes(x = valid_period_start, y = gain12C)) +
+                   aes(x = .data$valid_period_start, y = .data$gain12C)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
         scale_y_continuous("gain, 12C")
 
       p2 <- ggplot(data = calParDf[[i]],
-                   aes(x = valid_period_start, y = gain13C)) +
+                   aes(x = .data$valid_period_start, y = .data$gain13C)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
         scale_y_continuous("gain, 13C")
 
       p3 <- ggplot(data = calParDf[[i]],
-                   aes(x = valid_period_start, y = offset12C)) +
+                   aes(x = .data$valid_period_start, y = .data$offset12C)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
         scale_y_continuous("offset, 12C")
 
       p4 <- ggplot(data = calParDf[[i]],
-                   aes(x = valid_period_start, y = offset13C)) +
+                   aes(x = .data$valid_period_start, y = .data$offset13C)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
         scale_y_continuous("offset, 13C")
 
       p5 <- ggplot(data = calParDf[[i]],
-                   aes(x = valid_period_start, y = r2_12C)) +
+                   aes(x = .data$valid_period_start, y = .data$r2_12C)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
         scale_y_continuous("r2, 12C")
 
       p6 <- ggplot(data = calParDf[[i]],
-                   aes(x = valid_period_start, y = r2_13C)) +
+                   aes(x = .data$valid_period_start, y = .data$r2_13C)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
@@ -142,42 +142,42 @@ cplot_monthly_calParameters <- function(calParDf, plot_path, site, method) {
 
       # need to plot: slope, intercept, r2, calUcrt.
       p1 <- ggplot(data = calParDf[[i]],
-                   aes(x = valid_period_start, y = d13C_slope)) +
+                   aes(x = .data$valid_period_start, y = .data$d13C_slope)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
         scale_y_continuous("d13C slope")
 
       p2 <- ggplot(data = calParDf[[i]],
-                   aes(x = valid_period_start, y = d13C_intercept)) +
+                   aes(x = .data$valid_period_start, y = .data$d13C_intercept)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
         scale_y_continuous("d13C intercept")
 
       p3 <- ggplot(data = calParDf[[i]],
-                   aes(x = valid_period_start, y = d13C_r2)) +
+                   aes(x = .data$valid_period_start, y = .data$d13C_r2)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
         scale_y_continuous("d13C r2")
 
       p5 <- ggplot(data = calParDf[[i]],
-                   aes(x = valid_period_start, y = co2_slope)) +
+                   aes(x = .data$valid_period_start, y = .data$co2_slope)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
         scale_y_continuous("co2 slope")
 
       p6 <- ggplot(data = calParDf[[i]],
-                   aes(x = valid_period_start, y = co2_intercept)) +
+                   aes(x = .data$valid_period_start, y = .data$co2_intercept)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
         scale_y_continuous("co2 intercept")
 
       p7 <- ggplot(data = calParDf[[i]],
-                   aes(x = valid_period_start, y = co2_r2)) +
+                   aes(x = .data$valid_period_start, y = .data$co2_r2)) +
         geom_point() +
         theme_bw() +
         scale_x_datetime("date") +
@@ -214,7 +214,7 @@ cplot_monthly_ambient <- function(amb_data, dir_plots, site) {
 
     for (j in 1:nheights) {
 
-      amb_data_height <- subset(amb_data.mon[[k]], height == heights[j])
+      amb_data_height <- subset(amb_data.mon[[k]], amb_data.mon[[k]]$height == heights[j])
 
       # take out of xts format
       amb_data_df <- as.data.frame(cbind(zoo::index(amb_data_height),
@@ -230,8 +230,8 @@ cplot_monthly_ambient <- function(amb_data, dir_plots, site) {
       if (2 * j - 1 < 10) {
         assign(paste0("p0", 2 * j - 1), {
           ggplot(data = amb_data_df) +
-            geom_line(aes(x = timeBgn, y = ucal13C), col = "black") +
-            geom_line(aes(x = timeBgn, y = mean13C), col = "red") +
+            geom_line(aes(x = .data$timeBgn, y = .data$ucal13C), col = "black") +
+            geom_line(aes(x = .data$timeBgn, y = .data$mean13C), col = "red") +
             theme_bw() +
             scale_y_continuous(name = paste("Height:", heights[j], "m")) +
             scale_x_datetime(name = "Time")
@@ -239,8 +239,8 @@ cplot_monthly_ambient <- function(amb_data, dir_plots, site) {
       } else {
         assign(paste0("p", 2 * j - 1), {
           ggplot(data = amb_data_df) +
-            geom_line(aes(x = timeBgn, y = ucal13C), col = "black") +
-            geom_line(aes(x = timeBgn, y = mean13C), col = "red") +
+            geom_line(aes(x = .data$timeBgn, y = .data$ucal13C), col = "black") +
+            geom_line(aes(x = .data$timeBgn, y = .data$mean13C), col = "red") +
             theme_bw() +
             scale_y_continuous(name = paste("Height:", heights[j], "m")) +
             scale_x_datetime(name = "Time")
@@ -250,8 +250,8 @@ cplot_monthly_ambient <- function(amb_data, dir_plots, site) {
       if (2 * j < 10) {
         assign(paste0("p0", 2 * j), {
           ggplot(data = amb_data_df) +
-            geom_line(aes(x = timeBgn, y = ucalCo2), col = "black") +
-            geom_line(aes(x = timeBgn, y = meanCo2), col = "red") +
+            geom_line(aes(x = .data$timeBgn, y = .data$ucalCo2), col = "black") +
+            geom_line(aes(x = .data$timeBgn, y = .data$meanCo2), col = "red") +
             theme_bw() +
             scale_y_continuous(name = paste("Height:", heights[j], "m")) +
             scale_x_datetime(name = "Time")
@@ -259,8 +259,8 @@ cplot_monthly_ambient <- function(amb_data, dir_plots, site) {
       } else {
         assign(paste0("p", 2 * j), {
           ggplot(data = amb_data_df) +
-            geom_line(aes(x = timeBgn, y = ucalCo2), col = "black") +
-            geom_line(aes(x = timeBgn, y = meanCo2), col = "red") +
+            geom_line(aes(x = .data$timeBgn, y = .data$ucalCo2), col = "black") +
+            geom_line(aes(x = .data$timeBgn, y = .data$meanCo2), col = "red") +
             theme_bw() +
             scale_y_continuous(name = paste("Height:", heights[j], "m")) +
             scale_x_datetime(name = "Time")
@@ -292,39 +292,39 @@ cplot_fullts_standards <- function(cal_data, plot_path, site) {
   pdf(paste0(plot_path, "/", "4_tsCStds_", site, ".pdf"))
 
   #   # set up plots.
-  p1 <- ggplot(data = cal_data, aes(x = timeBgn, y = mean13C, col = standard)) +
+  p1 <- ggplot(data = cal_data, aes(x = .data$timeBgn, y = .data$mean13C, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d13C, obs")
 
-  p2 <- ggplot(data = cal_data, aes(x = timeBgn, y = ref13C, col = standard)) +
+  p2 <- ggplot(data = cal_data, aes(x = .data$timeBgn, y = .data$ref13C, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d13C, ref")
 
   p3 <- ggplot(data = cal_data,
-               aes(x = timeBgn, y = mean13C - ref13C, col = standard)) +
+               aes(x = .data$timeBgn, y = .data$mean13C - .data$ref13C, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d13Cdiff")
 
-  p4 <- ggplot(data = cal_data, aes(x = timeBgn, y = meanCo2, col = standard)) +
+  p4 <- ggplot(data = cal_data, aes(x = .data$timeBgn, y = .data$meanCo2, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("[CO2], obs")
 
-  p5 <- ggplot(data = cal_data, aes(x = timeBgn, y = refCo2, col = standard)) +
+  p5 <- ggplot(data = cal_data, aes(x = .data$timeBgn, y = .data$refCo2, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("[CO2], ref")
 
   p6 <- ggplot(data = cal_data,
-               aes(x = timeBgn, y = meanCo2 - refCo2, col = standard)) +
+               aes(x = .data$timeBgn, y = .data$meanCo2 - .data$refCo2, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
@@ -349,37 +349,37 @@ cplot_fullts_calParameters <- function(calParDf, plot_path, site, method) {
   if (method == "Bowling") {
 
     # need to plot: gain12C, gain13C, offset12C, offset13C.
-    p1 <- ggplot(data = calParDf, aes(x = valid_period_start, y = gain12C)) +
+    p1 <- ggplot(data = calParDf, aes(x = .data$valid_period_start, y = .data$gain12C)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("gain, 12C")
 
-    p2 <- ggplot(data = calParDf, aes(x = valid_period_start, y = gain13C)) +
+    p2 <- ggplot(data = calParDf, aes(x = .data$valid_period_start, y = .data$gain13C)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("gain, 13C")
 
-    p3 <- ggplot(data = calParDf, aes(x = valid_period_start, y = offset12C)) +
+    p3 <- ggplot(data = calParDf, aes(x = .data$valid_period_start, y = .data$offset12C)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("offset, 12C")
 
-    p4 <- ggplot(data = calParDf, aes(x = valid_period_start, y = offset13C)) +
+    p4 <- ggplot(data = calParDf, aes(x = .data$valid_period_start, y = .data$offset13C)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("offset, 13C")
 
-    p5 <- ggplot(data = calParDf, aes(x = valid_period_start, y = r2_12C)) +
+    p5 <- ggplot(data = calParDf, aes(x = .data$valid_period_start, y = .data$r2_12C)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("r2, 12C")
 
-    p6 <- ggplot(data = calParDf, aes(x = valid_period_start, y = r2_13C)) +
+    p6 <- ggplot(data = calParDf, aes(x = .data$valid_period_start, y = .data$r2_13C)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
@@ -391,42 +391,42 @@ cplot_fullts_calParameters <- function(calParDf, plot_path, site, method) {
 
     # need to plot: slope, intercept, r2, calUcrt.
     p1 <- ggplot(data = calParDf,
-                 aes(x = valid_period_start, y = d13C_slope)) +
+                 aes(x = .data$valid_period_start, y = .data$d13C_slope)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("d13C slope")
 
     p2 <- ggplot(data = calParDf,
-                 aes(x = valid_period_start, y = d13C_intercept)) +
+                 aes(x = .data$valid_period_start, y = .data$d13C_intercept)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("d13C intercept")
 
     p3 <- ggplot(data = calParDf,
-                 aes(x = valid_period_start, y = d13C_r2)) +
+                 aes(x = .data$valid_period_start, y = .data$d13C_r2)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("d13C r2")
 
     p5 <- ggplot(data = calParDf,
-                 aes(x = valid_period_start, y = co2_slope)) +
+                 aes(x = .data$valid_period_start, y = .data$co2_slope)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("co2 slope")
 
     p6 <- ggplot(data = calParDf,
-                 aes(x = valid_period_start, y = co2_intercept)) +
+                 aes(x = .data$valid_period_start, y = .data$co2_intercept)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("co2 intercept")
 
     p7 <- ggplot(data = calParDf,
-                 aes(x = valid_period_start, y = co2_r2)) +
+                 aes(x = .data$valid_period_start, y = .data$co2_r2)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
@@ -450,14 +450,14 @@ cplot_fullts_ambient <- function(amb_data, dir_plots, site) {
   for (j in 1:nheights) {
 
     amb_data_height <- amb_data %>%
-      dplyr::filter(height == heights[j])
+      dplyr::filter(.data$height == heights[j])
 
     # make a plot of this data.
     if (2 * j - 1 < 10) {
       assign(paste0("p0", 2 * j - 1), {
         ggplot(data = amb_data_height) +
-          geom_line(aes(x = timeBgn, y = ucal13C), col = "black") +
-          geom_line(aes(x = timeBgn, y = mean13C), col = "red") +
+          geom_line(aes(x = .data$timeBgn, y = .data$ucal13C), col = "black") +
+          geom_line(aes(x = .data$timeBgn, y = .data$mean13C), col = "red") +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
           scale_x_datetime(name = "Time")
@@ -465,8 +465,8 @@ cplot_fullts_ambient <- function(amb_data, dir_plots, site) {
     } else {
       assign(paste0("p", 2 * j - 1), {
         ggplot(data = amb_data_height) +
-          geom_line(aes(x = timeBgn, y = ucal13C), col = "black") +
-          geom_line(aes(x = timeBgn, y = mean13C), col = "red") +
+          geom_line(aes(x = .data$timeBgn, y = .data$ucal13C), col = "black") +
+          geom_line(aes(x = .data$timeBgn, y = .data$mean13C), col = "red") +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
           scale_x_datetime(name = "Time")
@@ -476,8 +476,8 @@ cplot_fullts_ambient <- function(amb_data, dir_plots, site) {
     if (2 * j < 10) {
       assign(paste0("p0", 2 * j), {
         ggplot(data = amb_data_height) +
-          geom_line(aes(x = timeBgn, y = ucalCo2), col = "black") +
-          geom_line(aes(x = timeBgn, y = meanCo2), col = "red") +
+          geom_line(aes(x = .data$timeBgn, y = .data$ucalCo2), col = "black") +
+          geom_line(aes(x = .data$timeBgn, y = .data$meanCo2), col = "red") +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
           scale_x_datetime(name = "Time")
@@ -485,8 +485,8 @@ cplot_fullts_ambient <- function(amb_data, dir_plots, site) {
     } else { 
       assign(paste0("p", 2 * j), {
         ggplot(data = amb_data_height) +
-          geom_line(aes(x = timeBgn, y = ucalCo2), col = "black") +
-          geom_line(aes(x = timeBgn, y = meanCo2), col = "red") +
+          geom_line(aes(x = .data$timeBgn, y = .data$ucalCo2), col = "black") +
+          geom_line(aes(x = .data$timeBgn, y = .data$meanCo2), col = "red") +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
           scale_x_datetime(name = "Time")
@@ -512,15 +512,14 @@ cplot_standard_distributions <- function(cal_data, plot_path, site) {
 
   # define f and R
   f <- 0.00474
-  R <- 0.0111797
+  R <- get_Rstd("carbon")
 
   # calculate 12CO2 and 13CO2 from d13C and CO2.
   if (!all(is.na(cal_data$refCo2)) & !all(is.na(cal_data$ref13C))) {
 
-    cal_data$c12 <- (1 - f) * cal_data$refCo2 /
-      (1 + R * (1 + cal_data$ref13C / 1000))
+    cal_data$c12 <- calculate_12CO2(cal_data$refCO2, cal_data$ref13C)
 
-    cal_data$c13 <- (1 - f) * cal_data$refCo2 - cal_data$c12
+    cal_data$c13 <- calculate_13CO2(cal_data$refCO2, cal_data$ref13C)
 
   } else {
     cal_data$c12 <- NA
@@ -528,25 +527,25 @@ cplot_standard_distributions <- function(cal_data, plot_path, site) {
   }
 
   # make plots of the distribution of each variable.
-  p1 <- ggplot(data = cal_data, aes(x = c12, y = ..density..)) +
+  p1 <- ggplot(data = cal_data, aes(x = .data$c12, y = ..density..)) +
     geom_histogram(binwidth = 1) +
     theme_bw() +
     scale_y_continuous("Frequency") +
     scale_x_continuous("12CO2 mixing ratio, ppm")
 
-  p2 <- ggplot(data = cal_data, aes(x = c13, y = ..density..)) +
+  p2 <- ggplot(data = cal_data, aes(x = .data$c13, y = ..density..)) +
     geom_histogram(binwidth = 0.01) +
     theme_bw() +
     scale_y_continuous("Frequency") +
     scale_x_continuous("13CO2 mixing ratio, ppm")
 
-  p3 <- ggplot(data = cal_data, aes(x = ref13C, y = ..density..)) +
+  p3 <- ggplot(data = cal_data, aes(x = .data$ref13C, y = ..density..)) +
     geom_histogram(binwidth = 0.1) +
     theme_bw() +
     scale_y_continuous("Frequency") +
     scale_x_continuous("d13C")
 
-  p4 <- ggplot(data = cal_data, aes(x = refCo2, y = ..density..)) +
+  p4 <- ggplot(data = cal_data, aes(x = .data$refCo2, y = ..density..)) +
     geom_histogram(binwidth = 1) +
     theme_bw() +
     scale_y_continuous("Frequency") +
@@ -574,13 +573,13 @@ co2_variance_timeseries <- function(var_data, dir_plots, site) {
       next
     } else {
       var_data_height <- var_data %>%
-        dplyr::filter(level == levels[j])
+        dplyr::filter(.data$level == levels[j])
       
       # make a plot of this data.
       if (2 * j - 1 < 10) {
         assign(paste0("p0", 2 * j - 1), {
           ggplot(data = var_data_height) +
-            geom_point(aes(x = timeBgn, y = variCo2), col = "black") +
+            geom_point(aes(x = .data$timeBgn, y = .data$variCo2), col = "black") +
             theme_bw() +
             scale_y_continuous(name = levels[j]) +
             scale_x_datetime(name = "Time")
@@ -588,7 +587,7 @@ co2_variance_timeseries <- function(var_data, dir_plots, site) {
       } else {
         assign(paste0("p", 2 * j - 1), {
           ggplot(data = var_data_height) +
-            geom_line(aes(x = timeBgn, y = variCo2), col = "black") +
+            geom_line(aes(x = .data$timeBgn, y = .data$variCo2), col = "black") +
             theme_bw() +
             scale_y_continuous(name = levels[j]) +
             scale_x_datetime(name = "Time")
@@ -622,13 +621,13 @@ c13_variance_timeseries <- function(var_data, dir_plots, site) {
       next # skip...
     } else {
       var_data_height <- var_data %>%
-        dplyr::filter(level == levels[j])
+        dplyr::filter(.data$level == levels[j])
       
       # make a plot of this data.
       if (2 * j - 1 < 10) {
         assign(paste0("p0", 2 * j - 1), {
           ggplot(data = var_data_height) +
-            geom_point(aes(x = timeBgn, y = vari13C), col = "black") +
+            geom_point(aes(x = .data$timeBgn, y = .data$vari13C), col = "black") +
             theme_bw() +
             scale_y_continuous(name = levels[j]) +
             scale_x_datetime(name = "Time")
@@ -636,7 +635,7 @@ c13_variance_timeseries <- function(var_data, dir_plots, site) {
       } else {
         assign(paste0("p", 2 * j - 1), {
           ggplot(data = var_data_height) +
-            geom_line(aes(x = timeBgn, y = vari13C), col = "black") +
+            geom_line(aes(x = .data$timeBgn, y = .data$vari13C), col = "black") +
             theme_bw() +
             scale_y_continuous(name = levels[j]) +
             scale_x_datetime(name = "Time")

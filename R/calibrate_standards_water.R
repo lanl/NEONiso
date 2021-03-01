@@ -163,7 +163,7 @@ restructure_water_variables <- function(dataframe, varname, mode) {
     stop("Invalid selection to mode argument.")
   } else if (mode == "reference") {
     output <- dataframe %>%
-      dplyr::select(timeBgn,timeEnd,starts_with(paste0("data.isoH2o.",varname,"."))) %>%
+      dplyr::select(.data$timeBgn,.data$timeEnd,starts_with(paste0("data.isoH2o.",varname,"."))) %>%
       dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
                     min  = paste0("data.isoH2o.", varname, ".min"),
                     max  = paste0("data.isoH2o.", varname, ".max"),
@@ -172,8 +172,8 @@ restructure_water_variables <- function(dataframe, varname, mode) {
       dplyr::mutate(varname = varname)
   } else if (mode == "ambient") {
     output <- dataframe[[1]] %>%
-      dplyr::select(verticalPosition,timeBgn,timeEnd,starts_with(paste0("data.isoH2o.",varname,"."))) %>%
-      dplyr::filter(!(verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch"))) %>%
+      dplyr::select(.data$verticalPosition,.data$timeBgn,.data$timeEnd,starts_with(paste0("data.isoH2o.",varname,"."))) %>%
+      dplyr::filter(!(.data$verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch"))) %>%
       dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
                     min  = paste0("data.isoH2o.", varname, ".min"),
                     max  = paste0("data.isoH2o.", varname, ".max"),

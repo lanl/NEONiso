@@ -140,40 +140,40 @@ carbon_diagnostic_package <- function(data_path,
     calData <- list()
 
     calData[[1]] <- c13_obs_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                       c("co2Low", "co2Med", "co2High", "co2Arch")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoCo2.dlta13CCo2.mean, verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    mean13C = data.isoCo2.dlta13CCo2.mean,
-                    standard = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoCo2.dlta13CCo2.mean, .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    mean13C = .data$data.isoCo2.dlta13CCo2.mean,
+                    standard = .data$verticalPosition)
 
     calData[[2]] <- c13_ref_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                       c("co2Low", "co2Med", "co2High", "co2Arch")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoCo2.dlta13CCo2Refe.mean, verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    ref13C = data.isoCo2.dlta13CCo2Refe.mean,
-                    standard = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoCo2.dlta13CCo2Refe.mean, .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    ref13C = .data$data.isoCo2.dlta13CCo2Refe.mean,
+                    standard = .data$verticalPosition)
 
     calData[[3]] <- co2_obs_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                       c("co2Low", "co2Med", "co2High", "co2Arch")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoCo2.rtioMoleDryCo2.mean, verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    meanCo2 = data.isoCo2.rtioMoleDryCo2.mean,
-                    standard = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoCo2.rtioMoleDryCo2.mean, .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    meanCo2 = .data$data.isoCo2.rtioMoleDryCo2.mean,
+                    standard = .data$verticalPosition)
 
     calData[[4]] <- co2_ref_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                       c("co2Low", "co2Med", "co2High", "co2Arch")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoCo2.rtioMoleDryCo2Refe.mean, verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    refCo2 = data.isoCo2.rtioMoleDryCo2Refe.mean,
-                    standard = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoCo2.rtioMoleDryCo2Refe.mean, .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    refCo2 = .data$data.isoCo2.rtioMoleDryCo2Refe.mean,
+                    standard = .data$verticalPosition)
 
     calData <- Reduce(
       function(x, y) merge(x, y, by = c("timeBgn", "timeEnd", "standard")),
@@ -242,26 +242,26 @@ carbon_diagnostic_package <- function(data_path,
     heights <- as.numeric(attrs$DistZaxsLvlMeasTow)
 
     ambData[[1]] <- c13_obs_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoCo2.dlta13CCo2.mean,
-                    data.isoCo2.dlta13CCo2.mean_cal,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    mean13C = data.isoCo2.dlta13CCo2.mean_cal,
-                    ucal13C = data.isoCo2.dlta13CCo2.mean,
-                    level = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoCo2.dlta13CCo2.mean,
+                    .data$data.isoCo2.dlta13CCo2.mean_cal,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    mean13C = .data$data.isoCo2.dlta13CCo2.mean_cal,
+                    ucal13C = .data$data.isoCo2.dlta13CCo2.mean,
+                    level = .data$verticalPosition)
 
     ambData[[2]] <- co2_obs_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
-      dplyr::select(timeBgn, timeEnd, data.isoCo2.rtioMoleDryCo2.mean,
-                    data.isoCo2.rtioMoleDryCo2.mean_cal, verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    meanCo2 = data.isoCo2.rtioMoleDryCo2.mean_cal,
-                    ucalCo2 = data.isoCo2.rtioMoleDryCo2.mean,
-                    level = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd, .data$data.isoCo2.rtioMoleDryCo2.mean,
+                    .data$data.isoCo2.rtioMoleDryCo2.mean_cal, .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    meanCo2 = .data$data.isoCo2.rtioMoleDryCo2.mean_cal,
+                    ucalCo2 = .data$data.isoCo2.rtioMoleDryCo2.mean,
+                    level = .data$verticalPosition)
 
     ambData <- Reduce(function(x, y)
       merge(x, y, by = c("timeBgn", "timeEnd", "level")), ambData)
@@ -294,20 +294,20 @@ carbon_diagnostic_package <- function(data_path,
     heights <- as.numeric(attrs$DistZaxsLvlMeasTow)
     
     varData[[1]] <- c13_obs_data[[1]] %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoCo2.dlta13CCo2.vari,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    vari13C = data.isoCo2.dlta13CCo2.vari,
-                    level = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoCo2.dlta13CCo2.vari,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    vari13C = .data$data.isoCo2.dlta13CCo2.vari,
+                    level = .data$verticalPosition)
     
     varData[[2]] <- co2_obs_data[[1]] %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoCo2.rtioMoleDryCo2.vari,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    variCo2 = data.isoCo2.rtioMoleDryCo2.vari,
-                    level = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoCo2.rtioMoleDryCo2.vari,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    variCo2 = .data$data.isoCo2.rtioMoleDryCo2.vari,
+                    level = .data$verticalPosition)
     
     varData <- Reduce(function(x, y)
       merge(x, y, by = c("timeBgn", "timeEnd", "level")), varData)

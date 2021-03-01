@@ -151,48 +151,48 @@ water_diagnostic_package_bymonth <- function(data_path,
     calData <- list()
 
     calData[[1]] <- o18_obs_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta18OH2o.mean,
-                    data.isoH2o.dlta18OH2o.vari,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    mean18O = data.isoH2o.dlta18OH2o.mean,
-                    vari18O = data.isoH2o.dlta18OH2o.vari,
-                    standard = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoH2o.dlta18OH2o.mean,
+                    .data$data.isoH2o.dlta18OH2o.vari,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    mean18O = .data$data.isoH2o.dlta18OH2o.mean,
+                    vari18O = .data$data.isoH2o.dlta18OH2o.vari,
+                    standard = .data$verticalPosition)
 
     calData[[2]] <- o18_ref_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta18OH2oRefe.mean,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    ref18O = data.isoH2o.dlta18OH2oRefe.mean,
-                    standard = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoH2o.dlta18OH2oRefe.mean,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    ref18O = .data$data.isoH2o.dlta18OH2oRefe.mean,
+                    standard = .data$verticalPosition)
 
     calData[[3]] <- h2_obs_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta2HH2o.mean,
-                    data.isoH2o.dlta2HH2o.vari,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    mean2H = data.isoH2o.dlta2HH2o.mean,
-                    vari2H = data.isoH2o.dlta2HH2o.vari,
-                    standard = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoH2o.dlta2HH2o.mean,
+                    .data$data.isoH2o.dlta2HH2o.vari,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    mean2H = .data$data.isoH2o.dlta2HH2o.mean,
+                    vari2H = .data$data.isoH2o.dlta2HH2o.vari,
+                    standard = .data$verticalPosition)
 
     calData[[4]] <- h2_ref_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta2HH2oRefe.mean,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    ref2H = data.isoH2o.dlta2HH2oRefe.mean,
-                    standard = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoH2o.dlta2HH2oRefe.mean,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    ref2H = .data$data.isoH2o.dlta2HH2oRefe.mean,
+                    standard = .data$verticalPosition)
 
     calData <- Reduce(
       function(x, y) merge(x, y, by = c("timeBgn", "timeEnd", "standard")),
@@ -249,37 +249,37 @@ water_diagnostic_package_bymonth <- function(data_path,
     heights <- as.numeric(attrs$DistZaxsLvlMeasTow)
 
     ambData[[1]] <- o18_amb_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta18OH2o.mean_cal,
-                    data.isoH2o.dlta18OH2o.mean,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    mean18O = data.isoH2o.dlta18OH2o.mean_cal,
-                    ucal18O = data.isoH2o.dlta18OH2o.mean,
-                    level = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoH2o.dlta18OH2o.mean_cal,
+                    .data$data.isoH2o.dlta18OH2o.mean,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    mean18O = .data$data.isoH2o.dlta18OH2o.mean_cal,
+                    ucal18O = .data$data.isoH2o.dlta18OH2o.mean,
+                    level = .data$verticalPosition)
 
     ambData[[2]] <- h2_amb_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta2HH2o.mean_cal,
-                    data.isoH2o.dlta2HH2o.mean,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    mean2H = data.isoH2o.dlta2HH2o.mean_cal,
-                    ucal2H = data.isoH2o.dlta2HH2o.mean,
-                    level = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoH2o.dlta2HH2o.mean_cal,
+                    .data$data.isoH2o.dlta2HH2o.mean,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    mean2H = .data$data.isoH2o.dlta2HH2o.mean_cal,
+                    ucal2H = .data$data.isoH2o.dlta2HH2o.mean,
+                    level = .data$verticalPosition)
 
     ambData[[3]] <- h2o_amb_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
-      dplyr::select(timeBgn, timeEnd, data.isoH2o.rtioMoleWetH2o.mean,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    meanH2o = data.isoH2o.rtioMoleWetH2o.mean,
-                    level = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd, .data$data.isoH2o.rtioMoleWetH2o.mean,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    meanH2o = .data$data.isoH2o.rtioMoleWetH2o.mean,
+                    level = .data$verticalPosition)
 
     ambData <- Reduce(function(x, y)
       merge(x, y, by = c("timeBgn", "timeEnd", "level")), ambData)
@@ -541,48 +541,48 @@ water_diagnostic_package_bysite <- function(data_path,
     calData <- list()
     
     calData[[1]] <- o18_obs_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta18OH2o.mean,
-                    data.isoH2o.dlta18OH2o.vari,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    mean18O = data.isoH2o.dlta18OH2o.mean,
-                    vari18O = data.isoH2o.dlta18OH2o.vari,
-                    standard = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoH2o.dlta18OH2o.mean,
+                    .data$data.isoH2o.dlta18OH2o.vari,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    mean18O = .data$data.isoH2o.dlta18OH2o.mean,
+                    vari18O = .data$data.isoH2o.dlta18OH2o.vari,
+                    standard = .data$verticalPosition)
     
     calData[[2]] <- o18_ref_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta18OH2oRefe.mean,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    ref18O = data.isoH2o.dlta18OH2oRefe.mean,
-                    standard = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoH2o.dlta18OH2oRefe.mean,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    ref18O = .data$data.isoH2o.dlta18OH2oRefe.mean,
+                    standard = .data$verticalPosition)
     
     calData[[3]] <- h2_obs_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta2HH2o.mean,
-                    data.isoH2o.dlta2HH2o.vari,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    mean2H = data.isoH2o.dlta2HH2o.mean,
-                    vari2H = data.isoH2o.dlta2HH2o.vari,
-                    standard = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoH2o.dlta2HH2o.mean,
+                    .data$data.isoH2o.dlta2HH2o.vari,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    mean2H = .data$data.isoH2o.dlta2HH2o.mean,
+                    vari2H = .data$data.isoH2o.dlta2HH2o.vari,
+                    standard = .data$verticalPosition)
     
     calData[[4]] <- h2_ref_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta2HH2oRefe.mean,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    ref2H = data.isoH2o.dlta2HH2oRefe.mean,
-                    standard = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoH2o.dlta2HH2oRefe.mean,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    ref2H = .data$data.isoH2o.dlta2HH2oRefe.mean,
+                    standard = .data$verticalPosition)
     
     calData <- Reduce(
       function(x, y) merge(x, y, by = c("timeBgn", "timeEnd", "standard")),
@@ -633,37 +633,37 @@ water_diagnostic_package_bysite <- function(data_path,
     heights <- as.numeric(attrs$DistZaxsLvlMeasTow)
     
     ambData[[1]] <- o18_amb_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                       c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta18OH2o.mean_cal,
-                    data.isoH2o.dlta18OH2o.mean,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    mean18O = data.isoH2o.dlta18OH2o.mean_cal,
-                    ucal18O = data.isoH2o.dlta18OH2o.mean,
-                    level = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoH2o.dlta18OH2o.mean_cal,
+                    .data$data.isoH2o.dlta18OH2o.mean,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    mean18O = .data$data.isoH2o.dlta18OH2o.mean_cal,
+                    ucal18O = .data$data.isoH2o.dlta18OH2o.mean,
+                    level = .data$verticalPosition)
     
     ambData[[2]] <- h2_amb_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                       c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
-      dplyr::select(timeBgn, timeEnd,
-                    data.isoH2o.dlta2HH2o.mean_cal,
-                    data.isoH2o.dlta2HH2o.mean,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    mean2H = data.isoH2o.dlta2HH2o.mean_cal,
-                    ucal2H = data.isoH2o.dlta2HH2o.mean,
-                    level = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd,
+                    .data$data.isoH2o.dlta2HH2o.mean_cal,
+                    .data$data.isoH2o.dlta2HH2o.mean,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    mean2H = .data$data.isoH2o.dlta2HH2o.mean_cal,
+                    ucal2H = .data$data.isoH2o.dlta2HH2o.mean,
+                    level = .data$verticalPosition)
     
     ambData[[3]] <- h2o_amb_data[[1]] %>%
-      dplyr::filter(verticalPosition %in%
+      dplyr::filter(.data$verticalPosition %in%
                       c("010", "020", "030", "040", "050", "060", "070", "080")) %>%
-      dplyr::select(timeBgn, timeEnd, data.isoH2o.rtioMoleWetH2o.mean,
-                    verticalPosition) %>%
-      dplyr::rename(timeBgn = timeBgn, timeEnd = timeEnd,
-                    meanH2o = data.isoH2o.rtioMoleWetH2o.mean,
-                    level = verticalPosition)
+      dplyr::select(.data$timeBgn, .data$timeEnd, .data$data.isoH2o.rtioMoleWetH2o.mean,
+                    .data$verticalPosition) %>%
+      dplyr::rename(timeBgn = .data$timeBgn, timeEnd = .data$timeEnd,
+                    meanH2o = .data$data.isoH2o.rtioMoleWetH2o.mean,
+                    level = .data$verticalPosition)
     
     ambData <- Reduce(function(x, y)
       merge(x, y, by = c("timeBgn", "timeEnd", "level")), ambData)

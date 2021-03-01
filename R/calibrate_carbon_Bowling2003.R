@@ -102,19 +102,19 @@ calibrate_carbon_Bowling2003 <- function(inname,
   rm(high_rs, med_rs, low_rs)
 
   # convert times to POSIXct
-  standards$d13C_obs_btime <- as.POSIXct(d13C_obs_btime,
+  standards$d13C_obs_btime <- as.POSIXct(standards$d13C_obs_btime,
                                   format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  standards$d13C_obs_etime <- as.POSIXct(d13C_obs_etime,
+  standards$d13C_obs_etime <- as.POSIXct(standards$d13C_obs_etime,
                                   format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  standards$d13C_ref_btime <- as.POSIXct(d13C_ref_btime,
+  standards$d13C_ref_btime <- as.POSIXct(standards$d13C_ref_btime,
                                   format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  standards$d13C_ref_etime <- as.POSIXct(d13C_ref_etime,
+  standards$d13C_ref_etime <- as.POSIXct(standards$d13C_ref_etime,
                                   format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
 
   # split back out into 3 data frames for each standard.
-  low_rs <- dplyr::filter(standards, std_name == "low")
-  med_rs <- dplyr::filter(standards, std_name == "med")
-  high_rs <- dplyr::filter(standards, std_name == "high")
+  low_rs  <- dplyr::filter(standards, .data$std_name == "low")
+  med_rs  <- dplyr::filter(standards, .data$std_name == "med")
+  high_rs <- dplyr::filter(standards, .data$std_name == "high")
 
   rm(standards)
 
@@ -130,26 +130,26 @@ calibrate_carbon_Bowling2003 <- function(inname,
   # removing these standards. code below has been modified to achieve this.
 
   high_rs <- high_rs %>%
-    dplyr::mutate(dom = lubridate::day(d13C_obs_btime)) %>% # get day of month
-    dplyr::group_by(dom) %>%
+    dplyr::mutate(dom = lubridate::day(.data$d13C_obs_btime)) %>% # get day of month
+    dplyr::group_by(.data$dom) %>%
     # check to make sure peak sufficiently long, then slice off single.
-    dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>%
+    dplyr::filter(.data$d13C_obs_n > 200 | is.na(.data$d13C_obs_n)) %>%
     dplyr::slice(1) %>%
     dplyr::ungroup()
 
   med_rs <- med_rs %>%
-    dplyr::mutate(dom = lubridate::day(d13C_obs_btime)) %>% # get day of month
-    dplyr::group_by(dom) %>%
+    dplyr::mutate(dom = lubridate::day(.data$d13C_obs_btime)) %>% # get day of month
+    dplyr::group_by(.data$dom) %>%
     # check to make sure peak sufficiently long, then slice off single.
-    dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>%
+    dplyr::filter(.data$d13C_obs_n > 200 | is.na(.data$d13C_obs_n)) %>%
     dplyr::slice(1) %>%
     dplyr::ungroup()
 
   low_rs <- low_rs %>%
-    dplyr::mutate(dom = lubridate::day(d13C_obs_btime)) %>% # get day of month
-    dplyr::group_by(dom) %>%
+    dplyr::mutate(dom = lubridate::day(.data$d13C_obs_btime)) %>% # get day of month
+    dplyr::group_by(.data$dom) %>%
     # check to make sure peak sufficiently long, then slice off single.
-    dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>%
+    dplyr::filter(.data$d13C_obs_n > 200 | is.na(.data$d13C_obs_n)) %>%
     dplyr::slice(1) %>%
     dplyr::ungroup()
 
@@ -166,13 +166,12 @@ calibrate_carbon_Bowling2003 <- function(inname,
     
   }
   
-  stds <- stds %>%
   #------------------------------------------------------------
   # calculate mole fraction (12CO2 / 13CO2) for ref gases and observed values
-  dplyr::mutate(conc12CCO2_ref = calculate_12CO2(CO2_ref_mean, d13C_ref_mean)) %>%
-  dplyr::mutate(conc13CCO2_ref = calculate_13CO2(CO2_ref_mean, d13C_ref_mean)) %>%
-  dplyr::mutate(conc12CCO2_obs = calculate_12CO2(CO2_obs_mean, d13C_obs_mean)) %>%
-  dplyr::mutate(conc13CCO2_obs = calculate_13CO2(CO2_obs_mean, d13C_obs_mean))
+  stds$conc12CCO2_ref = calculate_12CO2(stds$CO2_ref_mean, stds$d13C_ref_mean) 
+  stds$conc13CCO2_ref = calculate_13CO2(stds$CO2_ref_mean, stds$d13C_ref_mean)
+  stds$conc12CCO2_obs = calculate_12CO2(stds$CO2_obs_mean, stds$d13C_obs_mean)
+  stds$conc13CCO2_obs = calculate_13CO2(stds$CO2_obs_mean, stds$d13C_obs_mean)
   
   # reorder to be in chronological time.
   stds <- stds[order(stds$d13C_obs_btime), ]
@@ -216,9 +215,9 @@ calibrate_carbon_Bowling2003 <- function(inname,
       #---------------------------------------------
       # do some light validation of these points.
       cal_subset <- cal_subset %>%
-        dplyr::filter(d13C_obs_var < 5 &
-                 abs(CO2_obs_mean - CO2_ref_mean) < 10 &
-                 abs(d13C_obs_mean - d13C_ref_mean) < 5)
+        dplyr::filter(.data$d13C_obs_var < 5 &
+                 abs(.data$CO2_obs_mean - .data$CO2_ref_mean) < 10 &
+                 abs(.data$d13C_obs_mean - .data$d13C_ref_mean) < 5)
 
       if (length(unique(cal_subset$std_name)) >= 2 & # >= 2 standards
           !all(is.na(cal_subset$d13C_obs_mean)) & # not all obs missing
@@ -250,10 +249,10 @@ calibrate_carbon_Bowling2003 <- function(inname,
 
     # make dataframe of calibration data.
     times <- stds %>%
-      dplyr::select(d13C_obs_btime, d13C_obs_etime, d13C_ref_btime,
-             d13C_ref_etime, cal_period) %>%
-      dplyr::group_by(cal_period) %>%
-      dplyr::summarize(etime = max(c(d13C_obs_etime, d13C_ref_etime)))
+      dplyr::select(.data$d13C_obs_btime, .data$d13C_obs_etime, .data$d13C_ref_btime,
+             .data$d13C_ref_etime, .data$cal_period) %>%
+      dplyr::group_by(.data$cal_period) %>%
+      dplyr::summarize(etime = max(c(.data$d13C_obs_etime, .data$d13C_ref_etime)))
 
     # loop through times, assign begin/end values
     starttimes <- vector()
@@ -418,7 +417,6 @@ calibrate_carbon_Bowling2003 <- function(inname,
   #high <- calibrate_standards_carbon(out, high, R_vpdb, f)
   high <- calibrate_standards_carbon(out, high, correct_bad_refvals = TRUE,
                                      site = site, refGas = "high")
-  
   
   # loop through each variable amb.data.list and write out as a dataframe.
   lapply(names(high), function(x) {

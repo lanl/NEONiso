@@ -114,34 +114,34 @@ calibrate_water_linreg_bysite <- function(inpath,
                     units = "mins")
   
   high_rs <- high_rs %>%
-    mutate(time_diff = ifelse(btime - lag(btime) > thres_hours, 1, 0))
+    mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
   high_rs$periods <- rleidv(high_rs, "time_diff") %/% 2
   
   med_rs <- med_rs %>%
-    mutate(time_diff = ifelse(btime - lag(btime) > thres_hours, 1, 0))
+    mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
   med_rs$periods <- rleidv(med_rs, "time_diff") %/% 2
   
   low_rs <- low_rs %>%
-    mutate(time_diff = ifelse(btime - lag(btime) > thres_hours, 1, 0))
+    mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
   low_rs$periods <- rleidv(low_rs, "time_diff") %/% 2
   
   #return(list(low_rs,med_rs,high_rs))
 
   high_rs <- high_rs %>%
-    group_by(periods) %>%
-    filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>%
+    group_by(.data$periods) %>%
+    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
     slice_tail(n = 3) %>%
     ungroup()
 
   med_rs <- med_rs %>%
-    group_by(periods) %>%
-    filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>%
+    group_by(.data$periods) %>%
+    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
     slice_tail(n = 3) %>%
     ungroup()
 
   low_rs <- low_rs %>%
-    group_by(periods) %>%
-    filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>%
+    group_by(.data$periods) %>%
+    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
     slice_tail(n = 3) %>%
     ungroup()
 
@@ -207,7 +207,7 @@ calibrate_water_linreg_bysite <- function(inpath,
       
       # select data subset using the interval
       std_subset <- stds %>%
-        dplyr::filter(btime %within% cal_period)
+        dplyr::filter(.data$btime %within% cal_period)
       
       # check to see if sum of is.na() on oxygen data = nrow of oxygen data
       if (sum(is.na(std_subset$d18O_meas_mean)) < nrow(std_subset) &

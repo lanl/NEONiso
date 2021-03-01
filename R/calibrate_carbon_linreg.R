@@ -83,23 +83,23 @@ calibrate_carbon_linreg <- function(inname,
 
   # cut out period where there appears to be a valve malfunction.
   high_rs <- high_rs %>%
-    dplyr::mutate(dom = lubridate::day(d13C_obs_btime)) %>%
-    dplyr::group_by(dom) %>%
-    dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>%
+    dplyr::mutate(dom = lubridate::day(.data$d13C_obs_btime)) %>%
+    dplyr::group_by(.data$dom) %>%
+    dplyr::filter(.data$d13C_obs_n > 200 | is.na(.data$d13C_obs_n)) %>%
     dplyr::slice(1) %>%
     dplyr::ungroup()
 
   med_rs <- med_rs %>%
-    dplyr::mutate(dom = lubridate::day(d13C_obs_btime)) %>%
-    dplyr::group_by(dom) %>%
-    dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>%
+    dplyr::mutate(dom = lubridate::day(.data$d13C_obs_btime)) %>%
+    dplyr::group_by(.data$dom) %>%
+    dplyr::filter(.data$d13C_obs_n > 200 | is.na(.data$d13C_obs_n)) %>%
     dplyr::slice(1) %>%
     dplyr::ungroup()
 
   low_rs <- low_rs %>%
-    dplyr::mutate(dom = lubridate::day(d13C_obs_btime)) %>%
-    dplyr::group_by(dom) %>%
-    dplyr::filter(d13C_obs_n > 200 | is.na(d13C_obs_n)) %>%
+    dplyr::mutate(dom = lubridate::day(.data$d13C_obs_btime)) %>%
+    dplyr::group_by(.data$dom) %>%
+    dplyr::filter(.data$d13C_obs_n > 200 | is.na(.data$d13C_obs_n)) %>%
     dplyr::slice(1) %>%
     dplyr::ungroup()
 
@@ -178,7 +178,7 @@ calibrate_carbon_linreg <- function(inname,
       #---------------------------------------------
       # do some light validation of these points.
       cal.subset <- cal.subset %>%
-        dplyr::filter(d13C_obs_var < 5 & abs(CO2_obs_mean - CO2_ref_mean) < 10)
+        dplyr::filter(.data$d13C_obs_var < 5 & abs(.data$CO2_obs_mean - .data$CO2_ref_mean) < 10)
 
       if (length(unique(cal.subset$std_name)) >= 2 & # at least 2 stds present
           !all(is.na(cal.subset$d13C_obs_mean)) & # not all obs vals missing
@@ -213,10 +213,10 @@ calibrate_carbon_linreg <- function(inname,
 
     # make dataframe of calibration data.
     times <- stds %>%
-      dplyr::select(d13C_obs_btime, d13C_obs_etime, d13C_ref_btime,
-                    d13C_ref_etime, cal_period) %>%
-      dplyr::group_by(cal_period) %>%
-      dplyr::summarize(etime = max(c(d13C_obs_etime, d13C_ref_etime)))
+      dplyr::select(.data$d13C_obs_btime, .data$d13C_obs_etime, .data$d13C_ref_btime,
+                    .data$d13C_ref_etime, .data$cal_period) %>%
+      dplyr::group_by(.data$cal_period) %>%
+      dplyr::summarize(etime = max(c(.data$d13C_obs_etime, .data$d13C_ref_etime)))
 
     # loop through times, assign beginning, ending value.
     # max etime should be just fine.

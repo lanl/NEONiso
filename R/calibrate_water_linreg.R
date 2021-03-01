@@ -88,23 +88,23 @@ calibrate_water_linreg <- function(inname,
   # expectation of more than 1 row per day.
 
   high_rs <- high_rs %>%
-    mutate(dom = day(d18O_meas_btime)) %>% # get day of month
-    group_by(dom) %>%
-    filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>%
+    mutate(dom = lubridate::day(.data$d18O_meas_btime)) %>% # get day of month
+    group_by(.data$dom) %>%
+    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
     slice(utils::tail(row_number(), 3)) %>%
     ungroup()
 
   med_rs <- med_rs %>%
-    mutate(dom = day(d18O_meas_btime)) %>% # get day of month
-    group_by(dom) %>%
-    filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>%
+    mutate(dom = lubridate::day(.data$d18O_meas_btime)) %>% # get day of month
+    group_by(.data$dom) %>%
+    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
     slice(tail(row_number(), 3)) %>%
     ungroup()
 
   low_rs <- low_rs %>%
-    mutate(dom = day(d18O_meas_btime)) %>% # get day of month
-    group_by(dom) %>%
-    filter(d18O_meas_n > 30 | is.na(d18O_meas_n)) %>%
+    mutate(dom = lubridate::day(.data$d18O_meas_btime)) %>% # get day of month
+    group_by(.data$dom) %>%
+    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
     slice(tail(row_number(), 3)) %>%
     ungroup()
 
@@ -221,12 +221,12 @@ calibrate_water_linreg <- function(inname,
 
     # make dataframe of calibration data.
     times <- stds %>%
-      select(d18O_meas_btime, d18O_meas_etime, d18O_ref_btime,
-             d18O_ref_etime, d2H_meas_btime, d2H_meas_etime,
-             d2H_ref_btime, d2H_ref_etime, cal_period) %>%
-      group_by(cal_period) %>%
-      summarize(etime = max(c(d18O_meas_etime, d18O_ref_etime,
-                              d2H_meas_etime, d2H_ref_etime)))
+      dplyr::select(.data$d18O_meas_btime, .data$d18O_meas_etime, .data$d18O_ref_btime,
+             .data$d18O_ref_etime, .data$d2H_meas_btime, .data$d2H_meas_etime,
+             .data$d2H_ref_btime, .data$d2H_ref_etime, .data$cal_period) %>%
+      dplyr::group_by(.data$cal_period) %>%
+      dplyr::summarize(etime = max(c(.data$d18O_meas_etime, .data$d18O_ref_etime,
+                              .data$d2H_meas_etime, .data$d2H_ref_etime)))
 
     # loop through times, assign beginning, ending value.
     # max etime should be just fine.

@@ -22,7 +22,7 @@ wplot_monthly_standards <- function(cal_data, plot_path, site) {
     # set up plots.
     p1 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
-                     y = mean18O, col = factor(standard))) +
+                     y = .data$mean18O, col = factor(.data$standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date", date_labels = "%m-%d") +
@@ -30,7 +30,7 @@ wplot_monthly_standards <- function(cal_data, plot_path, site) {
 
     p2 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
-                     y = ref18O, col = factor(standard))) +
+                     y = .data$ref18O, col = factor(.data$standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date", date_labels = "%m-%d") +
@@ -38,7 +38,7 @@ wplot_monthly_standards <- function(cal_data, plot_path, site) {
 
     p3 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
-                     y = mean18O - ref18O, col = factor(standard))) +
+                     y = .data$mean18O - .data$ref18O, col = factor(.data$standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date", date_labels = "%m-%d") +
@@ -46,7 +46,7 @@ wplot_monthly_standards <- function(cal_data, plot_path, site) {
 
     p4 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
-                     y = mean2H, col = factor(standard))) +
+                     y = .data$mean2H, col = factor(.data$standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date", date_labels = "%m-%d") +
@@ -54,7 +54,7 @@ wplot_monthly_standards <- function(cal_data, plot_path, site) {
 
     p5 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
-                     y = ref2H, col = factor(standard))) +
+                     y = .data$ref2H, col = factor(.data$standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date", date_labels = "%m-%d") +
@@ -62,7 +62,7 @@ wplot_monthly_standards <- function(cal_data, plot_path, site) {
 
     p6 <- ggplot(data = cal_data.mon[[i]],
                  aes(x = zoo::index(cal_data.mon[[i]]),
-                     y = mean2H - ref2H, col = factor(standard))) +
+                     y = .data$mean2H - .data$ref2H, col = factor(.data$standard))) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date", date_labels = "%m-%d") +
@@ -92,42 +92,42 @@ wplot_monthly_calParameters <- function(calParDf, plot_path, site) {
 
     # need to plot: slope, intercept, r2, calUcrt.
     p1 <- ggplot(data = calParDf[[i]],
-                 aes(x = valid_period_start, y = o_slope)) +
+                 aes(x = .data$valid_period_start, y = .data$o_slope)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("d18O slope")
 
     p2 <- ggplot(data = calParDf[[i]],
-                 aes(x = valid_period_start, y = o_intercept)) +
+                 aes(x = .data$valid_period_start, y = .data$o_intercept)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("d18O intercept")
 
     p3 <- ggplot(data = calParDf[[i]],
-                 aes(x = valid_period_start, y = o_r2)) +
+                 aes(x = .data$valid_period_start, y = .data$o_r2)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("d18O r2")
 
     p4 <- ggplot(data = calParDf[[i]],
-                 aes(x = valid_period_start, y = h_slope)) +
+                 aes(x = .data$valid_period_start, y = .data$h_slope)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("d2H slope")
 
     p5 <- ggplot(data = calParDf[[i]],
-                 aes(x = valid_period_start, y = h_intercept)) +
+                 aes(x = .data$valid_period_start, y = .data$h_intercept)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
       scale_y_continuous("d2H intercept")
 
     p6 <- ggplot(data = calParDf[[i]],
-                 aes(x = valid_period_start, y = h_r2)) +
+                 aes(x = .data$valid_period_start, y = .data$h_r2)) +
       geom_point() +
       theme_bw() +
       scale_x_datetime("date") +
@@ -169,7 +169,7 @@ wplot_monthly_ambient <- function(amb_data, dir_plots, site) {
 
     for (j in 1:nheights) {
 
-      amb_data_height <- subset(amb_data.mon[[k]], height == heights[j])
+      amb_data_height <- subset(amb_data.mon[[k]], amb_data.mon[[k]]$height == heights[j]) #<- check this line?
 
       # take out of xts format
       amb_data_df <- as.data.frame(cbind(zoo::index(amb_data_height),
@@ -184,8 +184,8 @@ wplot_monthly_ambient <- function(amb_data, dir_plots, site) {
       if (3 * j - 2 < 10) {
         assign(paste0("p0", 3 * j - 2), {
           ggplot(data = amb_data_df) +
-            geom_line(aes(x = timeBgn, y = ucal18O), col = "black") +
-            geom_line(aes(x = timeBgn, y = mean18O), col = "red") +
+            geom_line(aes(x = .data$timeBgn, y = .data$ucal18O), col = "black") +
+            geom_line(aes(x = .data$timeBgn, y = .data$mean18O), col = "red") +
             theme_bw() +
             scale_y_continuous(name = paste("Height:", heights[j], "m")) +
             scale_x_datetime(name = "Time")
@@ -193,8 +193,8 @@ wplot_monthly_ambient <- function(amb_data, dir_plots, site) {
       } else {
         assign(paste0("p", 3 * j - 2), {
           ggplot(data = amb_data_df) +
-            geom_line(aes(x = timeBgn, y = ucal18O), col = "black") +
-            geom_line(aes(x = timeBgn, y = mean18O), col = "red") +
+            geom_line(aes(x = .data$timeBgn, y = .data$ucal18O), col = "black") +
+            geom_line(aes(x = .data$timeBgn, y = .data$mean18O), col = "red") +
             theme_bw() +
             scale_y_continuous(name = paste("Height:", heights[j], "m")) +
             scale_x_datetime(name = "Time")
@@ -204,8 +204,8 @@ wplot_monthly_ambient <- function(amb_data, dir_plots, site) {
       if (3 * j - 1 < 10) {
         assign(paste0("p0", 3 * j - 1), {
           ggplot(data = amb_data_df) +
-            geom_line(aes(x = timeBgn, y = ucal2H), col = "black") +
-            geom_line(aes(x = timeBgn, y = mean2H), col = "red") +
+            geom_line(aes(x = .data$timeBgn, y = .data$ucal2H), col = "black") +
+            geom_line(aes(x = .data$timeBgn, y = .data$mean2H), col = "red") +
             theme_bw() +
             scale_y_continuous(name = paste("Height:", heights[j], "m")) +
             scale_x_datetime(name = "Time")
@@ -213,8 +213,8 @@ wplot_monthly_ambient <- function(amb_data, dir_plots, site) {
       } else {
         assign(paste0("p", 3 * j - 1), {
           ggplot(data = amb_data_df) +
-            geom_line(aes(x = timeBgn, y = ucal2H), col = "black") +
-            geom_line(aes(x = timeBgn, y = mean2H), col = "red") +
+            geom_line(aes(x = .data$timeBgn, y = .data$ucal2H), col = "black") +
+            geom_line(aes(x = .data$timeBgn, y = .data$mean2H), col = "red") +
             theme_bw() +
             scale_y_continuous(name = paste("Height:", heights[j], "m")) +
             scale_x_datetime(name = "Time")
@@ -223,7 +223,7 @@ wplot_monthly_ambient <- function(amb_data, dir_plots, site) {
 
       if (3 * j < 10) {
         assign(paste0("p0", 3 * j), {
-          ggplot(data = amb_data_df, aes(x = timeBgn, y = meanH2o)) +
+          ggplot(data = amb_data_df, aes(x = .data$timeBgn, y = .data$meanH2o)) +
             geom_line() +
             theme_bw() +
             scale_y_continuous(name = paste("Height:", heights[j], "m")) +
@@ -231,7 +231,7 @@ wplot_monthly_ambient <- function(amb_data, dir_plots, site) {
         })
       } else {
         assign(paste0("p", 3 * j), {
-          ggplot(data = amb_data_df, aes(x = timeBgn, y = meanH2o)) +
+          ggplot(data = amb_data_df, aes(x = .data$timeBgn, y = .data$meanH2o)) +
             geom_line() +
             theme_bw() +
             scale_y_continuous(name = paste("Height:", heights[j], "m")) +
@@ -268,39 +268,39 @@ wplot_fullts_standards <- function(cal_data, plot_path, site) {
   pdf(paste0(plot_path, "/", "4_tsWStds_", site, ".pdf"))
 
   #   # set up plots.
-  p1 <- ggplot(data = cal_data, aes(x = timeBgn, y = mean18O, col = standard)) +
+  p1 <- ggplot(data = cal_data, aes(x = .data$timeBgn, y = .data$mean18O, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d18O, obs")
 
-  p2 <- ggplot(data = cal_data, aes(x = timeBgn, y = ref18O, col = standard)) +
+  p2 <- ggplot(data = cal_data, aes(x = .data$timeBgn, y = .data$ref18O, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d18O, ref")
 
   p3 <- ggplot(data = cal_data,
-               aes(x = timeBgn, y = mean18O - ref18O, col = standard)) +
+               aes(x = .data$timeBgn, y = .data$mean18O - .data$ref18O, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d18O, diff")
 
-  p4 <- ggplot(data = cal_data, aes(x = timeBgn, y = mean2H, col = standard)) +
+  p4 <- ggplot(data = cal_data, aes(x = .data$timeBgn, y = .data$mean2H, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d2H, obs")
 
-  p5 <- ggplot(data = cal_data, aes(x = timeBgn, y = ref2H, col = standard)) +
+  p5 <- ggplot(data = cal_data, aes(x = .data$timeBgn, y = .data$ref2H, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d2H, ref")
 
   p6 <- ggplot(data = cal_data,
-               aes(x = timeBgn, y = mean2H - ref2H, col = standard)) +
+               aes(x = .data$timeBgn, y = .data$mean2H - .data$ref2H, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
@@ -323,42 +323,42 @@ wplot_fullts_calParameters <- function(calParDf, plot_path, site) {
 
   # plot data
   p1 <- ggplot(data = calParDf,
-               aes(x = valid_period_start, y = o_slope)) +
+               aes(x = .data$valid_period_start, y = .data$o_slope)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d18O slope")
 
   p2 <- ggplot(data = calParDf,
-               aes(x = valid_period_start, y = o_intercept)) +
+               aes(x = .data$valid_period_start, y = .data$o_intercept)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d18O intercept")
 
   p3 <- ggplot(data = calParDf,
-               aes(x = valid_period_start, y = o_r2)) +
+               aes(x = .data$valid_period_start, y = .data$o_r2)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d18O r2")
 
   p5 <- ggplot(data = calParDf,
-               aes(x = valid_period_start, y = h_slope)) +
+               aes(x = .data$valid_period_start, y = .data$h_slope)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d2H slope")
 
   p6 <- ggplot(data = calParDf,
-               aes(x = valid_period_start, y = h_intercept)) +
+               aes(x = .data$valid_period_start, y = .data$h_intercept)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d2H intercept")
 
   p7 <- ggplot(data = calParDf,
-               aes(x = valid_period_start, y = h_r2)) +
+               aes(x = .data$valid_period_start, y = .data$h_r2)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
@@ -381,14 +381,14 @@ wplot_fullts_ambient <- function(amb_data, dir_plots, site) {
   for (j in 1:nheights) {
 
     amb_data_height <- amb_data %>%
-      dplyr::filter(height == heights[j])
+      dplyr::filter(.data$height == heights[j])
 
     #make a plot of this data.
     if (3 * j - 2 < 10) {
       assign(paste0("p0", 3 * j - 2), {
         ggplot(data = amb_data_height) +
-          geom_line(aes(x = timeBgn, y = ucal18O), col = "black") +
-          geom_line(aes(x = timeBgn, y = mean18O), col = "red") +
+          geom_line(aes(x = .data$timeBgn, y = .data$ucal18O), col = "black") +
+          geom_line(aes(x = .data$timeBgn, y = .data$mean18O), col = "red") +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
           scale_x_datetime(name = "Time")
@@ -396,8 +396,8 @@ wplot_fullts_ambient <- function(amb_data, dir_plots, site) {
     } else {
       assign(paste0("p", 3 * j - 2), {
         ggplot(data = amb_data_height) +
-          geom_line(aes(x = timeBgn, y = ucal18O), col = "black") +
-          geom_line(aes(x = timeBgn, y = mean18O), col = "red") +
+          geom_line(aes(x = .data$timeBgn, y = .data$ucal18O), col = "black") +
+          geom_line(aes(x = .data$timeBgn, y = .data$mean18O), col = "red") +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
           scale_x_datetime(name = "Time")
@@ -407,8 +407,8 @@ wplot_fullts_ambient <- function(amb_data, dir_plots, site) {
     if (3 * j - 1 < 10) {
       assign(paste0("p0", 3 * j - 1), {
         ggplot(data = amb_data_height) +
-          geom_line(aes(x = timeBgn, y = ucal2H), col = "black") +
-          geom_line(aes(x = timeBgn, y = mean2H), col = "red") +
+          geom_line(aes(x = .data$timeBgn, y = .data$ucal2H), col = "black") +
+          geom_line(aes(x = .data$timeBgn, y = .data$mean2H), col = "red") +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
           scale_x_datetime(name = "Time")
@@ -416,8 +416,8 @@ wplot_fullts_ambient <- function(amb_data, dir_plots, site) {
     } else {
       assign(paste0("p", 3 * j - 1), {
         ggplot(data = amb_data_height) +
-          geom_line(aes(x = timeBgn, y = ucal2H), col = "black") +
-          geom_line(aes(x = timeBgn, y = mean2H), col = "red") +
+          geom_line(aes(x = .data$timeBgn, y = .data$ucal2H), col = "black") +
+          geom_line(aes(x = .data$timeBgn, y = .data$mean2H), col = "red") +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
           scale_x_datetime(name = "Time")
@@ -426,7 +426,7 @@ wplot_fullts_ambient <- function(amb_data, dir_plots, site) {
 
     if (3 * j < 10) {
       assign(paste0("p0", 3 * j), {
-        ggplot(data = amb_data_height, aes(x = timeBgn, y = meanH2o)) +
+        ggplot(data = amb_data_height, aes(x = .data$timeBgn, y = .data$meanH2o)) +
           geom_line() +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
@@ -434,7 +434,7 @@ wplot_fullts_ambient <- function(amb_data, dir_plots, site) {
       })
     } else {
       assign(paste0("p", 3 * j), {
-        ggplot(data = amb_data_height, aes(x = timeBgn, y = meanH2o)) +
+        ggplot(data = amb_data_height, aes(x = .data$timeBgn, y = .data$meanH2o)) +
           geom_line() +
           theme_bw() +
           scale_y_continuous(name = paste("Height:", heights[j], "m")) +
@@ -464,39 +464,39 @@ wplot_fullts_dxsdiag <- function(cal_data, plot_path, site) {
   pdf(paste0(plot_path, "/", "7_tsWStdsDxs_", site, ".pdf"))
 
   #   # set up plots.
-  p1 <- ggplot(data = cal_data, aes(x = timeBgn, y = mean18O, col = standard)) +
+  p1 <- ggplot(data = cal_data, aes(x = .data$timeBgn, y = .data$mean18O, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d18O, obs")
 
-  p2 <- ggplot(data = cal_data, aes(x = timeBgn, y = ref18O, col = standard)) +
+  p2 <- ggplot(data = cal_data, aes(x = .data$timeBgn, y = .data$ref18O, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d18O, ref")
 
-  p3 <- ggplot(data = cal_data, aes(x = timeBgn, y = mean2H, col = standard)) +
+  p3 <- ggplot(data = cal_data, aes(x = .data$timeBgn, y = .data$mean2H, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d2H, obs")
 
-  p4 <- ggplot(data = cal_data, aes(x = timeBgn, y = ref2H, col = standard)) +
+  p4 <- ggplot(data = cal_data, aes(x = .data$timeBgn, y = .data$ref2H, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("d2H, ref")
 
   p5 <- ggplot(data = cal_data,
-               aes(x = timeBgn, y = mean2H - 8 * mean18O, col = standard)) +
+               aes(x = .data$timeBgn, y = .data$mean2H - 8 * .data$mean18O, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("obs d-excess")
 
   p6 <- ggplot(data = cal_data,
-               aes(x = timeBgn, y = ref2H - 8 * ref18O, col = standard)) +
+               aes(x = .data$timeBgn, y = .data$ref2H - 8 * .data$ref18O, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
@@ -517,13 +517,13 @@ wplot_fullts_vari <- function(cal_data, plot_path, site) {
   pdf(paste0(plot_path, "/", "8_tsWStdsVari_", site, ".pdf"))
   
   #   # set up plots.
-  p1 <- ggplot(data = cal_data, aes(x = timeBgn, y = vari18O, col = standard)) +
+  p1 <- ggplot(data = cal_data, aes(x = .data$timeBgn, y = .data$vari18O, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
     scale_y_continuous("ref d18O variance")
   
-  p2 <- ggplot(data = cal_data, aes(x = timeBgn, y = vari2H, col = standard)) +
+  p2 <- ggplot(data = cal_data, aes(x = .data$timeBgn, y = .data$vari2H, col = .data$standard)) +
     geom_point() +
     theme_bw() +
     scale_x_datetime("date") +
