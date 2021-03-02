@@ -71,14 +71,10 @@ extract_carbon_calibration_data <- function(data_list, ucrt_list,
     dplyr::mutate(std_name = standard)
 
   #convert times to posixct
-  std_df$d13C_obs_btime <- as.POSIXct(std_df$d13C_obs_btime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  std_df$d13C_obs_etime <- as.POSIXct(std_df$d13C_obs_etime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  std_df$d13C_ref_btime <- as.POSIXct(std_df$d13C_ref_btime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
-  std_df$d13C_ref_etime <- as.POSIXct(std_df$d13C_ref_etime,
-                                      format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+  std_df$d13C_obs_btime <- convert_NEONhdf5_to_POSIXct_time(std_df$d13C_obs_btime)
+  std_df$d13C_obs_etime <- convert_NEONhdf5_to_POSIXct_time(std_df$d13C_obs_etime)
+  std_df$d13C_ref_btime <- convert_NEONhdf5_to_POSIXct_time(std_df$d13C_ref_btime)
+  std_df$d13C_ref_etime <- convert_NEONhdf5_to_POSIXct_time(std_df$d13C_ref_etime)
   
   # return standard data frame.
   return(std_df)
@@ -192,33 +188,17 @@ extract_water_calibration_data <- function(data_list, ucrt_list = NULL,
                            d2H_ref_etime = data$dlta2HH2oRefe$timeEnd)
       
       # change class of time variables from charatcter to posixct.
-      std_df$d18O_meas_btime <- as.POSIXct(std_df$d18O_meas_btime,
-                                         format = "%Y-%m-%dT%H:%M:%OSZ",
-                                         tz = "UTC")
-      std_df$d18O_meas_etime <- as.POSIXct(std_df$d18O_meas_etime,
-                                         format = "%Y-%m-%dT%H:%M:%OSZ",
-                                         tz = "UTC")
+      std_df$d18O_meas_btime <- convert_NEONhdf5_to_POSIXct_time(std_df$d18O_meas_btime)
+      std_df$d18O_meas_etime <- convert_NEONhdf5_to_POSIXct_time(std_df$d18O_meas_etime)
 
-      std_df$d18O_ref_btime <- as.POSIXct(std_df$d18O_ref_btime,
-                                        format = "%Y-%m-%dT%H:%M:%OSZ",
-                                        tz = "UTC")
-      std_df$d18O_ref_etime <- as.POSIXct(std_df$d18O_ref_etime,
-                                        format = "%Y-%m-%dT%H:%M:%OSZ",
-                                        tz = "UTC")
+      std_df$d18O_ref_btime <- convert_NEONhdf5_to_POSIXct_time(std_df$d18O_ref_btime)
+      std_df$d18O_ref_etime <- convert_NEONhdf5_to_POSIXct_time(std_df$d18O_ref_etime)
 
-      std_df$d2H_meas_btime <- as.POSIXct(std_df$d2H_meas_btime,
-                                        format = "%Y-%m-%dT%H:%M:%OSZ",
-                                        tz = "UTC")
-      std_df$d2H_meas_etime <- as.POSIXct(std_df$d2H_meas_etime,
-                                        format = "%Y-%m-%dT%H:%M:%OSZ",
-                                        tz = "UTC")
+      std_df$d2H_meas_btime <- convert_NEONhdf5_to_POSIXct_time(std_df$d2H_meas_btime)
+      std_df$d2H_meas_etime <- convert_NEONhdf5_to_POSIXct_time(std_df$d2H_meas_etime)
 
-      std_df$d2H_ref_btime <- as.POSIXct(std_df$d2H_ref_btime,
-                                       format = "%Y-%m-%dT%H:%M:%OSZ",
-                                       tz = "UTC")
-      std_df$d2H_ref_etime <- as.POSIXct(std_df$d2H_ref_etime,
-                                       format = "%Y-%m-%dT%H:%M:%OSZ",
-                                       tz = "UTC")
+      std_df$d2H_ref_btime <- convert_NEONhdf5_to_POSIXct_time(std_df$d2H_ref_btime)
+      std_df$d2H_ref_etime <- convert_NEONhdf5_to_POSIXct_time(std_df$d2H_ref_etime)
       
     }
   } else {

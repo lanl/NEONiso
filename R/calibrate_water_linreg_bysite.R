@@ -86,24 +86,12 @@ calibrate_water_linreg_bysite <- function(inpath,
   high_rs <- swap_standard_isotoperatios(high_rs)
   
   # convert times in these data.frames (btime and etime) to posixct
-  low_rs$btime <- as.POSIXct(low_rs$btime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
-  low_rs$etime <- as.POSIXct(low_rs$etime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
-  med_rs$btime <- as.POSIXct(med_rs$btime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
-  med_rs$etime <- as.POSIXct(med_rs$etime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
-  high_rs$btime <- as.POSIXct(high_rs$btime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
-  high_rs$etime <- as.POSIXct(high_rs$etime,
-                           format = "%Y-%m-%dT%H:%M:%OSZ",
-                           tz = "UTC")
+  low_rs$btime <- convert_NEONhdf5_to_POSIXct_time(low_rs$btime)
+  low_rs$etime <- convert_NEONhdf5_to_POSIXct_time(low_rs$etime)
+  med_rs$btime <- convert_NEONhdf5_to_POSIXct_time(med_rs$btime)
+  med_rs$etime <- convert_NEONhdf5_to_POSIXct_time(med_rs$etime)
+  high_rs$btime <- convert_NEONhdf5_to_POSIXct_time(high_rs$btime)
+  high_rs$etime <- convert_NEONhdf5_to_POSIXct_time(high_rs$etime)
   
   #--------------------------------------------------------------
   # Ensure same number of measurements for each standard

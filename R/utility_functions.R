@@ -3,47 +3,7 @@
 # that do *not* need to be exported,  to help keep down on
 # number of files present in the repo/package. -rpf 200214.
 # 200219 - added a water isotope function.
-#--------------------------------------------------------------
-#' convert_POSIXct_to_NEONhdf5_time
-#'
-#' Converts a POSIXct object back to the character format used by NEON in their
-#' HDF eddy covariance files. Output format,  using strptime syntax,  is
-#' %Y-%m-%dT%H:%M:%OSZ.
-#'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
-#'
-#' @param intime POSIXct vector to convert to NEON time format.
-#'
-#' @return Returns character version of POSIXct object
-#'         matching NEON time variable format.
-#'
-#' @export
-#' @examples 
-#' convert_POSIXct_to_NEONhdf5_time(Sys.time())
-
-convert_POSIXct_to_NEONhdf5_time <- function(intime) {
-
-  # convert from POSIXct to
-  # a time in YYmmddTHH:MM:SSSZ format used by NEON hdf5 files.
-  outtime <- as.character(paste0(lubridate::year(intime), "-",
-                ifelse(lubridate::month(intime) < 10,
-                       paste0("0", lubridate::month(intime)),
-                       lubridate::month(intime)), "-",
-                ifelse(lubridate::day(intime) < 10,
-                       paste0("0", lubridate::day(intime)),
-                       lubridate::day(intime)), "T",
-                ifelse(lubridate::hour(intime) < 10,
-                       paste0("0", lubridate::hour(intime)),
-                       lubridate::hour(intime)), ":",
-                ifelse(lubridate::minute(intime) < 10,
-                       paste0("0", lubridate::minute(intime)),
-                       lubridate::minute(intime)), ":",
-                ifelse(lubridate::second(intime) < 10,
-                       paste0("0", floor(lubridate::second(intime)), ".000Z"),
-                       paste0(floor(lubridate::second(intime)), ".000Z"))))
-
-  return(outtime)
-}
+#-----------------------------------------------
 
 #' terrestrial_core_sites
 #'
