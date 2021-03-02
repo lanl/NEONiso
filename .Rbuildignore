@@ -7,3 +7,4 @@
 ^\.github$
 ^\.covrignore$
 ^cran-comments\.md$
+^setup_testing_data\.R$
