@@ -17,6 +17,8 @@
 #' @return Returns character version of POSIXct object
 #'         matching NEON time variable format.
 #'
+#' @examples 
+#' convert_POSIXct_to_NEONhdf5_time(Sys.time())
 
 convert_POSIXct_to_NEONhdf5_time <- function(intime) {
 

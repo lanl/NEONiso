@@ -18,6 +18,9 @@ Converts a POSIXct object back to the character format used by NEON in their
 HDF eddy covariance files. Output format,  using strptime syntax,  is
 %Y-%m-%dT%H:%M:%OSZ.
 }
+\examples{
+convert_POSIXct_to_NEONhdf5_time(Sys.time())
+}
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
 }
