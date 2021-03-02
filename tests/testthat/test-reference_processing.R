@@ -1,4 +1,4 @@
-# test-data_extraction
+# test-reference_processing
 
 #----------------------------
 # test carbon function
@@ -51,4 +51,26 @@ test_that("water data frames have correct number of columns after extract_carbon
 })
 
 # test functions using the output of extract_water_calibration_data(method = "by_month")
+
+
+# run raw reference data rhrough the extract data frame.
+low_co2 <- extract_carbon_calibration_data(co2RawRefData, co2RawRefData, "low", ucrt_source = "data")
+low_co2_filt <- select_daily_reference_data(low_co2, analyte = "co2")
+low_h2o <- extract_water_calibration_data(h2oRawRefData$h2oLow_03m, h2oRawRefUcrt, "low", ucrt_source = "data", method = "by_month")
+low_h2o_filt <- select_daily_reference_data(low_h2o, analyte = "h2o")
+
+test_that("select_daily_reference_data errors if invalid analyte given", {
+  expect_error(select_daily_reference_data(low_co2, analyte = "ch4"))
+  expect_error(select_daily_reference_data(low_h2o, analyte = "ch4"))
+})
+
+test_that("select_daily_reference_data errors if standard_df and analyte don't match", {
+  expect_error(select_daily_reference_data(low_co2, analyte = "h2o"))
+  expect_error(select_daily_reference_data(low_h2o, analyte = "co2"))
+})
+
+test_that("select_daily_reference_data returns data frame if valid analyte given", {
+  expect_true(is.data.frame(low_co2_filt))
+  expect_true(is.data.frame(low_h2o_filt))
+})
 
