@@ -135,13 +135,6 @@ water_isotope_sites <- function() {
 #' \donttest{
 #' # get all files from NEON S3 buckets
 #' manage_local_EC_archive("~/Desktop/",get = TRUE, unzip_files = TRUE, sites = "PUUM")
-#' # as NEON reprocesses, duplicate files can build up locally. to remove:
-#' # determine 'duplicates'
-#' manage_local_EC_archive("~/Desktop/", get = FALSE, unzip_files = FALSE, 
-#'                         trim = TRUE, sites = "PUUM") 
-#' # remove duplicates
-#' manage_local_EC_archive("~/Desktop/", get = FALSE, unzip_files = FALSE,
-#'                         trim = TRUE, dry_run = FALSE, sites = "PUUM") 
 #' }
 manage_local_EC_archive <- function(file_dir,
                                     get = TRUE,
@@ -248,14 +241,14 @@ manage_local_EC_archive <- function(file_dir,
   # unzip files if requested.
   if (unzip_files == TRUE) {
     # list the files in file_dir
-    files <- list.files(path = file_dir,
+    files <- list.files(path = paste0(file_dir,"/"),
                         pattern = "*.gz",
                         recursive = TRUE,
                         full.names = TRUE)
     
     if (length(files) > 0) {
       lapply(files, function(x) {
-        R.utils::gunzip(x)
+        R.utils::gunzip(x, skip = TRUE, remove = FALSE)
       })
     }
   }
@@ -279,10 +272,6 @@ manage_local_EC_archive <- function(file_dir,
     sites <- sapply(file_pieces, "[[", 3)
     yrmn  <- sapply(file_pieces, "[[", 8)
     fdiff <- sapply(file_pieces, "[[", 10)
-    
-    # print(head(sites))
-    # print(head(yrmn))
-    # print(head(fdiff))
     
     site_list <- unique(sites)
     

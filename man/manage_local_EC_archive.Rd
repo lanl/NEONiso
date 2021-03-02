@@ -40,13 +40,6 @@ and month.
 \donttest{
 # get all files from NEON S3 buckets
 manage_local_EC_archive("~/Desktop/",get = TRUE, unzip_files = TRUE, sites = "PUUM")
-# as NEON reprocesses, duplicate files can build up locally. to remove:
-# determine 'duplicates'
-manage_local_EC_archive("~/Desktop/", get = FALSE, unzip_files = FALSE, 
-                        trim = TRUE, sites = "PUUM") 
-# remove duplicates
-manage_local_EC_archive("~/Desktop/", get = FALSE, unzip_files = FALSE,
-                        trim = TRUE, dry_run = FALSE, sites = "PUUM") 
 }
 }
 \author{
