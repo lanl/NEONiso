@@ -36,12 +36,6 @@ Utility function to help retrieve new EC data and/or prune duplicates,
 as NEON provisions new data or re-provisions data for an existing site 
 and month.
 }
-\examples{
-\donttest{
-# get all files from NEON S3 buckets
-manage_local_EC_archive("~/",get = TRUE, unzip_files = TRUE, sites = "PUUM")
-}
-}
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
 }
