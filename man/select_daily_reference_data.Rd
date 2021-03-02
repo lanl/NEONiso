@@ -7,7 +7,7 @@
 select_daily_reference_data(standard_df, analyte, min_nobs = NA)
 }
 \arguments{
-\item{standard_df}{Input reference data frame.}
+\item{standard_df}{Input reference data.frame.}
 
 \item{analyte}{Are we calibrating CO2 and H2O?
 (Use argument 'co2' or 'h2o', or else function will throw error)}

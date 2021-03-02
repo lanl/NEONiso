@@ -17,6 +17,7 @@
 #' @return Returns character version of POSIXct object
 #'         matching NEON time variable format.
 #'
+#' @export
 #' @examples 
 #' convert_POSIXct_to_NEONhdf5_time(Sys.time())
 

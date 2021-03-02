@@ -3,7 +3,7 @@
 
 #' select_daily_reference_data
 #'
-#' @param standard_df Input reference data frame.
+#' @param standard_df Input reference data.frame.
 #' @param analyte Are we calibrating CO2 and H2O?
 #' (Use argument 'co2' or 'h2o', or else function will throw error)
 #' @param min_nobs Minimum number of high-frequency
@@ -20,8 +20,8 @@
 #' also keeps only the last three injections for each reference water
 #' per day. 
 #' @export
-#'
-#' @examples
+#' 
+#' 
 select_daily_reference_data <- function(standard_df, analyte, min_nobs=NA) {
   
   # set default min_nobs based on analyte if not user supplied
