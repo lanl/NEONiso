@@ -134,7 +134,7 @@ water_isotope_sites <- function() {
 #' @examples 
 #' \donttest{
 #' # get all files from NEON S3 buckets
-#' manage_local_EC_archive("~/Desktop/",get = TRUE, unzip_files = TRUE, sites = "PUUM")
+#' manage_local_EC_archive("~/",get = TRUE, unzip_files = TRUE, sites = "PUUM")
 #' }
 manage_local_EC_archive <- function(file_dir,
                                     get = TRUE,
