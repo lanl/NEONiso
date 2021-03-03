@@ -45,12 +45,8 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
     co2_ambdf  <- amb_data_list$rtioMoleDryCo2
 
     # ensure that time variables are in POSIXct.
-    amb_start_times <- as.POSIXct(d13C_ambdf$timeBgn,
-                                  format = "%Y-%m-%dT%H:%M:%OSZ",
-                                  tz = "UTC")
-    amb_end_times <- as.POSIXct(d13C_ambdf$timeEnd,
-                                format = "%Y-%m-%dT%H:%M:%OSZ",
-                                tz = "UTC")
+    amb_start_times <- convert_NEONhdf5_to_POSIXct_time(d13C_ambdf$timeBgn)
+    amb_end_times   <- convert_NEONhdf5_to_POSIXct_time(d13C_ambdf$timeEnd)
 
     # if force.to.end and/or force.to.beginning are true,
     # match out$start[1] to min(amb time)

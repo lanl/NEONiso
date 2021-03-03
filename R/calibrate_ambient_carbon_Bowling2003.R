@@ -68,12 +68,8 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   amb_13CO2$max  <- calculate_13CO2(amb_co2$max, amb_delta$max)
 
   # ensure that time variables are in POSIXct.
-  amb_start_times <- as.POSIXct(amb_delta$timeBgn,
-                                format = "%Y-%m-%dT%H:%M:%OSZ",
-                                tz = "UTC")
-  amb_end_times <- as.POSIXct(amb_delta$timeEnd,
-                              format = "%Y-%m-%dT%H:%M:%OSZ",
-                              tz = "UTC")
+  amb_start_times <- convert_NEONhdf5_to_POSIXct_time(amb_delta$timeBgn)
+  amb_end_times   <- convert_NEONhdf5_to_POSIXct_time(amb_delta$timeEnd)
 
   # if force_to_end and/or force_to_beginning are true, match
   # out$start[1] to min(amb time) and/or out$end[nrow] to max(amb time)

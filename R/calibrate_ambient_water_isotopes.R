@@ -54,12 +54,8 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   #-------------------------------------------------------
   # ensure that time variables are in POSIXct.
   # (note: these should be the same for 18O and 2H?)
-  amb_start_times <- as.POSIXct(oxydf$timeBgn,
-                                format = "%Y-%m-%dT%H:%M:%OSZ",
-                                tz = "UTC")
-  amb_end_times <- as.POSIXct(oxydf$timeEnd,
-                              format = "%Y-%m-%dT%H:%M:%OSZ",
-                              tz = "UTC")
+  amb_start_times <- convert_NEONhdf5_to_POSIXct_time(oxydf$timeBgn)
+  amb_end_times   <- convert_NEONhdf5_to_POSIXct_time(oxydf$timeEnd)
 
   # if force.to.end and/or force.to.beginning are true, match out$start[1]
   # to min(amb time) and/or out$end[nrow] to max(amb time)
@@ -120,12 +116,8 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   rm(amb_start_times, oxydf, amb_end_times, i, var_inds_in_calperiod)
 
   # ensure that time variables are in POSIXct.
-  amb_start_times <- as.POSIXct(hyddf$timeBgn,
-                                format = "%Y-%m-%dT%H:%M:%OSZ",
-                                tz = "UTC")
-  amb_end_times <- as.POSIXct(hyddf$timeEnd,
-                              format = "%Y-%m-%dT%H:%M:%OSZ",
-                              tz = "UTC")
+  amb_start_times <- convert_NEONhdf5_to_POSIXct_time(hyddf$timeBgn)
+  amb_end_times   <- convert_NEONhdf5_to_POSIXct_time(hyddf$timeEnd)
 
   # if force.to.end and/or force.to.beginning are true,
   # match out$start[1] to min(amb time) and/or out$end[nrow] to max(amb time)
