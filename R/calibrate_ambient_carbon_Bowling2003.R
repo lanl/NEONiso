@@ -28,9 +28,16 @@
 #'             applied to ambient data.
 #' @param write_to_file Write calibrated ambient data to file?
 #'              (Mostly used for testing)
+#' @param gap_fill_parameters Should function attempt to 'gap-fill' across a 
+#'            bad calibration by carrying the last known good calibration forward?
+#'            Implementation is fairly primitive currently, as it only carries 
+#'            the last known good calibration that's available forward rather
+#'            than interpolating, etc. Default FALSE.
 #'
-#' @return Nothing to environment; returns calibrated ambient observations to
-#'    the output file. This function is not designed to be called on its own.
+#' @return Depends on \code{write_to_file} argument. If true, returns nothing to environment; 
+#'    but returns calibrated ambient observations to the output file. If false, returns
+#'    modified version of amb_data_list that include calibrated ambient data.
+#'
 #' @export
 #'
 #' @importFrom magrittr %>%
@@ -44,6 +51,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
                                                  filter_data = TRUE,
                                                  force_to_end = TRUE,
                                                  force_to_beginning = TRUE,
+                                                 gap_fill_parameters = FALSE,
                                                  r2_thres = 0.9,
                                                  write_to_file = TRUE) {
 
@@ -88,40 +96,40 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
     int <- lubridate::interval(caldf$start[i], caldf$end[i])
     var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
 
-    # check to see if calibration point is "valid" -
-    # at present - "valid" means r2 > r2_thres.
-    # rpf - 190809.
-    # also some gap filling code here!
-
-    # 12CO2 calibration paramters.
-    if (!is.na(caldf$r2_12C[i]) & caldf$r2_12C[i] < r2_thres) {
-      # if we're in calibration period 2 or later, carry previous
-      # calibration period forward. else if the first calibration period
-      # is bad, find the first good calibration period at index n,
-      # and apply to first n periods.
-      if (i > 1) {
-        caldf$gain12C[i] <- caldf$gain12C[i - 1]
-        caldf$offset12C[i] <- caldf$offset12C[i - 1]
-        caldf$r2_12C[i] <- caldf$r2_12C[i - 1]
-      } else { # i = 1, and need to find first good value.
-        first_good_val <- min(which(caldf$r2_12C > r2_thres))
-        caldf$gain12C[i] <- caldf$gain12C[first_good_val]
-        caldf$offset12C[i] <- caldf$offset12C[first_good_val]
-        caldf$r2_12C[i] <- caldf$r2_12C[first_good_val]
+    if (gap_fill_parameters) {
+      
+      # print notice that we're gap filling
+      print("Gap filling calibrations...")
+      # 12CO2 calibration parameters.
+      if (!is.na(caldf$r2_12C[i]) & caldf$r2_12C[i] < r2_thres) {
+        # if we're in calibration period 2 or later, carry previous
+        # calibration period forward. else if the first calibration period
+        # is bad, find the first good calibration period at index n,
+        # and apply to first n periods.
+        if (i > 1) {
+          caldf$gain12C[i] <- caldf$gain12C[i - 1]
+          caldf$offset12C[i] <- caldf$offset12C[i - 1]
+          caldf$r2_12C[i] <- caldf$r2_12C[i - 1]
+        } else { # i = 1, and need to find first good value.
+          first_good_val <- min(which(caldf$r2_12C > r2_thres))
+          caldf$gain12C[i] <- caldf$gain12C[first_good_val]
+          caldf$offset12C[i] <- caldf$offset12C[first_good_val]
+          caldf$r2_12C[i] <- caldf$r2_12C[first_good_val]
+        }
       }
-    }
-
-    # 13CO2 calibration parameters - equivalent logic to 12Co2.
-    if (!is.na(caldf$r2_13C[i]) & caldf$r2_13C[i] < r2_thres) {
-      if (i > 1) {
-        caldf$gain13C[i] <- caldf$gain13C[i - 1]
-        caldf$offset13C[i] <- caldf$offset13C[i - 1]
-        caldf$r2_13C[i] <- caldf$r2_13C[i - 1]
-      } else {
-        first_good_val <- min(which(caldf$r2_13C > r2_thres))
-        caldf$gain13C[i] <- caldf$gain13C[first_good_val]
-        caldf$offset13C[i] <- caldf$offset13C[first_good_val]
-        caldf$r2_13C[i] <- caldf$r2_13C[first_good_val]
+      
+      # 13CO2 calibration parameters - equivalent logic to 12Co2.
+      if (!is.na(caldf$r2_13C[i]) & caldf$r2_13C[i] < r2_thres) {
+        if (i > 1) {
+          caldf$gain13C[i] <- caldf$gain13C[i - 1]
+          caldf$offset13C[i] <- caldf$offset13C[i - 1]
+          caldf$r2_13C[i] <- caldf$r2_13C[i - 1]
+        } else {
+          first_good_val <- min(which(caldf$r2_13C > r2_thres))
+          caldf$gain13C[i] <- caldf$gain13C[first_good_val]
+          caldf$offset13C[i] <- caldf$offset13C[first_good_val]
+          caldf$r2_13C[i] <- caldf$r2_13C[first_good_val]
+        }
       }
     }
   }
@@ -194,6 +202,8 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
     # close all open handles.
     rhdf5::h5closeAll()    
     
+  } else { # might want to return the ambient data list to the environment in some circumstances.
+    return(amb_data_list)
   }
 
 }

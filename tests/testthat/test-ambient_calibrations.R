@@ -9,9 +9,17 @@ co2B03CalTablePosix$start <- convert_NEONhdf5_to_POSIXct_time(co2B03CalTablePosi
 co2B03CalTablePosix$end   <- convert_NEONhdf5_to_POSIXct_time(co2B03CalTablePosix$valid_period_end)
 
 test_that("calibrate_ambient_carbon_Bowling2003 errors out when bad output file name is returned.", {
-  expect_error(calibrate_ambient_carbon_Bowling2003(co2RawAmbData, co2B03CalTablePosix, "dlta13CCo2", "ONAQ", "test.h5"))
+  expect_error(calibrate_ambient_carbon_Bowling2003(co2RawAmbData, co2B03CalTablePosix, "dlta13CCo2",
+                                                    "ONAQ", "test.h5"))
 })
 
 test_that("calibrate_ambient_carbon_Bowling2003 finishes when bad output file name is returned.", {
-  expect_silent(calibrate_ambient_carbon_Bowling2003(co2RawAmbData, co2B03CalTablePosix,"dlta13CCo2", "ONAQ", 'test.h5', write_to_file = FALSE))
+  expect_silent(calibrate_ambient_carbon_Bowling2003(co2RawAmbData, co2B03CalTablePosix,"dlta13CCo2",
+                                                     "ONAQ", 'test.h5', write_to_file = FALSE))
+})
+
+test_that("gap filling in calibrate_ambient_carbon_Bowling2003 issues a message", {
+  expect_output(calibrate_ambient_carbon_Bowling2003(co2RawAmbData, co2B03CalTablePosix,"dlta13CCo2",
+                         "ONAQ", 'test.h5', write_to_file = FALSE, gap_fill_parameters = TRUE),
+                "Gap filling calibrations...")
 })
