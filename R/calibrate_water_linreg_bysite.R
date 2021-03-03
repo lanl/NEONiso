@@ -140,6 +140,15 @@ calibrate_water_linreg_bysite <- function(inpath,
   #### OMIT FOR ERROR PROPOAGATION.
   stds <- do.call(rbind, list(high_rs, med_rs, low_rs))
   
+  #print(str(stds))
+  # do some light validation of these points.
+  stds <- stds %>%
+    dplyr::filter(.data$d18O_meas_var < 5 &
+                  abs(.data$d18O_meas_mean - .data$d18O_ref_mean) < 3 &
+                  .data$d2H_meas_var < 10 &
+                    abs(.data$d18O_meas_mean - .data$d18O_ref_mean) < 24)
+  
+  
   if (nrow(stds) > 0) {
     # replace NaNs with NA
     # is.na() also returns NaN as NA, so this does actually do what first
@@ -174,8 +183,8 @@ calibrate_water_linreg_bysite <- function(inpath,
     
     # loop through days and get regression statistics.
     # generate sequence of dates:
-    loop_start_date <- start_date + lubridate::days(x = calibration_half_width)
-    loop_end_date   <- end_date - lubridate::days(x = calibration_half_width)
+    loop_start_date <- start_date #+ lubridate::days(x = calibration_half_width)
+    loop_end_date   <- end_date #- lubridate::days(x = calibration_half_width)
     
     # generate date sequence
     date_seq <- base::seq.Date(loop_start_date, loop_end_date, by = "1 day")
