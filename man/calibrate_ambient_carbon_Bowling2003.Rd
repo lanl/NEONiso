@@ -10,10 +10,11 @@ calibrate_ambient_carbon_Bowling2003(
   outname,
   site,
   file,
-  filter_data,
-  force_to_end,
-  force_to_beginning,
-  r2_thres
+  filter_data = TRUE,
+  force_to_end = TRUE,
+  force_to_beginning = TRUE,
+  r2_thres = 0.9,
+  write_to_file = TRUE
 )
 }
 \arguments{
@@ -43,6 +44,9 @@ first calibration, using the first calibration? (default true)}
 
 \item{r2_thres}{Minimum r2 value for calibration to be considered "good" and
 applied to ambient data.}
+
+\item{write_to_file}{Write calibrated ambient data to file?
+(Mostly used for testing)}
 }
 \value{
 Nothing to environment; returns calibrated ambient observations to

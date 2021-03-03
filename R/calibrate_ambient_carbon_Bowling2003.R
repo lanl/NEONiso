@@ -26,6 +26,8 @@
 #'              first calibration, using the first calibration? (default true)
 #' @param r2_thres Minimum r2 value for calibration to be considered "good" and
 #'             applied to ambient data.
+#' @param write_to_file Write calibrated ambient data to file?
+#'              (Mostly used for testing)
 #'
 #' @return Nothing to environment; returns calibrated ambient observations to
 #'    the output file. This function is not designed to be called on its own.
@@ -39,10 +41,11 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
                                                  outname,
                                                  site,
                                                  file,
-                                                 filter_data,
-                                                 force_to_end,
-                                                 force_to_beginning,
-                                                 r2_thres) {
+                                                 filter_data = TRUE,
+                                                 force_to_end = TRUE,
+                                                 force_to_beginning = TRUE,
+                                                 r2_thres = 0.9,
+                                                 write_to_file = TRUE) {
 
   #-----------------------------------------------------------
   # should be able to get a calGainsOffsets object from the H5 file.
@@ -174,24 +177,27 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   amb_data_list$dlta13CCo2 <- amb_delta
 
   amb_data_list$rtioMoleDryCo2 <- amb_co2
-
-  # write out dataset to HDF5 file.
-  fid <- rhdf5::H5Fopen(file)
-
-  co2_data_outloc <- rhdf5::H5Gcreate(fid,
-                              paste0("/", site, "/dp01/data/isoCo2/", outname))
-
-  # loop through variables in list amb_data_list and write out as a dataframe.
-  lapply(names(amb_data_list), function(x) {
-    rhdf5::h5writeDataset.data.frame(obj = amb_data_list[[x]],
-                              h5loc = co2_data_outloc,
-                              name = x,
-                              DataFrameAsCompound = TRUE)})
-
-  rhdf5::H5Gclose(co2_data_outloc)
-  rhdf5::H5Fclose(fid)
-
-  # close all open handles.
-  rhdf5::h5closeAll()
+  
+  # write to hdf5 file if write_to_file = TRUE
+  if (write_to_file) {
+    fid <- rhdf5::H5Fopen(file)
+    
+    co2_data_outloc <- rhdf5::H5Gcreate(fid,
+                                        paste0("/", site, "/dp01/data/isoCo2/", outname))
+    
+    # loop through variables in list amb_data_list and write out as a dataframe.
+    lapply(names(amb_data_list), function(x) {
+      rhdf5::h5writeDataset.data.frame(obj = amb_data_list[[x]],
+                                       h5loc = co2_data_outloc,
+                                       name = x,
+                                       DataFrameAsCompound = TRUE)})
+    
+    rhdf5::H5Gclose(co2_data_outloc)
+    rhdf5::H5Fclose(fid)
+    
+    # close all open handles.
+    rhdf5::h5closeAll()    
+    
+  }
 
 }
