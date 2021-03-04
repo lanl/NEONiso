@@ -1,7 +1,7 @@
 Package: NEONiso
 Type: Package
 Title: Calibrate and plot NEON Atmospheric Isotope Data
-Version: 0.3.0
+Version: 0.3.1.9000
 Author: Rich Fiorella
 Maintainer: Rich Fiorella <rich.fiorella@utah.edu>
 Depends: 
