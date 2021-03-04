@@ -517,9 +517,8 @@ cplot_standard_distributions <- function(cal_data, plot_path, site) {
   # calculate 12CO2 and 13CO2 from d13C and CO2.
   if (!all(is.na(cal_data$refCo2)) & !all(is.na(cal_data$ref13C))) {
 
-    cal_data$c12 <- calculate_12CO2(cal_data$refCO2, cal_data$ref13C)
-
-    cal_data$c13 <- calculate_13CO2(cal_data$refCO2, cal_data$ref13C)
+    cal_data$c12 <- calculate_12CO2(cal_data$refCo2, cal_data$ref13C)
+    cal_data$c13 <- calculate_13CO2(cal_data$refCo2, cal_data$ref13C)
 
   } else {
     cal_data$c12 <- NA

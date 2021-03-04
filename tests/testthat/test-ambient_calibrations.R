@@ -1,6 +1,9 @@
 # test-ambient_calibrations
 
 load("co2RawAmbData.Rdata")
+
+#-----------------------------------
+# Carbon - Bowling method
 load("co2B03CalAmbData.Rdata")
 load("co2B03CalTable.Rdata")
 
@@ -23,3 +26,8 @@ test_that("gap filling in calibrate_ambient_carbon_Bowling2003 issues a message"
                          "ONAQ", 'test.h5', write_to_file = FALSE, gap_fill_parameters = TRUE),
                 "Gap filling calibrations...")
 })
+
+#-----------------------------------
+# Carbon - Linear regression
+load("co2B03CalAmbData.Rdata")
+load("co2B03CalTable.Rdata")

@@ -10,9 +10,12 @@ calibrate_ambient_carbon_linreg(
   outname,
   site,
   file,
+  filter_data = TRUE,
   force_to_end = TRUE,
   force_to_beginning = TRUE,
-  r2_thres
+  gap_fill_parameters = FALSE,
+  r2_thres = 0.9,
+  write_to_file = TRUE
 )
 }
 \arguments{
@@ -25,9 +28,13 @@ Will include all variables in 000_0x0_xxm. (character)}
 \item{outname}{Output variable name. Inherited from
 \code{calibrate_ambient_carbon_linreg}}
 
-\item{site}{Four-letter NEON code corersponding to site being processed.}
+\item{site}{Four-letter NEON code corresponding to site being processed.}
 
 \item{file}{Output file name. Inherited from
+\code{calibrate_ambient_carbon_linreg}}
+
+\item{filter_data}{Apply median absolute deviation filter from Brock 86 to
+remove impulse spikes? Inherited from
 \code{calibrate_ambient_carbon_linreg}}
 
 \item{force_to_end}{In given month, calibrate ambient data later than last
@@ -36,8 +43,17 @@ calibration, using the last calibration? (default true)}
 \item{force_to_beginning}{In given month, calibrate ambient data before than
 first calibration, using the first calibration? (default true)}
 
+\item{gap_fill_parameters}{Should function attempt to 'gap-fill' across a 
+bad calibration by carrying the last known good calibration forward?
+Implementation is fairly primitive currently, as it only carries 
+the last known good calibration that's available forward rather
+than interpolating, etc. Default FALSE.}
+
 \item{r2_thres}{Minimum r2 value for calibration to be considered "good" and
 applied to ambient data.}
+
+\item{write_to_file}{Write calibrated ambient data to file?
+(Mostly used for testing)}
 }
 \value{
 Nothing to environment; returns calibrated ambient observations to

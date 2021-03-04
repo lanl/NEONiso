@@ -24,7 +24,7 @@ carbon_diagnostic_package <- function(data_path,
 
   # query re: calibration plots
   print("This function makes diagnostic plots of NEON carbon isotope data.")
-
+  .Deprecated("Moving to neonIsoDiag...will not be included in version sent to cran")
   #-------------------------------------------------------
   # query for which plots.
   which_plots <- menu(c("Raw Calibration data - Monthly",
