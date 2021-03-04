@@ -8,14 +8,15 @@ library(rhdf5)
 # exists in rbuildignore, so should not be bundled with package.
 # requires install and restart w/ NEONiso.
 
-master_file <- "/Volumes/GradSchoolBackup/NEON/DP4_00200_001/WREF/NEON.D16.WREF.DP4.00200.001.nsae.2019-06.basic.20201020T180548Z.h5"
-master_cal_file <- "~/Desktop/NEONcal/201109_CisoEC/WREF/NEON.D16.WREF.DP4.00200.001.nsae.2019-06.basic.20201020T180548Z.calibrated.h5"
+master_file <- "/Volumes/GradSchoolBackup/NEON/DP4_00200_001/ONAQ/NEON.D15.ONAQ.DP4.00200.001.nsae.2019-06.basic.20201020T212232Z.h5"
+master_ccalB03_file <- "~/Desktop/NEONcal/210303_CisoEC/ONAQ/NEON.D15.ONAQ.DP4.00200.001.nsae.2019-06.basic.20201020T212232Z.calibrated.h5"
+master_ccalLR_file <- "~/Desktop/NEONcal/210303_CisoLR/ONAQ/NEON.D15.ONAQ.DP4.00200.001.nsae.2019-06.basic.20201020T212232Z.calibrated.h5"
 
 #---------------------------------------
 # extract co2 data for unit testing:
 #---------------------------------------
-ciso <- rhdf5::h5read(master_file, "/WREF/dp01/data/isoCo2")
-ucrt <- rhdf5::h5read(master_file, "/WREF/dp01/ucrt/isoCo2")
+ciso <- rhdf5::h5read(master_file, "/ONAQ/dp01/data/isoCo2")
+ucrt <- rhdf5::h5read(master_file, "/ONAQ/dp01/ucrt/isoCo2")
 
 # from raw file (and quick processing scripts), we need three datasets:
 # 1) raw calibration data
@@ -39,8 +40,11 @@ co2RawAmbData <- ciso$`000_010_09m`
 save(co2RawAmbData, file = "tests/testthat/co2RawAmbData.Rdata")
 
 # GET a few more datasets from the calibrated data file:
+#---------------------
+# Bowling method
+#---------------------
 # 4) get the table of Bowling gain and offset parameters.
-ciso_cal <- rhdf5::h5read(master_cal_file, "/WREF/dp01/data/isoCo2")
+ciso_cal <- rhdf5::h5read(master_ccalB03_file, "/ONAQ/dp01/data/isoCo2")
 
 co2B03CalTable <- ciso_cal$calData$calGainsOffsets
 save(co2B03CalTable, file = "tests/testthat/co2B03CalTable.Rdata")
@@ -53,6 +57,23 @@ save(co2B03CalRefData, file = "tests/testthat/co2B03CalRefData.Rdata")
 co2B03CalAmbData <- ciso_cal$`000_010_09m`
 save(co2B03CalAmbData, file = "tests/testthat/co2B03CalAmbData.Rdata")
 
+#---------------------
+# Linear regression method
+#---------------------
+# 4) get the table of Bowling gain and offset parameters.
+ciso_cal <- rhdf5::h5read(master_ccalLR_file, "/ONAQ/dp01/data/isoCo2")
+
+co2LRCalTable <- ciso_cal$calData$calRegressions
+save(co2LRCalTable, file = "tests/testthat/co2LRCalTable.Rdata")
+
+# 5) Bowling method calibrated reference values.
+co2LRCalRefData <- ciso_cal[c("co2High_09m","co2Med_09m","co2Low_09m")]
+save(co2LRCalRefData, file = "tests/testthat/co2LRCalRefData.Rdata")
+
+# 6) Bowling method calibrated data file.
+co2LRCalAmbData <- ciso_cal$`000_010_09m`
+save(co2LRCalAmbData, file = "tests/testthat/co2LRCalAmbData.Rdata")
+
 rm(list = ls(pattern = "^co2"))
 rm(ciso, ucrt, ciso_cal)
 
@@ -60,8 +81,8 @@ rm(ciso, ucrt, ciso_cal)
 # extract h2o data for unit testing:
 #---------------------------------------
 
-wiso <- rhdf5::h5read(master_file, "/WREF/dp01/data/isoH2o")
-ucrt <- rhdf5::h5read(master_file, "/WREF/dp01/ucrt/isoH2o")
+wiso <- rhdf5::h5read(master_file, "/ONAQ/dp01/data/isoH2o")
+ucrt <- rhdf5::h5read(master_file, "/ONAQ/dp01/ucrt/isoH2o")
 
 # 1) get raw calibration data.
 h2oRawRefData <- wiso[c("h2oHigh_03m","h2oMed_03m","h2oLow_03m")]
@@ -82,3 +103,56 @@ save(h2oRawRefDataBySite, file = "tests/testthat/h2oRawRefDataBySite.Rdata")
 # 3) get raw ambient data - currently from a monthly file, might be better to get from daily file.
 h2oRawAmbData <- wiso$`000_010_09m`
 save(h2oRawAmbData, file = "tests/testthat/h2oRawAmbData.Rdata")
+
+
+
+
+#_---------------------
+# if need to generate a new hdf5 sample file...
+# fid <- H5Fopen("inst/extdata/NEON_sample_full.h5")
+# h5delete(fid, '/ONAQ/dp04/')
+# h5delete(fid, '/ONAQ/dp03/')
+# h5delete(fid, '/ONAQ/dp02/')
+# h5delete(fid, '/ONAQ/dp01/qfqm/')
+# h5delete(fid, '/ONAQ/dp01/data/co2Stor/')
+# h5delete(fid, '/ONAQ/dp01/data/h2oStor/')
+# h5delete(fid, '/ONAQ/dp01/ucrt/h2oStor/')
+# h5delete(fid, '/ONAQ/dp01/ucrt/co2Stor/')
+# h5delete(fid, '/ONAQ/dp01/ucrt/co2Turb/')
+# h5delete(fid, '/ONAQ/dp01/data/co2Turb/')
+# h5delete(fid, '/ONAQ/dp01/ucrt/h2oTurb/')
+# h5delete(fid, '/ONAQ/dp01/data/h2oTurb/')
+# h5delete(fid, '/ONAQ/dp01/data/soni/')
+# h5delete(fid, '/ONAQ/dp01/data/amrs/')
+# h5delete(fid, '/ONAQ/dp01/ucrt/amrs/')
+# h5delete(fid, '/ONAQ/dp01/ucrt/soni/')
+# h5delete(fid, '/ONAQ/dp01/ucrt/tempAirLvl/')
+# h5delete(fid, '/ONAQ/dp01/data/tempAirLvl/')
+# h5delete(fid, '/ONAQ/dp01/data/radiNet/')
+# h5delete(fid, '/ONAQ/dp01/ucrt/radiNet/')
+# h5delete(fid, '/ONAQ/dp01/ucrt/tempSoil/')
+# h5delete(fid, '/ONAQ/dp01/data/tempSoil/')
+# h5delete(fid, '/ONAQ/dp01/data/h2oSoilVol/')
+# h5delete(fid, '/ONAQ/dp01/ucrt/h2oSoilVol/')
+# h5delete(fid, '/ONAQ/dp01/ucrt/fluxHeatSoil/')
+# h5delete(fid, '/ONAQ/dp01/data/fluxHeatSoil/')
+# h5delete(fid, '/ONAQ/dp01/data/presBaro/')
+# h5delete(fid, '/ONAQ/dp01/ucrt/presBaro/')
+# h5delete(fid, '/ONAQ/dp01/ucrt/tempAirTop/')
+# h5delete(fid, '/ONAQ/dp01/data/tempAirTop/')
+# h5delete(fid, '/ONAQ/dp01/data/isoCo2/co2High_30m')
+# h5delete(fid, '/ONAQ/dp01/data/isoCo2/co2Med_30m')
+# h5delete(fid, '/ONAQ/dp01/data/isoCo2/co2Low_30m')
+# h5delete(fid, '/ONAQ/dp01/data/isoCo2/co2Arch_30m')
+# h5delete(fid, '/ONAQ/dp01/data/isoH2o/h2oHigh_30m')
+# h5delete(fid, '/ONAQ/dp01/data/isoH2o/h2oMed_30m')
+# h5delete(fid, '/ONAQ/dp01/data/isoH2o/h2oLow_30m')
+# h5delete(fid, '/ONAQ/dp01/ucrt/isoCo2/co2High_30m')
+# h5delete(fid, '/ONAQ/dp01/ucrt/isoCo2/co2Med_30m')
+# h5delete(fid, '/ONAQ/dp01/ucrt/isoCo2/co2Low_30m')
+# h5delete(fid, '/ONAQ/dp01/ucrt/isoCo2/co2Arch_30m')
+# h5delete(fid, '/ONAQ/dp01/ucrt/isoH2o/h2oHigh_30m')
+# h5delete(fid, '/ONAQ/dp01/ucrt/isoH2o/h2oMed_30m')
+# h5delete(fid, '/ONAQ/dp01/ucrt/isoH2o/h2oLow_30m')
+# H5Fclose(fid)
+
