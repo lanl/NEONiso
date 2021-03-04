@@ -11,12 +11,11 @@ calibrate_carbon_Bowling2003(
   time_diff_btwn_cals = 1800,
   force_cal_to_beginning = TRUE,
   force_cal_to_end = TRUE,
-  interpolate.missing.cals = FALSE,
-  interpolation.method = "LWMA",
-  ucrt.source = "data",
+  gap_fill_parameters = FALSE,
   filter_ambient = TRUE,
   r2_thres = 0.95,
-  correct_refData = TRUE
+  correct_refData = TRUE,
+  write_to_file = TRUE
 )
 }
 \arguments{
@@ -35,15 +34,11 @@ of the file? (CURRENTLY NOT USED)}
 \item{force_cal_to_end}{Extend last calibration to the end of the file?
 (CURRENTLY NOT USED)}
 
-\item{interpolate.missing.cals}{If a calibration is flagged as bad, should
-we replace these calibrations by interpolating from the closest
-good calibrations? (logical)}
-
-\item{interpolation.method}{How to interpolate across bad calibrations,
-if \code{interpolate.missing.cals == TRUE}. (character)}
-
-\item{ucrt.source}{Where do we take uncertainty estimates from
-(data variance, or the ucrt group in the hdf5 file?)}
+\item{gap_fill_parameters}{Should function attempt to 'gap-fill' across a 
+bad calibration by carrying the last known good calibration forward?
+Implementation is fairly primitive currently, as it only carries 
+the last known good calibration that's available forward rather
+than interpolating, etc. Default FALSE.}
 
 \item{filter_ambient}{Apply the median absolute deviation filter (Brock 86)
 to remove impulse spikes in output ambient data?
@@ -56,6 +51,9 @@ relationship nonlinear. Default = 0.95}
 \item{correct_refData}{NEON has indicated there are a few instances where
 reported d13C or CO2 reference values are wrong. If set to true,
 correct known incorrect values.}
+
+\item{write_to_file}{Write calibrated ambient data to file?
+(Mostly used for testing)}
 }
 \value{
 Returns nothing to the workspace, but creates a new output HDF5
@@ -95,6 +93,11 @@ problem with a valve in the manifold, etc.); the third criterion was adopted
 after visual inspection of data timeseries revealed that often the first
 standard measurement following an instrument issue had higher-than-expected
 error. This criterion clips clearly poor values.
+}
+\examples{
+fin <- system.file("NEON_sample_packed.h5", package = "NEONiso")
+calibrate_carbon_Bowling2003(inname = fin, outname = "example.h5", 
+                            site = "ONAQ", write_to_file = FALSE)
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}

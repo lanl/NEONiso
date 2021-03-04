@@ -12,7 +12,8 @@ calibrate_carbon_linreg(
   force_cal_to_beginning = TRUE,
   force_cal_to_end = TRUE,
   r2_thres = 0.95,
-  correct_refData = TRUE
+  correct_refData = TRUE,
+  write_to_file = TRUE
 )
 }
 \arguments{
@@ -38,6 +39,9 @@ relationship nonlinear. Default = 0.95}
 \item{correct_refData}{Should we replace known/suspected incorrect reference
 values in the NEON HDF5 files? If \code{TRUE} (default), then
 corrects values using a function in \code{standard_corrections.R}.}
+
+\item{write_to_file}{Write calibrated ambient data to file?
+(Mostly used for testing)}
 }
 \value{
 nothing to the workspace, but creates a new output file of
@@ -80,6 +84,12 @@ In brief, this function takes the following steps:
 
 The qfqm and ucrt folders are also copied over from the original file,
 and are unchanged.
+}
+\examples{
+fin <- system.file("NEON_sample_packed.h5", package = "NEONiso")
+# note typical use case would have write_to_file = TRUE
+calibrate_carbon_linreg(inname = fin, outname = "example.h5", 
+                            site = "ONAQ", write_to_file = FALSE)
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}

@@ -12,7 +12,8 @@ calibrate_water_linreg(
   filter_data = TRUE,
   force_cal_to_beginning = TRUE,
   force_cal_to_end = TRUE,
-  r2_thres = 0.95
+  r2_thres = 0.95,
+  write_to_file = FALSE
 )
 }
 \arguments{
@@ -36,6 +37,9 @@ the beginning of the file?}
 \item{r2_thres}{Minimum r2 threshold of an "acceptable" calibration. Acts to
 remove calibration periods where a measurement error makes
 relationship nonlinear. Default = 0.95}
+
+\item{write_to_file}{Write calibrated ambient data to file?
+(Mostly used for testing)}
 }
 \value{
 nothing to the workspace, but creates a new output file of
@@ -65,6 +69,12 @@ data to implement these corrections is not yet publicly available.
 Caution is suggested when analyzing data at low humidities, below ~5000 ppm,
 with likely higher biases at lower humidity values. This is expected to be
 added in Q3 of 2020.
+}
+\examples{
+fin <- system.file("NEON_sample_packed.h5", package = "NEONiso")
+# note typical use case would have write_to_file = TRUE
+calibrate_water_linreg(inname = fin, outname = "example.h5", 
+                            site = "ONAQ", write_to_file = FALSE)
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
