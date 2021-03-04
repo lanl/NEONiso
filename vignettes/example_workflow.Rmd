@@ -69,13 +69,3 @@ sapply(unique(outpaths),dir.create,showWarnings=FALSE)
 # update fnames.out to include desired output paths.
 fnames.out <- paste0(outpaths,"/",fnames.out)
 ```
-
-## Diagnostic scripts
-
-NEONiso also contains a function to create a series of diagnostic plots of the calibrated datafiles for users to inspect and become more familiar with the dataset they are using. Plots include monthly or whole dataset plots of reference gas measurements, calibration parameters (e.g., slope and intercept of calibrating regression), and calibrated and uncalibrated atmospheric gas measurements. For the carbon data, the function is carbon_diagnostic_package(). For example, diagnostic plots can be written to a directory "plots/" using calibrated data stored in a directory "calibrated/" using the function:
-
-```{r, eval = FALSE}
-carbon_diagnostic_package("calibrated/","plots/")
-```
-
-Upon running this command, an interactive menu will come up for you to select which plots you are most interested in.
