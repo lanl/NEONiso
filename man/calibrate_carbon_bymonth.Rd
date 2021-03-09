@@ -15,7 +15,7 @@ calibrate_carbon_bymonth(
   gap_fill_parameters = FALSE,
   filter_ambient = TRUE,
   r2_thres = 0.95,
-  correct_refData = FALSE,
+  correct_refData = TRUE,
   write_to_file = TRUE
 )
 }
@@ -25,6 +25,14 @@ calibrate_carbon_bymonth(
 \item{outname}{Name of the output file. (character)}
 
 \item{site}{Four letter NEON site code for site being processed. (character)}
+
+\item{method}{Are we using the Bowling et al. 2003 method
+("Bowling_2003") or direct linear regression of
+d13C and CO2 mole fractions ("linreg")?}
+
+\item{calibration_half_width}{Determines the period (in days)
+from which reference data are selected (period
+is 2*calibration_half_width).}
 
 \item{force_cal_to_beginning}{Extend first calibration to the beginning
 of the file? (CURRENTLY NOT USED)}
@@ -52,12 +60,9 @@ correct known incorrect values.}
 
 \item{write_to_file}{Write calibrated ambient data to file?
 (Mostly used for testing)}
-
-\item{time_diff_btwn_cals}{Time (in seconds) required between
-consecutive standard measurements. (numeric)}
 }
 \value{
-Returns nothing to the workspace, but creates a new output HDF5
+Returns nothing to the environment, but creates a new output HDF5
         file containing calibrated carbon isotope values.
 }
 \description{
@@ -94,11 +99,6 @@ problem with a valve in the manifold, etc.); the third criterion was adopted
 after visual inspection of data timeseries revealed that often the first
 standard measurement following an instrument issue had higher-than-expected
 error. This criterion clips clearly poor values.
-}
-\examples{
-fin <- system.file("NEON_sample_packed.h5", package = "NEONiso")
-calibrate_carbon_bymonth(inname = fin, outname = "example.h5", 
-                            site = "ONAQ", write_to_file = FALSE)
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}

@@ -12,11 +12,7 @@
 #'                      Will include all variables in 000_0x0_xxm. (character)
 #' @param caldf Calibration data frame containing gain and offset values for
 #'              12C and 13C isotopologues.
-#' @param outname Output variable name. Inherited from
-#'                 \code{calibrate_ambient_carbon_Bowling2003}
 #' @param site Four-letter NEON code corersponding to site being processed.
-#' @param file Output file name. Inherited from
-#'              \code{calibrate_ambient_carbon_Bowling2003}
 #' @param filter_data Apply median absolute deviation filter from Brock 86 to
 #'             remove impulse spikes? Inherited from
 #'             \code{calibrate_ambient_carbon_Bowling2003}
@@ -26,8 +22,6 @@
 #'              first calibration, using the first calibration? (default true)
 #' @param r2_thres Minimum r2 value for calibration to be considered "good" and
 #'             applied to ambient data.
-#' @param write_to_file Write calibrated ambient data to file?
-#'              (Mostly used for testing)
 #' @param gap_fill_parameters Should function attempt to 'gap-fill' across a 
 #'            bad calibration by carrying the last known good calibration forward?
 #'            Implementation is fairly primitive currently, as it only carries 

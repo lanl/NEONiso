@@ -1,12 +1,26 @@
-#' Title
+#' fit_carbon_regression
+#' 
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param ref_data 
-#' @param ... 
+#' @param method Are we using the Bowling et al. 2003 method
+#'              ("Bowling_2003") or direct linear regression of
+#'              d13C and CO2 mole fractions ("linreg")?
+#' @param calibration_half_width Determines the period (in days)
+#'        from which reference data are selected (period
+#'        is 2*calibration_half_width).
+#' @param ref_data Reference data.frame from which to estimate 
+#'        calibration parameters.
 #'
-#' @return
+#' @return Returns a data.frame of calibration parameters. If
+#'        \code{method == "Bowling_2003"}, then data.frame includes 
+#'        gain and offset parameters for 12CO2 and 13CO2, and r^2
+#'        values for each regression. If \code{method == "linreg"},
+#'        then data.frame includes slope, intercept, and r^2 values
+#'        for d13C and CO2 values.
+#'        
 #' @export
 #'
-#' @examples
+#' @importFrom stats coef lm
 
 fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
   

@@ -2,20 +2,30 @@
 % Please edit documentation in R/output_functions.R
 \name{write_carbon_calibration_data}
 \alias{write_carbon_calibration_data}
-\title{Title}
+\title{write_carbon_calibration_data}
 \usage{
 write_carbon_calibration_data(outname, site, calDf, method)
 }
 \arguments{
-\item{outname}{}
+\item{outname}{Output file name.}
 
-\item{calDf}{}
+\item{site}{NEON 4-letter site code.}
 
-\item{method}{}
+\item{calDf}{Calibration data frame - 
+this is the output from fit_carbon_regression}
+
+\item{method}{Was the Bowling et al. 2003 or the linear regression
+method used in fit_carbon_regression?}
 }
 \value{
-
+Nothing to the environment, but writes out the
+        calibration parameters (e.g., gain and offset or 
+        regression slopes and intercepts) to the output
+        hdf5 file.
 }
 \description{
-Title
+write_carbon_calibration_data
+}
+\author{
+Rich Fiorella \email{rich.fiorella@utah.edu}
 }

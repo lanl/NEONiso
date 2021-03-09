@@ -8,8 +8,8 @@
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param std.frame Standard data frame to perform swap on.
-#' @param dxs.thres d-excess threshold to indicate when to swap.
+#' @param std_frame Standard data frame to perform swap on.
+#' @param dxs_thres d-excess threshold to indicate when to swap.
 #'
 #' @export
 

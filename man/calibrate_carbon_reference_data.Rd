@@ -2,24 +2,29 @@
 % Please edit documentation in R/output_functions.R
 \name{calibrate_carbon_reference_data}
 \alias{calibrate_carbon_reference_data}
-\title{Title}
+\title{calibrate_carbon_reference_data}
 \usage{
 calibrate_carbon_reference_data(inname, outname, standard, site, calDf)
 }
 \arguments{
-\item{inname}{}
+\item{inname}{Input file name.}
 
-\item{outname}{}
+\item{outname}{Output file name.}
 
-\item{standard}{}
+\item{standard}{Which standard are we working on? Must be "Low",
+"Med", or "High"}
 
-\item{site}{}
+\item{site}{NEON 4-letter site code.}
 
-\item{calDf}{}
+\item{calDf}{Calibration data frame - 
+this is the output from fit_carbon_regression}
 }
 \value{
-
+Nothing to the environment.
 }
 \description{
-Title
+calibrate_carbon_reference_data
+}
+\author{
+Rich Fiorella \email{rich.fiorella@utah.edu}
 }

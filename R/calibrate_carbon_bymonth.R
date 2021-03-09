@@ -37,8 +37,6 @@
 #'
 #' @param inname Name of the input file. (character)
 #' @param outname Name of the output file. (character)
-#' @param time_diff_btwn_cals Time (in seconds) required between
-#'             consecutive standard measurements. (numeric)
 #' @param force_cal_to_beginning Extend first calibration to the beginning
 #'             of the file? (CURRENTLY NOT USED)
 #' @param force_cal_to_end Extend last calibration to the end of the file?
@@ -60,19 +58,19 @@
 #'            correct known incorrect values. 
 #' @param write_to_file Write calibrated ambient data to file?
 #'              (Mostly used for testing)
+#' @param method Are we using the Bowling et al. 2003 method
+#'              ("Bowling_2003") or direct linear regression of
+#'              d13C and CO2 mole fractions ("linreg")?
+#' @param calibration_half_width Determines the period (in days)
+#'        from which reference data are selected (period
+#'        is 2*calibration_half_width).
 #'
-#' @return Returns nothing to the workspace, but creates a new output HDF5
+#' @return Returns nothing to the environment, but creates a new output HDF5
 #'         file containing calibrated carbon isotope values.
 #' @export
 #'
 #' @importFrom magrittr %>%
-#' @importFrom lubridate %within%
-#' @importFrom stats lm coef
 #' 
-#' @examples 
-#' fin <- system.file("NEON_sample_packed.h5", package = "NEONiso")
-#' calibrate_carbon_bymonth(inname = fin, outname = "example.h5", 
-#'                             site = "ONAQ", write_to_file = FALSE)
 calibrate_carbon_bymonth <- function(inname,
                                      outname,
                                      site,
@@ -83,7 +81,7 @@ calibrate_carbon_bymonth <- function(inname,
                                      gap_fill_parameters = FALSE,
                                      filter_ambient = TRUE,
                                      r2_thres = 0.95,
-                                     correct_refData = FALSE, # needs to be fixed.
+                                     correct_refData = TRUE,
                                      write_to_file = TRUE) {
 
   #-----------------------------------------------------------
@@ -149,14 +147,14 @@ calibrate_carbon_bymonth <- function(inname,
   if (write_to_file) {
     cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
     cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
-    setup_output_file(outname, site, 'co2')
+    setup_output_file(inname, outname, site, 'co2')
     write_carbon_calibration_data(outname, site, cal_df, method = method)
     write_carbon_ambient_data(outname, site, ciso_subset_cal)
     write_carbon_reference_data(inname, outname, site, cal_df)
     write_qfqm(inname, outname, site, 'co2')
     write_ucrt(inname, outname, site, 'co2')
     
-    # one last invokation of hdf5 close all, for good luck
+    # one last invocation of hdf5 close all, for good luck
     rhdf5::h5closeAll()
   }
 

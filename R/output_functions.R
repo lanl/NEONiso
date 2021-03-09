@@ -1,14 +1,17 @@
 # output_functions.R
 # functions that write data to hdf5 output files.
 
-#' Title
+#' validate_analyte
 #'
-#' @param analyte 
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @param analyte Co2 or H2o?
 #'
-#' @return
-#' @export
+#' @return Standardized string for the water ('H2o') or
+#'         carbon ('Co2') systems to make sure strings
+#'         are standardized across package functions.
 #'
-#' @examples
+#' 
+#' 
 validate_analyte <- function(analyte) {
   # helper function to make sure all of the variaous output functions are consistent.
   # check to make sure first letter of analyte is capitalized,
@@ -23,17 +26,22 @@ validate_analyte <- function(analyte) {
 }
 
 
-#' Title
+#' setup_output_file
 #'
-#' @param outname 
-#' @param site 
-#' @param analyte 
+#' Creates a skeleton hdf5 file for the calibrated data.
+#' 
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' 
+#' @param inname Input file name.
+#' @param outname Output file name.
+#' @param site NEON 4-letter site code.
+#' @param analyte Carbon ('Co2') or water ('H2o') system?
 #'
-#' @return
-#' @export
+#' @return Nothing to the environment, but creates a new data file
+#'         with the most basic output HDF5 structure consistent with
+#'         NEON's data files.
 #'
-#' @examples
-setup_output_file <- function(outname, site, analyte) {
+setup_output_file <- function(inname, outname, site, analyte) {
   
   analyte <- validate_analyte(analyte)
   
@@ -64,16 +72,22 @@ setup_output_file <- function(outname, site, analyte) {
   
 }
 
-#' Title
+#' write_carbon_calibration_data
 #'
-#' @param outname 
-#' @param calDf 
-#' @param method 
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @return
-#' @export
+#' @param outname Output file name.
+#' @param site NEON 4-letter site code.
+#' @param calDf Calibration data frame - 
+#'              this is the output from fit_carbon_regression
+#' @param method Was the Bowling et al. 2003 or the linear regression
+#'          method used in fit_carbon_regression?
 #'
-#' @examples
+#' @return Nothing to the environment, but writes out the
+#'         calibration parameters (e.g., gain and offset or 
+#'         regression slopes and intercepts) to the output
+#'         hdf5 file.
+#'
 write_carbon_calibration_data <- function(outname, site, calDf, method) {
 
   print("Writing calibration parameters...")
@@ -105,16 +119,21 @@ write_carbon_calibration_data <- function(outname, site, calDf, method) {
 }
 
 
-#' Title
+#' write_carbon_ambient_data
 #'
-#' @param outname 
-#' @param site 
-#' @param amb_data_list 
+#' Write out ambient observations from the NEON EC
+#' towers where the isotope data (either H2O or CO2)
+#' have been calibrated using this package.
 #'
-#' @return
-#' @export
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @examples
+#' @param outname Output file name.
+#' @param site NEON 4-letter site code.
+#' @param amb_data_list Calibrated list of ambient data -
+#'        this is the output from one of the calibrate_ambient_carbon* functions.
+#'
+#' @return Nothing to the environment, but writes data in amb_data_list to file.
+#'
 write_carbon_ambient_data <- function(outname, site, amb_data_list) {
   
   print("Writing calibrated ambient data...")
@@ -146,100 +165,18 @@ write_carbon_ambient_data <- function(outname, site, amb_data_list) {
 }
 
 
-#' Title
+#' write_carbon_reference_data
 #'
-#' @param inname 
-#' @param outname 
-#' @param site 
-#' @param analyte 
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @return
-#' @export
+#' @param inname Input file name.
+#' @param outname Output file name.
+#' @param site NEON 4-letter site code.
+#' @param calDf Calibration data frame - 
+#'              this is the output from fit_carbon_regression
 #'
-#' @examples
-write_qfqm <- function(inname, outname, site, analyte) {
-  
-  analyte <- validate_analyte(analyte)
-  
-  print("Copying qfqm...")
-  # copy over ucrt and qfqm groups as well.
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/iso",analyte))
-  qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/iso",analyte))
-  
-  if (analyte == 'Co2') {
-    lapply(names(qfqm), function(x) {
-      copy_qfqm_group(data_list = qfqm[[x]],
-                      outname = x,
-                      file = outname,
-                      site = site,
-                      species = "CO2")})
-  } else if (analyte == 'H2o') {
-    lapply(names(qfqm), function(x) {
-      copy_qfqm_group(data_list = qfqm[[x]],
-                      outname = x,
-                      file = outname,
-                      site = site, 
-                      species = "H2O")})
-  }
-  
-  rhdf5::h5closeAll()
-
-}
-
-#' Title
+#' @return Nothing to the environment, but writes calibrated reference data to hdf5 file.
 #'
-#' @param inname 
-#' @param outname 
-#' @param site 
-#' @param analyte 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-write_ucrt <- function(inname, outname, site, analyte) {
-  
-  analyte <- validate_analyte(analyte)
-  
-  print("Copying ucrt...")
-  # copy over ucrt and qfqm groups as well.
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/iso",analyte))
-  ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/iso",analyte))
-  
-  if (analyte == 'Co2') {
-    lapply(names(ucrt), function(x) {
-      copy_ucrt_group(data_list = ucrt[[x]],
-                      outname = x,
-                      file = outname,
-                      site = site,
-                      species = "CO2")})
-  } else if (analyte == 'H2o') {
-    lapply(names(ucrt), function(x) {
-      copy_ucrt_group(data_list = ucrt[[x]],
-                      outname = x,
-                      file = outname,
-                      site = site, 
-                      species = "H2O")})
-  }
-  
-  rhdf5::h5closeAll()
-  
-}
-
-
-#' Title
-#'
-#' @param inname 
-#' @param outname 
-#' @param site 
-#' @param calDf 
-#'
-#' @return
-#' @export
-#'
-#' @examples
 write_carbon_reference_data <- function(inname, outname, site, calDf) {
   
   print("Writing calibrated reference data...")
@@ -249,28 +186,29 @@ write_carbon_reference_data <- function(inname, outname, site, calDf) {
   
 }
 
-
-#' Title
+#' calibrate_carbon_reference_data
 #'
-#' @param inname 
-#' @param outname 
-#' @param standard 
-#' @param site 
-#' @param calDf 
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @return
-#' @export
+#' @param inname Input file name.
+#' @param outname Output file name.
+#' @param standard Which standard are we working on? Must be "Low",
+#'                 "Med", or "High"
+#' @param site NEON 4-letter site code.
+#' @param calDf Calibration data frame - 
+#'              this is the output from fit_carbon_regression
 #'
-#' @examples
+#' @return Nothing to the environment.  
+#'
 calibrate_carbon_reference_data <- function(inname, outname,
-                                     standard, site, calDf)  {
+                                            standard, site, calDf)  {
   
   std <- rhdf5::h5read(inname,
                        paste0("/", site, "/dp01/data/isoCo2/co2",standard,"_09m"))
-
+  
   std <- calibrate_standards_carbon(calDf, std, correct_bad_refvals = TRUE,
                                     site = site, refGas = standard)
-
+  
   
   fid <- rhdf5::H5Fopen(outname)
   rhdf5::H5Gcreate(fid, paste0("/", site, "/dp01/data/isoCo2/co2",standard,"_09m"))
@@ -282,10 +220,80 @@ calibrate_carbon_reference_data <- function(inname, outname,
                                      h5loc = std_outloc,
                                      name = x,
                                      DataFrameAsCompound = TRUE)})
-
+  
   rhdf5::H5Gclose(std_outloc)
   rhdf5::H5Fclose(fid)
   rhdf5::h5closeAll()
+}
+
+#' write_qfqm
+#' 
+#' Write NEON's qfqm data for an isotope species to 
+#' output file. Wraps copy_qfqm_group.
+#'
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#'
+#' @param inname Input file name.
+#' @param outname Output file name.
+#' @param site NEON 4-letter site code.
+#' @param analyte Carbon ('Co2') or water ('H2o') system?
+#'
+#' @return Nothing to the environment, but writes qfqm data to file.
+#'
+write_qfqm <- function(inname, outname, site, analyte) {
+  
+  analyte <- validate_analyte(analyte)
+  
+  print("Copying qfqm...")
+  # copy over ucrt and qfqm groups as well.
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/iso",analyte))
+  qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/iso",analyte))
+  
+  lapply(names(qfqm), function(x) {
+    copy_qfqm_group(data_list = qfqm[[x]],
+                    outname = x,
+                    file = outname,
+                    site = site,
+                    species = analyte)})
+  
+  rhdf5::h5closeAll()
+
+}
+
+#' write_ucrt
+#' 
+#' Write NEON's ucrt data for an isotope species to 
+#' output file. Wraps copy_ucrt_group.
+#'
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#'
+#' @param inname Input file name.
+#' @param outname Output file name.
+#' @param site NEON 4-letter site code.
+#' @param analyte Carbon ('Co2') or water ('H2o') system?
+#'
+#' @return Nothing to the environment, but writes ucrt data to file.
+#' 
+write_ucrt <- function(inname, outname, site, analyte) {
+  
+  analyte <- validate_analyte(analyte)
+  
+  print("Copying ucrt...")
+  # copy over ucrt and qfqm groups as well.
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/iso",analyte))
+  ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/iso",analyte))
+  
+  lapply(names(ucrt), function(x) {
+    copy_ucrt_group(data_list = ucrt[[x]],
+                    outname = x,
+                    file = outname,
+                    site = site,
+                    species = analyte)})
+  
+  rhdf5::h5closeAll()
+  
 }
 
 #' copy_qfqm_group
@@ -300,14 +308,13 @@ calibrate_carbon_reference_data <- function(inname, outname,
 #'
 #' @return Nothing to the workspace, but copies qfqm group from input file to
 #'         output file.
-#' @export
 #'
 copy_qfqm_group <- function(data_list, outname, site, file, species) {
 
   # create hdf5 structure for these variables.
   fid <- rhdf5::H5Fopen(file)
 
-  if (species == "CO2") {
+  if (species == "Co2") {
     co2_data_outloc <- rhdf5::H5Gcreate(fid,
                                         paste0("/", site, "/dp01/qfqm/isoCo2/", outname))
 
@@ -319,7 +326,7 @@ copy_qfqm_group <- function(data_list, outname, site, file, species) {
                                        name = x,
                                        DataFrameAsCompound = TRUE)})
 
-  } else if (species == "H2O") {
+  } else if (species == "H2o") {
 
     h2o_data_outloc <- rhdf5::H5Gcreate(fid,
                                         paste0("/", site, "/dp01/qfqm/isoH2o/", outname))
@@ -351,14 +358,13 @@ copy_qfqm_group <- function(data_list, outname, site, file, species) {
 #'
 #' @return Nothing to the workspace, but copies ucrt group from input file to
 #'         output file.
-#' @export
 #'
 copy_ucrt_group <- function(data_list, outname, site, file, species) {
 
   # create hdf5 structure for these variables.
   fid <- rhdf5::H5Fopen(file)
 
-  if (species == "CO2") {
+  if (species == "Co2") {
 
     co2_data_outloc <- rhdf5::H5Gcreate(fid,
                                         paste0("/", site, "/dp01/ucrt/isoCo2/", outname))
@@ -370,7 +376,7 @@ copy_ucrt_group <- function(data_list, outname, site, file, species) {
                                        name = x,
                                        DataFrameAsCompound = TRUE)})
 
-  } else if (species == "H2O") {
+  } else if (species == "H2o") {
 
     h2o_data_outloc <- rhdf5::H5Gcreate(fid,
                                         paste0("/", site, "/dp01/ucrt/isoH2o/", outname))

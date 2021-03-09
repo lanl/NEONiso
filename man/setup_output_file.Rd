@@ -2,20 +2,27 @@
 % Please edit documentation in R/output_functions.R
 \name{setup_output_file}
 \alias{setup_output_file}
-\title{Title}
+\title{setup_output_file}
 \usage{
-setup_output_file(outname, site, analyte)
+setup_output_file(inname, outname, site, analyte)
 }
 \arguments{
-\item{outname}{}
+\item{inname}{Input file name.}
 
-\item{site}{}
+\item{outname}{Output file name.}
 
-\item{analyte}{}
+\item{site}{NEON 4-letter site code.}
+
+\item{analyte}{Carbon ('Co2') or water ('H2o') system?}
 }
 \value{
-
+Nothing to the environment, but creates a new data file
+        with the most basic output HDF5 structure consistent with
+        NEON's data files.
 }
 \description{
-Title
+Creates a skeleton hdf5 file for the calibrated data.
+}
+\author{
+Rich Fiorella \email{rich.fiorella@utah.edu}
 }

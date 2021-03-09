@@ -42,15 +42,6 @@ than interpolating, etc. Default FALSE.}
 
 \item{r2_thres}{Minimum r2 value for calibration to be considered "good" and
 applied to ambient data.}
-
-\item{outname}{Output variable name. Inherited from
-\code{calibrate_ambient_carbon_Bowling2003}}
-
-\item{file}{Output file name. Inherited from
-\code{calibrate_ambient_carbon_Bowling2003}}
-
-\item{write_to_file}{Write calibrated ambient data to file?
-(Mostly used for testing)}
 }
 \value{
 Depends on \code{write_to_file} argument. If true, returns nothing to environment; 

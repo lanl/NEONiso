@@ -2,22 +2,26 @@
 % Please edit documentation in R/output_functions.R
 \name{write_carbon_reference_data}
 \alias{write_carbon_reference_data}
-\title{Title}
+\title{write_carbon_reference_data}
 \usage{
 write_carbon_reference_data(inname, outname, site, calDf)
 }
 \arguments{
-\item{inname}{}
+\item{inname}{Input file name.}
 
-\item{outname}{}
+\item{outname}{Output file name.}
 
-\item{site}{}
+\item{site}{NEON 4-letter site code.}
 
-\item{calDf}{}
+\item{calDf}{Calibration data frame - 
+this is the output from fit_carbon_regression}
 }
 \value{
-
+Nothing to the environment, but writes calibrated reference data to hdf5 file.
 }
 \description{
-Title
+write_carbon_reference_data
+}
+\author{
+Rich Fiorella \email{rich.fiorella@utah.edu}
 }

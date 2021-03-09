@@ -2,22 +2,26 @@
 % Please edit documentation in R/output_functions.R
 \name{write_ucrt}
 \alias{write_ucrt}
-\title{Title}
+\title{write_ucrt}
 \usage{
 write_ucrt(inname, outname, site, analyte)
 }
 \arguments{
-\item{inname}{}
+\item{inname}{Input file name.}
 
-\item{outname}{}
+\item{outname}{Output file name.}
 
-\item{site}{}
+\item{site}{NEON 4-letter site code.}
 
-\item{analyte}{}
+\item{analyte}{Carbon ('Co2') or water ('H2o') system?}
 }
 \value{
-
+Nothing to the environment, but writes ucrt data to file.
 }
 \description{
-Title
+Write NEON's ucrt data for an isotope species to 
+output file. Wraps copy_ucrt_group.
+}
+\author{
+Rich Fiorella \email{rich.fiorella@utah.edu}
 }

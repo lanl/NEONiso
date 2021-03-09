@@ -2,20 +2,26 @@
 % Please edit documentation in R/output_functions.R
 \name{write_carbon_ambient_data}
 \alias{write_carbon_ambient_data}
-\title{Title}
+\title{write_carbon_ambient_data}
 \usage{
 write_carbon_ambient_data(outname, site, amb_data_list)
 }
 \arguments{
-\item{outname}{}
+\item{outname}{Output file name.}
 
-\item{site}{}
+\item{site}{NEON 4-letter site code.}
 
-\item{amb_data_list}{}
+\item{amb_data_list}{Calibrated list of ambient data -
+this is the output from one of the calibrate_ambient_carbon* functions.}
 }
 \value{
-
+Nothing to the environment, but writes data in amb_data_list to file.
 }
 \description{
-Title
+Write out ambient observations from the NEON EC
+towers where the isotope data (either H2O or CO2)
+have been calibrated using this package.
+}
+\author{
+Rich Fiorella \email{rich.fiorella@utah.edu}
 }

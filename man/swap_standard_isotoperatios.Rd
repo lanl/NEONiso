@@ -7,9 +7,9 @@
 swap_standard_isotoperatios(std_frame, dxs_thres = 500)
 }
 \arguments{
-\item{std.frame}{Standard data frame to perform swap on.}
+\item{std_frame}{Standard data frame to perform swap on.}
 
-\item{dxs.thres}{d-excess threshold to indicate when to swap.}
+\item{dxs_thres}{d-excess threshold to indicate when to swap.}
 }
 \description{
 There are a few suspected instances where the water
