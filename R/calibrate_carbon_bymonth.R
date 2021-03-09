@@ -71,13 +71,13 @@
 #' 
 #' @examples 
 #' fin <- system.file("NEON_sample_packed.h5", package = "NEONiso")
-#' calibrate_carbon_Bowling2003(inname = fin, outname = "example.h5", 
+#' calibrate_carbon_bymonth(inname = fin, outname = "example.h5", 
 #'                             site = "ONAQ", write_to_file = FALSE)
 calibrate_carbon_bymonth <- function(inname,
                                      outname,
                                      site,
                                      method = "Bowling_2003",
-                                     calibration_half_width = 14, # seconds?
+                                     calibration_half_width = 0.5,
                                      force_cal_to_beginning = TRUE,
                                      force_cal_to_end = TRUE,
                                      gap_fill_parameters = FALSE,
@@ -94,142 +94,70 @@ calibrate_carbon_bymonth <- function(inname,
   
   # extract the data we need from ciso list
   refe <- extract_carbon_calibration_data(ciso)
-  #---------------------------------------------------------------
-  # Select which validation data to carry through to calibration
-  #---------------------------------------------------------------
-  refe <- select_daily_reference_data(refe, analyte = 'co2')
-
+  
   # Okay this function now needs some work. *************
   if (correct_refData == TRUE) {
     
     # do some work to correct the reference data frame
-    stds <- correct_carbon_ref_cval(stds,site)
+    refe <- correct_carbon_ref_cval(refe,site)
     
   }
   
-  if (method == "Bowling_2003") {
-    
-    # calculate mole fraction (12CO2 / 13CO2) for ref gases and observed values
-    refe$conc12CCO2_ref = calculate_12CO2(refe$rtioMoleDryCo2Refe.mean, refe$dlta13CCo2Refe.mean) 
-    refe$conc13CCO2_ref = calculate_13CO2(refe$rtioMoleDryCo2Refe.mean, refe$dlta13CCo2Refe.mean)
-    refe$conc12CCO2_obs = calculate_12CO2(refe$CO2_obs_mean, refe$dlta13CCo2.mean)
-    refe$conc13CCO2_obs = calculate_13CO2(refe$CO2_obs_mean, refe$dlta13CCo2.mean)
+  # get calibration parameters data.frame.
+  cal_df <- fit_carbon_regression(ref_data = refe, method = method,
+                                  calibration_half_width = calibration_half_width)
 
-
-  } else if (method == "lin_reg") {
-    stop("lin_reg not yet ported over to new structure")
-  } else {
-    stop("invalid calibration method selected.")
-  }
-  
-  #----------------------------------------------------------------------------
-  # calibrate ambient data.
-  # extract ambient measurements from ciso
+#----------------------------------------------------------------------------
+#  calibrate ambient data.
+#  extract ambient measurements from ciso
+  ciso <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2"))
   ciso_logical <- grepl(pattern = "000", x = names(ciso))
   ciso_subset <- ciso[ciso_logical]
-  
-  lapply(names(ciso_subset),
-         function(x) {
-           calibrate_ambient_carbon_Bowling2003(
-             amb_data_list = ciso_subset[[x]],
-             caldf = out,
-             outname = x,
-             file = outname,
-             site = site,
-             filter_data = filter_ambient,
-             force_to_end = force_cal_to_end,
-             force_to_beginning = force_cal_to_beginning,
-             r2_thres = r2_thres,
-             write_to_file = write_to_file)
-         }
-  )
-  
-  rhdf5::h5closeAll()
-  
-  
+
+  if (method == "Bowling_2003") {
+    ciso_subset_cal <- lapply(names(ciso_subset),
+                              function(x) {
+                                calibrate_ambient_carbon_Bowling2003(
+                                  amb_data_list = ciso_subset[[x]],
+                                  caldf = cal_df,
+                                  site = site,
+                                  # filter_data = filter_ambient,
+                                  # force_to_end = force_cal_to_end,
+                                  # force_to_beginning = force_cal_to_beginning,
+                                  r2_thres = r2_thres)
+                              })
+  } else if (method == "linreg") {
+    ciso_subset_cal <- lapply(names(ciso_subset),
+                              function(x) {
+                                calibrate_ambient_carbon_linreg(
+                                  amb_data_list = ciso_subset[[x]],
+                                  caldf = cal_df,
+                                  site = site,
+                                  # filter_data = filter_ambient,
+                                  # force_to_end = force_cal_to_end,
+                                  # force_to_beginning = force_cal_to_beginning,
+                                  r2_thres = r2_thres,
+                                  write_to_file = FALSE)
+                              })
+  }
+
+  names(ciso_subset_cal) <- names(ciso_subset)
   
   #-----------------------------------------------------------
-  var_for_h5 <- out
-
-  var_for_h5$start <- convert_POSIXct_to_NEONhdf5_time(out$start)
-  var_for_h5$end <- convert_POSIXct_to_NEONhdf5_time(out$end)
-
-  var_for_h5$valid_period_start <- var_for_h5$start
-  var_for_h5$valid_period_end   <- var_for_h5$end
-
-  # enforce that all other columns are numeric
-  var_for_h5$gain12C   <- as.numeric(var_for_h5$gain12C)
-  var_for_h5$gain13C   <- as.numeric(var_for_h5$gain13C)
-  var_for_h5$offset12C <- as.numeric(var_for_h5$offset12C)
-  var_for_h5$offset13C <- as.numeric(var_for_h5$offset13C)
-  var_for_h5$r2_12C    <- as.numeric(var_for_h5$r2_12C)
-  var_for_h5$r2_13C    <- as.numeric(var_for_h5$r2_13C)
-
-  # remove old vars.
-  var_for_h5$start <- var_for_h5$end <- NULL
-
+  # write out these data.frames to a new output file.
+  #-----------------------------------------------------------
   if (write_to_file) {
+    cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
+    cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
     setup_output_file(outname, site, 'co2')
+    write_carbon_calibration_data(outname, site, cal_df, method = method)
+    write_carbon_ambient_data(outname, site, ciso_subset_cal)
+    write_carbon_reference_data(inname, outname, site, cal_df)
+    write_qfqm(inname, outname, site, 'co2')
+    write_ucrt(inname, outname, site, 'co2')
     
-    # write out calibration dataframe to a new group to keep it away from stackEddy
-    rhdf5::h5createGroup(outname,
-                         paste0("/", site, "/dp01/data/isoCo2/calData"))
-    
-    co2.cal.outloc <- rhdf5::H5Gopen(fid,
-                                     paste0("/", site, "/dp01/data/isoCo2/calData"))
-    
-    # write out dataset.
-    rhdf5::h5writeDataset.data.frame(obj = var_for_h5,
-                                     h5loc = co2.cal.outloc,
-                                     name = "calGainsOffsets",
-                                     DataFrameAsCompound = TRUE)
-    
-    rhdf5::H5Gclose(co2.cal.outloc)
-    
-    # close the group and the file
-    rhdf5::H5Fclose(fid)
-    Sys.sleep(0.5)
-    
+    # one last invokation of hdf5 close all, for good luck
     rhdf5::h5closeAll()
   }
-  
-
-
-
-  # if (write_to_file) {
-  #   
-  #   print("Copying qfqm...")
-  #   # copy over ucrt and qfqm groups as well.
-  #   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/"))
-  #   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoCo2"))
-  #   qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/isoCo2"))
-  #   
-  #   lapply(names(qfqm), function(x) {
-  #     copy_qfqm_group(data_list = qfqm[[x]],
-  #                     outname = x,
-  #                     file = outname,
-  #                     site = site,
-  #                     species = "CO2")})
-  #   
-  #   rhdf5::h5closeAll()
-  #   
-  #   print("Copying ucrt...")
-  #   # now ucrt.
-  #   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/"))
-  #   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoCo2"))
-  #   ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/isoCo2"))
-  #   
-  #   lapply(names(ucrt), function(x) {
-  #     copy_ucrt_group(data_list = ucrt[[x]],
-  #                     outname = x,
-  #                     file = outname,
-  #                     site = site,
-  #                     species = "CO2")})
-  #   
-  #   rhdf5::h5closeAll()
-  #   
-  #   Sys.sleep(0.5)
-  #   
-  # }
 
 }
