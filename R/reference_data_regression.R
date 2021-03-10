@@ -44,11 +44,11 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
     if (nrow(ref_data) == 0) {
       
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
-      out <- data.frame(start = as.POSIXct(yrmn,
+      out <- data.frame(timeBgn = as.POSIXct(yrmn,
                                            format = "%Y-%m",
                                            tz = "UTC",
                                            origin = "1970-01-01"),
-                        end = as.POSIXct(yrmn,
+                        timeEnd = as.POSIXct(yrmn,
                                          format = "%Y-%m",
                                          tz = "UTC",
                                          origin = "1970-01-01"),
@@ -142,11 +142,11 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
     
     if (nrow(ref_data) == 0) {
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
-      out <- data.frame(start = as.POSIXct(yrmn,
+      out <- data.frame(timeBgn = as.POSIXct(yrmn,
                                            format = "%Y-%m",
                                            tz = "UTC",
                                            origin = "1970-01-01"),
-                        end = as.POSIXct(yrmn,
+                        timeEnd = as.POSIXct(yrmn,
                                          format = "%Y-%m",
                                          tz = "UTC",
                                          origin = "1970-01-01"),
