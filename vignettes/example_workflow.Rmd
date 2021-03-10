@@ -44,12 +44,13 @@ The simplest way to interact with these functions is to place it inside of a for
 
 ``` {r, eval = FALSE}
 for (i in 1:length(fnames.out)) {
-  #calibrate_carbon_linreg(fnames[i],fnames.out[i],site=site.code[i])
-  calibrate_carbon_Bowling2003(fnames[i],fnames.out[i],site=site.code[i])
+  calibrate_carbon_bymonth(fnames[i],fnames.out[i],site=site.code[i], method = "Bowling_2003")
 }
 ```
 
-Both functions assume you have vectors of: 1) input file names (fnames), 2) output file names (fnames.out), and 3) 4 letter NEON site codes corresponding to each entry in input file names (fnames). An example of code to generate these three vectors is provided below: 
+Two different methods to calibrate are available: a) a 'gain and offset' regression using 12CO2 and 13CO2 mole fractions (after Bowling et al. 2003) and b) a 'direct' linear regression of CO2 and d13C values to generate calibration transfer functions. More details are provided in the function documentation along with the package, as well as a recent publication in JGR Biogeosciences (doi.org/10.1029/2020JG005682)[https://doi.org/10.1029/2020JG005682]. 
+
+The function 'calibrate_carbon_bymonth' function assumes you have vectors of: 1) input file names (fnames), 2) output file names (fnames.out), and 3) 4 letter NEON site codes corresponding to each entry in input file names (fnames). An example of code to generate these three vectors is provided below: 
 
 ```{r, eval = FALSE}
 data.dir <- '/your/path/here/DP4_00200_001/'
@@ -69,3 +70,6 @@ sapply(unique(outpaths),dir.create,showWarnings=FALSE)
 # update fnames.out to include desired output paths.
 fnames.out <- paste0(outpaths,"/",fnames.out)
 ```
+
+## Road map: what to expect in near-term future releases
+Current functionality of the NEONiso package should enable users to replicate the datasets used in the JGR Biogeosciences paper. Currently, routines in the NEONiso package only allow calibration of carbon isotopes of CO2, but moving forward we'll be adding functionality to calibrate water vapor isotope ratios as well as making the period across which these routines are calibrated more flexible.
