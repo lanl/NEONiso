@@ -16,8 +16,6 @@
 #'             Only used if \code{correct_bad_refvals = TRUE}.
 #' @param refGas One of "low", "med", or "high."
 #'             Only used if \code{correct_bad_refvals = TRUE}.
-
-#' @export
 calibrate_standards_carbon <- function(cal_df,
                                        ref_df,
                                        f = 0.00474,

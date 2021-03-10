@@ -19,7 +19,6 @@
 #' qualify as a valid measurement. For the water system, this function
 #' also keeps only the last three injections for each reference water
 #' per day. 
-#' @export
 #' 
 #' 
 select_daily_reference_data <- function(standard_df, analyte, min_nobs=NA) {

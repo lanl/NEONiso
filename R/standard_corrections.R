@@ -10,8 +10,6 @@
 #'
 #' @param std_frame Standard data frame to perform swap on.
 #' @param dxs_thres d-excess threshold to indicate when to swap.
-#'
-#' @export
 
 swap_standard_isotoperatios <- function(std_frame, dxs_thres = 500) {
   # calculate d excess
@@ -50,8 +48,7 @@ swap_standard_isotoperatios <- function(std_frame, dxs_thres = 500) {
 #'
 #' @param std_frame Standard data frame to perform swap on.
 #' @param site NEON four letter site code.
-#'
-#' @export
+
 
 correct_carbon_ref_cval <- function(std_frame,site) {
 

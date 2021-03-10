@@ -6,7 +6,6 @@
 #'                  group in NEON HDF5 file.
 #'
 #' @return Returns data frame of required variables.
-#' @export
 #'
 #' @import tidyselect
 extract_carbon_calibration_data <- function(data_list) {
@@ -54,7 +53,6 @@ extract_carbon_calibration_data <- function(data_list) {
 #'               function (use "by_site)
 #'
 #' @return Returns data frame of required variables.
-#' @export
 #'
 extract_water_calibration_data <- function(data_list, ucrt_list = NULL,
                                            standard, ucrt_source = "data",
