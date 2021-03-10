@@ -44,11 +44,11 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
     if (nrow(ref_data) == 0) {
       
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
-      out <- data.frame(start = as.POSIXct(as.Date(yrmn),
+      out <- data.frame(start = as.POSIXct(yrmn,
                                            format = "%Y-%m",
                                            tz = "UTC",
                                            origin = "1970-01-01"),
-                        end = as.POSIXct(as.Date(yrmn),
+                        end = as.POSIXct(yrmn,
                                          format = "%Y-%m",
                                          tz = "UTC",
                                          origin = "1970-01-01"),
@@ -79,7 +79,6 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
       
       # okay, now run calibrations...
       for (i in 1:length(date_seq)) {
-        
         start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00"),
                                     format = "%Y-%m-%d %H:%M:%S",
                                     tz = "UTC", origin = "1970-01-01")
@@ -129,6 +128,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
           out$r2_13C[i]    <- NA
         }
       }
+
       
       #subset out data frame.
       out <- out[1:length(start_time),]
@@ -142,11 +142,11 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
     
     if (nrow(ref_data) == 0) {
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
-      out <- data.frame(start = as.POSIXct(as.Date(yrmn),
+      out <- data.frame(start = as.POSIXct(yrmn,
                                            format = "%Y-%m",
                                            tz = "UTC",
                                            origin = "1970-01-01"),
-                        end = as.POSIXct(as.Date(yrmn),
+                        end = as.POSIXct(yrmn,
                                          format = "%Y-%m",
                                          tz = "UTC",
                                          origin = "1970-01-01"),
@@ -231,6 +231,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
         }
       }
       
+
       #subset out data frame.
       out <- out[1:length(start_time),]
       
