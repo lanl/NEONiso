@@ -37,7 +37,7 @@ The sites argument can also be a vector of multiple sites you'd like to request,
 
 ## Data calibration
 
-Two functions are available to calibrate NEON Carbon isotope data and they take slightly different approaches: a) calibrate_carbon_Bowling2003 calibrates 12CO2 and 13CO2 mole fractions independently, while b) calibrate_carbon_linreg calibrates d13C and CO2 directly without converting to isotopologue mole fractions. These functions yield very similar results, but the error and precision estimates are slightly better from the calibrate_carbon_Bowling2003 function (Fiorella et al., 2021; JGR-Biogeosciences).
+Two functions are available to calibrate NEON Carbon isotope data and they take slightly different approaches: a) calibrate_carbon_Bowling2003 calibrates 12CO2 and 13CO2 mole fractions independently, while b) calibrate_carbon_linreg calibrates d13C and CO2 directly without converting to isotopologue mole fractions. These functions yield very similar results, but the error and precision estimates are slightly better from the calibrate_carbon_Bowling2003 function (Fiorella et al., 2021; JGR-Biogeosciences) [https://doi.org/10.1029/2020JG005682].
 
 The simplest way to interact with these functions is to place it inside of a for loop (or an apply statement), and call them for each file you would like to calibrate:
 
@@ -48,25 +48,32 @@ for (i in 1:length(fnames.out)) {
 }
 ```
 
-Two different methods to calibrate are available: a) a 'gain and offset' regression using 12CO2 and 13CO2 mole fractions (after Bowling et al. 2003) and b) a 'direct' linear regression of CO2 and d13C values to generate calibration transfer functions. More details are provided in the function documentation along with the package, as well as a recent publication in JGR Biogeosciences (doi.org/10.1029/2020JG005682)[https://doi.org/10.1029/2020JG005682]. 
-
-The function 'calibrate_carbon_bymonth' function assumes you have vectors of: 1) input file names (fnames), 2) output file names (fnames.out), and 3) 4 letter NEON site codes corresponding to each entry in input file names (fnames). An example of code to generate these three vectors is provided below: 
+Two different methods to calibrate are available: a) a 'gain and offset' regression using 12CO2 and 13CO2 mole fractions (after Bowling et al. 2003) and b) a 'direct' linear regression of CO2 and d13C values to generate calibration transfer functions. The function 'calibrate_carbon_bymonth' function assumes you have vectors of: 1) input file names (fnames), 2) output file names (fnames.out), and 3) 4 letter NEON site codes corresponding to each entry in input file names (fnames). An example of code to generate these three vectors is provided below: 
 
 ```{r, eval = FALSE}
 data.dir <- '/your/path/here/DP4_00200_001/'
 
 fnames <- list.files(path = data.dir,
-                     pattern = 'basic.h5',
+                     pattern = '.h5',
                      recursive = TRUE,
                      full.names = TRUE)
 
-fname.byfolder <- strsplit(fnames,split="/")
-site.code  <- sapply(fname.byfolder,'[[',7)
-fnames.out <- gsub("basic.h5","basic.calibrated.h5",fname.tmp)
+# unselect gz files.
+fnames <- fnames[!grepl('.gz',fnames)]
+
+fname.byfolder <- strsplit(fnames, split=".", fixed = TRUE)
+site.code  <- sapply(fname.byfolder,'[[',3)
+
+# inspect site.code in the environment: is it a vector that with repeated "ONAQ"?
+
+fnames.tmp <- gsub(".h5",".calibrated.h5",fnames)
+fnames.spt <- strsplit(fnames.tmp, split = "/")
+fnames.out <- sapply(fnames.spt, '[[', 7)
 
 # create new output directory
-outpaths   <- paste0('/output/dir/here/',site.code)
-sapply(unique(outpaths),dir.create,showWarnings=FALSE)
+outpaths   <- paste0(your_path,'/ONAQ/output/')
+sapply(unique(outpaths),dir.create,showWarnings=FALSE) # apply function used here to generalize in case you wanted to run all sites
+
 # update fnames.out to include desired output paths.
 fnames.out <- paste0(outpaths,"/",fnames.out)
 ```
