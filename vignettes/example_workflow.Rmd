@@ -70,6 +70,3 @@ sapply(unique(outpaths),dir.create,showWarnings=FALSE)
 # update fnames.out to include desired output paths.
 fnames.out <- paste0(outpaths,"/",fnames.out)
 ```
-
-## Road map: what to expect in near-term future releases
-Current functionality of the NEONiso package should enable users to replicate the datasets used in the JGR Biogeosciences paper. Currently, routines in the NEONiso package only allow calibration of carbon isotopes of CO2, but moving forward we'll be adding functionality to calibrate water vapor isotope ratios as well as making the period across which these routines are calibrated more flexible.
