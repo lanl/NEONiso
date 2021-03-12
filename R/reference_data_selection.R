@@ -19,7 +19,6 @@
 #' qualify as a valid measurement. For the water system, this function
 #' also keeps only the last three injections for each reference water
 #' per day. 
-#' @export
 #' 
 #' 
 select_daily_reference_data <- function(standard_df, analyte, min_nobs=NA) {
@@ -33,13 +32,14 @@ select_daily_reference_data <- function(standard_df, analyte, min_nobs=NA) {
   if (analyte == "co2") {
     
     standard_df <- standard_df %>%
-      dplyr::mutate(dom = lubridate::day(.data$d13C_obs_btime)) %>% # get day of month
-      dplyr::group_by(.data$dom) %>%
+      dplyr::mutate(dom = lubridate::day(.data$timeBgn)) %>% # get day of month
+      dplyr::group_by(.data$dom, .data$verticalPosition) %>%
       # check to make sure peak sufficiently long, then slice off single.
-      dplyr::filter(.data$d13C_obs_n > min_nobs | is.na(.data$d13C_obs_n)) %>%
+      dplyr::filter(.data$dlta13CCo2.numSamp > min_nobs | is.na(.data$dlta13CCo2.numSamp)) %>%
       dplyr::slice(1) %>%
       dplyr::ungroup() %>%
-      dplyr::select(-dom)
+      dplyr::select(-dom) %>%
+      dplyr::arrange(.data$timeBgn)
     
   } else if (analyte == "h2o") {
     

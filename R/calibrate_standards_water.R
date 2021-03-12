@@ -8,7 +8,6 @@
 #'          calibrate standards data. Default is 0.95. Calibrated reference
 #'          gas measurements occuring during calibration periods
 #'          with r2 values less than \code{r2_thres} will be marked NA.
-#' @export
 calibrate_standards_water <- function(cal_df,
                                        ref_df,
                                        r2_thres = 0.95) {
@@ -148,7 +147,6 @@ return(ref_df)
 #' @param mode Are we fixing a reference data frame or an ambient data frame?
 #'
 #' @return data.frame formatted for output to hdf5 file.
-#' @export
 #'
 restructure_water_variables <- function(dataframe, varname, mode) {
   

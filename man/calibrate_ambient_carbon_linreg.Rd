@@ -57,7 +57,8 @@ applied to ambient data.}
 }
 \value{
 Nothing to environment; returns calibrated ambient observations to
-    the output file. This function is not designed to be called on its own.
+    the output file. This function is not designed to be called on its own,
+    and is not exported to the namespace.
 }
 \description{
 calibrate_ambient_carbon_linreg

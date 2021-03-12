@@ -7,15 +7,12 @@
 calibrate_ambient_carbon_Bowling2003(
   amb_data_list,
   caldf,
-  outname,
   site,
-  file,
   filter_data = TRUE,
   force_to_end = TRUE,
   force_to_beginning = TRUE,
   gap_fill_parameters = FALSE,
-  r2_thres = 0.9,
-  write_to_file = TRUE
+  r2_thres = 0.9
 )
 }
 \arguments{
@@ -25,13 +22,7 @@ Will include all variables in 000_0x0_xxm. (character)}
 \item{caldf}{Calibration data frame containing gain and offset values for
 12C and 13C isotopologues.}
 
-\item{outname}{Output variable name. Inherited from
-\code{calibrate_ambient_carbon_Bowling2003}}
-
 \item{site}{Four-letter NEON code corersponding to site being processed.}
-
-\item{file}{Output file name. Inherited from
-\code{calibrate_ambient_carbon_Bowling2003}}
 
 \item{filter_data}{Apply median absolute deviation filter from Brock 86 to
 remove impulse spikes? Inherited from
@@ -51,9 +42,6 @@ than interpolating, etc. Default FALSE.}
 
 \item{r2_thres}{Minimum r2 value for calibration to be considered "good" and
 applied to ambient data.}
-
-\item{write_to_file}{Write calibrated ambient data to file?
-(Mostly used for testing)}
 }
 \value{
 Depends on \code{write_to_file} argument. If true, returns nothing to environment; 

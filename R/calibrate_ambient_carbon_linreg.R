@@ -34,8 +34,8 @@
 #'            than interpolating, etc. Default FALSE.
 #'
 #' @return Nothing to environment; returns calibrated ambient observations to
-#'     the output file. This function is not designed to be called on its own.
-#' @export
+#'     the output file. This function is not designed to be called on its own,
+#'     and is not exported to the namespace.
 #'
 #' @importFrom magrittr %>%
 #'
@@ -74,7 +74,7 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
     var_inds_in_calperiod <- list()
 
     for (i in 1:nrow(caldf)) {
-      int <- lubridate::interval(caldf$start[i], caldf$end[i])
+      int <- lubridate::interval(caldf$timeBgn[i], caldf$timeEnd[i])
       var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
 
       if (gap_fill_parameters) {      

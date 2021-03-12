@@ -12,7 +12,6 @@
 #' @return Returns character version of POSIXct object
 #'         matching NEON time variable format.
 #'
-#' @export
 #' @examples 
 #' convert_POSIXct_to_NEONhdf5_time(Sys.time())
 
@@ -48,7 +47,6 @@ convert_POSIXct_to_NEONhdf5_time <- function(intime) {
 #'           to convert to POSIXct class
 #'
 #' @return Vector of datetimes from NEON data file now in POSIXct format.
-#' @export
 #'
 #' @examples 
 #' convert_NEONhdf5_to_POSIXct_time("2019-06-01T12:00:00.000Z")

@@ -54,6 +54,7 @@
 #' @import dplyr
 #' @import neonUtilities
 #' @importFrom data.table rleidv
+#' @importFrom stats coef lm
 calibrate_water_linreg_bysite <- function(inpath,
                                    outpath,
                                    site,

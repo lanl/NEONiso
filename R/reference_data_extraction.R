@@ -2,84 +2,37 @@
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param standard String indicating whether to grab data from the high,
-#'                  medium, or low standard.
 #' @param data_list List containing data, from the /*/dp01/data/
 #'                  group in NEON HDF5 file.
-#' @param ucrt_list List containing uncertainty data, from the /*/dp01/ucrt/
-#'                  group in NEON HDF5 file.
-#' @param ucrt_source Where from HDF5 file should  variance be extracted from?
-#'                    (Valid values are "data" and "ucrt")
 #'
 #' @return Returns data frame of required variables.
-#' @export
 #'
-extract_carbon_calibration_data <- function(data_list, ucrt_list,
-                                            standard, ucrt_source = "data") {
-
-  if (standard == "high") {
-    data <- data_list$co2High_09m
-    ucrt <- ucrt_list$co2High_09m
-  } else if (standard == "med") {
-    data <- data_list$co2Med_09m
-    ucrt <- ucrt_list$co2Med_09m
-  } else if (standard == "low") {
-    data <- data_list$co2Low_09m
-    ucrt <- ucrt_list$co2Low_09m
-  } else {
-    stop()
+#' @import tidyselect
+extract_carbon_calibration_data <- function(data_list) {
+  
+  # input should be the list from stackEddy
+  if (!is.list(data_list)) {
+    stop("Input to extract carbon calibration data must be a list")
   }
-
-  if (ucrt_source == "ucrt") {
-
-    std_df <- data.frame(d13C_obs_mean = data$dlta13CCo2$mean,
-                         d13C_obs_n = data$dlta13CCo2$numSamp,
-                         d13C_obs_btime = data$dlta13CCo2$timeBgn,
-                         d13C_obs_etime = data$dlta13CCo2$timeEnd,
-                         d13C_ref_mean = data$dlta13CCo2Refe$mean,
-                         d13C_ref_btime = data$dlta13CCo2Refe$timeBgn,
-                         d13C_ref_etime = data$dlta13CCo2Refe$timeEnd,
-                         d13C_obs_var = ucrt$dlta13CCo2$vari,
-                         d13C_ref_var = data$dlta13CCo2Refe$vari,
-                         CO2_obs_mean = data$rtioMoleDryCo2$mean,
-                         CO2_obs_n = data$rtioMoleDryCo2$numSamp,
-                         CO2_ref_mean = data$rtioMoleDryCo2Refe$mean,
-                         CO2_ref_var = data$rtioMoleDryCo2Refe$vari,
-                         CO2_obs_var = ucrt$rtioMoleDryCo2$vari)
-
-  } else if (ucrt_source == "data") {
-
-    std_df <- data.frame(d13C_obs_mean = data$dlta13CCo2$mean,
-                         d13C_obs_n = data$dlta13CCo2$numSamp,
-                         d13C_obs_btime = data$dlta13CCo2$timeBgn,
-                         d13C_obs_etime = data$dlta13CCo2$timeEnd,
-                         d13C_ref_mean = data$dlta13CCo2Refe$mean,
-                         d13C_ref_btime = data$dlta13CCo2Refe$timeBgn,
-                         d13C_ref_etime = data$dlta13CCo2Refe$timeEnd,
-                         d13C_obs_var = data$dlta13CCo2$vari,
-                         d13C_ref_var = data$dlta13CCo2Refe$vari,
-                         CO2_obs_mean = data$rtioMoleDryCo2$mean,
-                         CO2_obs_n = data$rtioMoleDryCo2$numSamp,
-                         CO2_ref_mean = data$rtioMoleDryCo2Refe$mean,
-                         CO2_ref_var = data$rtioMoleDryCo2Refe$vari,
-                         CO2_obs_var = data$rtioMoleDryCo2$vari)
-
-  }
-
-  # add standard name
-  std_df <- std_df %>%
-    dplyr::mutate(std_name = standard)
-
+  
+  # extract desired data from data list.
+  data <- data_list[[1]] %>% 
+    dplyr::select(.data$verticalPosition, .data$timeBgn, .data$timeEnd,
+           tidyselect::starts_with("data.isoCo2.dlta13CCo2"),
+           tidyselect::starts_with("data.isoCo2.rtioMoleDryCo2")) %>%
+    dplyr::filter(.data$verticalPosition %in% c("co2High", "co2Med", "co2Low"))
+  
+  # simplify names
+  names(data) <- sub("data.isoCo2.", "", names(data))
+  
   #convert times to posixct
-  std_df$d13C_obs_btime <- convert_NEONhdf5_to_POSIXct_time(std_df$d13C_obs_btime)
-  std_df$d13C_obs_etime <- convert_NEONhdf5_to_POSIXct_time(std_df$d13C_obs_etime)
-  std_df$d13C_ref_btime <- convert_NEONhdf5_to_POSIXct_time(std_df$d13C_ref_btime)
-  std_df$d13C_ref_etime <- convert_NEONhdf5_to_POSIXct_time(std_df$d13C_ref_etime)
+  data$timeBgn <- convert_NEONhdf5_to_POSIXct_time(data$timeBgn)
+  data$timeEnd <- convert_NEONhdf5_to_POSIXct_time(data$timeEnd)
   
   # return standard data frame.
-  return(std_df)
-
+  return(data)
 }
+
 
 
 #' extract_water_calibration_data
@@ -100,7 +53,6 @@ extract_carbon_calibration_data <- function(data_list, ucrt_list,
 #'               function (use "by_site)
 #'
 #' @return Returns data frame of required variables.
-#' @export
 #'
 extract_water_calibration_data <- function(data_list, ucrt_list = NULL,
                                            standard, ucrt_source = "data",
