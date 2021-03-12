@@ -32,7 +32,6 @@
 #'    but returns calibrated ambient observations to the output file. If false, returns
 #'    modified version of amb_data_list that include calibrated ambient data.
 #'
-#' @export
 #'
 #' @importFrom magrittr %>%
 #' @importFrom lubridate %within%

@@ -17,8 +17,6 @@
 #'        values for each regression. If \code{method == "linreg"},
 #'        then data.frame includes slope, intercept, and r^2 values
 #'        for d13C and CO2 values.
-#'        
-#' @export
 #'
 #' @importFrom stats coef lm
 

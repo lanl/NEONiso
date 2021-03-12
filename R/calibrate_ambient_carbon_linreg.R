@@ -34,8 +34,8 @@
 #'            than interpolating, etc. Default FALSE.
 #'
 #' @return Nothing to environment; returns calibrated ambient observations to
-#'     the output file. This function is not designed to be called on its own.
-#' @export
+#'     the output file. This function is not designed to be called on its own,
+#'     and is not exported to the namespace.
 #'
 #' @importFrom magrittr %>%
 #'
