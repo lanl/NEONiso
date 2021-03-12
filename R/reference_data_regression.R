@@ -28,6 +28,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
   yrmn <- paste(lubridate::year(ref_data$timeBgn)[1],
                 lubridate::month(ref_data$timeBgn)[1],
                 sep = "-")
+  
+  # validate yrmn - is it actually a date? if no refdata, then no.
   #---------------------------------------------------------------
   # Select which validation data to carry through to calibration
   #---------------------------------------------------------------
@@ -230,7 +232,6 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
           
         }
       }
-      
 
       #subset out data frame.
       out <- out[1:length(start_time),]
@@ -240,7 +241,14 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
       out$timeEnd <- as.POSIXct(end_time, tz = "UTC", origin = "1970-01-01")
     }
   }
-    
+   
+  # ensure that not all dates are missing...narrowly defined here to 
+  # be if out only has 1 row (should be the only case where this happens!)
+  if (nrow(out) == 1 & is.na(out$timeBgn)) {
+    out$timeBgn <- as.POSIXct("2010-01-01",format = "%Y-%m-%d")
+    out$timeEnd <- as.POSIXct("2010-01-01",format = "%Y-%m-%d")
+  }
+  
   return(out)
     
 }
