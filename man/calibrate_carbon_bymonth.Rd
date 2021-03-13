@@ -35,10 +35,9 @@ from which reference data are selected (period
 is 2*calibration_half_width).}
 
 \item{force_cal_to_beginning}{Extend first calibration to the beginning
-of the file? (CURRENTLY NOT USED)}
+of the file? (default true)}
 
-\item{force_cal_to_end}{Extend last calibration to the end of the file?
-(CURRENTLY NOT USED)}
+\item{force_cal_to_end}{Extend last calibration to the end of the file? (default true)}
 
 \item{gap_fill_parameters}{Should function attempt to 'gap-fill' across a 
 bad calibration by carrying the last known good calibration forward?
@@ -56,7 +55,9 @@ relationship nonlinear. Default = 0.95}
 
 \item{correct_refData}{NEON has indicated there are a few instances where
 reported d13C or CO2 reference values are wrong. If set to true,
-correct known incorrect values.}
+correct known incorrect values. This argument will (hopefully,
+eventually) go away after NEON has fixed the reference database.
+Users will be warned prior to removal of this argument.}
 
 \item{write_to_file}{Write calibrated ambient data to file?
 (Mostly used for testing)}
@@ -99,6 +100,11 @@ problem with a valve in the manifold, etc.); the third criterion was adopted
 after visual inspection of data timeseries revealed that often the first
 standard measurement following an instrument issue had higher-than-expected
 error. This criterion clips clearly poor values.
+}
+\examples{
+fin <- system.file('NEON_sample_packed.h5', package = 'NEONiso', mustWork = TRUE)
+calibrate_carbon_bymonth(inname = fin, outname = 'out.h5', site = 'ONAQ', write_to_file = FALSE)
+
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}

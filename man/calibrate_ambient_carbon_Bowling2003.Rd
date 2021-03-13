@@ -26,7 +26,7 @@ Will include all variables in 000_0x0_xxm. (character)}
 
 \item{filter_data}{Apply median absolute deviation filter from Brock 86 to
 remove impulse spikes? Inherited from
-\code{calibrate_ambient_carbon_Bowling2003}}
+\code{calibrate_ambient_carbon_Bowling2003()}}
 
 \item{force_to_end}{In given month, calibrate ambient data later than last
 calibration, using the last calibration? (default true)}
@@ -54,9 +54,9 @@ calibrate_ambient_carbon_Bowling2003
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
 
-Function called by \code{calibrate_ambient_carbon_Bowling2003} to apply
+Function called by \code{calibrate_carbon_bymoth()} to apply
 gain and offset parameters to the ambient datasets (000_0x0_09m and
 000_0x0_30m). This function should generally not be used independently,
 but should be used in coordination with
-\code{calibrate_ambient_carbon_Bowling2003}.
+\code{calibrate_carbon_bymonth()}.
 }

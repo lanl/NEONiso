@@ -38,9 +38,8 @@
 #' @param inname Name of the input file. (character)
 #' @param outname Name of the output file. (character)
 #' @param force_cal_to_beginning Extend first calibration to the beginning
-#'             of the file? (CURRENTLY NOT USED)
-#' @param force_cal_to_end Extend last calibration to the end of the file?
-#'             (CURRENTLY NOT USED)
+#'             of the file? (default true)
+#' @param force_cal_to_end Extend last calibration to the end of the file? (default true)
 #' @param site Four letter NEON site code for site being processed. (character)
 #' @param gap_fill_parameters Should function attempt to 'gap-fill' across a 
 #'            bad calibration by carrying the last known good calibration forward?
@@ -55,7 +54,9 @@
 #'            relationship nonlinear. Default = 0.95
 #' @param correct_refData NEON has indicated there are a few instances where
 #'            reported d13C or CO2 reference values are wrong. If set to true,
-#'            correct known incorrect values. 
+#'            correct known incorrect values. This argument will (hopefully,
+#'            eventually) go away after NEON has fixed the reference database.
+#'            Users will be warned prior to removal of this argument.
 #' @param write_to_file Write calibrated ambient data to file?
 #'              (Mostly used for testing)
 #' @param method Are we using the Bowling et al. 2003 method
@@ -70,6 +71,9 @@
 #' @export
 #'
 #' @importFrom magrittr %>%
+#' @examples 
+#' fin <- system.file('NEON_sample_packed.h5', package = 'NEONiso', mustWork = TRUE)
+#' calibrate_carbon_bymonth(inname = fin, outname = 'out.h5', site = 'ONAQ', write_to_file = FALSE)
 #' 
 calibrate_carbon_bymonth <- function(inname,
                                      outname,
@@ -119,9 +123,9 @@ calibrate_carbon_bymonth <- function(inname,
                                   amb_data_list = ciso_subset[[x]],
                                   caldf = cal_df,
                                   site = site,
-                                  # filter_data = filter_ambient,
-                                  # force_to_end = force_cal_to_end,
-                                  # force_to_beginning = force_cal_to_beginning,
+                                  filter_data = filter_ambient,
+                                  force_to_end = force_cal_to_end,
+                                  force_to_beginning = force_cal_to_beginning,
                                   r2_thres = r2_thres)
                               })
   } else if (method == "linreg") {
@@ -131,11 +135,10 @@ calibrate_carbon_bymonth <- function(inname,
                                   amb_data_list = ciso_subset[[x]],
                                   caldf = cal_df,
                                   site = site,
-                                  # filter_data = filter_ambient,
-                                  # force_to_end = force_cal_to_end,
-                                  # force_to_beginning = force_cal_to_beginning,
-                                  r2_thres = r2_thres,
-                                  write_to_file = FALSE)
+                                  filter_data = filter_ambient,
+                                  force_to_end = force_cal_to_end,
+                                  force_to_beginning = force_cal_to_beginning,
+                                  r2_thres = r2_thres)
                               })
   }
 
