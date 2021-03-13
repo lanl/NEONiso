@@ -70,12 +70,6 @@ Caution is suggested when analyzing data at low humidities, below ~5000 ppm,
 with likely higher biases at lower humidity values. This is expected to be
 added in Q3 of 2020.
 }
-\examples{
-fin <- system.file("NEON_sample_packed.h5", package = "NEONiso")
-# note typical use case would have write_to_file = TRUE
-calibrate_water_linreg(inname = fin, outname = "example.h5", 
-                            site = "ONAQ", write_to_file = FALSE)
-}
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}
 }

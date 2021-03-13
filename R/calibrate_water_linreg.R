@@ -50,11 +50,6 @@
 #' @importFrom utils tail
 #' @import dplyr
 #' 
-#' @examples 
-#' fin <- system.file("NEON_sample_packed.h5", package = "NEONiso")
-#' # note typical use case would have write_to_file = TRUE
-#' calibrate_water_linreg(inname = fin, outname = "example.h5", 
-#'                             site = "ONAQ", write_to_file = FALSE)
 calibrate_water_linreg <- function(inname,
                                    outname,
                                    site,

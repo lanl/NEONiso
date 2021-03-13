@@ -102,8 +102,11 @@ standard measurement following an instrument issue had higher-than-expected
 error. This criterion clips clearly poor values.
 }
 \examples{
-fin <- system.file('NEON_sample_packed.h5', package = 'NEONiso', mustWork = TRUE)
-calibrate_carbon_bymonth(inname = fin, outname = 'out.h5', site = 'ONAQ', write_to_file = FALSE)
+fin <- system.file('extdata',
+         'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.20201020T211037Z.packed.h5',
+         package = 'NEONiso', mustWork = TRUE)
+calibrate_carbon_bymonth(inname = fin, outname = 'out.h5',
+         site = 'ONAQ', write_to_file = FALSE)
 
 }
 \author{
