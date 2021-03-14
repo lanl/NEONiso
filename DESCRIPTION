@@ -41,4 +41,5 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
+Language: en-US
 Config/testthat/edition: 3

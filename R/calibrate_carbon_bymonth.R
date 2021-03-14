@@ -3,7 +3,7 @@
 #' This function drives a workflow that reads in NEON carbon isotope data
 #' of atmospheric CO2, calibrates it to the VPDB scale, and (optionally)
 #' writes the calibrated data to a new HDF5 file. Two different approaches
-#' are possible: a) a calibration on 12CO2 and 13CO2 isotoplogues independently,
+#' are possible: a) a calibration on 12CO2 and 13CO2 isotopologues independently,
 #' after Bowling et al. 2003 (Agr. For. Met.), or b) a direct calibration
 #' of d13C and CO2 values using linear regression. The vast majority of the time
 #' the results generated from either method are extremely similar to each other.

@@ -7,7 +7,7 @@
 <!-- badges: end -->
 
 Author: Rich Fiorella \
-Last Updated: Febuary 18, 2021.
+Last Updated: February 18, 2021.
 
 This repository contains an R package to calibrate NEON atmospheric isotope data. 
 Please report any issues you have, bugs found, or enhancement suggestions as issues to this repository.
@@ -31,7 +31,7 @@ BiocManager::install("rhdf5")
 ```R
 devtools::install_github("SPATIAL-Lab/NEONiso")
 ```
-Alternatively, you can install a specific version of the pacakge (e.g., v0.1)
+Alternatively, you can install a specific version of the package (e.g., v0.1)
 by specifying the version tag:
 ```R
 devtools::install_github("SPATIAL-Lab/NEONiso@v0.1")
@@ -57,8 +57,8 @@ In the interim, the function documentation for the above functions should help u
 ## Future plans
 There will be two major changes and a minor change coming to this package in the next few months:
 1) We are starting to work on calibration routines for the NEON water isotope products - more info soon.
-2) When development of this package began, neonUtilities::stackEddy did not exist. As a result, we decided to apply calibration routines on monthly files only. The developmetn of the stackEddy function opens up some new possibilities that allow for a more continuous calibration. As a result, we are working on functions that will take advantage of this capability.
-3) (minor change) Unit tests will be added as we have time in order to improve code reliability. code coverage badge is provided for transparancy, but this effort has just begun to spin up.
+2) When development of this package began, neonUtilities::stackEddy did not exist. As a result, we decided to apply calibration routines on monthly files only. The development of the stackEddy function opens up some new possibilities that allow for a more continuous calibration. As a result, we are working on functions that will take advantage of this capability.
+3) (minor change) Unit tests will be added as we have time in order to improve code reliability. code coverage badge is provided for transparency, but this effort has just begun to spin up.
 
 ## DATA ALERT:
 [NOTE: THIS SECTION IS OUT OF DATE AND WILL BE REVISED SHORTLY.]
