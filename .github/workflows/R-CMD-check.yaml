@@ -9,6 +9,7 @@ on:
     branches:
       - main
       - master
+      - cran-rc0.4
   pull_request:
     branches:
       - main
