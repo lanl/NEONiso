@@ -30,7 +30,20 @@ test_that("fit_carbon_regression returns 8 columns (linreg method)", {
 
 # test calibration functions.
 ciso <- rhdf5::h5read(fin, paste0("/ONAQ/dp01/data/isoCo2"))
-ciso_subset <- ciso['000_010_09m']
+cal_B03 <- fit_carbon_regression(refe, 'Bowling_2003', calibration_half_width = 0.5)
+cal_lr <- fit_carbon_regression(refe, 'linreg', calibration_half_width = 0.5)
+
+test_that("calibrate_ambient_carbon_Bowling2003 returns a list", {
+  expect_true(is.list(calibrate_ambient_carbon_Bowling2003(
+    amb_data_list = ciso[['000_030_09m']],
+    caldf = cal_B03, site = 'ONAQ')))
+})
+
+test_that("calibrate_ambient_carbon_linreg returns a list", {
+  expect_true(is.list(calibrate_ambient_carbon_linreg(
+    amb_data_list = ciso[['000_030_09m']],
+    caldf = cal_lr, site = 'ONAQ')))
+})
 
 #-------------------------------------------------------------------------------
 # test water functions - this will need to be changed to match carbon structure.
