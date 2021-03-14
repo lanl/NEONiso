@@ -242,9 +242,11 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
    
   # ensure that not all dates are missing...narrowly defined here to 
   # be if out only has 1 row (should be the only case where this happens!)
-  if (nrow(out) == 1 & is.na(out$timeBgn)) {
-    out$timeBgn <- as.POSIXct("2010-01-01",format = "%Y-%m-%d")
-    out$timeEnd <- as.POSIXct("2010-01-01",format = "%Y-%m-%d")
+  if (nrow(out) == 1) {
+    if (is.na(out$timeBgn)) {
+      out$timeBgn <- as.POSIXct("2010-01-01",format = "%Y-%m-%d")
+      out$timeEnd <- as.POSIXct("2010-01-01",format = "%Y-%m-%d")
+    }
   }
   
   return(out)

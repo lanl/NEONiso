@@ -1,16 +1,25 @@
 #' calibrate_carbon_bymonth
 #'
-#' Use the gain-and-offset style calibration approach detailed in
-#' Bowling et al. 2003 AFM. Wen et al. 2013 compared several different carbon
+#' This function drives a workflow that reads in NEON carbon isotope data
+#' of atmospheric CO2, calibrates it to the VPDB scale, and (optionally)
+#' writes the calibrated data to a new HDF5 file. Two different approaches
+#' are possible: a) a calibration on 12CO2 and 13CO2 isotoplogues independently,
+#' after Bowling et al. 2003 (Agr. For. Met.), or b) a direct calibration
+#' of d13C and CO2 values using linear regression. The vast majority of the time
+#' the results generated from either method are extremely similar to each other.
+#' Wen et al. 2013 compared several different carbon
 #' isotope calibration techniques and found this to be the superior method
-#' under most circumstances. In brief, this method estimates gain and offset
-#' parameters using linear regression on 12CO2 and 13CO2 isotopologues
-#' separately. These gain and offset parameters are analogous to regression
-#' slope and intercepts, but jointly correct for CO2 concentration dependence
-#' and place d13C values on the VPDB scale. Gain and offset parameters are 
-#' determined independently for each major isotopologue (12CO2 and 13CO2).
-#' For the two reference materials
-#' selected, the gain and offset parameters are defined by:
+#' under most circumstances. We also found this to be the case for NEON data
+#' (Fiorella et al. 2021; JGR-Biogeosciences).
+#' 
+#' The 'linreg' method simply takes measured and reference d13C and CO2 values
+#' and generates a transfer function between them using \code{lm()}. For the
+#' gain-and-offset method, d13C and CO2 values are converted to 12CO2 and 13CO2
+#' mole fractions. Gain and offset parameters are calculated for each isotopologue
+#' independently, and are analogous to regression slope and intercepts, but jointly 
+#' correct for CO2 concentration dependence
+#' and place d13C values on the VPDB scale. 
+#' The gain and offset parameters are defined by:
 #'
 #' \deqn{G = (X_{2,ref}-X_{1,ref})/(X_{2,meas}-X_{1,meas})}
 #' \deqn{O = X_{2,ref}- G X_{2,meas}}
@@ -31,16 +40,16 @@
 #' problem with a valve in the manifold, etc.); the third criterion was adopted
 #' after visual inspection of data timeseries revealed that often the first
 #' standard measurement following an instrument issue had higher-than-expected
-#' error. This criterion clips clearly poor values.
+#' error. This criterion clips clearly poor values. Selection of these criteria
+#' will become a function argument, and therefore customizable, in a future release.
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
 #' @param inname Name of the input file. (character)
 #' @param outname Name of the output file. (character)
 #' @param force_cal_to_beginning Extend first calibration to the beginning
-#'             of the file? (CURRENTLY NOT USED)
-#' @param force_cal_to_end Extend last calibration to the end of the file?
-#'             (CURRENTLY NOT USED)
+#'             of the file? (default true)
+#' @param force_cal_to_end Extend last calibration to the end of the file? (default true)
 #' @param site Four letter NEON site code for site being processed. (character)
 #' @param gap_fill_parameters Should function attempt to 'gap-fill' across a 
 #'            bad calibration by carrying the last known good calibration forward?
@@ -55,7 +64,9 @@
 #'            relationship nonlinear. Default = 0.95
 #' @param correct_refData NEON has indicated there are a few instances where
 #'            reported d13C or CO2 reference values are wrong. If set to true,
-#'            correct known incorrect values. 
+#'            correct known incorrect values. This argument will (hopefully,
+#'            eventually) go away after NEON has fixed the reference database.
+#'            Users will be warned prior to removal of this argument.
 #' @param write_to_file Write calibrated ambient data to file?
 #'              (Mostly used for testing)
 #' @param method Are we using the Bowling et al. 2003 method
@@ -70,6 +81,14 @@
 #' @export
 #'
 #' @importFrom magrittr %>%
+#' @examples 
+#' fin <- system.file('extdata',
+#'          'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.20201020T211037Z.packed.h5',
+#'          package = 'NEONiso', mustWork = TRUE)
+#' calibrate_carbon_bymonth(inname = fin, outname = 'out.h5',
+#'          site = 'ONAQ', write_to_file = FALSE)
+#' calibrate_carbon_bymonth(inname = fin, outname = 'out.h5',
+#'          site = 'ONAQ', method = 'linreg', write_to_file = FALSE)
 #' 
 calibrate_carbon_bymonth <- function(inname,
                                      outname,
@@ -119,9 +138,9 @@ calibrate_carbon_bymonth <- function(inname,
                                   amb_data_list = ciso_subset[[x]],
                                   caldf = cal_df,
                                   site = site,
-                                  # filter_data = filter_ambient,
-                                  # force_to_end = force_cal_to_end,
-                                  # force_to_beginning = force_cal_to_beginning,
+                                  filter_data = filter_ambient,
+                                  force_to_end = force_cal_to_end,
+                                  force_to_beginning = force_cal_to_beginning,
                                   r2_thres = r2_thres)
                               })
   } else if (method == "linreg") {
@@ -131,11 +150,10 @@ calibrate_carbon_bymonth <- function(inname,
                                   amb_data_list = ciso_subset[[x]],
                                   caldf = cal_df,
                                   site = site,
-                                  # filter_data = filter_ambient,
-                                  # force_to_end = force_cal_to_end,
-                                  # force_to_beginning = force_cal_to_beginning,
-                                  r2_thres = r2_thres,
-                                  write_to_file = FALSE)
+                                  filter_data = filter_ambient,
+                                  force_to_end = force_cal_to_end,
+                                  force_to_beginning = force_cal_to_beginning,
+                                  r2_thres = r2_thres)
                               })
   }
 

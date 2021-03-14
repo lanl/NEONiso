@@ -10,14 +10,9 @@
 #'        carbon, oxygen, or hydrogen.
 #'
 #' @return Heavy-to-light isotope ratio of most common
-#'         stable isotope standard. VMOW for water,
+#'         stable isotope standard. VSMOW for water,
 #'         VPDB for carbon.
-#' 
-#' @export
-#' @examples
-#' get_Rstd('carbon') # returns 0.0111797
-#' get_Rstd('oxygen') # returns 2005.2e-6
-#' get_Rstd('hydrogen') # returns 155.76e-6
+#'
 #' 
 get_Rstd <- function(element) {
   # return the standard isotope ratio

@@ -6,8 +6,11 @@
 \usage{
 terrestrial_relocatable_sites()
 }
+\value{
+A vector listing NEON core terrestrial sites.
+}
 \description{
-Return a vector listing NEON core terrestrial sites.
+terrestrial_relocatable_sites
 }
 \examples{
 terrestrial_relocatable_sites()

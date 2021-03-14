@@ -7,7 +7,7 @@
 
 #' terrestrial_core_sites
 #'
-#' Return a vector listing NEON core terrestrial sites.
+#' @return A vector listing NEON core terrestrial sites.
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
@@ -28,7 +28,7 @@ terrestrial_core_sites <- function() {
 
 #' terrestrial_relocatable_sites
 #'
-#' Return a vector listing NEON core terrestrial sites.
+#' @return A vector listing NEON core terrestrial sites.
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #' 
@@ -56,9 +56,6 @@ terrestrial_relocatable_sites <- function() {
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #' 
-#' @export
-#' @examples 
-#' water_isotope_sites()
 
 water_isotope_sites <- function() {
 
