@@ -19,6 +19,19 @@ test_that("correct_carbon_ref_cval returns 23 columns", {
   expect_equal(ncol(correct_carbon_ref_cval(refe, 'ONAQ')),23)
 })
 
+# test outputs of fit_carbon_regression - should have 8 column dataframes for either method.
+test_that("fit_carbon_regression returns 8 columns (Bowling method)", {
+  expect_equal(ncol(fit_carbon_regression(refe, 'Bowling_2003', calibration_half_width = 0.5)),8)
+})
+
+test_that("fit_carbon_regression returns 8 columns (linreg method)", {
+  expect_equal(ncol(fit_carbon_regression(refe, 'linreg', calibration_half_width = 0.5)),8)
+})
+
+# test calibration functions.
+ciso <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2"))
+ciso_subset <- ciso['000_010_09m']
+
 #-------------------------------------------------------------------------------
 # test water functions - this will need to be changed to match carbon structure.
 
