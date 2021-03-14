@@ -29,7 +29,7 @@ test_that("fit_carbon_regression returns 8 columns (linreg method)", {
 })
 
 # test calibration functions.
-ciso <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2"))
+ciso <- rhdf5::h5read(fin, paste0("/ONAQ/dp01/data/isoCo2"))
 ciso_subset <- ciso['000_010_09m']
 
 #-------------------------------------------------------------------------------
