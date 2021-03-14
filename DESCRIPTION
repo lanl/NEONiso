@@ -1,22 +1,24 @@
 Package: NEONiso
 Type: Package
-Title: Tools to calibrate and work with NEON Atmospheric Isotope Data
+Title: Tools to Calibrate and Work with NEON Atmospheric Isotope Data
 Version: 0.4.0
-Authors@R: person("Rich", "Fiorella", email = "rich.fiorella@utah.edu",
-                role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0824-4777")) 
+Authors@R: c(person("Rich", "Fiorella", email = "rich.fiorella@utah.edu",
+                role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0824-4777")),
+           person(c("Gabriel", "J."), "Bowen", email = 'gabe.bowen@utah.edu',
+                role = 'rth'))
 Maintainer: Rich Fiorella <rich.fiorella@utah.edu>
 Depends: 
     R (>= 3.5.0)
-Description: This package provides functions for downloading,
+Description: Functions for downloading,
     calibrating, and analyzing atmospheric isotope data bundled
     into the eddy covariance data products of the National Ecological
     Observatory Network (NEON) <https://www.neonscience.org>. 
     In this version, calibration tools are provided for only the 
     carbon isotope products. Tools for calibrating water isotope 
-    products are under development. This package is described in Fiorella et al. (2021)
-    <doi: 10.1029/2020JG005862>, and more information can also be found in the readme 
+    products are under development. More details are found in Fiorella et al. (2021)
+    <doi: 10.1029/2020JG005862>, and the readme 
     file at <https://github.com/SPATIAL-Lab/NEONiso>.
-License: GPL-3 + file LICENSE
+License: GPL-3
 BugReports: https://github.com/SPATIAL-Lab/NEONiso/issues
 URL: https://github.com/SPATIAL-Lab/NEONiso
 Encoding: UTF-8
