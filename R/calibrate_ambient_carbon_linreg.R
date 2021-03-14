@@ -25,8 +25,6 @@
 #'             first calibration, using the first calibration? (default true)
 #' @param r2_thres Minimum r2 value for calibration to be considered "good" and
 #'             applied to ambient data.
-#' @param write_to_file Write calibrated ambient data to file?
-#'              (Mostly used for testing)
 #' @param gap_fill_parameters Should function attempt to 'gap-fill' across a 
 #'            bad calibration by carrying the last known good calibration forward?
 #'            Implementation is fairly primitive currently, as it only carries 
@@ -48,8 +46,7 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
                                             force_to_end = TRUE,
                                             force_to_beginning = TRUE,
                                             gap_fill_parameters = FALSE,
-                                            r2_thres = 0.9, 
-                                            write_to_file = TRUE) {
+                                            r2_thres = 0.9) {
 
     # only working on the d13C of the amb.data.list, so extract just this...
     d13C_ambdf <- amb_data_list$dlta13CCo2
@@ -164,30 +161,6 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
     amb_data_list$dlta13CCo2 <- d13C_ambdf
     amb_data_list$rtioMoleDryCo2 <- co2_ambdf
 
-    if (write_to_file) {
-      
-      # write out dataset to HDF5 file.
-      fid <- rhdf5::H5Fopen(file)
-      
-      co2.data.outloc <- rhdf5::H5Gcreate(fid,
-                                          paste0("/", site, "/dp01/data/isoCo2/", outname))
-      
-      # loop through variables in amb.data.list and write out as a data.frame.
-      lapply(names(amb_data_list), function(x) {
-        rhdf5::h5writeDataset.data.frame(obj = amb_data_list[[x]],
-                                         h5loc = co2.data.outloc,
-                                         name = x,
-                                         DataFrameAsCompound = TRUE)})
-      
-      # close all open handles.
-      rhdf5::h5closeAll()
-      
-    } else {
-      
-      # might want to return the ambient data list 
-      # to the environment in some circumstances.
-      return(amb_data_list)
-      
-    }
-    
+    return(amb_data_list)
+
 }
