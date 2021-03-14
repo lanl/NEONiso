@@ -15,8 +15,20 @@ test_that("extract_carbon_calibration_data returns 23 columns", {
 
 # test standard correction
 refe <- extract_carbon_calibration_data(ciso)
-test_that("correct_carbon_ref_cval returns 23 columns", {
+test_that("correct_carbon_ref_cval returns 23 columns for all sites that require corrections", {
   expect_equal(ncol(correct_carbon_ref_cval(refe, 'ONAQ')),23)
+  expect_equal(ncol(correct_carbon_ref_cval(refe, 'WOOD')),23)
+  expect_equal(ncol(correct_carbon_ref_cval(refe, 'BLAN')),23)
+  expect_equal(ncol(correct_carbon_ref_cval(refe, 'STER')),23)
+  expect_equal(ncol(correct_carbon_ref_cval(refe, 'ORNL')),23)
+  expect_equal(ncol(correct_carbon_ref_cval(refe, 'TREE')),23)
+  expect_equal(ncol(correct_carbon_ref_cval(refe, 'BARR')),23)
+  expect_equal(ncol(correct_carbon_ref_cval(refe, 'SRER')),23)
+  expect_equal(ncol(correct_carbon_ref_cval(refe, 'HARV')),23)
+})
+
+test_that("correct_carbon_ref_cval doesn't change data frame if site doesn't need correction", {
+  expect_equal(correct_carbon_ref_cval(refe, 'HARV'),refe)
 })
 
 # test outputs of fit_carbon_regression - should have 8 column dataframes for either method.
