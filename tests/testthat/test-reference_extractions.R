@@ -15,6 +15,9 @@ test_that("extract_carbon_calibration_data returns 23 columns", {
 
 # test standard correction
 refe <- extract_carbon_calibration_data(ciso)
+# what if output has 0 rows?
+refe2 <- refe[0,] # delete all rows to test error handling.
+
 test_that("correct_carbon_ref_cval returns 23 columns for all sites that require corrections", {
   expect_equal(ncol(correct_carbon_ref_cval(refe, 'ONAQ')),23)
   expect_equal(ncol(correct_carbon_ref_cval(refe, 'WOOD')),23)
@@ -34,10 +37,13 @@ test_that("correct_carbon_ref_cval doesn't change data frame if site doesn't nee
 # test outputs of fit_carbon_regression - should have 8 column dataframes for either method.
 test_that("fit_carbon_regression returns 8 columns (Bowling method)", {
   expect_equal(ncol(fit_carbon_regression(refe, 'Bowling_2003', calibration_half_width = 0.5)),8)
+  expect_equal(ncol(fit_carbon_regression(refe2, 'Bowling_2003', calibration_half_width = 0.5)),8)
 })
 
 test_that("fit_carbon_regression returns 8 columns (linreg method)", {
   expect_equal(ncol(fit_carbon_regression(refe, 'linreg', calibration_half_width = 0.5)),8)
+
+  expect_equal(ncol(fit_carbon_regression(refe2, 'linreg', calibration_half_width = 0.5)),8)
 })
 
 # test calibration functions.
@@ -56,6 +62,49 @@ test_that("calibrate_ambient_carbon_linreg returns a list", {
     amb_data_list = ciso[['000_030_09m']],
     caldf = cal_lr, site = 'ONAQ')))
 })
+
+# test gap filling - there's an error lurking here
+# where if all values for a month have r2 < r2_thres,
+# code will fail. need to update in future release.
+cal_B03$r2_12C[1]  <- 0.001
+cal_lr$d13C_r2[1]  <- 0.001
+
+test_that("ambient gap filling triggers correctly when r2 < r2_thres", {
+expect_output(calibrate_ambient_carbon_linreg(
+  amb_data_list = ciso[['000_030_09m']],
+  caldf = cal_lr, site = 'ONAQ', gap_fill_parameters = TRUE),
+   "Gap filling calibrations...")
+ expect_output(calibrate_ambient_carbon_Bowling2003(
+   amb_data_list = ciso[['000_030_09m']],
+   caldf = cal_B03, site = 'ONAQ', gap_fill_parameters = TRUE),
+   "Gap filling calibrations...")
+})
+
+# test reference data corrections:
+low <- rhdf5::h5read(fin,"/ONAQ/dp01/data/isoCo2/co2Low_09m")
+med <- rhdf5::h5read(fin,"/ONAQ/dp01/data/isoCo2/co2Med_09m")
+hig <- rhdf5::h5read(fin,"/ONAQ/dp01/data/isoCo2/co2High_09m")
+test_that("calibrate_standards_carbon returns 23 columns for all sites that require corrections", {
+  expect_true(is.list(calibrate_standards_carbon(cal_B03, med, correct_bad_refvals = TRUE, site = 'ONAQ', refGas = 'med')))
+  expect_true(is.list(calibrate_standards_carbon(cal_B03, med, correct_bad_refvals = TRUE, site = 'WOOD', refGas = 'med')))
+  expect_true(is.list(calibrate_standards_carbon(cal_B03, med, correct_bad_refvals = TRUE, site = 'BLAN', refGas = 'med')))
+  expect_true(is.list(calibrate_standards_carbon(cal_B03, med, correct_bad_refvals = TRUE, site = 'STER', refGas = 'med')))
+  expect_true(is.list(calibrate_standards_carbon(cal_B03, med, correct_bad_refvals = TRUE, site = 'ORNL', refGas = 'med')))
+  expect_true(is.list(calibrate_standards_carbon(cal_B03, med, correct_bad_refvals = TRUE, site = 'TREE', refGas = 'med')))
+  expect_true(is.list(calibrate_standards_carbon(cal_B03, med, correct_bad_refvals = TRUE, site = 'BARR', refGas = 'med')))
+  expect_true(is.list(calibrate_standards_carbon(cal_B03, med, correct_bad_refvals = TRUE, site = 'SRER', refGas = 'med')))
+  expect_true(is.list(calibrate_standards_carbon(cal_B03, med, correct_bad_refvals = TRUE, site = 'HARV', refGas = 'med')))
+  expect_true(is.list(calibrate_standards_carbon(cal_lr, low, correct_bad_refvals = TRUE, site = 'ONAQ', refGas = 'low')))
+  expect_true(is.list(calibrate_standards_carbon(cal_lr, low, correct_bad_refvals = TRUE, site = 'WOOD', refGas = 'low')))
+  expect_true(is.list(calibrate_standards_carbon(cal_lr, low, correct_bad_refvals = TRUE, site = 'BLAN', refGas = 'low')))
+  expect_true(is.list(calibrate_standards_carbon(cal_lr, low, correct_bad_refvals = TRUE, site = 'STER', refGas = 'low')))
+  expect_true(is.list(calibrate_standards_carbon(cal_lr, low, correct_bad_refvals = TRUE, site = 'ORNL', refGas = 'low')))
+  expect_true(is.list(calibrate_standards_carbon(cal_lr, low, correct_bad_refvals = TRUE, site = 'TREE', refGas = 'low')))
+  expect_true(is.list(calibrate_standards_carbon(cal_lr, low, correct_bad_refvals = TRUE, site = 'BARR', refGas = 'low')))
+  expect_true(is.list(calibrate_standards_carbon(cal_lr, low, correct_bad_refvals = TRUE, site = 'SRER', refGas = 'low')))
+  expect_true(is.list(calibrate_standards_carbon(cal_lr, low, correct_bad_refvals = TRUE, site = 'HARV', refGas = 'low')))
+})
+
 
 #-------------------------------------------------------------------------------
 # test water functions - this will need to be changed to match carbon structure.
@@ -76,6 +125,10 @@ test_that("water data frames have correct number of columns after extract_carbon
   expect_equal(ncol(extract_water_calibration_data(h2oRawRefDataBySite,NULL,"low",ucrt_source = "data", method = "by_site")),16) # change back to 15 after kludge fix
   expect_equal(ncol(extract_water_calibration_data(h2oRawRefDataBySite,NULL,"med",ucrt_source = "data", method = "by_site")),16) # in calibrate_water_linreg function.
   expect_equal(ncol(extract_water_calibration_data(h2oRawRefDataBySite,NULL,"high",ucrt_source = "data", method = "by_site")),16)
+  expect_equal(ncol(extract_water_calibration_data(h2oRawRefDataBySite,NULL,"low",ucrt_source = "data", method = "by_month")),9) # change back to 15 after kludge fix
+  expect_equal(ncol(extract_water_calibration_data(h2oRawRefDataBySite,NULL,"med",ucrt_source = "data", method = "by_month")),9) # in calibrate_water_linreg function.
+  expect_equal(ncol(extract_water_calibration_data(h2oRawRefDataBySite,NULL,"high",ucrt_source = "data", method = "by_month")),9)
+  
 })
 
 

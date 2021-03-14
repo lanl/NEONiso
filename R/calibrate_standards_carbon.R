@@ -73,7 +73,6 @@ calibrate_standards_carbon <- function(cal_df,
                                          ref_df$rtioMoleDryCo2Refe$mean > 470] <- 466.643
       }
     } else if (site == "WOOD") {
-      print(ref_df$dlta13CCo2Refe)
       # okay, now apply corrections if necessary.
       if (refGas == "low") {
         ref_df$dlta13CCo2Refe$mean[ref_df$dlta13CCo2Refe$timeBgn > as.POSIXct("06/18/2018", format = "%m/%d/%Y") &
