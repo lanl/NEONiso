@@ -104,31 +104,3 @@ test_that("calibrate_standards_carbon returns 23 columns for all sites that requ
   expect_true(is.list(calibrate_standards_carbon(cal_lr, low, correct_bad_refvals = TRUE, site = 'SRER', refGas = 'low')))
   expect_true(is.list(calibrate_standards_carbon(cal_lr, low, correct_bad_refvals = TRUE, site = 'HARV', refGas = 'low')))
 })
-
-
-#-------------------------------------------------------------------------------
-# test water functions - this will need to be changed to match carbon structure.
-
-load("h2oRawRefData.Rdata")
-load("h2oRawRefUcrt.Rdata")
-load("h2oRawRefDataBySite.Rdata")
-
-test_that("extract_water_calibration_data throws errors when it should",{
-  expect_error(extract_water_calibration_data(h2oRawRefData,h2oRawRefUcrt,"low",ucrt_source = "ucrt", method = "by_site"))
-  expect_error(extract_water_calibration_data(h2oRawRefData,h2oRawRefUcrt,"low",ucrt_source = "ucrt", method = "by_month")) # passes, but doesn't hit the right line?
-  expect_error(extract_water_calibration_data(h2oRawRefData,h2oRawRefData,"spork",ucrt_source = "data", method = "by_site"))
-  expect_error(extract_water_calibration_data(h2oRawRefData,h2oRawRefData,"spork",ucrt_source = "data", method = "by_month"))
-  expect_error(extract_water_calibration_data(h2oRawRefData,h2oRawRefData,"spork",ucrt_source = "data", method = "by_cheese"))
-})
-
-test_that("water data frames have correct number of columns after extract_carbon_calibration_data", {
-  expect_equal(ncol(extract_water_calibration_data(h2oRawRefDataBySite,NULL,"low",ucrt_source = "data", method = "by_site")),16) # change back to 15 after kludge fix
-  expect_equal(ncol(extract_water_calibration_data(h2oRawRefDataBySite,NULL,"med",ucrt_source = "data", method = "by_site")),16) # in calibrate_water_linreg function.
-  expect_equal(ncol(extract_water_calibration_data(h2oRawRefDataBySite,NULL,"high",ucrt_source = "data", method = "by_site")),16)
-  expect_equal(ncol(extract_water_calibration_data(h2oRawRefDataBySite,NULL,"low",ucrt_source = "data", method = "by_month")),9) # change back to 15 after kludge fix
-  expect_equal(ncol(extract_water_calibration_data(h2oRawRefDataBySite,NULL,"med",ucrt_source = "data", method = "by_month")),9) # in calibrate_water_linreg function.
-  expect_equal(ncol(extract_water_calibration_data(h2oRawRefDataBySite,NULL,"high",ucrt_source = "data", method = "by_month")),9)
-  
-})
-
-
