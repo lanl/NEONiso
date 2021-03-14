@@ -20,6 +20,8 @@
 #' also keeps only the last three injections for each reference water
 #' per day. 
 #' 
+#' @importFrom utils tail
+#' @import dplyr
 #' 
 select_daily_reference_data <- function(standard_df, analyte, min_nobs=NA) {
   
