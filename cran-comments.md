@@ -9,7 +9,7 @@
 0 errors | 0 warnings | 1 note
 
 * This is a the a resubmission of a new package.
-* The following changes have been made to address notes arising during CRAN auto-checks:
+* The following changes have been made to address notes arising during CRAN auto-checks that did not arise in above test environments:
   * An invalid URL from inst/doc/example_workflow.html has been corrected.
   * An invalid URI from inst/CITATION has been corrected.
   * The auto-checks indicate that there are misspelled words in DESCRIPTION, but the words flagged are all correct.
