@@ -19,6 +19,6 @@ citEntry(
   volume   = "",
   number   = "",
   pages    = "",
-  url      = "doi.org/10.1029/2020JG005862",
+  url      = "https://doi.org/10.1029/2020JG005862",
   textVersion = paste("Fiorella, R. P., Good, S. P., Allen, S. T., Guo, J. S., Still, C. J., Noone, D. C., et al. (2021). Calibration Strategies for Detecting Macroscale Patterns in NEON Atmospheric Carbon Isotope Observations. Journal of Geophysical Research: Biogeosciences, 126, e2020JG005862. https://doi.org/10.1029/2020JG005862")
 )

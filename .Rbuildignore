@@ -9,3 +9,4 @@
 ^cran-comments\.md$
 ^setup_testing_data\.R$
 ^package_testing_script\.R$
+^CRAN-RELEASE$
