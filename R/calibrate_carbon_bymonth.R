@@ -82,13 +82,13 @@
 #'
 #' @importFrom magrittr %>%
 #' @examples 
-#' fin <- system.file('extdata',
+#' \dontrun{fin <- system.file('extdata',
 #'          'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.20201020T211037Z.packed.h5',
 #'          package = 'NEONiso', mustWork = TRUE)
 #' calibrate_carbon_bymonth(inname = fin, outname = 'out.h5',
 #'          site = 'ONAQ', write_to_file = FALSE)
 #' calibrate_carbon_bymonth(inname = fin, outname = 'out.h5',
-#'          site = 'ONAQ', method = 'linreg', write_to_file = FALSE)
+#'          site = 'ONAQ', method = 'linreg', write_to_file = FALSE)}
 #' 
 calibrate_carbon_bymonth <- function(inname,
                                      outname,
