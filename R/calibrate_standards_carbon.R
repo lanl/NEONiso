@@ -16,6 +16,10 @@
 #'             Only used if \code{correct_bad_refvals = TRUE}.
 #' @param refGas One of "low", "med", or "high."
 #'             Only used if \code{correct_bad_refvals = TRUE}.
+#'             
+#' @return A data.frame having the same number of rows of \code{cal_df}, with
+#'        additional columns added for calibrated CO2 mole fractions
+#'        and d13C values.
 calibrate_standards_carbon <- function(cal_df,
                                        ref_df,
                                        f = 0.00474,

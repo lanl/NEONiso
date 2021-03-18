@@ -16,7 +16,7 @@ Description: Functions for downloading,
     In this version, calibration tools are provided for only the 
     carbon isotope products. Tools for calibrating water isotope 
     products are under development. More details are found in Fiorella et al. (2021)
-    <doi: 10.1029/2020JG005862>, and the readme 
+    <doi:10.1029/2020JG005862>, and the readme 
     file at <https://github.com/SPATIAL-Lab/NEONiso>.
 License: GPL-3
 BugReports: https://github.com/SPATIAL-Lab/NEONiso/issues

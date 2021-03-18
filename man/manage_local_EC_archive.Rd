@@ -31,6 +31,12 @@ delete them? Default true to prevent unintended data loss.}
 with available data, but can specify a single site or a vector
 here.}
 }
+\value{
+Returns nothing to the environment, but will download new NEON HDF5 files
+        for selected sites (if \code{get = TRUE}), unzip them in the local file directory
+        (if \code{unzip_files = TRUE}), and identify and remove suspected duplicate files
+        (if \code{trim = TRUE} and \code{dry_run = FALSE}).
+}
 \description{
 Utility function to help retrieve new EC data and/or prune duplicates,
 as NEON provisions new data or re-provisions data for an existing site 
