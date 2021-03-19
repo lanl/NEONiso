@@ -14,11 +14,7 @@ This repository contains an R package to calibrate NEON atmospheric isotope data
 
 Please report any issues you have, bugs found, or enhancement suggestions as issues to this repository.
 
-## Citation information:
-A manuscript describing the carbon isotope calibration techniques used in this package has just been accepted at JGR-Biogeosciences (doi: [10.1029/2020JG005862](https://doi.org/10.1029/2020JG005862)). Users of this package should also cite the Zenodo DOI above.
 
-Please also check to ensure that you are compliant with NEON's data citation policy for any
-products derived from this package: https://www.neonscience.org/data/about-data/data-policies
 
 ## Installing the development version:
 1) You will need the rhdf5 package, which is not on CRAN. rhdf5 is available from bioconductor using:
@@ -38,6 +34,12 @@ by specifying the version tag:
 ```R
 devtools::install_github("SPATIAL-Lab/NEONiso@v0.1")
 ```
+
+## Citation information:
+Package functionality to calibrate NEON carbon isotope data is described in a paper at JGR-Biogeosciences (doi: [10.1029/2020JG005862](https://doi.org/10.1029/2020JG005862)). Users of this package should also cite the Zenodo DOI above.
+
+Please also check to ensure that you are compliant with NEON's data citation policy for any
+products derived from this package: https://www.neonscience.org/data/about-data/data-policies
 
 ## Usage:
 
