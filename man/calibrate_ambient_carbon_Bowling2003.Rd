@@ -22,7 +22,7 @@ Will include all variables in 000_0x0_xxm. (character)}
 \item{caldf}{Calibration data frame containing gain and offset values for
 12C and 13C isotopologues.}
 
-\item{site}{Four-letter NEON code corersponding to site being processed.}
+\item{site}{Four-letter NEON code corresponding to site being processed.}
 
 \item{filter_data}{Apply median absolute deviation filter from Brock 86 to
 remove impulse spikes? Inherited from

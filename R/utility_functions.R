@@ -52,7 +52,7 @@ terrestrial_relocatable_sites <- function() {
 
 #' water_isotope_sites
 #'
-#' Return a vector listing NEON sites measuring water vapor isotope ratios.
+#' @Return A vector listing NEON sites measuring water vapor isotope ratios.
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #' 
@@ -90,6 +90,11 @@ water_isotope_sites <- function() {
 #'              with available data, but can specify a single site or a vector
 #'              here.           
 #' @export
+#' 
+#' @return Returns nothing to the environment, but will download new NEON HDF5 files
+#'         for selected sites (if \code{get = TRUE}), unzip them in the local file directory
+#'         (if \code{unzip_files = TRUE}), and identify and remove suspected duplicate files
+#'         (if \code{trim = TRUE} and \code{dry_run = FALSE}).
 #' 
 manage_local_EC_archive <- function(file_dir,
                                     get = TRUE,

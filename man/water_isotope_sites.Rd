@@ -7,7 +7,7 @@
 water_isotope_sites()
 }
 \description{
-Return a vector listing NEON sites measuring water vapor isotope ratios.
+water_isotope_sites
 }
 \author{
 Rich Fiorella \email{rich.fiorella@utah.edu}

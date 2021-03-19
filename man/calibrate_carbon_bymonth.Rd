@@ -70,7 +70,7 @@ Returns nothing to the environment, but creates a new output HDF5
 This function drives a workflow that reads in NEON carbon isotope data
 of atmospheric CO2, calibrates it to the VPDB scale, and (optionally)
 writes the calibrated data to a new HDF5 file. Two different approaches
-are possible: a) a calibration on 12CO2 and 13CO2 isotoplogues independently,
+are possible: a) a calibration on 12CO2 and 13CO2 isotopologues independently,
 after Bowling et al. 2003 (Agr. For. Met.), or b) a direct calibration
 of d13C and CO2 values using linear regression. The vast majority of the time
 the results generated from either method are extremely similar to each other.
@@ -112,13 +112,13 @@ error. This criterion clips clearly poor values. Selection of these criteria
 will become a function argument, and therefore customizable, in a future release.
 }
 \examples{
-fin <- system.file('extdata',
+\dontrun{fin <- system.file('extdata',
          'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.20201020T211037Z.packed.h5',
          package = 'NEONiso', mustWork = TRUE)
 calibrate_carbon_bymonth(inname = fin, outname = 'out.h5',
          site = 'ONAQ', write_to_file = FALSE)
 calibrate_carbon_bymonth(inname = fin, outname = 'out.h5',
-         site = 'ONAQ', method = 'linreg', write_to_file = FALSE)
+         site = 'ONAQ', method = 'linreg', write_to_file = FALSE)}
 
 }
 \author{

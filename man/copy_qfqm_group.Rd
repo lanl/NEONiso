@@ -9,11 +9,11 @@ copy_qfqm_group(data_list, outname, site, file, species)
 \arguments{
 \item{data_list}{List of groups to retrieve qfqm data from.}
 
-\item{outname}{Output filename. Inhereted from a calibrate function.}
+\item{outname}{Output filename.}
 
 \item{site}{Four-letter NEON site code.}
 
-\item{file}{Input filename. Inhereted from one of the calibrate functions.}
+\item{file}{Input filename.}
 
 \item{species}{CO2 or H2O? Same function used for both CO2 and H2O isotopes.}
 }

@@ -36,6 +36,11 @@ Only used if \code{correct_bad_refvals = TRUE}.}
 \item{refGas}{One of "low", "med", or "high."
 Only used if \code{correct_bad_refvals = TRUE}.}
 }
+\value{
+A data.frame having the same number of rows of \code{cal_df}, with
+       additional columns added for calibrated CO2 mole fractions
+       and d13C values.
+}
 \description{
 calibrate_standards_carbon
 }

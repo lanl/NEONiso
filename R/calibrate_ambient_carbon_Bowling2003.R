@@ -12,7 +12,7 @@
 #'                      Will include all variables in 000_0x0_xxm. (character)
 #' @param caldf Calibration data frame containing gain and offset values for
 #'              12C and 13C isotopologues.
-#' @param site Four-letter NEON code corersponding to site being processed.
+#' @param site Four-letter NEON code corresponding to site being processed.
 #' @param filter_data Apply median absolute deviation filter from Brock 86 to
 #'             remove impulse spikes? Inherited from
 #'             \code{calibrate_ambient_carbon_Bowling2003()}

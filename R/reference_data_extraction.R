@@ -8,6 +8,7 @@
 #' @return Returns data frame of required variables.
 #'
 #' @import tidyselect
+#' @import rlang
 extract_carbon_calibration_data <- function(data_list) {
   
   # input should be the list from stackEddy
