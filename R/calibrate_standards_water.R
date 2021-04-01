@@ -6,7 +6,7 @@
 #' @param ref_df Data.frame containing reference gas measurements
 #' @param r2_thres Threshold for calibration regression to be used to
 #'          calibrate standards data. Default is 0.95. Calibrated reference
-#'          gas measurements occuring during calibration periods
+#'          gas measurements occurring during calibration periods
 #'          with r2 values less than \code{r2_thres} will be marked NA.
 #' @export
 calibrate_standards_water <- function(cal_df,
@@ -24,21 +24,18 @@ calibrate_standards_water <- function(cal_df,
   ref_df$dlta2HH2o$mean_cal <- as.numeric(NA)
   
   # convert start times to POSIXct.
-  ref_df$dlta18OH2o$timeBgn <- as.POSIXct(ref_df$dlta18OH2o$timeBgn,
-                                          format = "%Y-%m-%dT%H:%M:%OSZ",
-                                          tz = "UTC")
-  
-  ref_df$dlta2HH2o$timeBgn <- as.POSIXct(ref_df$dlta2HH2o$timeBgn,
-                                         format = "%Y-%m-%dT%H:%M:%OSZ",
-                                         tz = "UTC")
+  ref_df$dlta18OH2o$timeBgn <- convert_NEONhdf5_to_POSIXct_time(ref_df$dlta18OH2o$timeBgn)
+  ref_df$dlta2HH2o$timeBgn <- convert_NEONhdf5_to_POSIXct_time(ref_df$dlta2HH2o$timeBgn)
   
   # Calibrate oxygen isotope ratios.
   if (nrow(ref_df$dlta18OH2o) > 1) {
-    for (i in 2:nrow(ref_df$dlta18OH2o)) { # use n-1 because of bracketing
+    for (i in 1:nrow(ref_df$dlta18OH2o)) { 
       
       # determine which row calibration point is in.
       int <- lubridate::interval(cal_df$start, cal_df$end)
       cal_id <- which(ref_df$dlta18OH2o$timeBgn[i] %within% int)
+      
+      print(cal_id)
       
       # now, calculate calibrated value ONLY IF CERTAIN CONDITIONS ARE MET:
       # 1a-d. variables needed are not missing.
@@ -83,7 +80,7 @@ calibrate_standards_water <- function(cal_df,
   
   # Calibrate hydrogen isotope ratios.
   if (nrow(ref_df$dlta2HH2o) > 1) {
-    for (i in 2:nrow(ref_df$dlta2HH2o)) { # use n-1 because of bracketing
+    for (i in 1:nrow(ref_df$dlta2HH2o)) { 
       
       # determine which row calibration point is in.
       int <- lubridate::interval(cal_df$start, cal_df$end)
@@ -146,15 +143,17 @@ calibrate_standards_water <- function(cal_df,
 #'                a list of ~10 common ones to write to the hdf5 file.
 #' @param dataframe Input data.frame, from \code{neonUtilities::stackEddy}
 #' @param mode Are we fixing a reference data frame or an ambient data frame?
-#'
+#' 
 #' @return data.frame formatted for output to hdf5 file.
 #' @export
 #'
-restructure_water_variables <- function(dataframe, varname, mode) {
-  
+restructure_water_variables <- function(dataframe,
+                                        varname,
+                                        mode) {
+
   # ensure that varname is a string but standard is a data.frame
   if (!is.character(varname)) {
-    stop("input argument must a string")
+    stop("varname must be a string")
   } else if ((!is.data.frame(dataframe) & mode == "reference") | (!is.list(dataframe) & mode == "ambient")) {
     stop("dataframe argument must be a data.frame (reference mode) or list (ambient mode)")
   }
@@ -162,7 +161,7 @@ restructure_water_variables <- function(dataframe, varname, mode) {
   if (mode != "reference" & mode != "ambient") {
     stop("Invalid selection to mode argument.")
   } else if (mode == "reference") {
-    output <- dataframe %>%
+    output1 <- dataframe %>%
       dplyr::select(.data$timeBgn,.data$timeEnd,starts_with(paste0("data.isoH2o.",varname,"."))) %>%
       dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
                     min  = paste0("data.isoH2o.", varname, ".min"),
@@ -170,8 +169,27 @@ restructure_water_variables <- function(dataframe, varname, mode) {
                     vari = paste0("data.isoH2o.", varname, ".vari"),
                     numSamp = paste0("data.isoH2o.", varname, ".numSamp")) %>%
       dplyr::mutate(varname = varname)
+    
+    if (!grepl("Refe", varname)) {
+      output2 <- dataframe %>%
+        dplyr::select(.data$timeBgn,.data$timeEnd,starts_with(paste0("qfqm.isoH2o.",varname,"."))) %>%
+        dplyr::rename(qfFinl = paste0("qfqm.isoH2o.", varname, ".qfFinl")) %>%
+        dplyr::mutate(varname = varname)
+      
+      
+      output3 <- dataframe %>%
+        dplyr::select(.data$timeBgn,.data$timeEnd,starts_with(paste0("ucrt.isoH2o.",varname,"."))) %>%
+        dplyr::rename(mean = paste0("ucrt.isoH2o.", varname, ".mean"),
+                      vari = paste0("ucrt.isoH2o.", varname, ".vari"),
+                      se   = paste0("ucrt.isoH2o.", varname, ".se")) %>%
+        dplyr::mutate(varname = varname)
+    } else {
+      output2 <- output3 <- NULL
+    }
+
+    
   } else if (mode == "ambient") {
-    output <- dataframe[[1]] %>%
+    output1 <- dataframe[[1]] %>%
       dplyr::select(.data$verticalPosition,.data$timeBgn,.data$timeEnd,starts_with(paste0("data.isoH2o.",varname,"."))) %>%
       dplyr::filter(!(.data$verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch"))) %>%
       dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
@@ -180,7 +198,23 @@ restructure_water_variables <- function(dataframe, varname, mode) {
                     vari = paste0("data.isoH2o.", varname, ".vari"),
                     numSamp = paste0("data.isoH2o.", varname, ".numSamp")) %>%
       dplyr::mutate(varname = varname)
+    
+    output2 <- output3 <- NULL
+
+  }
+
+  
+  # stackEddy will have converted time to posixct - covert back here.
+  output1$timeBgn <- convert_POSIXct_to_NEONhdf5_time(output1$timeBgn)
+  output1$timeEnd <- convert_POSIXct_to_NEONhdf5_time(output1$timeEnd)
+  
+  if (!grepl("Refe", varname)) {
+    output2$timeBgn <- convert_POSIXct_to_NEONhdf5_time(output2$timeBgn)
+    output2$timeEnd <- convert_POSIXct_to_NEONhdf5_time(output2$timeEnd)
+    
+    output3$timeBgn <- convert_POSIXct_to_NEONhdf5_time(output3$timeBgn)
+    output3$timeEnd <- convert_POSIXct_to_NEONhdf5_time(output3$timeEnd)
   }
   
-  return(output)
+  return(list(output1, output2, output3))
 }

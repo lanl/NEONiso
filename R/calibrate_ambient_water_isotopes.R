@@ -54,13 +54,9 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   #-------------------------------------------------------
   # ensure that time variables are in POSIXct.
   # (note: these should be the same for 18O and 2H?)
-  amb_start_times <- as.POSIXct(oxydf$timeBgn,
-                                format = "%Y-%m-%dT%H:%M:%OSZ",
-                                tz = "UTC")
-  amb_end_times <- as.POSIXct(oxydf$timeEnd,
-                              format = "%Y-%m-%dT%H:%M:%OSZ",
-                              tz = "UTC")
-  
+  amb_start_times <- convert_NEONhdf5_to_POSIXct_time(oxydf$timeBgn)
+  amb_end_times <- convert_NEONhdf5_to_POSIXct_time(oxydf$timeEnd)
+
   # if force.to.end and/or force.to.beginning are true, match out$start[1]
   # to min(amb time) and/or out$end[nrow] to max(amb time)
   
@@ -110,6 +106,9 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
     oxydf$min_cal      <- filter_median_Brock86(oxydf$min_cal)
     oxydf$max_cal      <- filter_median_Brock86(oxydf$max_cal)
   }
+
+  oxydf$timeBgn <- convert_POSIXct_to_NEONhdf5_time(oxydf$timeBgn)
+  oxydf$timeEnd <- convert_POSIXct_to_NEONhdf5_time(oxydf$timeEnd)
   
   # replace ambdf in amb_data_list
   amb_data_list$dlta18OH2o <- oxydf
@@ -120,12 +119,8 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   rm(amb_start_times, oxydf, amb_end_times, i, var_inds_in_calperiod)
   
   # ensure that time variables are in POSIXct.
-  amb_start_times <- as.POSIXct(hyddf$timeBgn,
-                                format = "%Y-%m-%dT%H:%M:%OSZ",
-                                tz = "UTC")
-  amb_end_times <- as.POSIXct(hyddf$timeEnd,
-                              format = "%Y-%m-%dT%H:%M:%OSZ",
-                              tz = "UTC")
+  amb_start_times <- convert_NEONhdf5_to_POSIXct_time(hyddf$timeBgn)
+  amb_end_times   <- convert_NEONhdf5_to_POSIXct_time(hyddf$timeEnd)
   
   # if force.to.end and/or force.to.beginning are true,
   # match out$start[1] to min(amb time) and/or out$end[nrow] to max(amb time)
@@ -176,6 +171,9 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
     hyddf$min_cal  <- filter_median_Brock86(hyddf$min_cal)
     hyddf$max_cal  <- filter_median_Brock86(hyddf$max_cal)
   }
+  
+  hyddf$timeBgn <- convert_POSIXct_to_NEONhdf5_time(hyddf$timeBgn)
+  hyddf$timeEnd <- convert_POSIXct_to_NEONhdf5_time(hyddf$timeEnd)
   
   # replace ambdf in amb_data_list
   amb_data_list$dlta2HH2o <- hyddf

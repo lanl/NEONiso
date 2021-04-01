@@ -59,8 +59,8 @@ calibrate_water_linreg_bysite <- function(inpath,
                                           site,
                                           calibration_half_width = 14, # days
                                           filter_data = TRUE,
-                                          force_cal_to_beginning = TRUE,
-                                          force_cal_to_end = TRUE,
+                                          force_cal_to_beginning = FALSE,
+                                          force_cal_to_end = FALSE,
                                           r2_thres = 0.95,
                                           slope_tolerance = 9999) {
   
@@ -190,12 +190,10 @@ calibrate_water_linreg_bysite <- function(inpath,
     date_seq <- base::seq.Date(loop_start_date, loop_end_date, by = "1 day")
     
     for (i in 1:length(date_seq)) {
-      
-      start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00"),
-                                  format = "%Y-%m-%d %H:%M:%S",
+       
+      start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"), # odd workaround to prevent R from converting this to NA.
                                   tz = "UTC", origin = "1970-01-01")
-      end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59"),
-                                  format = "%Y-%m-%d %H:%M:%S",
+      end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59.0000"),
                                   tz = "UTC", origin = "1970-01-01")
       
       # define calibration interval
@@ -277,9 +275,13 @@ calibrate_water_linreg_bysite <- function(inpath,
       }
     }
     
+    print(start_time)
+    
+    # start time is numeric here at some point - hence, format not necessary 
+    # to be specified below.
     # output dataframe giving valid time range, slopes, intercepts, rsquared.
-    out <- data.frame(start = as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01"),
-                      end = as.POSIXct(end_time, tz = "UTC", origin = "1970-01-01"),
+    out <- data.frame(start = lubridate::as_datetime(start_time, tz= 'UTC'),
+                      end = lubridate::as_datetime(end_time, tz= 'UTC'),
                       o_slope = as.numeric(oxy_cal_slopes),
                       o_intercept = as.numeric(oxy_cal_ints),
                       o_r2 = as.numeric(oxy_cal_rsq),
@@ -288,8 +290,8 @@ calibrate_water_linreg_bysite <- function(inpath,
                       h_r2 = as.numeric(hyd_cal_rsq))
     
   } else { # this branch shouldn't run any more, as it indicates no ref data in *entire* timeseries
-    out <- data.frame(start = start_date,
-                      end = end_date,
+    out <- data.frame(start = lubridate::as_datetime(start_date, tz = 'UTC'),
+                      end = lubridate::as_datetime(end_date, tz = 'UTC'),
                       o_slope = as.numeric(NA),
                       o_intercept = as.numeric(NA),
                       o_r2 = as.numeric(NA),
@@ -297,8 +299,7 @@ calibrate_water_linreg_bysite <- function(inpath,
                       h_intercept = as.numeric(NA),
                       h_r2 = as.numeric(NA))
   }
-  
-  
+
   # check to ensure there are 6 columns.
   # add slope, intercept, r2 columns if missing.
   if (!("o_slope" %in% names(out))) {
@@ -330,17 +331,23 @@ calibrate_water_linreg_bysite <- function(inpath,
   var_for_h5$start <- convert_POSIXct_to_NEONhdf5_time(var_for_h5$start)
   var_for_h5$end <- convert_POSIXct_to_NEONhdf5_time(var_for_h5$end)
   
-  var_for_h5$valid_period_start <- var_for_h5$start
-  var_for_h5$valid_period_end   <- var_for_h5$end
+  var_for_h5$timeBgn <- var_for_h5$start
+  var_for_h5$timeEnd <- var_for_h5$end
   
   # remove old vars.
   var_for_h5$start <- var_for_h5$end <- NULL
-  
+
   #----------------------------------
   # write out to h5 file.
   #----------------------------------
   # generate file name:
-  outname <- paste0(outpath,"/NEON.",site,".wiso.alldata.calibrated.",
+  inname <- list.files(inpath, pattern = '.h5', full.names = TRUE)[[1]]
+
+  inname_list <- strsplit(inname, split = '.', fixed = TRUE)
+  
+  # get domain number.
+  
+  outname <- paste0(outpath,"/NEON.",inname_list[[1]][2],'.',site,".DP4.00200.001.nsae.all.basic.wiso.calibrated.",
                     2*calibration_half_width,"dayWindow.h5")
   
   rhdf5::h5createFile(outname)
@@ -348,6 +355,10 @@ calibrate_water_linreg_bysite <- function(inpath,
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01"))
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data"))
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoH2o"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoH2o"))
   
   # okay try to write out to h5 file.
   fid <- rhdf5::H5Fopen(outname)
@@ -355,8 +366,6 @@ calibrate_water_linreg_bysite <- function(inpath,
   #####------------NEED TO PORT OVER TO NEW FUNCTION------------------
   # copy attributes from source file and write to output file.
   # use list of files in inpath to get first file, copy attributes from first file.
-  inname <- list.files(inpath, pattern = '.h5', full.names = TRUE)[[1]]
-  
   tmp <- rhdf5::h5readAttributes(inname, paste0("/", site))
   attrloc <- rhdf5::H5Gopen(fid, paste0("/", site))
   
@@ -383,7 +392,14 @@ calibrate_water_linreg_bysite <- function(inpath,
   
   # close the group and the file
   rhdf5::H5Gclose(h2o_cal_outloc)
-  # 
+  
+  # copy over objDesk and readme
+  tmp <- rhdf5::h5read(inname, '/objDesc')
+  rhdf5::h5write(tmp, file = outname, '/objDesc')
+  
+  tmp <- rhdf5::h5read(inname, '/readMe')
+  rhdf5::h5write(tmp, file = outname, '/readMe')
+  
   #####------------NEED TO PORT OVER TO NEW FUNCTION------------------
   
   # stack data available for a given site into a single timeseries.
@@ -414,9 +430,9 @@ calibrate_water_linreg_bysite <- function(inpath,
   temp                 <- restructure_water_variables(low, "temp", "reference")
   tempEnvHut           <- restructure_water_variables(low, "tempEnvHut", "reference")
   
-  data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, dlta18OH2oRefe, dlta2HH2oRefe,
-                                     pres, presEnvHut, rhEnvHut,
-                                     rtioMoleWetH2o, rtioMoleWetH2oEnvHut, temp, tempEnvHut))
+  data_out_all <- do.call(rbind,list(dlta18OH2o[[1]], dlta2HH2o[[1]], dlta18OH2oRefe[[1]], dlta2HH2oRefe[[1]],
+                                     pres[[1]], presEnvHut[[1]], rhEnvHut[[1]],
+                                     rtioMoleWetH2o[[1]], rtioMoleWetH2oEnvHut[[1]], temp[[1]], tempEnvHut[[1]]))
   
   lowref <- base::split(data_out_all, factor(data_out_all$varname))
   
@@ -430,6 +446,51 @@ calibrate_water_linreg_bysite <- function(inpath,
                                      DataFrameAsCompound = TRUE)})
   
   rhdf5::H5Gclose(low_outloc)
+  
+  # write qfqm
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoH2o/h2olow_03m"))
+  
+  low_outloc <- rhdf5::H5Gopen(fid,
+                             paste0("/", site, "/dp01/qfqm/isoH2o/h2olow_03m"))
+  
+  data_out_all <- do.call(rbind,list(dlta18OH2o[[2]], dlta2HH2o[[2]],
+                                     pres[[2]], presEnvHut[[2]], rhEnvHut[[2]],
+                                     rtioMoleWetH2o[[2]], rtioMoleWetH2oEnvHut[[2]], temp[[2]], tempEnvHut[[2]]))
+  
+  lowref <- base::split(data_out_all, factor(data_out_all$varname))
+  
+  # and write out as a dataframe.
+  lapply(names(lowref), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = lowref[[x]],
+                                     h5loc = low_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)})
+  
+  rhdf5::H5Gclose(low_outloc)
+  
+  # write ucrt 
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoH2o/h2olow_03m"))
+  
+  low_outloc <- rhdf5::H5Gopen(fid,
+                               paste0("/", site, "/dp01/ucrt/isoH2o/h2olow_03m"))
+  
+  data_out_all <- do.call(rbind,list(dlta18OH2o[[3]], dlta2HH2o[[3]],
+                                     pres[[3]], presEnvHut[[3]], rhEnvHut[[3]],
+                                     rtioMoleWetH2o[[3]], rtioMoleWetH2oEnvHut[[3]], temp[[3]], tempEnvHut[[3]]))
+  
+  lowref <- base::split(data_out_all, factor(data_out_all$varname))
+  
+  # and write out as a dataframe.
+  lapply(names(lowref), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = lowref[[x]],
+                                     h5loc = low_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)})
+  
+  rhdf5::H5Gclose(low_outloc)
+  
+  print("okay to here! low standard works copy to other data frames.")
+  
   # 
   # #------------------------------------------------------------
   # #medium
@@ -452,15 +513,15 @@ calibrate_water_linreg_bysite <- function(inpath,
   temp                 <- restructure_water_variables(med, "temp", "reference")
   tempEnvHut           <- restructure_water_variables(med, "tempEnvHut", "reference")
   
-  data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, dlta18OH2oRefe, dlta2HH2oRefe,
-                                     pres, presEnvHut, rhEnvHut,
-                                     rtioMoleWetH2o, rtioMoleWetH2oEnvHut, temp, tempEnvHut))
+  
+  data_out_all <- do.call(rbind,list(dlta18OH2o[[1]], dlta2HH2o[[1]], dlta18OH2oRefe[[1]], dlta2HH2oRefe[[1]],
+                                     pres[[1]], presEnvHut[[1]], rhEnvHut[[1]],
+                                     rtioMoleWetH2o[[1]], rtioMoleWetH2oEnvHut[[1]], temp[[1]], tempEnvHut[[1]]))
   
   medref <- base::split(data_out_all, factor(data_out_all$varname))
   
   medref <- calibrate_standards_water(out, medref)
   
-  # loop through each of the variables in list amb.data.list
   # and write out as a dataframe.
   lapply(names(medref), function(x) {
     rhdf5::h5writeDataset.data.frame(obj = medref[[x]],
@@ -469,6 +530,51 @@ calibrate_water_linreg_bysite <- function(inpath,
                                      DataFrameAsCompound = TRUE)})
   
   rhdf5::H5Gclose(med_outloc)
+  
+  # write qfqm
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoH2o/h2omed_03m"))
+  
+  med_outloc <- rhdf5::H5Gopen(fid,
+                               paste0("/", site, "/dp01/qfqm/isoH2o/h2omed_03m"))
+  
+  data_out_all <- do.call(rbind,list(dlta18OH2o[[2]], dlta2HH2o[[2]],
+                                     pres[[2]], presEnvHut[[2]], rhEnvHut[[2]],
+                                     rtioMoleWetH2o[[2]], rtioMoleWetH2oEnvHut[[2]], temp[[2]], tempEnvHut[[2]]))
+  
+  medref <- base::split(data_out_all, factor(data_out_all$varname))
+  
+  # and write out as a dataframe.
+  lapply(names(medref), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = medref[[x]],
+                                     h5loc = med_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)})
+  
+  rhdf5::H5Gclose(med_outloc)
+  
+  # write ucrt 
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoH2o/h2omed_03m"))
+  
+  med_outloc <- rhdf5::H5Gopen(fid,
+                               paste0("/", site, "/dp01/ucrt/isoH2o/h2omed_03m"))
+  
+  data_out_all <- do.call(rbind,list(dlta18OH2o[[3]], dlta2HH2o[[3]],
+                                     pres[[3]], presEnvHut[[3]], rhEnvHut[[3]],
+                                     rtioMoleWetH2o[[3]], rtioMoleWetH2oEnvHut[[3]], temp[[3]], tempEnvHut[[3]]))
+  
+  medref <- base::split(data_out_all, factor(data_out_all$varname))
+  
+  # and write out as a dataframe.
+  lapply(names(medref), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = medref[[x]],
+                                     h5loc = med_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)})
+  
+  rhdf5::H5Gclose(med_outloc)
+  
+  
+  print("okay to here! med standard works copy to other data frames.")
   
   # #------------------------------------------------------------
   # #high
@@ -491,15 +597,14 @@ calibrate_water_linreg_bysite <- function(inpath,
   temp                 <- restructure_water_variables(high, "temp", "reference")
   tempEnvHut           <- restructure_water_variables(high, "tempEnvHut", "reference")  
   
-  data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, dlta18OH2oRefe, dlta2HH2oRefe,
-                                     pres, presEnvHut, rhEnvHut,
-                                     rtioMoleWetH2o, rtioMoleWetH2oEnvHut, temp, tempEnvHut))
+  data_out_all <- do.call(rbind,list(dlta18OH2o[[1]], dlta2HH2o[[1]], dlta18OH2oRefe[[1]], dlta2HH2oRefe[[1]],
+                                     pres[[1]], presEnvHut[[1]], rhEnvHut[[1]],
+                                     rtioMoleWetH2o[[1]], rtioMoleWetH2oEnvHut[[1]], temp[[1]], tempEnvHut[[1]]))
   
   highref <- base::split(data_out_all, factor(data_out_all$varname))
   
   highref <- calibrate_standards_water(out, highref)
   
-  # loop through each of the variables in list amb.data.list
   # and write out as a dataframe.
   lapply(names(highref), function(x) {
     rhdf5::h5writeDataset.data.frame(obj = highref[[x]],
@@ -509,8 +614,50 @@ calibrate_water_linreg_bysite <- function(inpath,
   
   rhdf5::H5Gclose(high_outloc)
   
-  # close the group and the file
-  rhdf5::H5Fclose(fid)
+  # write qfqm
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoH2o/h2ohigh_03m"))
+  
+  high_outloc <- rhdf5::H5Gopen(fid,
+                               paste0("/", site, "/dp01/qfqm/isoH2o/h2ohigh_03m"))
+  
+  data_out_all <- do.call(rbind,list(dlta18OH2o[[2]], dlta2HH2o[[2]],
+                                     pres[[2]], presEnvHut[[2]], rhEnvHut[[2]],
+                                     rtioMoleWetH2o[[2]], rtioMoleWetH2oEnvHut[[2]], temp[[2]], tempEnvHut[[2]]))
+  
+  highref <- base::split(data_out_all, factor(data_out_all$varname))
+  
+  # and write out as a dataframe.
+  lapply(names(highref), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = highref[[x]],
+                                     h5loc = high_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)})
+  
+  rhdf5::H5Gclose(high_outloc)
+  
+  # write ucrt 
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoH2o/h2ohigh_03m"))
+  
+  high_outloc <- rhdf5::H5Gopen(fid,
+                               paste0("/", site, "/dp01/ucrt/isoH2o/h2ohigh_03m"))
+  
+  data_out_all <- do.call(rbind,list(dlta18OH2o[[3]], dlta2HH2o[[3]],
+                                     pres[[3]], presEnvHut[[3]], rhEnvHut[[3]],
+                                     rtioMoleWetH2o[[3]], rtioMoleWetH2oEnvHut[[3]], temp[[3]], tempEnvHut[[3]]))
+  
+  highref <- base::split(data_out_all, factor(data_out_all$varname))
+  
+  # and write out as a dataframe.
+  lapply(names(highref), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = highref[[x]],
+                                     h5loc = high_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)})
+  
+  rhdf5::H5Gclose(high_outloc)
+  
+  
+  print("okay to here! high standard works copy to other data frames.")
   Sys.sleep(0.5)
   
   rhdf5::h5closeAll()
@@ -565,8 +712,8 @@ calibrate_water_linreg_bysite <- function(inpath,
   tempEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "tempEnvHut", avg = 9)
   tempEnvHut <- restructure_water_variables(tempEnvHut_list, "tempEnvHut", "ambient")
   
-  data_out_all <- do.call(rbind,list(dlta18OH2o, dlta2HH2o, pres, presEnvHut, rhEnvHut,
-                                     rtioMoleWetH2o, rtioMoleWetH2oEnvHut, temp, tempEnvHut))
+  data_out_all <- do.call(rbind,list(dlta18OH2o[[1]], dlta2HH2o[[1]], pres[[1]], presEnvHut[[1]], rhEnvHut[[1]],
+                                     rtioMoleWetH2o[[1]], rtioMoleWetH2oEnvHut[[1]], temp[[1]], tempEnvHut[[1]]))
   
   # split first by height
   data_by_height <- base::split(data_out_all, factor(data_out_all$verticalPosition))
