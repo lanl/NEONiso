@@ -50,6 +50,10 @@ setup_output_file <- function(inname, outname, site, analyte) {
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01"))
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data"))
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/iso",analyte))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/iso",analyte))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt"))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/iso",analyte))
   
   rhdf5::h5closeAll()
   

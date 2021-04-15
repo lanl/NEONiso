@@ -10,8 +10,8 @@ calibrate_water_linreg_bysite(
   site,
   calibration_half_width = 14,
   filter_data = TRUE,
-  force_cal_to_beginning = TRUE,
-  force_cal_to_end = TRUE,
+  force_cal_to_beginning = FALSE,
+  force_cal_to_end = FALSE,
   r2_thres = 0.95,
   slope_tolerance = 9999
 )

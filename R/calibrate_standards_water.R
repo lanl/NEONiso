@@ -34,9 +34,7 @@ calibrate_standards_water <- function(cal_df,
       # determine which row calibration point is in.
       int <- lubridate::interval(cal_df$start, cal_df$end)
       cal_id <- which(ref_df$dlta18OH2o$timeBgn[i] %within% int)
-      
-      print(cal_id)
-      
+
       # now, calculate calibrated value ONLY IF CERTAIN CONDITIONS ARE MET:
       # 1a-d. variables needed are not missing.
       # 2. at least 200 ~1Hz measmnts available (filters out valve issues)
@@ -46,9 +44,9 @@ calibrate_standards_water <- function(cal_df,
       # these conditions are listed in this order in the logical below.
       if (!is.na(ref_df$dlta18OH2o$mean[i]) &
           !is.na(ref_df$dlta18OH2oRefe$mean[i]) &
-          ref_df$dlta18OH2o$numSamp[i] >= 200 &
+          ref_df$dlta18OH2o$numSamp[i] >= 30 &
           abs(ref_df$dlta18OH2o$mean[i] -
-              ref_df$dlta18OH2oRefe$mean[i]) < 5 &
+              ref_df$dlta18OH2oRefe$mean[i]) < 10 &
           ref_df$dlta18OH2o$vari[i] < 5) {
         
         if (!length(cal_id) == 0) {
@@ -95,10 +93,10 @@ calibrate_standards_water <- function(cal_df,
       # these conditions are listed in this order in the logical below.
       if (!is.na(ref_df$dlta2HH2o$mean[i]) &
           !is.na(ref_df$dlta2HH2oRefe$mean[i]) &
-          ref_df$dlta2HH2o$numSamp[i] >= 200 &
+          ref_df$dlta2HH2o$numSamp[i] >= 30 &
           abs(ref_df$dlta2HH2o$mean[i] -
-              ref_df$dlta2HH2oRefe$mean[i]) < 5 &
-          ref_df$dlta2HH2o$vari[i] < 5) {
+              ref_df$dlta2HH2oRefe$mean[i]) < 40 &
+          ref_df$dlta2HH2o$vari[i] < 20) {
         
         if (!length(cal_id) == 0) {
           
@@ -168,21 +166,31 @@ restructure_water_variables <- function(dataframe,
                     max  = paste0("data.isoH2o.", varname, ".max"),
                     vari = paste0("data.isoH2o.", varname, ".vari"),
                     numSamp = paste0("data.isoH2o.", varname, ".numSamp")) %>%
-      dplyr::mutate(varname = varname)
+      dplyr::mutate(varname = varname) %>%
+      dplyr::mutate(dom = lubridate::day(.data$timeBgn),
+                    yr  = lubridate::year(.data$timeBgn),
+                    mn  = lubridate::month(.data$timeBgn)) %>% # get day of month
+      dplyr::group_by(.data$yr, .data$mn, .data$dom) %>%
+      dplyr::filter(.data$numSamp > 30 | is.na(.data$numSamp)) %>%
+      dplyr::slice(tail(row_number(), 3)) %>%
+      dplyr::ungroup() %>%
+      dplyr::select(-dom, -yr, -mn)
     
     if (!grepl("Refe", varname)) {
       output2 <- dataframe %>%
         dplyr::select(.data$timeBgn,.data$timeEnd,starts_with(paste0("qfqm.isoH2o.",varname,"."))) %>%
         dplyr::rename(qfFinl = paste0("qfqm.isoH2o.", varname, ".qfFinl")) %>%
-        dplyr::mutate(varname = varname)
-      
+        dplyr::mutate(varname = varname) %>%
+        dplyr::filter(.data$timeBgn %in% output1$timeBgn) 
       
       output3 <- dataframe %>%
         dplyr::select(.data$timeBgn,.data$timeEnd,starts_with(paste0("ucrt.isoH2o.",varname,"."))) %>%
         dplyr::rename(mean = paste0("ucrt.isoH2o.", varname, ".mean"),
                       vari = paste0("ucrt.isoH2o.", varname, ".vari"),
                       se   = paste0("ucrt.isoH2o.", varname, ".se")) %>%
-        dplyr::mutate(varname = varname)
+        dplyr::mutate(varname = varname) %>%
+        dplyr::filter(.data$timeBgn %in% output1$timeBgn) 
+      
     } else {
       output2 <- output3 <- NULL
     }

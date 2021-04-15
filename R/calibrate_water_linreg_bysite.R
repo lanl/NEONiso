@@ -64,11 +64,9 @@ calibrate_water_linreg_bysite <- function(inpath,
                                           r2_thres = 0.95,
                                           slope_tolerance = 9999) {
   
-  # print status.
-  print("Processing water calibration data...")
-  
   # stack data available for a given site into a single timeseries.
   wiso_ref <- neonUtilities::stackEddy(inpath, level = "dp01", avg = 3)
+  wiso_amb <- neonUtilities::stackEddy(inpath, level = "dp01", avg = 9)
   
   # extract standards data.
   high <- subset(wiso_ref[[site]], wiso_ref[[site]]$verticalPosition == 'h2oHigh')
@@ -112,9 +110,7 @@ calibrate_water_linreg_bysite <- function(inpath,
   low_rs <- low_rs %>%
     mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
   low_rs$periods <- rleidv(low_rs, "time_diff") %/% 2
-  
-  #return(list(low_rs,med_rs,high_rs))
-  
+
   high_rs <- high_rs %>%
     group_by(.data$periods) %>%
     filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
@@ -140,191 +136,10 @@ calibrate_water_linreg_bysite <- function(inpath,
   #### OMIT FOR ERROR PROPOAGATION.
   stds <- do.call(rbind, list(high_rs, med_rs, low_rs))
   
-  #print(str(stds))
-  # do some light validation of these points.
-  stds <- stds %>%
-    dplyr::filter(.data$d18O_meas_var < 5 &
-                    abs(.data$d18O_meas_mean - .data$d18O_ref_mean) < 3 &
-                    .data$d2H_meas_var < 10 &
-                    abs(.data$d18O_meas_mean - .data$d18O_ref_mean) < 24)
-  
-  
-  if (nrow(stds) > 0) {
-    # replace NaNs with NA
-    # is.na() also returns NaN as NA, so this does actually do what first
-    # comment indicates.
-    stds[is.na(stds)] <- NA
-    
-    #-----------------------------------------------------------
-    # CALIBRATE WATER ISOTOPE VALUES
-    
-    # reorder data frame
-    stds <- stds[order(stds$btime), ]
-    
-    # loop through days represented in the dataframe,
-    # select rows corresponding to window of interest, 
-    # and run regression.
-    
-    # get start and end days.
-    start_date <- as.Date(min(stds$btime))
-    end_date   <- as.Date(max(stds$etime))
-    
-    # set up output vectors
-    oxy_cal_slopes <- vector()
-    oxy_cal_ints   <- vector()
-    oxy_cal_rsq    <- vector()
-    
-    hyd_cal_slopes <- vector()
-    hyd_cal_ints   <- vector()
-    hyd_cal_rsq    <- vector()
-    
-    start_time     <- vector()
-    end_time       <- vector()
-    
-    # loop through days and get regression statistics.
-    # generate sequence of dates:
-    loop_start_date <- start_date #+ lubridate::days(x = calibration_half_width)
-    loop_end_date   <- end_date #- lubridate::days(x = calibration_half_width)
-    
-    # generate date sequence
-    date_seq <- base::seq.Date(loop_start_date, loop_end_date, by = "1 day")
-    
-    for (i in 1:length(date_seq)) {
-       
-      start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"), # odd workaround to prevent R from converting this to NA.
-                                  tz = "UTC", origin = "1970-01-01")
-      end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59.0000"),
-                                  tz = "UTC", origin = "1970-01-01")
-      
-      # define calibration interval
-      cal_period <- lubridate::interval(date_seq[i] - lubridate::days(calibration_half_width),
-                                        date_seq[i] + lubridate::days(calibration_half_width))
-      
-      # select data subset using the interval
-      std_subset <- stds %>%
-        dplyr::filter(.data$btime %within% cal_period)
-      
-      # check to see if sum of is.na() on oxygen data = nrow of oxygen data
-      if (sum(is.na(std_subset$d18O_meas_mean)) < nrow(std_subset) &
-          sum(is.na(std_subset$d18O_ref_mean)) < nrow(std_subset)) {
-        tmp <- lm(d18O_ref_mean ~ d18O_meas_mean, data = std_subset)
-        
-        oxy_cal_slopes[i] <- coef(tmp)[[2]]
-        oxy_cal_ints[i]   <- coef(tmp)[[1]]
-        oxy_cal_rsq[i]    <- summary(tmp)$r.squared
-        
-        # enforce thresholds. replace regression parameters as NA where they fail.
-        if (!is.na(oxy_cal_rsq[i])) {
-          if ((oxy_cal_slopes[i] > (1 + slope_tolerance)) |
-              (oxy_cal_slopes[i] < (1 - slope_tolerance)) |
-              (oxy_cal_rsq[i] < r2_thres)) {
-            
-            # set as NA
-            oxy_cal_slopes[i] <- NA
-            oxy_cal_ints[i]   <- NA
-            oxy_cal_rsq[i]    <- NA
-          }
-        } else {
-          # set as NA
-          oxy_cal_slopes[i] <- NA
-          oxy_cal_ints[i]   <- NA
-          oxy_cal_rsq[i]    <- NA
-        }
-        
-      } else { # all are missing
-        oxy_cal_slopes[i] <- NA
-        oxy_cal_ints[i]   <- NA
-        oxy_cal_rsq[i]    <- NA
-      }
-      
-      # HYDROGEN
-      
-      # check to see if sum of is.na() on oxygen data = nrow of oxygen data
-      if (sum(is.na(std_subset$d2H_meas_mean)) < nrow(std_subset) &
-          sum(is.na(std_subset$d2H_ref_mean)) < nrow(std_subset)) {
-        
-        tmp <- lm(d2H_ref_mean ~ d2H_meas_mean, data = std_subset)
-        
-        hyd_cal_slopes[i] <- coef(tmp)[[2]]
-        hyd_cal_ints[i]   <- coef(tmp)[[1]]
-        hyd_cal_rsq[i]    <- summary(tmp)$r.squared
-        
-        # enforce thresholds. replace regression parameters where they fail.
-        if (!is.na(hyd_cal_rsq[i])) {
-          if ((hyd_cal_slopes[i] > (1 + slope_tolerance)) |
-              (hyd_cal_slopes[i] < (1 - slope_tolerance)) |
-              (hyd_cal_rsq[i] < r2_thres)) {
-            
-            # set as NA
-            hyd_cal_slopes[i] <- NA
-            hyd_cal_ints[i]   <- NA
-            hyd_cal_rsq[i]    <- NA
-          }
-        } else {
-          # set as NA
-          hyd_cal_slopes[i] <- NA
-          hyd_cal_ints[i]   <- NA
-          hyd_cal_rsq[i]    <- NA
-        }
-        
-      } else { # all are missing
-        
-        hyd_cal_slopes[i] <- NA
-        hyd_cal_ints[i]   <- NA
-        hyd_cal_rsq[i]    <- NA
-      }
-    }
-    
-    print(start_time)
-    
-    # start time is numeric here at some point - hence, format not necessary 
-    # to be specified below.
-    # output dataframe giving valid time range, slopes, intercepts, rsquared.
-    out <- data.frame(start = lubridate::as_datetime(start_time, tz= 'UTC'),
-                      end = lubridate::as_datetime(end_time, tz= 'UTC'),
-                      o_slope = as.numeric(oxy_cal_slopes),
-                      o_intercept = as.numeric(oxy_cal_ints),
-                      o_r2 = as.numeric(oxy_cal_rsq),
-                      h_slope = as.numeric(hyd_cal_slopes),
-                      h_intercept = as.numeric(hyd_cal_ints),
-                      h_r2 = as.numeric(hyd_cal_rsq))
-    
-  } else { # this branch shouldn't run any more, as it indicates no ref data in *entire* timeseries
-    out <- data.frame(start = lubridate::as_datetime(start_date, tz = 'UTC'),
-                      end = lubridate::as_datetime(end_date, tz = 'UTC'),
-                      o_slope = as.numeric(NA),
-                      o_intercept = as.numeric(NA),
-                      o_r2 = as.numeric(NA),
-                      h_slope = as.numeric(NA),
-                      h_intercept = as.numeric(NA),
-                      h_r2 = as.numeric(NA))
-  }
-
-  # check to ensure there are 6 columns.
-  # add slope, intercept, r2 columns if missing.
-  if (!("o_slope" %in% names(out))) {
-    out$o_slope <- as.numeric(rep(NA, length(out$start)))
-  }
-  if (!("o_intercept" %in% names(out))) {
-    out$o_intercept <- as.numeric(rep(NA, length(out$start)))
-  }
-  if (!("o_r2" %in% names(out))) {
-    out$o_r2 <- as.numeric(rep(NA, length(out$start)))
-  }
-  if (!("h_slope" %in% names(out))) {
-    out$h_slope <- as.numeric(rep(NA, length(out$start)))
-  }
-  if (!("h_intercept" %in% names(out))) {
-    out$h_intercept <- as.numeric(rep(NA, length(out$start)))
-  }
-  if (!("h_r2" %in% names(out))) {
-    out$h_r2 <- as.numeric(rep(NA, length(out$start)))
-  }
-  
-  # ensure there are 8 columns in out!
-  if (ncol(out) != 8) {
-    stop("Wrong number of columns in out.")
-  }
+  out <- fit_water_regression(stds,
+                                     calibration_half_width = calibration_half_width,
+                                     slope_tolerance = slope_tolerance,
+                                     r2_thres = r2_thres)
   
   var_for_h5 <- out
   
@@ -342,42 +157,15 @@ calibrate_water_linreg_bysite <- function(inpath,
   #----------------------------------
   # generate file name:
   inname <- list.files(inpath, pattern = '.h5', full.names = TRUE)[[1]]
-
   inname_list <- strsplit(inname, split = '.', fixed = TRUE)
-  
-  # get domain number.
   
   outname <- paste0(outpath,"/NEON.",inname_list[[1]][2],'.',site,".DP4.00200.001.nsae.all.basic.wiso.calibrated.",
                     2*calibration_half_width,"dayWindow.h5")
   
-  rhdf5::h5createFile(outname)
-  rhdf5::h5createGroup(outname, paste0("/", site))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoH2o"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoH2o"))
+  setup_output_file(inname, outname, site, analyte = 'h2o')
   
   # okay try to write out to h5 file.
   fid <- rhdf5::H5Fopen(outname)
-  
-  #####------------NEED TO PORT OVER TO NEW FUNCTION------------------
-  # copy attributes from source file and write to output file.
-  # use list of files in inpath to get first file, copy attributes from first file.
-  tmp <- rhdf5::h5readAttributes(inname, paste0("/", site))
-  attrloc <- rhdf5::H5Gopen(fid, paste0("/", site))
-  
-  for (i in 1:length(tmp)) { # probably a more rapid way to do this...lapply?
-    rhdf5::h5writeAttribute(h5obj = attrloc,
-                            attr = tmp[[i]],
-                            name = names(tmp)[i])
-  }
-  
-  # add attributes regarding sloep and r2 thresholds
-  
-  rhdf5::H5Gclose(attrloc)
   
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o/calData"))
   
@@ -399,12 +187,6 @@ calibrate_water_linreg_bysite <- function(inpath,
   
   tmp <- rhdf5::h5read(inname, '/readMe')
   rhdf5::h5write(tmp, file = outname, '/readMe')
-  
-  #####------------NEED TO PORT OVER TO NEW FUNCTION------------------
-  
-  # stack data available for a given site into a single timeseries.
-  # should probably kick this out to its own function someday.
-  
   # #---------------------------------------------
   # #---------------------------------------------
   # # copy high/mid/low standard data from input file.
@@ -489,9 +271,6 @@ calibrate_water_linreg_bysite <- function(inpath,
   
   rhdf5::H5Gclose(low_outloc)
   
-  print("okay to here! low standard works copy to other data frames.")
-  
-  # 
   # #------------------------------------------------------------
   # #medium
   rhdf5::h5createGroup(outname,
@@ -572,10 +351,7 @@ calibrate_water_linreg_bysite <- function(inpath,
                                      DataFrameAsCompound = TRUE)})
   
   rhdf5::H5Gclose(med_outloc)
-  
-  
-  print("okay to here! med standard works copy to other data frames.")
-  
+
   # #------------------------------------------------------------
   # #high
   rhdf5::h5createGroup(outname,
@@ -655,9 +431,7 @@ calibrate_water_linreg_bysite <- function(inpath,
                                      DataFrameAsCompound = TRUE)})
   
   rhdf5::H5Gclose(high_outloc)
-  
-  
-  print("okay to here! high standard works copy to other data frames.")
+
   Sys.sleep(0.5)
   
   rhdf5::h5closeAll()
@@ -747,30 +521,5 @@ calibrate_water_linreg_bysite <- function(inpath,
                                           r2_thres = r2_thres)})
   
   rhdf5::h5closeAll()
-  
-  #####------------NEED TO PORT OVER TO NEW FUNCTION------------------
-  # print("Copying qfqm...")
-  # # copy over ucrt and qfqm groups as well.
-  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/"))
-  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoH2o"))
-  # qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/isoH2o"))
-  # 
-  # lapply(names(qfqm), function(x) {
-  #   copy_qfqm_group(data_list = qfqm[[x]],
-  #                 outname = x, file = outname, site = site, species = "H2O")})
-  # 
-  # rhdf5::h5closeAll()
-  # 
-  # print("Copying ucrt...")
-  # # now ucrt.
-  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/"))
-  # rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoH2o"))
-  # ucrt <- rhdf5::h5read(inname, paste0("/", site, "/dp01/ucrt/isoH2o"))
-  # 
-  # lapply(names(ucrt), function(x) {
-  #   copy_ucrt_group(data_list = ucrt[[x]],
-  #                 outname = x, file = outname, site = site, species = "H2O")})
-  # 
-  # rhdf5::h5closeAll()
   
 }
