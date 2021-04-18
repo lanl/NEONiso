@@ -2,22 +2,25 @@
 % Please edit documentation in R/output_functions.R
 \name{calibrate_water_reference_data}
 \alias{calibrate_water_reference_data}
-\title{Title}
+\title{calibrate_water_reference_data}
 \usage{
 calibrate_water_reference_data(outname, standard, site, stdDf, calDf)
 }
 \arguments{
-\item{outname}{}
+\item{outname}{Output file name.}
 
-\item{standard}{}
+\item{standard}{Which reference material is being 'calibrated'? (Low, med, or high)}
 
-\item{site}{}
+\item{site}{NEON 4-letter site code.}
 
-\item{calDf}{}
+\item{stdDf}{Data frame of reference material measurements.}
+
+\item{calDf}{Calibration data frame - 
+this is the output from fit_water_regression}
 }
 \value{
-
+Nothing to the environment.
 }
 \description{
-Title
+calibrate_water_reference_data
 }

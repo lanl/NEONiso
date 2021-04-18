@@ -253,19 +253,24 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
     
 }
  
-
-
-
 #' fit_water_regression
 #'
-#' @param ref_data 
-#' @param method 
-#' @param calibration_half_width 
+#' @param stds Reference data.frame from which to estimate 
+#'        calibration parameters.
+#' @param calibration_half_width Determines the period (in days)
+#'        from which reference data are selected (period
+#'        is 2*calibration_half_width).
+#' @param slope_tolerance Allows for filtering of slopes that deviate
+#'        from 1 by slope_tolerance.
+#' @param r2_thres What is the minimum r2 value permitted in a 'useful'
+#'        calibration relationship.
+#' 
+#' @return Returns a data.frame of calibration parameters.
+#'        Output data.frame includes slope, intercept, and r^2 values
+#'        for d13C and CO2 values.
 #'
-#' @return
-#' @export
-#'
-#' @examples
+#' @importFrom stats coef lm
+#' 
 fit_water_regression <- function(stds, calibration_half_width, slope_tolerance, r2_thres) {
   # do some light validation of these points.
   stds <- stds %>%

@@ -89,6 +89,7 @@
 #' @export
 #'
 #' @importFrom magrittr %>%
+#' @importFrom utils str
 #' @examples 
 #' \dontrun{fin <- system.file('extdata',
 #'          'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.20201020T211037Z.packed.h5',
