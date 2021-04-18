@@ -20,6 +20,8 @@ convert_POSIXct_to_NEONhdf5_time <- function(intime) {
   
   # convert from POSIXct to
   # a time in YYmmddTHH:MM:SSSZ format used by NEON hdf5 files.
+  intime <- lubridate::ymd_hms(intime)
+  
   outtime <- as.character(paste0(lubridate::year(intime), "-",
                                  ifelse(lubridate::month(intime) < 10,
                                         paste0("0", lubridate::month(intime)),
@@ -55,7 +57,7 @@ convert_POSIXct_to_NEONhdf5_time <- function(intime) {
 #' convert_NEONhdf5_to_POSIXct_time("2019-06-01T12:00:00.000Z")
 convert_NEONhdf5_to_POSIXct_time <- function(intime) {
   
-  outtime <- as.POSIXct(intime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+  outtime <- as.POSIXct(intime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC", origin = '1970-01-01')
   
   return(outtime)
 }

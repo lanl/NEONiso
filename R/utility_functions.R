@@ -52,7 +52,7 @@ terrestrial_relocatable_sites <- function() {
 
 #' water_isotope_sites
 #'
-#' @Return A vector listing NEON sites measuring water vapor isotope ratios.
+#' @return A vector listing NEON sites measuring water vapor isotope ratios.
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #' 
