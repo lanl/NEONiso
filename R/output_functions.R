@@ -59,7 +59,7 @@ setup_output_file <- function(inname, outname, site, analyte) {
   
   # copy attributes from source file and write to output file.
   fid <- rhdf5::H5Fopen(outname)
-  tmp <- rhdf5::h5readAttributes(inname, paste0("/", site))
+  tmp <- rhdf5::h5readAttributes(inname[1], paste0("/", site))
   
   attrloc <- rhdf5::H5Gopen(fid, paste0("/", site))
   
@@ -69,11 +69,10 @@ setup_output_file <- function(inname, outname, site, analyte) {
                             attr = tmp[[i]],
                             name = names(tmp)[i])
   }
-  
+
   rhdf5::H5Gclose(attrloc)
   rhdf5::h5closeAll()
-  
-  
+
 }
 
 #' write_carbon_calibration_data
