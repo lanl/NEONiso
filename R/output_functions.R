@@ -122,6 +122,46 @@ write_carbon_calibration_data <- function(outname, site, calDf, method) {
 
 }
 
+#' write_water_calibration_data
+#'
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#'
+#' @param outname Output file name.
+#' @param site NEON 4-letter site code.
+#' @param calDf Calibration data frame - 
+#'              this is the output from fit_water_regression
+#'
+#' @return Nothing to the environment, but writes out the
+#'         calibration parameters (e.g., 
+#'         regression slopes and intercepts) to the output
+#'         hdf5 file.
+#'
+write_water_calibration_data <- function(outname, site, calDf) {
+  
+  print("Writing calibration parameters...")
+  
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o/calData"))
+
+  fid <- rhdf5::H5Fopen(outname)
+  
+  h2o_cal_outloc <- rhdf5::H5Gopen(fid,
+                                   paste0("/", site, "/dp01/data/isoH2o/calData"))
+  
+  # write out dataset.
+  rhdf5::h5writeDataset.data.frame(obj = calDf,
+                                   h5loc = h2o_cal_outloc,
+                                   name = "calRegressions",
+                                   DataFrameAsCompound = TRUE)
+  
+  # close the group and the file
+  rhdf5::H5Gclose(h2o_cal_outloc)
+  
+  # close the group and the file
+  rhdf5::H5Fclose(fid)
+  rhdf5::h5closeAll()
+  
+}
+
 
 #' write_carbon_ambient_data
 #'
@@ -229,6 +269,128 @@ calibrate_carbon_reference_data <- function(inname, outname,
   rhdf5::H5Fclose(fid)
   rhdf5::h5closeAll()
 }
+
+
+#' write_water_reference_data
+#'
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#'
+#' @param inname Input file name.
+#' @param outname Output file name.
+#' @param site NEON 4-letter site code.
+#' @param calDf Calibration data frame - 
+#'              this is the output from fit_water_regression
+#' @param lowDf Dataframe corresponding to the "low" reference water.
+#' @param medDf Data frame corresponding to the "med" reference water.
+#' @param highDf Data frame corresponding to the "high" reference water.
+#'
+#' @return Nothing to the environment, but writes calibrated reference data to hdf5 file.
+#'
+write_water_reference_data <- function(inname, outname, site, 
+                                        lowDf, medDf, highDf, calDf) {
+  
+  print("Writing calibrated reference data...")
+  calibrate_water_reference_data(outname, "Low", site, lowDf, calDf)
+  calibrate_water_reference_data(outname, "Med", site, medDf, calDf)
+  calibrate_water_reference_data(outname, "High", site, highDf, calDf)
+  
+}
+
+
+#' Title
+#'
+#' @param outname 
+#' @param standard 
+#' @param site 
+#' @param calDf 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+calibrate_water_reference_data <- function(outname, standard, site, stdDf, calDf) { #,- problem here: in some contexts standard is a df, others its a string (e.g., which standard?)
+
+  rhdf5::h5createGroup(outname,
+                       paste0("/", site, "/dp01/data/isoH2o/h2o",standard,"_03m"))
+  
+  fid <- rhdf5::H5Fopen(outname)
+  std_outloc <- rhdf5::H5Gopen(fid,
+                               paste0("/", site, "/dp01/data/isoH2o/h2o",standard,"_03m"))
+  
+  # restructure variables to be more suitable for output file.
+  dlta18OH2o           <- restructure_water_variables(stdDf, "dlta18OH2o", "reference")
+  dlta2HH2o            <- restructure_water_variables(stdDf, "dlta2HH2o", "reference")
+  dlta18OH2oRefe       <- restructure_water_variables(stdDf, "dlta18OH2oRefe", "reference")
+  dlta2HH2oRefe        <- restructure_water_variables(stdDf, "dlta2HH2oRefe", "reference")
+  pres                 <- restructure_water_variables(stdDf, "pres", "reference")
+  presEnvHut           <- restructure_water_variables(stdDf, "presEnvHut", "reference")
+  rhEnvHut             <- restructure_water_variables(stdDf, "rhEnvHut", "reference")
+  rtioMoleWetH2o       <- restructure_water_variables(stdDf, "rtioMoleWetH2o", "reference")
+  rtioMoleWetH2oEnvHut <- restructure_water_variables(stdDf, "rtioMoleWetH2oEnvHut", "reference")
+  temp                 <- restructure_water_variables(stdDf, "temp", "reference")
+  tempEnvHut           <- restructure_water_variables(stdDf, "tempEnvHut", "reference")
+  
+  data_out_all <- do.call(rbind,list(dlta18OH2o[[1]], dlta2HH2o[[1]], dlta18OH2oRefe[[1]], dlta2HH2oRefe[[1]],
+                                     pres[[1]], presEnvHut[[1]], rhEnvHut[[1]],
+                                     rtioMoleWetH2o[[1]], rtioMoleWetH2oEnvHut[[1]], temp[[1]], tempEnvHut[[1]]))
+  
+  std <- base::split(data_out_all, factor(data_out_all$varname))
+  
+  std <- calibrate_standards_water(calDf, std)
+  
+  # and write out as a dataframe.
+  lapply(names(std), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = std[[x]],
+                                     h5loc = std_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)})
+  
+  rhdf5::H5Gclose(std_outloc)
+  
+  # write qfqm
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoH2o/h2o",standard,"_03m"))
+  
+  std_outloc <- rhdf5::H5Gopen(fid,
+                               paste0("/", site, "/dp01/qfqm/isoH2o/h2o",standard,"_03m"))
+  
+  data_out_all <- do.call(rbind,list(dlta18OH2o[[2]], dlta2HH2o[[2]],
+                                     pres[[2]], presEnvHut[[2]], rhEnvHut[[2]],
+                                     rtioMoleWetH2o[[2]], rtioMoleWetH2oEnvHut[[2]], temp[[2]], tempEnvHut[[2]]))
+  
+  std <- base::split(data_out_all, factor(data_out_all$varname))
+  
+  # and write out as a dataframe.
+  lapply(names(std), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = std[[x]],
+                                     h5loc = std_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)})
+  
+  rhdf5::H5Gclose(std_outloc)
+  
+  # write ucrt 
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoH2o/h2o",standard,"_03m"))
+  
+  std_outloc <- rhdf5::H5Gopen(fid,
+                               paste0("/", site, "/dp01/ucrt/isoH2o/h2o",standard,"_03m"))
+  
+  data_out_all <- do.call(rbind,list(dlta18OH2o[[3]], dlta2HH2o[[3]],
+                                     pres[[3]], presEnvHut[[3]], rhEnvHut[[3]],
+                                     rtioMoleWetH2o[[3]], rtioMoleWetH2oEnvHut[[3]], temp[[3]], tempEnvHut[[3]]))
+  
+  std <- base::split(data_out_all, factor(data_out_all$varname))
+  
+  # and write out as a dataframe.
+  lapply(names(std), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = std[[x]],
+                                     h5loc = std_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)})
+  
+  rhdf5::H5Gclose(std_outloc)
+}
+
+
 
 #' write_qfqm
 #' 
