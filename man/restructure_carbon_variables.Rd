@@ -13,6 +13,8 @@ restructure_carbon_variables(dataframe, varname, mode, group)
 a list of ~10 common ones to write to the hdf5 file.}
 
 \item{mode}{Are we fixing a reference data frame or an ambient data frame?}
+
+\item{group}{Data, ucrt, or qfqm?}
 }
 \value{
 data.frame formatted for output to hdf5 file.

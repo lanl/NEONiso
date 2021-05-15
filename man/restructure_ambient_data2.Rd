@@ -2,16 +2,18 @@
 % Please edit documentation in R/restructure_data.R
 \name{restructure_ambient_data2}
 \alias{restructure_ambient_data2}
-\title{Title}
+\title{restructure_ambient_data2}
 \usage{
 restructure_ambient_data2(inpath, analyte)
 }
 \arguments{
-\item{inpath}{}
+\item{inpath}{Folder containing data to stack.}
+
+\item{analyte}{Carbon (Co2) or water (H2o)?}
 }
 \value{
-
+List of data extracted from files listed in inpath.
 }
 \description{
-Title
+restructure_ambient_data2
 }

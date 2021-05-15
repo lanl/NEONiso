@@ -14,9 +14,9 @@ calibrate_carbon_reference_data2(outname, standard, site, allData, calParams)
 
 \item{site}{NEON 4-letter site code.}
 
-\item{inname}{Input file name.}
+\item{allData}{Uncalibrated reference data frames.}
 
-\item{calDf}{Calibration data frame -
+\item{calParams}{Calibration data frame -
 this is the output from fit_carbon_regression}
 }
 \value{

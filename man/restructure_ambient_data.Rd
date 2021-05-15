@@ -8,6 +8,8 @@ restructure_ambient_data(inpath, analyte)
 }
 \arguments{
 \item{inpath}{Folder containing data to stack.}
+
+\item{analyte}{Carbon (Co2) or water (H2o)?}
 }
 \value{
 List of data extracted from files listed in inpath.

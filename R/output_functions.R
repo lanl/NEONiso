@@ -364,11 +364,11 @@ write_carbon_reference_data <- function(inname, outname, site, calDf) {
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param inname Input file name.
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
 #' @param calDf Calibration data frame - 
 #'              this is the output from fit_carbon_regression
+#' @param allData Uncalibrated reference data frames.
 #'
 #' @return Nothing to the environment, but writes calibrated reference data to hdf5 file.
 #'
@@ -425,13 +425,13 @@ calibrate_carbon_reference_data <- function(inname, outname,
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' @param inname Input file name.
 #' @param outname Output file name.
 #' @param standard Which standard are we working on? Must be "Low",
 #'                 "Med", or "High"
-#' @param site NEON 4-letter site code.
-#' @param calDf Calibration data frame - 
+#' @param allData Uncalibrated reference data frames.
+#' @param calParams Calibration data frame - 
 #'              this is the output from fit_carbon_regression
+#' @param site NEON 4-letter site code.
 #'
 #' @return Nothing to the environment.  
 #'

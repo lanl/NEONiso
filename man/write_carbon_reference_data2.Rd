@@ -11,10 +11,10 @@ write_carbon_reference_data2(outname, site, allData, calDf)
 
 \item{site}{NEON 4-letter site code.}
 
+\item{allData}{Uncalibrated reference data frames.}
+
 \item{calDf}{Calibration data frame -
 this is the output from fit_carbon_regression}
-
-\item{inname}{Input file name.}
 }
 \value{
 Nothing to the environment, but writes calibrated reference data to hdf5 file.
