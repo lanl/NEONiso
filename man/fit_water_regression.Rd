@@ -7,7 +7,7 @@
 fit_water_regression(stds, calibration_half_width, slope_tolerance, r2_thres)
 }
 \arguments{
-\item{stds}{Reference data.frame from which to estimate 
+\item{stds}{Reference data.frame from which to estimate
 calibration parameters.}
 
 \item{calibration_half_width}{Determines the period (in days)
@@ -22,8 +22,8 @@ calibration relationship.}
 }
 \value{
 Returns a data.frame of calibration parameters.
-       Output data.frame includes slope, intercept, and r^2 values
-       for d13C and CO2 values.
+Output data.frame includes slope, intercept, and r^2 values
+for d13C and CO2 values.
 }
 \description{
 fit_water_regression

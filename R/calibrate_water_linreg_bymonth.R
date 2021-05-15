@@ -12,7 +12,7 @@
 #' the regression is greater than a threshold value (by default, this is 0.95).
 #' Most of this function deals with selecting the appropriate calibration data
 #' and determining calibration quality. This function also contains a wrapper
-#' for \code{calibrate_ambient_water_linreg}, which calibrates the ambient
+#' for `calibrate_ambient_water_linreg`, which calibrates the ambient
 #' water data using the calibration parameters generated in this function.
 #' This function also copies over data in the qfqm and ucrt hdf5 data groups.
 #'

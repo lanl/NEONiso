@@ -13,7 +13,7 @@
 #' (Fiorella et al. 2021; JGR-Biogeosciences).
 #' 
 #' The 'linreg' method simply takes measured and reference d13C and CO2 values
-#' and generates a transfer function between them using \code{lm()}. For the
+#' and generates a transfer function between them using `lm()`. For the
 #' gain-and-offset method, d13C and CO2 values are converted to 12CO2 and 13CO2
 #' mole fractions. Gain and offset parameters are calculated for each isotopologue
 #' independently, and are analogous to regression slope and intercepts, but jointly 

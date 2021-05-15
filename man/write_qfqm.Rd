@@ -19,7 +19,7 @@ write_qfqm(inname, outname, site, analyte)
 Nothing to the environment, but writes qfqm data to file.
 }
 \description{
-Write NEON's qfqm data for an isotope species to 
+Write NEON's qfqm data for an isotope species to
 output file. Wraps copy_qfqm_group.
 }
 \author{

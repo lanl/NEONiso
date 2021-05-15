@@ -42,9 +42,9 @@ of the file? (default true)}
 
 \item{force_cal_to_end}{Extend last calibration to the end of the file? (default true)}
 
-\item{gap_fill_parameters}{Should function attempt to 'gap-fill' across a 
+\item{gap_fill_parameters}{Should function attempt to 'gap-fill' across a
 bad calibration by carrying the last known good calibration forward?
-Implementation is fairly primitive currently, as it only carries 
+Implementation is fairly primitive currently, as it only carries
 the last known good calibration that's available forward rather
 than interpolating, etc. Default FALSE.}
 
@@ -67,7 +67,7 @@ Users will be warned prior to removal of this argument.}
 }
 \value{
 Returns nothing to the environment, but creates a new output HDF5
-        file containing calibrated carbon isotope values.
+file containing calibrated carbon isotope values.
 }
 \description{
 This function drives a workflow that reads in NEON carbon isotope data
@@ -87,9 +87,9 @@ The 'linreg' method simply takes measured and reference d13C and CO2 values
 and generates a transfer function between them using \code{lm()}. For the
 gain-and-offset method, d13C and CO2 values are converted to 12CO2 and 13CO2
 mole fractions. Gain and offset parameters are calculated for each isotopologue
-independently, and are analogous to regression slope and intercepts, but jointly 
+independently, and are analogous to regression slope and intercepts, but jointly
 correct for CO2 concentration dependence
-and place d13C values on the VPDB scale. 
+and place d13C values on the VPDB scale.
 The gain and offset parameters are defined by:
 
 \deqn{G = (X_{2,ref}-X_{1,ref})/(X_{2,meas}-X_{1,meas})}
@@ -100,11 +100,11 @@ Calibrated ambient isotopologues are then given as:
 Measurements of reference materials were considered "good" if the following
 conditions were met:
 \itemize{
-  \item Measured CO2 concentrations were within 10 ppm
-        of known "reference" concentrations.
-  \item Variance of the CO2 concentration in standard peak was < 5 ppm.
-  \item Measured d13C value must be within 5 per mil
-        of known "reference" d13C value.
+\item Measured CO2 concentrations were within 10 ppm
+of known "reference" concentrations.
+\item Variance of the CO2 concentration in standard peak was < 5 ppm.
+\item Measured d13C value must be within 5 per mil
+of known "reference" d13C value.
 }
 The first two criteria are intended to filter out periods where there is
 a clear issue with the gas delivery system (i.e., nearly empty gas tank,

@@ -13,10 +13,10 @@ swap_standard_isotoperatios(std_frame, dxs_thres = 500)
 }
 \value{
 A data.frame based on \code{std_frame}, where d18O and
-        d2H values have been swapped from NEON input files if
-        determined to have a reference value mismatch. Mismatch
-        is determined based on the d-excess of the standard (= 
-        d2H - 8*d18O), using a value of 500 by default.
+d2H values have been swapped from NEON input files if
+determined to have a reference value mismatch. Mismatch
+is determined based on the d-excess of the standard (=
+d2H - 8*d18O), using a value of 500 by default.
 }
 \description{
 There are a few suspected instances where the water

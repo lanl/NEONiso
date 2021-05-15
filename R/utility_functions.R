@@ -92,9 +92,9 @@ water_isotope_sites <- function() {
 #' @export
 #' 
 #' @return Returns nothing to the environment, but will download new NEON HDF5 files
-#'         for selected sites (if \code{get = TRUE}), unzip them in the local file directory
-#'         (if \code{unzip_files = TRUE}), and identify and remove suspected duplicate files
-#'         (if \code{trim = TRUE} and \code{dry_run = FALSE}).
+#'         for selected sites (if `get = TRUE`), unzip them in the local file directory
+#'         (if `unzip_files = TRUE`), and identify and remove suspected duplicate files
+#'         (if `trim = TRUE` and `dry_run = FALSE`).
 #' 
 manage_local_EC_archive <- function(file_dir,
                                     get = TRUE,
@@ -199,7 +199,7 @@ manage_local_EC_archive <- function(file_dir,
   } # get branch.
   
   # unzip files if requested.
-  if (unzip_files == TRUE) {
+  if (get == TRUE & unzip_files == TRUE) {
     # list the files in file_dir
     files <- list.files(path = paste0(file_dir,"/"),
                         pattern = "*.gz",
@@ -260,7 +260,7 @@ manage_local_EC_archive <- function(file_dir,
         
         # check to see if one site has an 'h5' fdiff and the duplicates
         # have a date.
-        if (!is.null(dup_candidates) & any(fdiff_isite[dups] == 'h5')) {
+        if (!is.null(dup_candidates) & any(dup_fdiff == 'h5')) {
           h5files <- fdiff_isite[dups] == 'h5'
           print(paste('Removing:',dup_candidates[h5files]))
           if (!dry_run) {

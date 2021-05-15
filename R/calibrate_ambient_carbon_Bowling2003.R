@@ -2,11 +2,11 @@
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' Function called by \code{calibrate_carbon_bymoth()} to apply
+#' Function called by `calibrate_carbon_bymoth()` to apply
 #' gain and offset parameters to the ambient datasets (000_0x0_09m and
 #' 000_0x0_30m). This function should generally not be used independently,
 #' but should be used in coordination with
-#' \code{calibrate_carbon_bymonth()}.
+#' `calibrate_carbon_bymonth()`.
 #'
 #' @param amb_data_list List containing an ambient d13C dataset.
 #'                      Will include all variables in 000_0x0_xxm. (character)
@@ -15,7 +15,7 @@
 #' @param site Four-letter NEON code corresponding to site being processed.
 #' @param filter_data Apply median absolute deviation filter from Brock 86 to
 #'             remove impulse spikes? Inherited from
-#'             \code{calibrate_ambient_carbon_Bowling2003()}
+#'             `calibrate_ambient_carbon_Bowling2003()`
 #' @param force_to_end In given month, calibrate ambient data later than last
 #'             calibration, using the last calibration? (default true)
 #' @param force_to_beginning In given month, calibrate ambient data before than
@@ -28,7 +28,7 @@
 #'            the last known good calibration that's available forward rather
 #'            than interpolating, etc. Default FALSE.
 #'
-#' @return Depends on \code{write_to_file} argument. If true, returns nothing to environment; 
+#' @return Depends on `write_to_file` argument. If true, returns nothing to environment; 
 #'    but returns calibrated ambient observations to the output file. If false, returns
 #'    modified version of amb_data_list that include calibrated ambient data.
 #'
@@ -153,8 +153,8 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
 
   # output calibrated delta values.
   amb_delta$mean_cal <- round(R_to_delta(mean13c / mean12c,"carbon"), 2)
-  amb_delta$min      <- round(R_to_delta(min13c / min12c, "carbon"), 2)
-  amb_delta$max      <- round(R_to_delta(max13c / max12c, "carbon"), 2)
+  amb_delta$min_cal  <- round(R_to_delta(min13c / min12c, "carbon"), 2)
+  amb_delta$max_cal  <- round(R_to_delta(max13c / max12c, "carbon"), 2)
   amb_delta$vari     <- round(amb_delta$vari, 2)
 
   # calibrate co2 mole fractions.
@@ -163,8 +163,8 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   # apply median filter to data
   if (filter_data == TRUE) {
     amb_delta$mean_cal <- filter_median_Brock86(amb_delta$mean_cal)
-    amb_delta$min      <- filter_median_Brock86(amb_delta$min)
-    amb_delta$max      <- filter_median_Brock86(amb_delta$max)
+    amb_delta$min_cal  <- filter_median_Brock86(amb_delta$min_cal)
+    amb_delta$max_cal  <- filter_median_Brock86(amb_delta$max_cal)
   }
 
   # replace ambdf in amb_data_list, return amb_data_list

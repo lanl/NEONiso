@@ -11,8 +11,8 @@ validate_analyte(analyte)
 }
 \value{
 Standardized string for the water ('H2o') or
-        carbon ('Co2') systems to make sure strings
-        are standardized across package functions.
+carbon ('Co2') systems to make sure strings
+are standardized across package functions.
 }
 \description{
 validate_analyte

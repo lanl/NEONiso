@@ -11,14 +11,14 @@ write_water_calibration_data(outname, site, calDf)
 
 \item{site}{NEON 4-letter site code.}
 
-\item{calDf}{Calibration data frame - 
+\item{calDf}{Calibration data frame -
 this is the output from fit_water_regression}
 }
 \value{
 Nothing to the environment, but writes out the
-        calibration parameters (e.g., 
-        regression slopes and intercepts) to the output
-        hdf5 file.
+calibration parameters (e.g.,
+regression slopes and intercepts) to the output
+hdf5 file.
 }
 \description{
 write_water_calibration_data

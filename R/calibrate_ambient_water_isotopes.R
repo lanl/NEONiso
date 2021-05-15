@@ -2,11 +2,11 @@
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' Function called by \code{calibrate_ambient_water_linreg} to apply
+#' Function called by `calibrate_ambient_water_linreg` to apply
 #' slope and intercept parameters to the ambient datasets (000_0x0_09m and
 #' 000_0x0_30m) to correct to the VSMOW scale.
 #' This function should generally not be used independently,
-#' but should be used with \code{calibrate_ambient_water_linreg}.
+#' but should be used with `calibrate_ambient_water_linreg`.
 #' Note that in this version *NO CORRECTION FOR HUMIDITY* is performed.
 #' Use with caution.
 #'
@@ -15,10 +15,10 @@
 #' @param caldf Calibration data frame containing slope and intercept values
 #'             for d18O and d2H values.
 #' @param outname Output variable name. Inherited from
-#'             \code{calibrate_ambient_water_linreg}
+#'             `calibrate_ambient_water_linreg`
 #' @param site Four-letter NEON code corresponding to site being processed.
 #' @param file Output file name. Inherited from
-#'             \code{calibrate_ambient_water_linreg}
+#'             `calibrate_ambient_water_linreg`
 #' @param force_to_end In given month, calibrate ambient data later than last
 #'             calibration, using the last calibration? (default true)
 #' @param force_to_beginning In given month, calibrate ambient data before than

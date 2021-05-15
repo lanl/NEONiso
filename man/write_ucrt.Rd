@@ -19,7 +19,7 @@ write_ucrt(inname, outname, site, analyte)
 Nothing to the environment, but writes ucrt data to file.
 }
 \description{
-Write NEON's ucrt data for an isotope species to 
+Write NEON's ucrt data for an isotope species to
 output file. Wraps copy_ucrt_group.
 }
 \author{

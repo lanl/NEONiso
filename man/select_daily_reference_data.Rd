@@ -21,7 +21,7 @@ defaults are 200 for \code{analyte = 'co2'} or 30 for
 Smaller data.frame where only the reference data selected
 to use in the calibration routines is returned. Assumes that we are
 calibrating on a daily basis, and not on a longer time scale. Data
-are selected based on two criteria: cannot be missing, and must be 
+are selected based on two criteria: cannot be missing, and must be
 at least a certain number of high-frequency observations in order to
 qualify as a valid measurement. For the water system, this function
 also keeps only the last three injections for each reference water

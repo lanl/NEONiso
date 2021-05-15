@@ -12,9 +12,9 @@
 #'        calibration parameters.
 #'
 #' @return Returns a data.frame of calibration parameters. If
-#'        \code{method == "Bowling_2003"}, then data.frame includes 
+#'        `method == "Bowling_2003"`, then data.frame includes 
 #'        gain and offset parameters for 12CO2 and 13CO2, and r^2
-#'        values for each regression. If \code{method == "linreg"},
+#'        values for each regression. If `method == "linreg"`,
 #'        then data.frame includes slope, intercept, and r^2 values
 #'        for d13C and CO2 values.
 #'
@@ -26,6 +26,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
   yrmn <- paste(lubridate::year(ref_data$timeBgn)[1],
                 lubridate::month(ref_data$timeBgn)[1],
                 sep = "-")
+  
+  print(ref_data$timeBgn)
   
   # validate yrmn - is it actually a date? if no refdata, then no.
   #---------------------------------------------------------------
@@ -71,6 +73,9 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
       start_date <- as.Date(min(ref_data$timeBgn))
       end_date   <- as.Date(max(ref_data$timeEnd))
       
+      print(ref_data$timeBgn)
+      print(c(start_date, end_date))
+      
       # generate date sequence
       date_seq <- base::seq.Date(start_date, end_date, by = "1 day")
       
@@ -79,11 +84,9 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
       
       # okay, now run calibrations...
       for (i in 1:length(date_seq)) {
-        start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00"),
-                                    format = "%Y-%m-%d %H:%M:%S",
+        start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"), # odd workaround to prevent R from converting this to NA.
                                     tz = "UTC", origin = "1970-01-01")
-        end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59"),
-                                    format = "%Y-%m-%d %H:%M:%S",
+        end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59.0000"),
                                     tz = "UTC", origin = "1970-01-01")
         
         # define calibration interval

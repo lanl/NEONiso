@@ -17,7 +17,7 @@ extract_carbon_calibration_data <- function(data_list) {
   }
   
   # extract desired data from data list.
-  data <- data_list[[1]] %>% 
+  data <- data_list %>% 
     dplyr::select(.data$verticalPosition, .data$timeBgn, .data$timeEnd,
            tidyselect::starts_with("data.isoCo2.dlta13CCo2"),
            tidyselect::starts_with("data.isoCo2.rtioMoleDryCo2")) %>%

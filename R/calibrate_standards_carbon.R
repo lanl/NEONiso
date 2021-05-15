@@ -9,15 +9,15 @@
 #' @param r2_thres Threshold for calibration regression to be used to
 #'          calibrate standards data. Default is 0.95. Calibrated reference
 #'          gas measurements occurring during calibration periods
-#'          with r2 values less than \code{r2_thres} will be marked NA.
+#'          with r2 values less than `r2_thres` will be marked NA.
 #' @param correct_bad_refvals Should we correct known/suspected incorrect
-#'          reference values in the NEON HDF5 files? (Default = \code{FALSE}).
+#'          reference values in the NEON HDF5 files? (Default = `FALSE`).
 #' @param site Four letter NEON site code.
-#'             Only used if \code{correct_bad_refvals = TRUE}.
+#'             Only used if `correct_bad_refvals = TRUE`.
 #' @param refGas One of "low", "med", or "high."
-#'             Only used if \code{correct_bad_refvals = TRUE}.
+#'             Only used if `correct_bad_refvals = TRUE`.
 #'             
-#' @return A data.frame having the same number of rows of \code{cal_df}, with
+#' @return A data.frame having the same number of rows of `cal_df`, with
 #'        additional columns added for calibrated CO2 mole fractions
 #'        and d13C values.
 calibrate_standards_carbon <- function(cal_df,

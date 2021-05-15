@@ -11,12 +11,12 @@ convert_POSIXct_to_NEONhdf5_time(intime)
 }
 \value{
 Returns character version of POSIXct object
-        matching NEON time variable format.
+matching NEON time variable format.
 }
 \description{
 Converts a POSIXct object back to the character format used by NEON in their
 HDF eddy covariance files. Output format,  using strptime syntax,  is
-%Y-%m-%dT%H:%M:%OSZ.
+\%Y-\%m-\%dT\%H:\%M:\%OSZ.
 }
 \examples{
 convert_POSIXct_to_NEONhdf5_time(Sys.time())

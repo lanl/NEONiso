@@ -360,6 +360,27 @@ write_carbon_reference_data <- function(inname, outname, site, calDf) {
   
 }
 
+#' write_carbon_reference_data2
+#'
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#'
+#' @param inname Input file name.
+#' @param outname Output file name.
+#' @param site NEON 4-letter site code.
+#' @param calDf Calibration data frame - 
+#'              this is the output from fit_carbon_regression
+#'
+#' @return Nothing to the environment, but writes calibrated reference data to hdf5 file.
+#'
+write_carbon_reference_data2 <- function(outname, site, allData, calDf) {
+  
+  print("Writing calibrated reference data...")
+  calibrate_carbon_reference_data2(outname, "Low", site, allData = allData$reference, calParams = calDf)
+  calibrate_carbon_reference_data2(outname, "Med", site, allData = allData$reference, calParams = calDf)
+  calibrate_carbon_reference_data2(outname, "High", site, allData = allData$reference, calParams = calDf)
+  
+}
+
 #' calibrate_carbon_reference_data
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
@@ -399,6 +420,46 @@ calibrate_carbon_reference_data <- function(inname, outname,
   rhdf5::H5Fclose(fid)
   rhdf5::h5closeAll()
 }
+
+#' calibrate_carbon_reference_data2
+#'
+#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#'
+#' @param inname Input file name.
+#' @param outname Output file name.
+#' @param standard Which standard are we working on? Must be "Low",
+#'                 "Med", or "High"
+#' @param site NEON 4-letter site code.
+#' @param calDf Calibration data frame - 
+#'              this is the output from fit_carbon_regression
+#'
+#' @return Nothing to the environment.  
+#'
+calibrate_carbon_reference_data2 <- function(outname,
+                                            standard, site, allData, calParams)  {
+  
+  std <- allData[[base::paste0("co2", standard)]]
+  
+  std <- calibrate_standards_carbon(calParams, std, correct_bad_refvals = TRUE,
+                                    site = site, refGas = standard)
+  
+  
+  fid <- rhdf5::H5Fopen(outname)
+  rhdf5::H5Gcreate(fid, paste0("/", site, "/dp01/data/isoCo2/co2",standard,"_09m"))
+  std_outloc <- rhdf5::H5Gopen(fid,
+                               paste0("/", site, "/dp01/data/isoCo2/co2",standard,"_09m"))
+  # loop through each variable amb.data.list and write out as a dataframe.
+  lapply(names(std), function(x) {
+    rhdf5::h5writeDataset.data.frame(obj = std[[x]],
+                                     h5loc = std_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)})
+  
+  rhdf5::H5Gclose(std_outloc)
+  rhdf5::H5Fclose(fid)
+  rhdf5::h5closeAll()
+}
+
 
 #######################################
 ### FUNCTIONS THAT WORK ON ONLY H2O ###

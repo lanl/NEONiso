@@ -13,7 +13,7 @@
 #' (Fiorella et al. 2021; JGR-Biogeosciences).
 #' 
 #' The 'linreg' method simply takes measured and reference d13C and CO2 values
-#' and generates a transfer function between them using \code{lm()}. For the
+#' and generates a transfer function between them using `lm()`. For the
 #' gain-and-offset method, d13C and CO2 values are converted to 12CO2 and 13CO2
 #' mole fractions. Gain and offset parameters are calculated for each isotopologue
 #' independently, and are analogous to regression slope and intercepts, but jointly 
@@ -44,7 +44,7 @@
 #' will become a function argument, and therefore customizable, in a future release.
 #'
 #' The behavior of this function will be a bit different depending on what is supplied
-#' as \code{inname}. If a single file is provided, the output will be monthly. However,
+#' as `inname`. If a single file is provided, the output will be monthly. However,
 #' a list of files corresponding to a site can also be provided, and then a single output
 #' file per site will be generated.
 #'
@@ -116,11 +116,11 @@ calibrate_carbon         <- function(inname,
   # Extract reference data from input HDF5 file.
   #-----------------------------------------------------------
   # pull all carbon isotope data into a list.
-  ciso <- neonUtilities::stackEddy(inname, level = 'dp01', avg = 9)
+  inname <- list.files('~/Desktop/DP4_00200_001/ABBY/',full.names=TRUE)
+  ciso <- ingest_data(inname, analyte = 'Co2')
   
-
   # extract the data we need from ciso list
-  refe <- extract_carbon_calibration_data(ciso)
+  refe <- extract_carbon_calibration_data(ciso$refe_stacked)
 
   # Okay this function now needs some work. *************
   if (correct_refData == TRUE) {
@@ -138,19 +138,8 @@ calibrate_carbon         <- function(inname,
 #  calibrate ambient data.
 #  extract ambient measurements from ciso
 
-  if (length(inname) > 1) {
-      ciso <- list()
-    for (i in 1:length(inname)) {
-      ciso[[i]] <- rhdf5::h5read(inname[i], paste0("/", site, "/dp01/data/isoCo2"))
-    }
-    ciso <- do.call(Map, c(f= rbind,ciso))
-  } else {
-    ciso <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2"))
-  }
-  ciso_logical <- grepl(pattern = "000", x = names(ciso))
-  ciso_subset <- ciso[ciso_logical]
-  print(str(ciso_subset))
-  
+  ciso_subset <- ciso$ambient
+
   if (method == "Bowling_2003") {
     ciso_subset_cal <- lapply(names(ciso_subset),
                               function(x) {
@@ -177,7 +166,6 @@ calibrate_carbon         <- function(inname,
                               })
   }
   names(ciso_subset_cal) <- names(ciso_subset)
-  print(str(ciso_subset_cal))
   #-----------------------------------------------------------
   # write out these data.frames to a new output file.
   #-----------------------------------------------------------
@@ -191,11 +179,11 @@ calibrate_carbon         <- function(inname,
     print("step 3")
     write_carbon_ambient_data(outname, site, ciso_subset_cal)  
     print("step 4")
-    write_carbon_reference_data(inname, outname, site, cal_df)
+    write_carbon_reference_data2(outname, site, ciso, cal_df)
     print("step 5")
-    write_qfqm(inname, outname, site, 'co2')
+    #write_qfqm(inname, outname, site, 'co2')
     print('step 6')
-    write_ucrt(inname, outname, site, 'co2')
+    #write_ucrt(inname, outname, site, 'co2')
     
     # one last invocation of hdf5 close all, for good luck
     rhdf5::h5closeAll()

@@ -19,7 +19,7 @@ copy_ucrt_group(data_list, outname, site, file, species)
 }
 \value{
 Nothing to the workspace, but copies ucrt group from input file to
-        output file.
+output file.
 }
 \description{
 copy_ucrt_group

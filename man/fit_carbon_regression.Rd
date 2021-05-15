@@ -7,7 +7,7 @@
 fit_carbon_regression(ref_data, method, calibration_half_width)
 }
 \arguments{
-\item{ref_data}{Reference data.frame from which to estimate 
+\item{ref_data}{Reference data.frame from which to estimate
 calibration parameters.}
 
 \item{method}{Are we using the Bowling et al. 2003 method
@@ -20,11 +20,11 @@ is 2*calibration_half_width).}
 }
 \value{
 Returns a data.frame of calibration parameters. If
-       \code{method == "Bowling_2003"}, then data.frame includes 
-       gain and offset parameters for 12CO2 and 13CO2, and r^2
-       values for each regression. If \code{method == "linreg"},
-       then data.frame includes slope, intercept, and r^2 values
-       for d13C and CO2 values.
+\code{method == "Bowling_2003"}, then data.frame includes
+gain and offset parameters for 12CO2 and 13CO2, and r^2
+values for each regression. If \code{method == "linreg"},
+then data.frame includes slope, intercept, and r^2 values
+for d13C and CO2 values.
 }
 \description{
 fit_carbon_regression

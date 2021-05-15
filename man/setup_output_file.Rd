@@ -17,8 +17,8 @@ setup_output_file(inname, outname, site, analyte)
 }
 \value{
 Nothing to the environment, but creates a new data file
-        with the most basic output HDF5 structure consistent with
-        NEON's data files.
+with the most basic output HDF5 structure consistent with
+NEON's data files.
 }
 \description{
 Creates a skeleton hdf5 file for the calibrated data.

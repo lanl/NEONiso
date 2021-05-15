@@ -11,7 +11,7 @@ write_carbon_calibration_data(outname, site, calDf, method)
 
 \item{site}{NEON 4-letter site code.}
 
-\item{calDf}{Calibration data frame - 
+\item{calDf}{Calibration data frame -
 this is the output from fit_carbon_regression}
 
 \item{method}{Was the Bowling et al. 2003 or the linear regression
@@ -19,9 +19,9 @@ method used in fit_carbon_regression?}
 }
 \value{
 Nothing to the environment, but writes out the
-        calibration parameters (e.g., gain and offset or 
-        regression slopes and intercepts) to the output
-        hdf5 file.
+calibration parameters (e.g., gain and offset or
+regression slopes and intercepts) to the output
+hdf5 file.
 }
 \description{
 write_carbon_calibration_data

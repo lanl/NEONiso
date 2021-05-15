@@ -8,8 +8,8 @@
 #' (Use argument 'co2' or 'h2o', or else function will throw error)
 #' @param min_nobs Minimum number of high-frequency
 #' observations to define a peak. If not supplied,
-#' defaults are 200 for \code{analyte = 'co2'} or 30 for
-#' \code{analyte = 'h2o'}
+#' defaults are 200 for `analyte = 'co2'` or 30 for
+#' `analyte = 'h2o'`
 #'
 #' @return Smaller data.frame where only the reference data selected
 #' to use in the calibration routines is returned. Assumes that we are
@@ -32,26 +32,26 @@ select_daily_reference_data <- function(standard_df, analyte, min_nobs=NA) {
   }
   
   if (analyte == "co2") {
-    
+
     standard_df <- standard_df %>%
-      dplyr::mutate(dom = lubridate::day(.data$timeBgn)) %>% # get day of month
-      dplyr::group_by(.data$dom, .data$verticalPosition) %>%
+      dplyr::mutate(date = lubridate::date(.data$timeBgn)) %>% # get day of month
+      dplyr::group_by(.data$date, .data$verticalPosition) %>%
       # check to make sure peak sufficiently long, then slice off single.
       dplyr::filter(.data$dlta13CCo2.numSamp > min_nobs | is.na(.data$dlta13CCo2.numSamp)) %>%
       dplyr::slice(1) %>%
       dplyr::ungroup() %>%
-      dplyr::select(-dom) %>%
+      dplyr::select(-date) %>%
       dplyr::arrange(.data$timeBgn)
     
   } else if (analyte == "h2o") {
     
     standard_df <- standard_df %>%
-      dplyr::mutate(dom = lubridate::day(.data$d18O_meas_btime)) %>% # get day of month
-      dplyr::group_by(.data$dom) %>%
+      dplyr::mutate(date = lubridate::date(.data$d18O_meas_btime)) %>% # get day of month
+      dplyr::group_by(.data$date) %>%
       dplyr::filter(.data$d18O_meas_n > min_nobs | is.na(.data$d18O_meas_n)) %>%
       dplyr::slice(tail(row_number(), 3)) %>%
       dplyr::ungroup() %>%
-      dplyr::select(-dom)
+      dplyr::select(-date)
     
   } else {
     

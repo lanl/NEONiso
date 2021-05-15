@@ -7,7 +7,7 @@
 #' @param r2_thres Threshold for calibration regression to be used to
 #'          calibrate standards data. Default is 0.95. Calibrated reference
 #'          gas measurements occurring during calibration periods
-#'          with r2 values less than \code{r2_thres} will be marked NA.
+#'          with r2 values less than `r2_thres` will be marked NA.
 #' @export
 calibrate_standards_water <- function(cal_df,
                                       ref_df,
@@ -134,95 +134,3 @@ calibrate_standards_water <- function(cal_df,
   
 }
 
-#-----------------------------------------
-#' restructure_water_variables
-#'
-#' @param varname Which variable are we applying this function to? There's
-#'                a list of ~10 common ones to write to the hdf5 file.
-#' @param dataframe Input data.frame, from \code{neonUtilities::stackEddy}
-#' @param mode Are we fixing a reference data frame or an ambient data frame?
-#' 
-#' @return data.frame formatted for output to hdf5 file.
-#' @export
-#'
-restructure_water_variables <- function(dataframe,
-                                        varname,
-                                        mode) {
-
-  # ensure that varname is a string but standard is a data.frame
-  if (!is.character(varname)) {
-    stop("varname must be a string")
-  } else if ((!is.data.frame(dataframe) & mode == "reference") | (!is.list(dataframe) & mode == "ambient")) {
-    stop("dataframe argument must be a data.frame (reference mode) or list (ambient mode)")
-  }
-  
-  if (mode != "reference" & mode != "ambient") {
-    stop("Invalid selection to mode argument.")
-  } else if (mode == "reference") {
-    output1 <- dataframe %>%
-      dplyr::select(.data$timeBgn,.data$timeEnd,starts_with(paste0("data.isoH2o.",varname,"."))) %>%
-      dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
-                    min  = paste0("data.isoH2o.", varname, ".min"),
-                    max  = paste0("data.isoH2o.", varname, ".max"),
-                    vari = paste0("data.isoH2o.", varname, ".vari"),
-                    numSamp = paste0("data.isoH2o.", varname, ".numSamp")) %>%
-      dplyr::mutate(varname = varname) %>%
-      dplyr::mutate(dom = lubridate::day(.data$timeBgn),
-                    yr  = lubridate::year(.data$timeBgn),
-                    mn  = lubridate::month(.data$timeBgn)) %>% # get day of month
-      dplyr::group_by(.data$yr, .data$mn, .data$dom) %>%
-      dplyr::filter(.data$numSamp > 30 | is.na(.data$numSamp)) %>%
-      dplyr::slice(tail(row_number(), 3)) %>%
-      dplyr::ungroup() %>%
-      dplyr::select(-dom, -yr, -mn)
-    
-    if (!grepl("Refe", varname)) {
-      output2 <- dataframe %>%
-        dplyr::select(.data$timeBgn,.data$timeEnd,starts_with(paste0("qfqm.isoH2o.",varname,"."))) %>%
-        dplyr::rename(qfFinl = paste0("qfqm.isoH2o.", varname, ".qfFinl")) %>%
-        dplyr::mutate(varname = varname) %>%
-        dplyr::filter(.data$timeBgn %in% output1$timeBgn) 
-      
-      output3 <- dataframe %>%
-        dplyr::select(.data$timeBgn,.data$timeEnd,starts_with(paste0("ucrt.isoH2o.",varname,"."))) %>%
-        dplyr::rename(mean = paste0("ucrt.isoH2o.", varname, ".mean"),
-                      vari = paste0("ucrt.isoH2o.", varname, ".vari"),
-                      se   = paste0("ucrt.isoH2o.", varname, ".se")) %>%
-        dplyr::mutate(varname = varname) %>%
-        dplyr::filter(.data$timeBgn %in% output1$timeBgn) 
-      
-    } else {
-      output2 <- output3 <- NULL
-    }
-
-    
-  } else if (mode == "ambient") {
-    output1 <- dataframe[[1]] %>%
-      dplyr::select(.data$verticalPosition,.data$timeBgn,.data$timeEnd,starts_with(paste0("data.isoH2o.",varname,"."))) %>%
-      dplyr::filter(!(.data$verticalPosition %in% c("co2Low","co2Med","co2High","co2Arch"))) %>%
-      dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
-                    min  = paste0("data.isoH2o.", varname, ".min"),
-                    max  = paste0("data.isoH2o.", varname, ".max"),
-                    vari = paste0("data.isoH2o.", varname, ".vari"),
-                    numSamp = paste0("data.isoH2o.", varname, ".numSamp")) %>%
-      dplyr::mutate(varname = varname)
-    
-    output2 <- output3 <- NULL
-
-  }
-
-  
-  # stackEddy will have converted time to posixct - covert back here.
-  output1$timeBgn <- convert_POSIXct_to_NEONhdf5_time(output1$timeBgn)
-  output1$timeEnd <- convert_POSIXct_to_NEONhdf5_time(output1$timeEnd)
-  
-  if (!grepl("Refe", varname)) {
-    output2$timeBgn <- convert_POSIXct_to_NEONhdf5_time(output2$timeBgn)
-    output2$timeEnd <- convert_POSIXct_to_NEONhdf5_time(output2$timeEnd)
-    
-    output3$timeBgn <- convert_POSIXct_to_NEONhdf5_time(output3$timeBgn)
-    output3$timeEnd <- convert_POSIXct_to_NEONhdf5_time(output3$timeEnd)
-  }
-  
-  return(list(output1, output2, output3))
-}

@@ -12,7 +12,7 @@
 #' the regression is greater than a threshold value (by default, this is 0.95).
 #' Most of this function deals with selecting the appropriate calibration data
 #' and determining calibration quality. This function also contains a wrapper
-#' for \code{calibrate_ambient_water_linreg}, which calibrates the ambient
+#' for `calibrate_ambient_water_linreg`, which calibrates the ambient
 #' water data using the calibration parameters generated in this function.
 #' This function also copies over data in the qfqm and ucrt hdf5 data groups.
 #'
@@ -38,7 +38,7 @@
 #'             remove impulse spikes?
 #' @param calibration_half_width Determines the range of standard measurements
 #'             to use in determining the calibration regression dataset. Creates
-#'             a moving window that is \code{2*calibration_half_width} days wide.
+#'             a moving window that is `2*calibration_half_width` days wide.
 #'             Default is set to 14 for a 28 day moving window.
 #' @param slope_tolerance How different from 1 should we allow 'passing' regression
 #'             slopes to be? Experimental parameter, off by default
@@ -194,55 +194,7 @@ calibrate_water_linreg_bysite <- function(inpath,
   # stack data to get ambient observations.
   print("stacking ambient data...this may take a while...")
   
-  # stack data available for a given site into a single timeseries.
-  # should probably kick this out to its own function someday.
-  
-  dlta18O_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "dlta18OH2o", avg = 9)
-  dlta18OH2o <- restructure_water_variables(dlta18O_list, "dlta18OH2o", "ambient")
-  
-  dlta2H_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "dlta2HH2o", avg = 9)
-  dlta2HH2o <- restructure_water_variables(dlta2H_list, "dlta2HH2o", "ambient")
-  
-  pres_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "pres", avg = 9)
-  pres <- restructure_water_variables(pres_list, "pres", "ambient")
-  
-  presEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "presEnvHut", avg = 9)
-  presEnvHut <- restructure_water_variables(presEnvHut_list, "presEnvHut", "ambient")
-  
-  rhEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rhEnvHut", avg = 9)
-  rhEnvHut <- restructure_water_variables(rhEnvHut_list, "rhEnvHut", "ambient")
-  
-  rtioMoleWetH2o_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rtioMoleWetH2o", avg = 9)
-  rtioMoleWetH2o <- restructure_water_variables(rtioMoleWetH2o_list, "rtioMoleWetH2o", "ambient")
-  
-  rtioMoleWetH2oEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rtioMoleWetH2oEnvHut", avg = 9)
-  rtioMoleWetH2oEnvHut <- restructure_water_variables(rtioMoleWetH2oEnvHut_list, "rtioMoleWetH2oEnvHut", "ambient")
-  
-  temp_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "temp", avg = 9)
-  temp <- restructure_water_variables(temp_list, "temp", "ambient")
-  
-  tempEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "tempEnvHut", avg = 9)
-  tempEnvHut <- restructure_water_variables(tempEnvHut_list, "tempEnvHut", "ambient")
-  
-  data_out_all <- do.call(rbind,list(dlta18OH2o[[1]], dlta2HH2o[[1]], pres[[1]], presEnvHut[[1]], rhEnvHut[[1]],
-                                     rtioMoleWetH2o[[1]], rtioMoleWetH2oEnvHut[[1]], temp[[1]], tempEnvHut[[1]]))
-  
-  # split first by height
-  data_by_height <- base::split(data_out_all, factor(data_out_all$verticalPosition))
-  
-  # get number of heights
-  heights <- unique(data_out_all$verticalPosition)
-  names_vector <- vector()
-  for (i in 1:length(heights)) {
-    names_vector[i] <- paste0("000_0",i,"0_09m")
-  }
-  
-  names(data_by_height) <- names_vector
-  
-  # remove verticalPosition column
-  data_by_height <- lapply(data_by_height, function(x){dplyr::select(x,-verticalPosition)})
-  
-  data_by_height_by_var <- lapply(data_by_height, function(x){base::split(x, factor(x$varname))})
+  data_by_height_by_var <- restructure_ambient_data(inpath, 'H2o')
   
   # okay, now calibrate the ambient data...
   lapply(names(data_by_height_by_var),

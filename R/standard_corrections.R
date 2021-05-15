@@ -11,7 +11,7 @@
 #' @param std_frame Standard data frame to perform swap on.
 #' @param dxs_thres d-excess threshold to indicate when to swap.
 #' 
-#' @return A data.frame based on \code{std_frame}, where d18O and
+#' @return A data.frame based on `std_frame`, where d18O and
 #'         d2H values have been swapped from NEON input files if
 #'         determined to have a reference value mismatch. Mismatch
 #'         is determined based on the d-excess of the standard (= 
@@ -55,7 +55,7 @@ swap_standard_isotoperatios <- function(std_frame, dxs_thres = 500) {
 #' @param std_frame Standard data frame to perform swap on.
 #' @param site NEON four letter site code.
 #' 
-#' @return A data.frame, based on \code{std_frame}, where NEON-supplied
+#' @return A data.frame, based on `std_frame`, where NEON-supplied
 #' reference values have been corrected if a mismatch has previously 
 #' been identified. 
 

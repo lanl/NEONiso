@@ -21,10 +21,10 @@ manage_local_EC_archive(
 \item{unzip_files}{NEON gzips the hdf5 files, should we unzip any gzipped
 files within file_dir? (Searches recursively)}
 
-\item{trim}{Search through local holdings, and remove older file where 
+\item{trim}{Search through local holdings, and remove older file where
 there are duplicates?}
 
-\item{dry_run}{List files identified as duplicates, but do not actually 
+\item{dry_run}{List files identified as duplicates, but do not actually
 delete them? Default true to prevent unintended data loss.}
 
 \item{sites}{Which sites to retrieve data from? Default will be all sites
@@ -33,13 +33,13 @@ here.}
 }
 \value{
 Returns nothing to the environment, but will download new NEON HDF5 files
-        for selected sites (if \code{get = TRUE}), unzip them in the local file directory
-        (if \code{unzip_files = TRUE}), and identify and remove suspected duplicate files
-        (if \code{trim = TRUE} and \code{dry_run = FALSE}).
+for selected sites (if \code{get = TRUE}), unzip them in the local file directory
+(if \code{unzip_files = TRUE}), and identify and remove suspected duplicate files
+(if \code{trim = TRUE} and \code{dry_run = FALSE}).
 }
 \description{
 Utility function to help retrieve new EC data and/or prune duplicates,
-as NEON provisions new data or re-provisions data for an existing site 
+as NEON provisions new data or re-provisions data for an existing site
 and month.
 }
 \author{

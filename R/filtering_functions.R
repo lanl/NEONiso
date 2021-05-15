@@ -9,7 +9,7 @@
 #'
 #' @param data Vector to filter.
 #' @param width Width of filter, in rows.
-#' @param threshold Only filter values that are \code{abs(threshold)}
+#' @param threshold Only filter values that are `abs(threshold)`
 #'              away from median
 #'
 #' @return Returns filtered vector.

@@ -44,7 +44,7 @@ applied to ambient data.}
 }
 \value{
 Nothing to environment; returns calibrated ambient observations to
-    the output file. This function is not designed to be called on its own.
+the output file. This function is not designed to be called on its own.
 }
 \description{
 calibrate_ambient_water_isotopes
@@ -57,6 +57,6 @@ slope and intercept parameters to the ambient datasets (000_0x0_09m and
 000_0x0_30m) to correct to the VSMOW scale.
 This function should generally not be used independently,
 but should be used with \code{calibrate_ambient_water_linreg}.
-Note that in this version *NO CORRECTION FOR HUMIDITY* is performed.
+Note that in this version \emph{NO CORRECTION FOR HUMIDITY} is performed.
 Use with caution.
 }

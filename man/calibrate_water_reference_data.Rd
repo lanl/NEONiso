@@ -15,7 +15,7 @@ calibrate_water_reference_data(outname, standard, site, stdDf, calDf)
 
 \item{stdDf}{Data frame of reference material measurements.}
 
-\item{calDf}{Calibration data frame - 
+\item{calDf}{Calibration data frame -
 this is the output from fit_water_regression}
 }
 \value{

@@ -19,7 +19,7 @@ copy_qfqm_group(data_list, outname, site, file, species)
 }
 \value{
 Nothing to the workspace, but copies qfqm group from input file to
-        output file.
+output file.
 }
 \description{
 copy_qfqm_group

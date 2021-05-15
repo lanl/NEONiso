@@ -13,11 +13,11 @@ correct_carbon_ref_cval(std_frame, site)
 }
 \value{
 A data.frame, based on \code{std_frame}, where NEON-supplied
-reference values have been corrected if a mismatch has previously 
+reference values have been corrected if a mismatch has previously
 been identified.
 }
 \description{
-This ugly function is present out of necessity, and will 
+This ugly function is present out of necessity, and will
 only exist for as long as it is necessary. It is an internal
 correction within the NEONiso calibration routines that is
 required as there are some mismatches between the 'true'

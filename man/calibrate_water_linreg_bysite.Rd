@@ -46,7 +46,7 @@ slopes to be? Experimental parameter, off by default
 }
 \value{
 nothing to the workspace, but creates a new output file of
-        calibrated water isotope data.
+calibrated water isotope data.
 }
 \description{
 This function uses NEON validation data to apply drift corrections to
@@ -66,7 +66,7 @@ water data using the calibration parameters generated in this function.
 This function also copies over data in the qfqm and ucrt hdf5 data groups.
 }
 \details{
-*IMPORTANT NOTE* Currently this function does not apply a correction for
+\emph{IMPORTANT NOTE} Currently this function does not apply a correction for
 humidity dependence of Picarro isotopic measurements. This is because the
 data to implement these corrections is not yet publicly available.
 Caution is suggested when analyzing data at low humidities, below ~5000 ppm,

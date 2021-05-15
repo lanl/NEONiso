@@ -7,13 +7,13 @@
 get_Rstd(element)
 }
 \arguments{
-\item{element}{Which element to return standard ratio - 
+\item{element}{Which element to return standard ratio -
 carbon, oxygen, or hydrogen.}
 }
 \value{
 Heavy-to-light isotope ratio of most common
-        stable isotope standard. VSMOW for water,
-        VPDB for carbon.
+stable isotope standard. VSMOW for water,
+VPDB for carbon.
 }
 \description{
 get_Rstd

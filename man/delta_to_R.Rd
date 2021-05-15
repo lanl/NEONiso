@@ -9,7 +9,7 @@ delta_to_R(delta_values, element)
 \arguments{
 \item{delta_values}{A vector of isotope ratios in delta notation.}
 
-\item{element}{Which element to return R values - 
+\item{element}{Which element to return R values -
 carbon, oxygen, or hydrogen.}
 }
 \value{

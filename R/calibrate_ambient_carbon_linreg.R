@@ -2,23 +2,23 @@
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
-#' Function called by \code{calibrate_ambient_carbon_linreg} to apply
+#' Function called by `calibrate_ambient_carbon_linreg` to apply
 #' gain and offset parameters to the ambient datasets (000_0x0_09m and
 #' 000_0x0_30m). This function should generally not be used independently,
-#' but should be used with \code{calibrate_ambient_carbon_linreg}.
+#' but should be used with `calibrate_ambient_carbon_linreg`.
 #'
 #' @param amb_data_list List containing an ambient d13C dataset.
 #'             Will include all variables in 000_0x0_xxm. (character)
 #' @param caldf Calibration data frame containing gain and offset values for
 #'             12C and 13C isotopologues.
 #' @param outname Output variable name. Inherited from
-#'             \code{calibrate_ambient_carbon_linreg}
+#'             `calibrate_ambient_carbon_linreg`
 #' @param site Four-letter NEON code corresponding to site being processed.
 #' @param file Output file name. Inherited from
-#'             \code{calibrate_ambient_carbon_linreg}
+#'             `calibrate_ambient_carbon_linreg`
 #' @param filter_data Apply median absolute deviation filter from Brock 86 to
 #'             remove impulse spikes? Inherited from
-#'             \code{calibrate_ambient_carbon_linreg}
+#'             `calibrate_ambient_carbon_linreg`
 #' @param force_to_end In given month, calibrate ambient data later than last
 #'             calibration, using the last calibration? (default true)
 #' @param force_to_beginning In given month, calibrate ambient data before than

@@ -19,7 +19,7 @@ write_water_reference_data(inname, outname, site, lowDf, medDf, highDf, calDf)
 
 \item{highDf}{Data frame corresponding to the "high" reference water.}
 
-\item{calDf}{Calibration data frame - 
+\item{calDf}{Calibration data frame -
 this is the output from fit_water_regression}
 }
 \value{
