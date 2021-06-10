@@ -19,9 +19,10 @@ ingest_data <- function(inname, analyte) {
   # c) ambient ucrt, d-f) same, but for ref vars.
   
   analyte <- validate_analyte(analyte)
-  data <- neonUtilities::stackEddy(inname, avg = 9, level = 'dp01')[[1]]
   
   if (analyte == 'Co2') {
+    
+    data <- neonUtilities::stackEddy(inname, avg = 9, level = 'dp01')[[1]]
     
     # filter data and remove rows that are all NaNs:
     data <- data %>% 
@@ -46,6 +47,8 @@ ingest_data <- function(inname, analyte) {
     reference <- data %>%
       dplyr::filter(.data$verticalPosition %in% c("co2Low", "co2Med", "co2High", "co2Arch"))
     
+  } else if (analyte == 'H2o') {
+    stop("ingest_data does not work yet for H2o.")
   }
 
   ambi_by_height <- base::split(ambient, factor(ambient$verticalPosition)) 

@@ -116,7 +116,7 @@ calibrate_carbon         <- function(inname,
   # Extract reference data from input HDF5 file.
   #-----------------------------------------------------------
   # pull all carbon isotope data into a list.
-  inname <- list.files('~/Desktop/DP4_00200_001/ABBY/',full.names=TRUE)
+  #inname <- list.files('~/Desktop/DP4_00200_001/ABBY/',full.names=TRUE)
   ciso <- ingest_data(inname, analyte = 'Co2')
   
   # extract the data we need from ciso list
