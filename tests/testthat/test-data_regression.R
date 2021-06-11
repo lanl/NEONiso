@@ -10,4 +10,5 @@ calDf_B03 <- fit_carbon_regression(co2data, method = "Bowling_2003", calibration
 
 test_that("fit_carbon_regression returns data.frame", {
   expect_s3_class(fit_carbon_regression(co2data, method = "Bowling_2003", calibration_half_width = 2), "data.frame")
+  expect_s3_class(fit_carbon_regression(co2data, method = "linreg", calibration_half_width = 2), "data.frame")
 })
