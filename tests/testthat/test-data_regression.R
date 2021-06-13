@@ -26,39 +26,55 @@ test_that("calibration data frames have 8 columns", {
 temp <- calibrate_ambient_carbon_Bowling2003(co2test$ambient$`000_010_09m`,
                                              calDf_B03,
                                              site = 'ONAQ')
+temp_gf <- calibrate_ambient_carbon_Bowling2003(co2test$ambient$`000_010_09m`,
+                                           calDf_B03,
+                                           site = 'ONAQ',
+                                           gap_fill_parameters = TRUE)
 
 test_that("calibrate_ambient_carbon_Bowling2003 returns a list",{
   expect_equal(class(temp), "list")
+  expect_equal(class(temp_gf), "list")
 })
 
 test_that("calibrate_ambient_carbon_Bowling2003 returns correct variables", {
-  expect_equal(names(temp), c("dlta13CCo2", "pres", "presEnvHut", "rhEnvHut",
-                              "rtioMoleDry12CCo2", "rtioMoleDry13CCo2", "rtioMoleDryCo2", "rtioMoleDryH2o",
-                              "rtioMoleWet12CCo2", "rtioMoleWet13CCo2", "rtioMoleWetCo2", "rtioMoleWetH2o",
-                              "rtioMoleWetH2oEnvHut", "temp", "tempEnvHut"))
+  vars <- c("dlta13CCo2", "pres", "presEnvHut", "rhEnvHut",
+            "rtioMoleDry12CCo2", "rtioMoleDry13CCo2", "rtioMoleDryCo2", "rtioMoleDryH2o",
+            "rtioMoleWet12CCo2", "rtioMoleWet13CCo2", "rtioMoleWetCo2", "rtioMoleWetH2o",
+            "rtioMoleWetH2oEnvHut", "temp", "tempEnvHut")
+  expect_equal(names(temp), vars)
+  expect_equal(names(temp_gf), vars)
 })
 
 test_that("calibrated d13C values have been added to calibrate_ambient_cabron_Bowling2003 output", {
   expect_gt(ncol(temp$dlta13CCo2), ncol(co2test$ambient$`000_010_09m`$dlta13CCo2))
+  expect_gt(ncol(temp_gf$dlta13CCo2), ncol(co2test$ambient$`000_010_09m`$dlta13CCo2))
 })
 
 # test carbon - linreg ambient calibration
 temp <- calibrate_ambient_carbon_linreg(co2test$ambient$`000_010_09m`,
                                              calDf_LR,
                                              site = 'ONAQ')
+temp_gf <- calibrate_ambient_carbon_linreg(co2test$ambient$`000_010_09m`,
+                                calDf_LR,
+                                site = 'ONAQ',
+                                gap_fill_parameters = TRUE)
 
 test_that("calibrate_ambient_carbon_linreg returns a list",{
   expect_equal(class(temp), "list")
+  expect_equal(class(temp_gf), "list")
 })
 
 test_that("calibrate_ambient_carbon_linreg returns correct variables", {
-  expect_equal(names(temp), c("dlta13CCo2", "pres", "presEnvHut", "rhEnvHut",
-                              "rtioMoleDry12CCo2", "rtioMoleDry13CCo2", "rtioMoleDryCo2", "rtioMoleDryH2o",
-                              "rtioMoleWet12CCo2", "rtioMoleWet13CCo2", "rtioMoleWetCo2", "rtioMoleWetH2o",
-                              "rtioMoleWetH2oEnvHut", "temp", "tempEnvHut"))
+  vars <- c("dlta13CCo2", "pres", "presEnvHut", "rhEnvHut",
+            "rtioMoleDry12CCo2", "rtioMoleDry13CCo2", "rtioMoleDryCo2", "rtioMoleDryH2o",
+            "rtioMoleWet12CCo2", "rtioMoleWet13CCo2", "rtioMoleWetCo2", "rtioMoleWetH2o",
+            "rtioMoleWetH2oEnvHut", "temp", "tempEnvHut")
+  expect_equal(names(temp), vars)
+  expect_equal(names(temp_gf), vars)
 })
 
 test_that("calibrated d13C values have been added to calibrate_ambient_cabron_linreg output", {
   expect_gt(ncol(temp$dlta13CCo2), ncol(co2test$ambient$`000_010_09m`$dlta13CCo2))
+  expect_gt(ncol(temp_gf$dlta13CCo2), ncol(co2test$ambient$`000_010_09m`$dlta13CCo2))
 })
 
