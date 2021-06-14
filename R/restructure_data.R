@@ -84,13 +84,14 @@ ingest_data <- function(inname, analyte) {
   # variable name has been removed in restructure_carbon_variables - could move it back here to validate!
 
   # get number of heights
-  heights <- unique(ambient$verticalPosition) # not that efficient, but needed
-  names_vector <- vector()
-  for (i in 1:length(heights)) {
-   names_vector[i] <- paste0("000_0",i,"0_09m")
+  if (nrow(ambient) > 0) {
+    heights <- unique(ambient$verticalPosition) # not that efficient, but needed
+    names_vector <- vector()
+    for (i in 1:length(heights)) {
+      names_vector[i] <- paste0("000_0",i,"0_09m")
+    }
+    names(ambi_out) <- names_vector
   }
-
-  names(ambi_out) <- names_vector
     
   output <- list(ambi_out, refe_out, reference)
   names(output) <- c("ambient", "reference", "refe_stacked")

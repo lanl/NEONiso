@@ -107,10 +107,10 @@ calibrate_carbon_bymonth <- function(inname,
   # Extract reference data from input HDF5 file.
   #-----------------------------------------------------------
   # pull all carbon isotope data into a list.
-  ciso <- neonUtilities::stackEddy(inname, level = 'dp01', avg = 9)
+  ciso <- ingest_data(inname, analyte = 'Co2')
   
   # extract the data we need from ciso list
-  refe <- extract_carbon_calibration_data(ciso)
+  refe <- extract_carbon_calibration_data(ciso$refe_stacked)
   
   # Okay this function now needs some work. *************
   if (correct_refData == TRUE) {

@@ -27,8 +27,6 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
                 lubridate::month(ref_data$timeBgn)[1],
                 sep = "-")
   
-  print(ref_data$timeBgn)
-  
   # validate yrmn - is it actually a date? if no refdata, then no.
   #---------------------------------------------------------------
   # Select which validation data to carry through to calibration
@@ -72,9 +70,6 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
       # get start and end days.
       start_date <- as.Date(min(ref_data$timeBgn))
       end_date   <- as.Date(max(ref_data$timeEnd))
-      
-      print(ref_data$timeBgn)
-      print(c(start_date, end_date))
       
       # generate date sequence
       date_seq <- base::seq.Date(start_date, end_date, by = "1 day")
