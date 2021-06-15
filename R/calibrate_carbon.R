@@ -180,9 +180,9 @@ calibrate_carbon         <- function(inname,
     write_carbon_ambient_data(outname, site, ciso_subset_cal)  
     print("step 4")
     write_carbon_reference_data2(outname, site, ciso, cal_df)
-    print("step 5")
+    #print("step 5")
     #write_qfqm(inname, outname, site, 'co2')
-    print('step 6')
+    #print('step 6')
     #write_ucrt(inname, outname, site, 'co2')
     
     # one last invocation of hdf5 close all, for good luck

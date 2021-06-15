@@ -312,25 +312,28 @@ write_carbon_calibration_data <- function(outname, site, calDf, method) {
 write_carbon_ambient_data <- function(outname, site, amb_data_list) {
   
   print("Writing calibrated ambient data...")
+  
   fid <- rhdf5::H5Fopen(outname)
   
-  for (i in 1:length(amb_data_list)) {
-    amb_data_subset <- amb_data_list[i]
-    
-    co2_data_outloc <- rhdf5::H5Gcreate(fid,
-                                        paste0("/", site, "/dp01/data/isoCo2/", 
-                                               names(amb_data_subset)))
-    
-    amb_data_subset <- amb_data_subset[[1]] # list hack
-    
-    # loop through variables in list amb_data_list and write out as a dataframe.
-    lapply(names(amb_data_subset), function(x) {
-      rhdf5::h5writeDataset.data.frame(obj = amb_data_subset[[x]],
-                                       h5loc = co2_data_outloc,
-                                       name = x,
-                                       DataFrameAsCompound = TRUE)})
-    
-    rhdf5::H5Gclose(co2_data_outloc)
+  if (length(amb_data_list) > 0) {
+    for (i in 1:length(amb_data_list)) {
+      amb_data_subset <- amb_data_list[i]
+      
+      co2_data_outloc <- rhdf5::H5Gcreate(fid,
+                                          paste0("/", site, "/dp01/data/isoCo2/", 
+                                                 names(amb_data_subset)))
+      
+      amb_data_subset <- amb_data_subset[[1]] # list hack
+      
+      # loop through variables in list amb_data_list and write out as a dataframe.
+      lapply(names(amb_data_subset), function(x) {
+        rhdf5::h5writeDataset.data.frame(obj = amb_data_subset[[x]],
+                                         h5loc = co2_data_outloc,
+                                         name = x,
+                                         DataFrameAsCompound = TRUE)})
+      rhdf5::H5Gclose(co2_data_outloc)
+    }
+  
   }
   
   # close all open handles.
@@ -438,6 +441,7 @@ calibrate_carbon_reference_data <- function(inname, outname,
 calibrate_carbon_reference_data2 <- function(outname,
                                             standard, site, allData, calParams)  {
   
+  print(standard)
   std <- allData[[base::paste0("co2", standard)]]
   
   std <- calibrate_standards_carbon(calParams, std, correct_bad_refvals = TRUE,
