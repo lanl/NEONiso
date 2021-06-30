@@ -1,9 +1,9 @@
 # test-reference_extractions.R
 
-fin <- system.file('extdata',
-                   'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.20201020T211037Z.packed.h5',
-                   package = 'NEONiso', mustWork = TRUE)
-ciso <- neonUtilities::stackEddy(fin, level = 'dp01', avg = 9)
+# fin <- system.file('extdata',
+#                    'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.20201020T211037Z.packed.h5',
+#                    package = 'NEONiso', mustWork = TRUE)
+# ciso <- neonUtilities::stackEddy(fin, level = 'dp01', avg = 9)
 
 # test_that("extract_carbon_calibration_data returns a data frame", {
 #   expect_true(is.data.frame(extract_carbon_calibration_data(ciso)))
