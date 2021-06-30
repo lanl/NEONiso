@@ -1,5 +1,6 @@
 #' calibrate_carbon_bymonth
 #'
+#' `r lifecycle::badge("stable")`
 #' This function drives a workflow that reads in NEON carbon isotope data
 #' of atmospheric CO2, calibrates it to the VPDB scale, and (optionally)
 #' writes the calibrated data to a new HDF5 file. Two different approaches

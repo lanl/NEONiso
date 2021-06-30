@@ -1,5 +1,6 @@
 #' calibrate_water_linreg
 #'
+#' `r lifecycle::badge("experimental")`
 #' This function uses NEON validation data to apply drift corrections to
 #' measured ambient water isotope ratios. In brief, ambient water isotope
 #' ratios are calibrated by generating regressions using reference water

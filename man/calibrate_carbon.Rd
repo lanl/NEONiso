@@ -2,7 +2,7 @@
 % Please edit documentation in R/calibrate_carbon.R
 \name{calibrate_carbon}
 \alias{calibrate_carbon}
-\title{calibrate_carbon_bymonth}
+\title{calibrate_carbon}
 \usage{
 calibrate_carbon(
   inname,
@@ -70,6 +70,7 @@ Returns nothing to the environment, but creates a new output HDF5
 file containing calibrated carbon isotope values.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 This function drives a workflow that reads in NEON carbon isotope data
 of atmospheric CO2, calibrates it to the VPDB scale, and (optionally)
 writes the calibrated data to a new HDF5 file. Two different approaches

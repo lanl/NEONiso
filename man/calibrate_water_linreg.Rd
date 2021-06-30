@@ -42,6 +42,7 @@ nothing to the workspace, but creates a new output file of
 calibrated carbon isotope data.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 This function uses NEON validation data to apply drift corrections to
 measured ambient water isotope ratios. In brief, ambient water isotope
 ratios are calibrated by generating regressions using reference water

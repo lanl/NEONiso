@@ -67,6 +67,7 @@ Returns nothing to the environment, but creates a new output HDF5
 file containing calibrated carbon isotope values.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 This function drives a workflow that reads in NEON carbon isotope data
 of atmospheric CO2, calibrates it to the VPDB scale, and (optionally)
 writes the calibrated data to a new HDF5 file. Two different approaches
