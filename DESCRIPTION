@@ -37,7 +37,8 @@ Imports:
     R.utils,
     tidyselect,
     data.table,
-    rlang
+    rlang,
+    lifecycle
 Suggests: 
     knitr,
     rmarkdown,
