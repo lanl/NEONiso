@@ -16,18 +16,21 @@
 # where does uncalibrated data live?
 data.dir <- '~/Desktop/DP4_00200_001/'
 
+# set test_date
+test_date <- Sys.Date()
+
 # make output directory structure:
-dir.create(paste0('~/Desktop/NEONcal/',Sys.Date(),"_tests"))
+dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests"))
 
 # which tests to run?
 run_test1 <- TRUE
 run_test2 <- TRUE
-run_test3 <- FALSE
-run_test4 <- FALSE
-run_test5 <- FALSE
-run_test6 <- FALSE
+run_test3 <- TRUE
+run_test4 <- TRUE
+run_test5 <- TRUE
+run_test6 <- TRUE
 run_test7 <- FALSE
-run_test8 <- TRUE
+run_test8 <- FALSE
 
 # load required packages:
 library(rhdf5)
@@ -75,8 +78,6 @@ if (run_test1 | run_test2 | run_test3 | run_test5) {
 
 if (run_test4 | run_test6) {
   csites <- c(NEONiso:::terrestrial_core_sites(), NEONiso:::terrestrial_relocatable_sites())
-  fin <- list.files(paste0(data.dir,csites[i],'/'),full.names=TRUE)
-  fout <- list.files(paste0(data.dir,csites[i],'/'),full.names=FALSE)
 }
 
 # water files
@@ -111,8 +112,6 @@ if (run_test7) {
 
 if (run_test8) {
   wsites <- NEONiso:::water_isotope_sites()
-  fwin <- list.files(paste0(data.dir,wsites[i],'/'),full.names=TRUE)
-  fwout <- list.files(paste0(data.dir,wsites[i],'/'),full.names=FALSE)
 }
 
 #==========================
@@ -120,9 +119,9 @@ if (run_test8) {
 #==========================
 
 if (run_test1) {
-  dir.create(paste0('~/Desktop/NEONcal/',Sys.Date(),"_tests/01"))
+  dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests/01"))
 
-  outpaths <- paste0('~/Desktop/NEONcal/',Sys.Date(),"_tests/01/", site.code)
+  outpaths <- paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests/01/", site.code)
   
   sapply(unique(outpaths),dir.create,showWarnings=FALSE)
   fnames.out2 <- paste0(outpaths,"/",fnames.out)
@@ -138,9 +137,9 @@ if (run_test1) {
 }
 
 if (run_test2) {
-  dir.create(paste0('~/Desktop/NEONcal/',Sys.Date(),"_tests/02"))
+  dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests/02"))
   
-  outpaths <- paste0('~/Desktop/NEONcal/',Sys.Date(),"_tests/02/", site.code)
+  outpaths <- paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests/02/", site.code)
   
   sapply(unique(outpaths),dir.create,showWarnings=FALSE)
   fnames.out2 <- paste0(outpaths,"/",fnames.out)
@@ -160,25 +159,29 @@ if (run_test2) {
 #----------------------------------------------------
 
 if (run_test3) {
-  dir.create(paste0('~/Desktop/NEONcal/',Sys.Date(),"_tests/03"))
+  dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests/03"))
   
-  outpaths <- paste0('~/Desktop/NEONcal/',Sys.Date(),"_tests/03/", site.code)
+  outpaths <- paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests/03/", site.code)
   
   sapply(unique(outpaths),dir.create,showWarnings=FALSE)
   fnames.out2 <- paste0(outpaths,"/",fnames.out)
   
   for (i in 1:length(fnames.out)) {
-    print(paste0("Calibration test set 3: ", round(100*i/length(fnames.out),3),"% complete"))
+    print(paste0("Calibration test set 3: ", round(100*i/length(fnames.out),3),"% complete...", fnames.out[i]))
     calibrate_carbon(fnames[i],fnames.out2[i],site=site.code[i], method = "Bowling_2003")
   }
 }
 
 if (run_test4) {
-  dir.create(paste0('~/Desktop/NEONcal/',Sys.Date(),'_tests/04'))
+  dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,'_tests/04'))
   
-  for (i in 1:length(csites)) {
+  for (i in 10:length(csites)) {
+    
+    fin <- list.files(paste0(data.dir,csites[i],'/') , pattern = '.h5', full.names=TRUE)
+    fout <- list.files(paste0(data.dir,csites[i],'/'), pattern = '.h5', full.names=FALSE)
+    
     calibrate_carbon(fin,
-                     paste0('~/Desktop/NEONcal/',Sys.Date(),'_tests/04/',fout[1]),
+                     paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,'_tests/04/',fout[1]),
                      site=csites[i], r2_thres = 0.95,
                      calibration_half_width = 100000)
   }
@@ -186,9 +189,9 @@ if (run_test4) {
 }
 
 if (run_test5) {
-  dir.create(paste0('~/Desktop/NEONcal/',Sys.Date(),"_tests/05"))
+  dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests/05"))
   
-  outpaths <- paste0('~/Desktop/NEONcal/',Sys.Date(),"_tests/05/", site.code)
+  outpaths <- paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests/05/", site.code)
   
   sapply(unique(outpaths),dir.create,showWarnings=FALSE)
   fnames.out2 <- paste0(outpaths,"/",fnames.out)
@@ -200,12 +203,15 @@ if (run_test5) {
 }
 
 if (run_test6) {
-  dir.create(paste0('~/Desktop/NEONcal/',Sys.Date(),"_tests/06"))
-  
+  dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests/06"))
   
   for (i in 1:length(csites)) {
+    
+    fin <- list.files(paste0(data.dir,csites[i],'/'),full.names=TRUE)
+    fout <- list.files(paste0(data.dir,csites[i],'/'),full.names=FALSE)
+    
     calibrate_carbon(fin,
-                     paste0('~/Desktop/NEONcal/',Sys.Date(),'_tests/06/',fout[1]),
+                     paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,'_tests/06/',fout[1]),
                      site=csites[i], r2_thres = 0.95, method = 'linreg',
                      calibration_half_width = 100000)
   }
@@ -219,9 +225,9 @@ if (run_test6) {
 #----------------------------------------------------
 
 if (run_test7) {
-  dir.create(paste0('~/Desktop/NEONcal/',Sys.Date(),"_tests/07"))
+  dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests/07"))
   
-  outpaths <- paste0('~/Desktop/NEONcal/',Sys.Date(),"_tests/07/", wsite.code)
+  outpaths <- paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests/07/", wsite.code)
   
   sapply(unique(outpaths),dir.create,showWarnings=FALSE)
   wnames.out2 <- paste0(outpaths,"/",wnames.out)
@@ -239,11 +245,11 @@ if (run_test7) {
 #----------------------------------------------------
 
 if (run_test8) {
-  dir.create(paste0('~/Desktop/NEONcal/',Sys.Date(),"_tests/08"))
+  dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests/08"))
   
   for (i in 1:length(wsites)) {
     calibrate_water_linreg_bysite(paste0(data.dir,wsites[i],'/'),
-                                  paste0('~/Desktop/NEONcal/',Sys.Date(),'_tests/08/'),
+                                  paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,'_tests/08/'),
                                   site=wsites[i], r2_thres = 0.95,
                                  calibration_half_width = 100000)
   }  

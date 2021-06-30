@@ -447,17 +447,58 @@ calibrate_carbon_reference_data2 <- function(outname,
   std <- calibrate_standards_carbon(calParams, std, correct_bad_refvals = TRUE,
                                     site = site, refGas = standard)
   
+  # get year/month combo from outname:
+  tmp <- base::strsplit(outname, split = '.', fixed = TRUE)
+  yrmn <- tmp[[1]][8]
+  print(yrmn)
   
   fid <- rhdf5::H5Fopen(outname)
   rhdf5::H5Gcreate(fid, paste0("/", site, "/dp01/data/isoCo2/co2",standard,"_09m"))
   std_outloc <- rhdf5::H5Gopen(fid,
                                paste0("/", site, "/dp01/data/isoCo2/co2",standard,"_09m"))
+  
   # loop through each variable amb.data.list and write out as a dataframe.
   lapply(names(std), function(x) {
-    rhdf5::h5writeDataset.data.frame(obj = std[[x]],
-                                     h5loc = std_outloc,
-                                     name = x,
-                                     DataFrameAsCompound = TRUE)})
+    print(std[[x]])
+    print(nrow(std[[x]]))
+    
+    if (!is.null(nrow(std[[x]]))) {
+      if (nrow(std[[x]]) > 0) {
+        rhdf5::h5writeDataset.data.frame(obj = std[[x]],
+                                         h5loc = std_outloc,
+                                         name = x,
+                                         DataFrameAsCompound = TRUE)
+      } else {
+        dummyDf <- data.frame(timeBgn = paste0(yrmn,"-01T00:00:00.000Z"),
+                              timeEnd = paste0(yrmn,"-01T01:00:00.000Z"),
+                              mean = NA,
+                              min = NA,
+                              max = NA,
+                              vari = NA,
+                              numSamp = NA)
+        
+        rhdf5::h5writeDataset.data.frame(obj = dummyDf,
+                                         h5loc = std_outloc,
+                                         name = x,
+                                         DataFrameAsCompound = TRUE)
+      }
+    } else {
+        dummyDf <- data.frame(timeBgn = paste0(yrmn,"-01T00:00:00.000Z"),
+                              timeEnd = paste0(yrmn,"-01T01:00:00.000Z"),
+                              mean = NA,
+                              min = NA,
+                              max = NA,
+                              vari = NA,
+                              numSamp = NA)
+        
+        rhdf5::h5writeDataset.data.frame(obj = dummyDf,
+                                         h5loc = std_outloc,
+                                         name = x,
+                                         DataFrameAsCompound = TRUE)
+    }
+  })
+  
+  
   
   rhdf5::H5Gclose(std_outloc)
   rhdf5::H5Fclose(fid)
