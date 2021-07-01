@@ -87,4 +87,88 @@ test_that("calibrated d13C values have been added to calibrate_ambient_cabron_li
 # WATER FUNCTIONS
 #----------------------
 
+# stack data available for a given site into a single timeseries.
+wiso_ref <- neonUtilities::stackEddy(fin, level = "dp01", avg = 3)
+
+# extract standards data.
+high <- subset(wiso_ref[["ONAQ"]], wiso_ref[["ONAQ"]]$verticalPosition == 'h2oHigh')
+med  <- subset(wiso_ref[["ONAQ"]], wiso_ref[["ONAQ"]]$verticalPosition == 'h2oMed')
+low  <- subset(wiso_ref[["ONAQ"]], wiso_ref[["ONAQ"]]$verticalPosition == 'h2oLow')
+
+# restructure standards data.  
+high_rs <- extract_water_calibration_data(high, standard = 'high', method = 'by_site')
+med_rs  <- extract_water_calibration_data(med, standard = 'med', method = 'by_site')
+low_rs  <- extract_water_calibration_data(low, standard = 'low', method = 'by_site')
+
+# add fix for NEON standard swap.
+low_rs <- swap_standard_isotoperatios(low_rs)
+med_rs <- swap_standard_isotoperatios(med_rs)
+high_rs <- swap_standard_isotoperatios(high_rs)
+
+# convert times in these data.frames (btime and etime) to posixct
+low_rs$btime <- convert_NEONhdf5_to_POSIXct_time(low_rs$btime)
+low_rs$etime <- convert_NEONhdf5_to_POSIXct_time(low_rs$etime)
+med_rs$btime <- convert_NEONhdf5_to_POSIXct_time(med_rs$btime)
+med_rs$etime <- convert_NEONhdf5_to_POSIXct_time(med_rs$etime)
+high_rs$btime <- convert_NEONhdf5_to_POSIXct_time(high_rs$btime)
+high_rs$etime <- convert_NEONhdf5_to_POSIXct_time(high_rs$etime)
+
+#--------------------------------------------------------------
+# Ensure same number of measurements for each standard
+#--------------------------------------------------------------
+# add group ids using run length encoding based on time differences.
+thres_hours <- as.difftime("04:00:00", # assume any time difference 
+                           format = "%H:%M:%S", # > 4 hours is a new reference measurement
+                           units = "mins")
+
+high_rs <- high_rs %>%
+  mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
+high_rs$periods <- rleidv(high_rs, "time_diff") %/% 2
+
+med_rs <- med_rs %>%
+  mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
+med_rs$periods <- rleidv(med_rs, "time_diff") %/% 2
+
+low_rs <- low_rs %>%
+  mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
+low_rs$periods <- rleidv(low_rs, "time_diff") %/% 2
+
+high_rs <- high_rs %>%
+  group_by(.data$periods) %>%
+  filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
+  slice_tail(n = 3) %>%
+  ungroup()
+
+med_rs <- med_rs %>%
+  group_by(.data$periods) %>%
+  filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
+  slice_tail(n = 3) %>%
+  ungroup()
+
+low_rs <- low_rs %>%
+  group_by(.data$periods) %>%
+  filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
+  slice_tail(n = 3) %>%
+  ungroup()
+
+#=======================================================================
+# apply calibration routines
+#=======================================================================
+# bind together, and cleanup.
+#### OMIT FOR ERROR PROPOAGATION.
+stds <- do.call(rbind, list(high_rs, med_rs, low_rs))
+
+test_that("fit_water_regression returns dataframe with 8 columns", {
+  expect_equal(ncol(fit_water_regression(stds,
+                                    calibration_half_width = 14,
+                                    slope_tolerance = 9999,
+                                    r2_thres = 0.9)), 8)
+  
+  expect_true(is.data.frame(fit_water_regression(stds,
+                                                 calibration_half_width = 14,
+                                                 slope_tolerance = 9999,
+                                                 r2_thres = 0.9)))
+})
+
+
 
