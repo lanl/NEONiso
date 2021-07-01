@@ -21,8 +21,7 @@
 #' humidity dependence of Picarro isotopic measurements. This is because the
 #' data to implement these corrections is not yet publicly available.
 #' Caution is suggested when analyzing data at low humidities, below ~5000 ppm,
-#' with likely higher biases at lower humidity values. This is expected to be
-#' added in Q3 of 2020.
+#' with likely higher biases at lower humidity values.
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'

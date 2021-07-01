@@ -1,4 +1,4 @@
-#' calibrate_water_linreg
+#' calibrate_water
 #'
 #' `r lifecycle::badge("experimental")`
 #' This function uses NEON validation data to apply drift corrections to
@@ -58,15 +58,15 @@
 #' @import dplyr
 #' @import neonUtilities
 #' @importFrom data.table rleidv
-calibrate_water_linreg        <- function(inpath,
-                                          outpath,
-                                          site,
-                                          calibration_half_width = 14, # days
-                                          filter_data = TRUE,
-                                          force_cal_to_beginning = FALSE,
-                                          force_cal_to_end = FALSE,
-                                          r2_thres = 0.95,
-                                          slope_tolerance = 9999) {
+calibrate_water       <- function(inpath,
+                                  outpath,
+                                  site,
+                                  calibration_half_width = 14, # days
+                                  filter_data = TRUE,
+                                  force_cal_to_beginning = FALSE,
+                                  force_cal_to_end = FALSE,
+                                  r2_thres = 0.95,
+                                  slope_tolerance = 9999) {
   
   # stack data available for a given site into a single timeseries.
   wiso_ref <- neonUtilities::stackEddy(inpath, level = "dp01", avg = 3)
