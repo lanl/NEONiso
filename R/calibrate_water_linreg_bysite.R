@@ -1,4 +1,4 @@
-#' calibrate_water_linreg_bysite
+#' calibrate_water_linreg
 #'
 #' `r lifecycle::badge("experimental")`
 #' This function uses NEON validation data to apply drift corrections to
@@ -21,8 +21,11 @@
 #' humidity dependence of Picarro isotopic measurements. This is because the
 #' data to implement these corrections is not yet publicly available.
 #' Caution is suggested when analyzing data at low humidities, below ~5000 ppm,
-#' with likely higher biases at lower humidity values. This is expected to be
-#' added in Q3 of 2020.
+#' with likely higher biases at lower humidity values.
+#' 
+#' Additionally, please note that this function is meant to work on *all* files
+#' for a given site at the same time. A more flexible version that can handle all
+#' files or monthly files will be added to a future release.
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
 #'
@@ -55,7 +58,7 @@
 #' @import dplyr
 #' @import neonUtilities
 #' @importFrom data.table rleidv
-calibrate_water_linreg_bysite <- function(inpath,
+calibrate_water_linreg        <- function(inpath,
                                           outpath,
                                           site,
                                           calibration_half_width = 14, # days

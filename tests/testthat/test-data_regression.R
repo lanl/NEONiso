@@ -1,5 +1,9 @@
 # test-data_regression
 
+#----------------------
+# CARBON FUNCTIONS
+#----------------------
+
 # test to make sure that the I/O structures across regression functions are correct.
 fin <- system.file('extdata',
                    'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.packed.h5',
@@ -77,4 +81,10 @@ test_that("calibrated d13C values have been added to calibrate_ambient_cabron_li
   expect_gt(ncol(temp$dlta13CCo2), ncol(co2test$ambient$`000_010_09m`$dlta13CCo2))
   expect_gt(ncol(temp_gf$dlta13CCo2), ncol(co2test$ambient$`000_010_09m`$dlta13CCo2))
 })
+
+
+#----------------------
+# WATER FUNCTIONS
+#----------------------
+
 

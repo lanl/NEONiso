@@ -1,6 +1,6 @@
 #' calibrate_water_linreg
 #'
-#' `r lifecycle::badge("experimental")`
+#' `r lifecycle::badge("deprecated")`
 #' This function uses NEON validation data to apply drift corrections to
 #' measured ambient water isotope ratios. In brief, ambient water isotope
 #' ratios are calibrated by generating regressions using reference water
@@ -48,7 +48,7 @@
 #' @importFrom lubridate %within%
 #' @importFrom utils tail
 #' @import dplyr
-calibrate_water_linreg <- function(inname,
+calibrate_water_linreg_bymonth <- function(inname,
                                    outname,
                                    site,
                                    time_diff_betweeen_standards = 1800,
@@ -56,6 +56,8 @@ calibrate_water_linreg <- function(inname,
                                    force_cal_to_beginning = TRUE,
                                    force_cal_to_end = TRUE,
                                    r2_thres = 0.95) {
+  
+  lifecycle::deprecate_warn("0.5.0","calibrate_water_linreg_bymonth","calibrate_water_linreg")
   
   # print status.
   print("Processing water calibration data...")
