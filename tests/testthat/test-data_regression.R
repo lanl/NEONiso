@@ -151,11 +151,6 @@ low_rs <- low_rs %>%
   slice_tail(n = 3) %>%
   ungroup()
 
-#=======================================================================
-# apply calibration routines
-#=======================================================================
-# bind together, and cleanup.
-#### OMIT FOR ERROR PROPOAGATION.
 stds <- do.call(rbind, list(high_rs, med_rs, low_rs))
 
 test_that("fit_water_regression returns dataframe with 8 columns", {
@@ -168,6 +163,20 @@ test_that("fit_water_regression returns dataframe with 8 columns", {
                                                  calibration_half_width = 14,
                                                  slope_tolerance = 9999,
                                                  r2_thres = 0.9)))
+})
+
+#-----------------------------
+# now test ambient functions:
+out <- fit_water_regression(stds,
+                            calibration_half_width = 14,
+                            slope_tolerance = 9999,
+                            r2_thres = 0.9)
+data_by_height_by_var <- restructure_ambient_data(fin, 'H2o')
+
+# test restructure_ambient_data:
+test_that("restructure_ambient_data returns a list with 4 elements for ONAQ", {
+  expect_equal(length(restructure_ambient_data(fin, 'H2o')), 4)
+  expect_type(data_by_height_by_var, "list")
 })
 
 
