@@ -23,11 +23,11 @@ test_date <- Sys.Date()
 dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests"))
 
 # which tests to run?
-run_test1 <- TRUE
-run_test2 <- TRUE
-run_test3 <- TRUE
-run_test4 <- TRUE
-run_test5 <- TRUE
+run_test1 <- FALSE
+run_test2 <- FALSE
+run_test3 <- FALSE
+run_test4 <- FALSE
+run_test5 <- FALSE
 run_test6 <- TRUE
 run_test7 <- FALSE
 run_test8 <- FALSE
@@ -207,8 +207,8 @@ if (run_test6) {
   
   for (i in 1:length(csites)) {
     
-    fin <- list.files(paste0(data.dir,csites[i],'/'),full.names=TRUE)
-    fout <- list.files(paste0(data.dir,csites[i],'/'),full.names=FALSE)
+    fin <- list.files(paste0(data.dir,csites[i],'/'), pattern = '.h5', full.names=TRUE)
+    fout <- list.files(paste0(data.dir,csites[i],'/'), pattern = '.h5', full.names=FALSE)
     
     calibrate_carbon(fin,
                      paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,'_tests/06/',fout[1]),
