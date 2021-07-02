@@ -33,7 +33,7 @@ Imports:
     lubridate,
     neonUtilities (>= 2.0.1),
     magrittr,
-    rhdf5,
+    rhdf5 (>= 2.33.7),
     R.utils,
     tidyselect,
     data.table,
