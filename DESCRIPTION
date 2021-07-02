@@ -8,7 +8,7 @@ Authors@R: c(person("Rich", "Fiorella", email = "rich.fiorella@utah.edu",
                 role = 'rth'))
 Maintainer: Rich Fiorella <rich.fiorella@utah.edu>
 Depends: 
-    R (>= 3.5.0)
+    R (>= 4.0.0)
 Description: Functions for downloading,
     calibrating, and analyzing atmospheric isotope data bundled
     into the eddy covariance data products of the National Ecological
