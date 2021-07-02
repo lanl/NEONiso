@@ -450,7 +450,6 @@ calibrate_carbon_reference_data2 <- function(outname,
   # get year/month combo from outname:
   tmp <- base::strsplit(outname, split = '.', fixed = TRUE)
   yrmn <- tmp[[1]][8]
-  print(yrmn)
   
   fid <- rhdf5::H5Fopen(outname)
   rhdf5::H5Gcreate(fid, paste0("/", site, "/dp01/data/isoCo2/co2",standard,"_09m"))
@@ -459,9 +458,6 @@ calibrate_carbon_reference_data2 <- function(outname,
   
   # loop through each variable amb.data.list and write out as a dataframe.
   lapply(names(std), function(x) {
-    print(std[[x]])
-    print(nrow(std[[x]]))
-    
     if (!is.null(nrow(std[[x]]))) {
       if (nrow(std[[x]]) > 0) {
         rhdf5::h5writeDataset.data.frame(obj = std[[x]],
@@ -497,8 +493,6 @@ calibrate_carbon_reference_data2 <- function(outname,
                                          DataFrameAsCompound = TRUE)
     }
   })
-  
-  
   
   rhdf5::H5Gclose(std_outloc)
   rhdf5::H5Fclose(fid)
