@@ -173,17 +173,11 @@ calibrate_carbon         <- function(inname,
   if (write_to_file) {
     cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
     cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
-    print("step 1")
-    setup_output_file(inname, outname, site, 'co2')  
-    print("step 2")
-    write_carbon_calibration_data(outname, site, cal_df, method = method)  
-    print("step 3")
-    write_carbon_ambient_data(outname, site, ciso_subset_cal)  
-    print("step 4")
+    setup_output_file(inname, outname, site, 'co2')
+    write_carbon_calibration_data(outname, site, cal_df, method = method)
+    write_carbon_ambient_data(outname, site, ciso_subset_cal)
     write_carbon_reference_data2(outname, site, ciso, cal_df)
-    #print("step 5")
     #write_qfqm(inname, outname, site, 'co2')
-    #print('step 6')
     #write_ucrt(inname, outname, site, 'co2')
     
     # one last invocation of hdf5 close all, for good luck

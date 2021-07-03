@@ -441,7 +441,6 @@ calibrate_carbon_reference_data <- function(inname, outname,
 calibrate_carbon_reference_data2 <- function(outname,
                                             standard, site, allData, calParams)  {
   
-  print(standard)
   std <- allData[[base::paste0("co2", standard)]]
   
   std <- calibrate_standards_carbon(calParams, std, correct_bad_refvals = TRUE,
