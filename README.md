@@ -1,6 +1,6 @@
 # NEONiso
 
-NOTE: some restructuring of this package, and working to adding new functions, may have caused some workflows to break. If you are having trouble with this verrsion, please try the CRAN version.
+NOTE: some restructuring of this package, and working to adding new functions, may have caused some workflows to break. If you are having trouble with this version, please try the CRAN version.
 
 <!-- badges: start -->
 [![DOI](https://zenodo.org/badge/188347333.svg)](https://zenodo.org/badge/latestdoi/188347333)
