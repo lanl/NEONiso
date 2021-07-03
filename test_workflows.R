@@ -25,12 +25,13 @@ dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests"))
 # which tests to run?
 run_test1 <- FALSE
 run_test2 <- FALSE
-run_test3 <- FALSE
-run_test4 <- FALSE
-run_test5 <- FALSE
+run_test3 <- TRUE
+run_test4 <- TRUE
+run_test5 <- TRUE
 run_test6 <- TRUE
 run_test7 <- FALSE
 run_test8 <- FALSE
+rapid_test <- TRUE # if rapid, only run ~5% of possible site months.
 
 # load required packages:
 library(rhdf5)
@@ -114,9 +115,16 @@ if (run_test8) {
   wsites <- NEONiso:::water_isotope_sites()
 }
 
+# if we're doing rapid testing!
+if (rapid_test) {
+  fnames.out <- sample(fnames.out, floor(length(fnames.out)/20))
+  csites <- sample(csites, 4)
+}
+
 #==========================
 # Run carbon tests
 #==========================
+
 
 if (run_test1) {
   dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests/01"))
@@ -175,7 +183,7 @@ if (run_test3) {
 if (run_test4) {
   dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,'_tests/04'))
   
-  for (i in 10:length(csites)) {
+  for (i in 1:length(csites)) {
     
     fin <- list.files(paste0(data.dir,csites[i],'/') , pattern = '.h5', full.names=TRUE)
     fout <- list.files(paste0(data.dir,csites[i],'/'), pattern = '.h5', full.names=FALSE)
