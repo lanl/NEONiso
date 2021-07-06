@@ -8,12 +8,10 @@ on:
   push:
     branches:
       - main
-      - master
-      - cran-rc0.4
+      - cran-rc05
   pull_request:
     branches:
       - main
-      - master
 
 name: R-CMD-check
 
