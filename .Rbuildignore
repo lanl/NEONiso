@@ -11,3 +11,4 @@
 ^package_testing_script\.R$
 ^CRAN-RELEASE$
 ^test_workflows\.R$
+^revdep$
