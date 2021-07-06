@@ -3,11 +3,15 @@
 * GitHub Actions (ubuntu-18.04): devel, release, oldrel
 * GitHub Actions (windows-latest): release
 * GitHub Actions (macOS-latest): devel, release, oldrel
+* win-builder: devel
+* r-hub: Fedora Linux, R-devel, clang, gfortran
+* r-hub: Ubuntu Linux 20.04.1 LTS, R-release, GCC
 
 ## R CMD check results
-No errors, warnings, or notes.
+No errors, warnings, or notes on local environment, GitHub Actions, or win-builder.
 
 * Auto-check will issue a warning about misspelled words in DESCRIPTION, but the words flagged are all correct.
+* r-hub test environments fail due to issues building Bioconductor packages (rhdf5).
 
 ## Downstream dependencies
 There are currently no downstream dependencies for this package.
