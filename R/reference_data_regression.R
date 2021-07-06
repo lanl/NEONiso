@@ -404,8 +404,6 @@ fit_water_regression <- function(stds, calibration_half_width, slope_tolerance, 
       }
     }
     
-    print(start_time)
-    
     # start time is numeric here at some point - hence, format not necessary 
     # to be specified below.
     # output dataframe giving valid time range, slopes, intercepts, rsquared.
