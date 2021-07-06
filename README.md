@@ -11,7 +11,7 @@ NOTE: some restructuring of this package, and working to adding new functions, m
 <!-- badges: end -->
 
 Author: Rich Fiorella \
-Last Updated: March 19, 2021.
+Last Updated: July 6, 2021.
 
 This repository contains an R package to calibrate NEON atmospheric isotope data. A stable version of the package can be installed from CRAN, and a development version of this package can be installed here using devtools (see below).
 
@@ -46,16 +46,14 @@ products derived from this package: https://www.neonscience.org/data/about-data/
 
 ## Usage:
 
-Two methods are available to calibrate NEON Carbon isotope data and they take slightly different approaches: a) the 'Bowling_2003' method calibrates 12CO2 and 13CO2 mole fractions independently, while b) the 'linreg' method calibrates d13C and CO2 directly without converting to isotopologue mole fractions. The method is specified as an argument to calibrate_carbon_bymonth(). Both methods yield very similar results, but the error and precision estimates are slightly better from the calibrate_carbon_Bowling2003() function (Fiorella et al., 2021; JGR-Biogeosciences)
+Two methods are available to calibrate NEON Carbon isotope data and they take slightly different approaches: a) the 'Bowling_2003' method calibrates 12CO2 and 13CO2 mole fractions independently, while b) the 'linreg' method calibrates d13C and CO2 directly without converting to isotopologue mole fractions. The method is specified as an argument to calibrate_carbon(). Both methods yield very similar results, but the error and precision estimates are slightly better from the Bowling et al. 2003 method (Fiorella et al., 2021; JGR-Biogeosciences)
 
-This function is meant to be applied to a list or vector of uncalibrated data files, and produce output hdf5 files that have (currently) only the CO2 and d13C variables instead of the entire data bundle. Development was targeted and tested on monthly basic files, but the functions should also work on the extended data files.
+This function is meant to be applied to a list or vector of uncalibrated data files, and produce output hdf5 files that have (currently) only the CO2 and d13C variables instead of the entire data bundle. Development was targeted and tested on basic files, but the functions should also work on the extended data files.
 
 neonUtilities:::stackEddy *should* work on these output files - please file an issue if it does not.
 
 ## Future plans
-There will be two major changes and a minor change coming to this package in the next few months:
-1) We are starting to work on calibration routines for the NEON water isotope products - more info soon. This will likely not make it into the CRAN package until at least two minor releases from now (0.6.0).
-2) We are also working on versions of the carbon routines that work on the entire data series in a single pass (e.g., instead of monthly files - a single output file is created for the whole time series). This allows for more flexibility for which calibration data may be included in the calibration data file, and this functionality may be part of the next minor release (0.5.0).
+The next major release will include calibration routines for the NEON water isotope products - more info soon
 
 ## DATA ALERT:
 
