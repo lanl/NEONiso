@@ -41,7 +41,6 @@
 #'
 #' @return nothing to the workspace, but creates a new output file of
 #'         calibrated carbon isotope data.
-#' @export
 #'
 #' @importFrom magrittr %>%
 #' @importFrom lubridate %within%

@@ -215,7 +215,6 @@ restructure_carbon_variables <- function(dataframe,
 #' @param mode Are we fixing a reference data frame or an ambient data frame?
 #' 
 #' @return data.frame formatted for output to hdf5 file.
-#' @export
 #'
 restructure_water_variables <- function(dataframe,
                                         varname,

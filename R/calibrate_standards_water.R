@@ -8,7 +8,6 @@
 #'          calibrate standards data. Default is 0.95. Calibrated reference
 #'          gas measurements occurring during calibration periods
 #'          with r2 values less than `r2_thres` will be marked NA.
-#' @export
 calibrate_standards_water <- function(cal_df,
                                       ref_df,
                                       r2_thres = 0.95) {

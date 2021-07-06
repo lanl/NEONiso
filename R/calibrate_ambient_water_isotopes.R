@@ -29,7 +29,6 @@
 #'
 #' @return Nothing to environment; returns calibrated ambient observations to
 #'     the output file. This function is not designed to be called on its own.
-#' @export
 #'
 #' @importFrom magrittr %>%
 calibrate_ambient_water_linreg <- function(amb_data_list,
