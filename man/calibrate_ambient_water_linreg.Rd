@@ -60,3 +60,4 @@ but should be used with \code{calibrate_ambient_water_linreg}.
 Note that in this version \emph{NO CORRECTION FOR HUMIDITY} is performed.
 Use with caution.
 }
+\keyword{internal}

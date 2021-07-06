@@ -41,7 +41,7 @@ validate_analyte <- function(analyte) {
 #' @return Nothing to the environment, but creates a new data file
 #'         with the most basic output HDF5 structure consistent with
 #'         NEON's data files.
-#'
+#' @keywords internal
 setup_output_file <- function(inname, outname, site, analyte) {
   
   analyte <- validate_analyte(analyte)
@@ -89,7 +89,7 @@ setup_output_file <- function(inname, outname, site, analyte) {
 #' @param analyte Carbon ('Co2') or water ('H2o') system?
 #'
 #' @return Nothing to the environment, but writes qfqm data to file.
-#'
+#' @keywords internal
 write_qfqm <- function(inname, outname, site, analyte) {
   
   analyte <- validate_analyte(analyte)
@@ -124,7 +124,7 @@ write_qfqm <- function(inname, outname, site, analyte) {
 #' @param analyte Carbon ('Co2') or water ('H2o') system?
 #'
 #' @return Nothing to the environment, but writes ucrt data to file.
-#' 
+#' @keywords internal
 write_ucrt <- function(inname, outname, site, analyte) {
   
   analyte <- validate_analyte(analyte)
@@ -158,7 +158,7 @@ write_ucrt <- function(inname, outname, site, analyte) {
 #'
 #' @return Nothing to the workspace, but copies qfqm group from input file to
 #'         output file.
-#'
+#' @keywords internal
 copy_qfqm_group <- function(data_list, outname, site, file, species) {
   
   # create hdf5 structure for these variables.
@@ -208,7 +208,7 @@ copy_qfqm_group <- function(data_list, outname, site, file, species) {
 #'
 #' @return Nothing to the workspace, but copies ucrt group from input file to
 #'         output file.
-#'
+#' @keywords internal
 copy_ucrt_group <- function(data_list, outname, site, file, species) {
   
   # create hdf5 structure for these variables.
@@ -263,7 +263,7 @@ copy_ucrt_group <- function(data_list, outname, site, file, species) {
 #'         calibration parameters (e.g., gain and offset or 
 #'         regression slopes and intercepts) to the output
 #'         hdf5 file.
-#'
+#' @keywords internal
 write_carbon_calibration_data <- function(outname, site, calDf, method) {
 
   print("Writing calibration parameters...")
@@ -308,7 +308,7 @@ write_carbon_calibration_data <- function(outname, site, calDf, method) {
 #'        this is the output from one of the calibrate_ambient_carbon* functions.
 #'
 #' @return Nothing to the environment, but writes data in amb_data_list to file.
-#'
+#' @keywords internal
 write_carbon_ambient_data <- function(outname, site, amb_data_list) {
   
   print("Writing calibrated ambient data...")
@@ -353,7 +353,7 @@ write_carbon_ambient_data <- function(outname, site, amb_data_list) {
 #'              this is the output from fit_carbon_regression
 #'
 #' @return Nothing to the environment, but writes calibrated reference data to hdf5 file.
-#'
+#' @keywords internal
 write_carbon_reference_data <- function(inname, outname, site, calDf) {
   
   print("Writing calibrated reference data...")
@@ -374,7 +374,7 @@ write_carbon_reference_data <- function(inname, outname, site, calDf) {
 #' @param allData Uncalibrated reference data frames.
 #'
 #' @return Nothing to the environment, but writes calibrated reference data to hdf5 file.
-#'
+#' @keywords internal
 write_carbon_reference_data2 <- function(outname, site, allData, calDf) {
   
   print("Writing calibrated reference data...")
@@ -397,7 +397,7 @@ write_carbon_reference_data2 <- function(outname, site, allData, calDf) {
 #'              this is the output from fit_carbon_regression
 #'
 #' @return Nothing to the environment.  
-#'
+#' @keywords internal
 calibrate_carbon_reference_data <- function(inname, outname,
                                             standard, site, calDf)  {
   
@@ -437,7 +437,7 @@ calibrate_carbon_reference_data <- function(inname, outname,
 #' @param site NEON 4-letter site code.
 #'
 #' @return Nothing to the environment.  
-#'
+#' @keywords internal
 calibrate_carbon_reference_data2 <- function(outname,
                                             standard, site, allData, calParams)  {
   
@@ -515,7 +515,7 @@ calibrate_carbon_reference_data2 <- function(outname,
 #'         calibration parameters (e.g., 
 #'         regression slopes and intercepts) to the output
 #'         hdf5 file.
-#'
+#' @keywords internal
 write_water_calibration_data <- function(outname, site, calDf) {
   
   print("Writing calibration parameters...")
@@ -556,7 +556,7 @@ write_water_calibration_data <- function(outname, site, calDf) {
 #' @param highDf Data frame corresponding to the "high" reference water.
 #'
 #' @return Nothing to the environment, but writes calibrated reference data to hdf5 file.
-#'
+#' @keywords internal
 write_water_reference_data <- function(inname, outname, site, 
                                         lowDf, medDf, highDf, calDf) {
   
@@ -577,7 +577,7 @@ write_water_reference_data <- function(inname, outname, site,
 #' @param stdDf Data frame of reference material measurements.
 #'
 #' @return Nothing to the environment.
-#' 
+#' @keywords internal
 calibrate_water_reference_data <- function(outname, standard, site, stdDf, calDf) { #,- problem here: in some contexts standard is a df, others its a string (e.g., which standard?)
 
   rhdf5::h5createGroup(outname,

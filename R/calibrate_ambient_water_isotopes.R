@@ -31,6 +31,7 @@
 #'     the output file. This function is not designed to be called on its own.
 #'
 #' @importFrom magrittr %>%
+#' @keywords internal
 calibrate_ambient_water_linreg <- function(amb_data_list,
                                            caldf,
                                            outname,

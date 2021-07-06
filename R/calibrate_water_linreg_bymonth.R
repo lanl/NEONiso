@@ -46,6 +46,7 @@
 #' @importFrom lubridate %within%
 #' @importFrom utils tail
 #' @import dplyr
+#' @keywords internal
 calibrate_water_linreg_bymonth <- function(inname,
                                    outname,
                                    site,

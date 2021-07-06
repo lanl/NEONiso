@@ -14,6 +14,7 @@
 #' @export
 #' @examples 
 #' terrestrial_core_sites()
+#'
 terrestrial_core_sites <- function() {
 
   # core sites as of 190523.
@@ -55,7 +56,7 @@ terrestrial_relocatable_sites <- function() {
 #' @return A vector listing NEON sites measuring water vapor isotope ratios.
 #'
 #' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
-#' 
+#' @keywords internal
 
 water_isotope_sites <- function() {
 

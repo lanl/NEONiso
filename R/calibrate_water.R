@@ -57,6 +57,7 @@
 #' @import dplyr
 #' @import neonUtilities
 #' @importFrom data.table rleidv
+#' @keywords internal
 calibrate_water       <- function(inpath,
                                   outpath,
                                   site,

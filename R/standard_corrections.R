@@ -16,6 +16,7 @@
 #'         determined to have a reference value mismatch. Mismatch
 #'         is determined based on the d-excess of the standard (= 
 #'         d2H - 8*d18O), using a value of 500 by default. 
+#' @keywords internal
 
 swap_standard_isotoperatios <- function(std_frame, dxs_thres = 500) {
   # calculate d excess

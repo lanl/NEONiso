@@ -9,6 +9,7 @@
 #'
 #' @import tidyselect
 #' @import rlang
+#' @keywords internal
 extract_carbon_calibration_data <- function(data_list) {
   
   # input should be the list from stackEddy
@@ -54,7 +55,7 @@ extract_carbon_calibration_data <- function(data_list) {
 #'               function (use "by_site)
 #'
 #' @return Returns data frame of required variables.
-#'
+#' @keywords internal
 extract_water_calibration_data <- function(data_list, ucrt_list = NULL,
                                            standard, ucrt_source = "data",
                                            method = "by_site") {

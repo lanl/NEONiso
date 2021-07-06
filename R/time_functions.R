@@ -15,6 +15,7 @@
 #' @export
 #' @examples 
 #' convert_POSIXct_to_NEONhdf5_time(Sys.time())
+#' @keywords internal
 
 convert_POSIXct_to_NEONhdf5_time <- function(intime) {
   
@@ -55,6 +56,7 @@ convert_POSIXct_to_NEONhdf5_time <- function(intime) {
 #'
 #' @examples 
 #' convert_NEONhdf5_to_POSIXct_time("2019-06-01T12:00:00.000Z")
+#' @keywords internal
 convert_NEONhdf5_to_POSIXct_time <- function(intime) {
   
   outtime <- as.POSIXct(intime, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC", origin = '1970-01-01')
