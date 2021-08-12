@@ -22,7 +22,11 @@ ingest_data <- function(inname, analyte) {
   
   if (analyte == 'Co2') {
     
-    data <- neonUtilities::stackEddy(inname, avg = 9, level = 'dp01')[[1]]
+    if (packageVersion("neonUtilities") >= "2.1.1") {
+      data <- neonUtilities::stackEddy(inname, avg = 9, level = 'dp01', var = 'isoCo2')[[1]]
+    } else {
+      data <- neonUtilities::stackEddy(inname, avg = 9, level = 'dp01')[[1]]
+    }
     
     # filter data and remove rows that are all NaNs:
     data <- data %>% 
@@ -324,33 +328,46 @@ restructure_ambient_data <- function(inpath, analyte) {
     
     dlta18O_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "dlta18OH2o", avg = 9)
     dlta18OH2o <- restructure_water_variables(dlta18O_list, "dlta18OH2o", "ambient")
+    dlta18OH2o[[1]] <- dlta18OH2o[[1]][rowSums(is.na(dlta18OH2o[[1]])) < 5,]
     
     dlta2H_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "dlta2HH2o", avg = 9)
     dlta2HH2o <- restructure_water_variables(dlta2H_list, "dlta2HH2o", "ambient")
+    dlta2HH2o[[1]] <- dlta2HH2o[[1]][rowSums(is.na(dlta2HH2o[[1]])) < 5,]
     
     pres_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "pres", avg = 9)
     pres <- restructure_water_variables(pres_list, "pres", "ambient")
+    pres[[1]] <- pres[[1]][rowSums(is.na(pres[[1]])) < 5,]
     
     presEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "presEnvHut", avg = 9)
     presEnvHut <- restructure_water_variables(presEnvHut_list, "presEnvHut", "ambient")
+    presEnvHut[[1]] <- presEnvHut[[1]][rowSums(is.na(presEnvHut[[1]])) < 5,]
     
     rhEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rhEnvHut", avg = 9)
     rhEnvHut <- restructure_water_variables(rhEnvHut_list, "rhEnvHut", "ambient")
+    rhEnvHut[[1]] <- rhEnvHut[[1]][rowSums(is.na(rhEnvHut[[1]])) < 5,]
     
+    rtioMoleDryH2o_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rtioMoleDryH2o", avg = 9)
+    rtioMoleDryH2o <- restructure_water_variables(rtioMoleDryH2o_list, "rtioMoleDryH2o", "ambient")
+    rtioMoleDryH2o[[1]] <- rtioMoleDryH2o[[1]][rowSums(is.na(rtioMoleDryH2o[[1]])) < 5,]
+        
     rtioMoleWetH2o_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rtioMoleWetH2o", avg = 9)
     rtioMoleWetH2o <- restructure_water_variables(rtioMoleWetH2o_list, "rtioMoleWetH2o", "ambient")
+    rtioMoleWetH2o[[1]] <- rtioMoleWetH2o[[1]][rowSums(is.na(rtioMoleWetH2o[[1]])) < 5,]
     
     rtioMoleWetH2oEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rtioMoleWetH2oEnvHut", avg = 9)
     rtioMoleWetH2oEnvHut <- restructure_water_variables(rtioMoleWetH2oEnvHut_list, "rtioMoleWetH2oEnvHut", "ambient")
+    rtioMoleWetH2oEnvHut[[1]] <- rtioMoleWetH2oEnvHut[[1]][rowSums(is.na(rtioMoleWetH2oEnvHut[[1]])) < 5,]
     
     temp_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "temp", avg = 9)
     temp <- restructure_water_variables(temp_list, "temp", "ambient")
+    temp[[1]] <- temp[[1]][rowSums(is.na(temp[[1]])) < 5,]
     
     tempEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "tempEnvHut", avg = 9)
     tempEnvHut <- restructure_water_variables(tempEnvHut_list, "tempEnvHut", "ambient")
+    tempEnvHut[[1]] <- tempEnvHut[[1]][rowSums(is.na(tempEnvHut[[1]])) < 5,]
     
     data_out_all <- do.call(rbind,list(dlta18OH2o[[1]], dlta2HH2o[[1]], pres[[1]], presEnvHut[[1]], rhEnvHut[[1]],
-                                       rtioMoleWetH2o[[1]], rtioMoleWetH2oEnvHut[[1]], temp[[1]], tempEnvHut[[1]]))
+                                       rtioMoleDryH2o[[1]], rtioMoleWetH2o[[1]], rtioMoleWetH2oEnvHut[[1]], temp[[1]], tempEnvHut[[1]]))
     
     # split first by height
     data_by_height <- base::split(data_out_all, factor(data_out_all$verticalPosition))
