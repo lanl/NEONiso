@@ -13,6 +13,8 @@
 # 7) calibrate_water_linreg_bymonth works
 # 8) calibrate_water_linreg_bysite works
 
+library(NEONiso)
+
 # where does uncalibrated data live?
 data.dir <- '~/Desktop/DP4_00200_001/'
 
@@ -25,13 +27,13 @@ dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests"))
 # which tests to run?
 run_test1 <- FALSE
 run_test2 <- FALSE
-run_test3 <- TRUE
+run_test3 <- FALSE
 run_test4 <- TRUE
-run_test5 <- TRUE
-run_test6 <- TRUE
+run_test5 <- FALSE
+run_test6 <- FALSE
 run_test7 <- FALSE
 run_test8 <- FALSE
-rapid_test <- TRUE # if rapid, only run ~5% of possible site months.
+rapid_test <- FALSE # if rapid, only run ~5% of possible site months.
 
 # load required packages:
 library(rhdf5)
@@ -181,7 +183,7 @@ if (run_test3) {
 }
 
 if (run_test4) {
-  dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,'_tests/04'))
+  dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,'_tests/04a'))
   
   for (i in 1:length(csites)) {
     
@@ -189,7 +191,7 @@ if (run_test4) {
     fout <- list.files(paste0(data.dir,csites[i],'/'), pattern = '.h5', full.names=FALSE)
     
     calibrate_carbon(fin,
-                     paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,'_tests/04/',fout[1]),
+                     paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,'_tests/04a/',fout[1]),
                      site=csites[i], r2_thres = 0.95,
                      calibration_half_width = 100000)
   }
@@ -256,7 +258,7 @@ if (run_test8) {
   dir.create(paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,"_tests/08"))
   
   for (i in 1:length(wsites)) {
-    calibrate_water_linreg_bysite(paste0(data.dir,wsites[i],'/'),
+    calibrate_water(paste0(data.dir,wsites[i],'/'),
                                   paste0('/Volumes/GradSchoolBackup/NEONcal/',test_date,'_tests/08/'),
                                   site=wsites[i], r2_thres = 0.95,
                                  calibration_half_width = 100000)
