@@ -69,7 +69,7 @@ calibrate_water       <- function(inpath,
                                   slope_tolerance = 9999) {
   
   # stack data available for a given site into a single timeseries.
-  if (packageVersion("neonUtilities") >= "2.1.1") {
+  if (utils::packageVersion("neonUtilities") >= "2.1.1") {
     wiso_ref <- neonUtilities::stackEddy(inpath, level = "dp01", avg = 3, var = 'isoH2o')
     wiso_amb <- neonUtilities::stackEddy(inpath, level = "dp01", avg = 9, var = 'isoH2o')  
   } else {

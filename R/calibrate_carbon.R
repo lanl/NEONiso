@@ -131,6 +131,11 @@ calibrate_carbon         <- function(inname,
     
   }
 
+  print(nrow(refe))
+  # filter for rmse estimates:
+  refe <- refe %>%
+    dplyr::filter(verticalPosition %in% c("co2Low","co2High"))
+  
   # get calibration parameters data.frame.
   cal_df <- fit_carbon_regression(ref_data = refe, method = method,
                                   calibration_half_width = calibration_half_width)
