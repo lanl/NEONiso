@@ -69,8 +69,13 @@ calibrate_water       <- function(inpath,
                                   slope_tolerance = 9999) {
   
   # stack data available for a given site into a single timeseries.
-  wiso_ref <- neonUtilities::stackEddy(inpath, level = "dp01", avg = 3)
-  wiso_amb <- neonUtilities::stackEddy(inpath, level = "dp01", avg = 9)
+  if (packageVersion("neonUtilities") >= "2.1.1") {
+    wiso_ref <- neonUtilities::stackEddy(inpath, level = "dp01", avg = 3, var = 'isoH2o')
+    wiso_amb <- neonUtilities::stackEddy(inpath, level = "dp01", avg = 9, var = 'isoH2o')  
+  } else {
+    wiso_ref <- neonUtilities::stackEddy(inpath, level = "dp01", avg = 3)
+    wiso_amb <- neonUtilities::stackEddy(inpath, level = "dp01", avg = 9)  
+  }
   
   # extract standards data.
   high <- subset(wiso_ref[[site]], wiso_ref[[site]]$verticalPosition == 'h2oHigh')
