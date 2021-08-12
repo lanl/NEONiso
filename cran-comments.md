@@ -12,6 +12,7 @@ No errors, warnings, or notes on local environment, GitHub Actions, or win-build
 
 * Auto-check will issue a warning about misspelled words in DESCRIPTION, but the words flagged are all correct.
 * r-hub test environments fail due to issues building Bioconductor packages (rhdf5).
+* CRAN web checks also occassionaly issue an error due to issues with rhdf5.
 
 ## Downstream dependencies
 There are currently no downstream dependencies for this package.
