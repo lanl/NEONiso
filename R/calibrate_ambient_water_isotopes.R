@@ -188,7 +188,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   
   # loop through variables in list amb_data_list and write out as a dataframe.
   lapply(names(amb_data_list), function(x) {
-    rhdf5::h5writeDataset.data.frame(obj = amb_data_list[[x]],
+    rhdf5::h5writeDataset(obj = amb_data_list[[x]],
                                      h5loc = h2o_data_outloc,
                                      name = x,
                                      DataFrameAsCompound = TRUE)})

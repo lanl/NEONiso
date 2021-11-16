@@ -320,7 +320,7 @@ calibrate_water_linreg_bymonth <- function(inname,
                                    paste0("/", site, "/dp01/data/isoH2o/calData"))
   
   # write out dataset.
-  rhdf5::h5writeDataset.data.frame(obj = var_for_h5,
+  rhdf5::h5writeDataset(obj = var_for_h5,
                                    h5loc = h2o_cal_outloc,
                                    name = "calRegressions",
                                    DataFrameAsCompound = TRUE)
@@ -348,7 +348,7 @@ calibrate_water_linreg_bymonth <- function(inname,
   # loop through each of the variables in list amb.data.list
   # and write out as a dataframe.
   lapply(names(low), function(x) {
-    rhdf5::h5writeDataset.data.frame(obj = low[[x]],
+    rhdf5::h5writeDataset(obj = low[[x]],
                                      h5loc = low_outloc,
                                      name = x,
                                      DataFrameAsCompound = TRUE)})
@@ -371,7 +371,7 @@ calibrate_water_linreg_bymonth <- function(inname,
   # loop through each of the variables in list amb.data.list
   # and write out as a dataframe.
   lapply(names(med), function(x) {
-    rhdf5::h5writeDataset.data.frame(obj = med[[x]],
+    rhdf5::h5writeDataset(obj = med[[x]],
                                      h5loc = med_outloc,
                                      name = x,
                                      DataFrameAsCompound = TRUE)})
@@ -394,7 +394,7 @@ calibrate_water_linreg_bymonth <- function(inname,
   # loop through each of the variables in list amb.data.list
   # and write out as a dataframe.
   lapply(names(high), function(x) {
-    rhdf5::h5writeDataset.data.frame(obj = high[[x]],
+    rhdf5::h5writeDataset(obj = high[[x]],
                                      h5loc = high_outloc,
                                      name = x,
                                      DataFrameAsCompound = TRUE)})
