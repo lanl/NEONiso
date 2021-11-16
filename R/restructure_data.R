@@ -10,6 +10,7 @@
 #' @export
 #'
 #' @importFrom stats setNames
+#' @importFrom utils packageVersion
 ingest_data <- function(inname, analyte) {
   
   # this function needs to:
