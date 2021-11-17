@@ -5,7 +5,7 @@ NOTE: some restructuring of this package, and working to adding new functions, m
 <!-- badges: start -->
 [![DOI](https://zenodo.org/badge/188347333.svg)](https://zenodo.org/badge/latestdoi/188347333)
 [![R-CMD-check](https://github.com/SPATIAL-Lab/NEONiso/workflows/R-CMD-check/badge.svg)](https://github.com/SPATIAL-Lab/NEONiso/actions)
-[![codecov](https://codecov.io/gh/SPATIAL-Lab/NEONiso/branch/main/graph/badge.svg?token=ZHDFEU5NZW)](https://codecov.io/gh/SPATIAL-Lab/NEONiso)
+[![codecov](https://codecov.io/gh/SPATIAL-Lab/NEONiso/branch/main/graph/badge.svg?token=ZHDFEU5NZW)](https://app.codecov.io/gh/SPATIAL-Lab/NEONiso)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/NEONiso)](https://CRAN.R-project.org/package=NEONiso)
 <!-- badges: end -->
