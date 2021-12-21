@@ -12,3 +12,4 @@
 ^CRAN-RELEASE$
 ^test_workflows\.R$
 ^uncertainty_testing\.R$
+^test_workflows_parallel\.R$
