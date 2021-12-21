@@ -3,6 +3,12 @@
 
 # run suite of tests for each version to make sure
 # that calibration scripts work, and id any problems.
+#
+# note on parallelizing - mclapply doesn't work well.
+# notes from a gidhub issue indiciate it's
+# due to the use of forking instead of socks. reimplementing with 
+# parLapply and sockets
+#
 # tests to run:
 # 1) calibrate_carbon_bymonth works B03 method (soon to be deprecated)
 # 2) calibrate_carbon_bymonth works linreg method (soon to be deprecated)
@@ -20,7 +26,7 @@ data.dir <- '~/DP4_00200_001/'
 test_date <- "2021-12-20"
 
 # make output directory structure:
-dir.create(paste0('~/NEONcal/',test_date,"_tests"))
+dir.create(paste0('~/NEONcal/',test_date,"_parallel"))
 
 # which tests to run?
 run_test1 <- TRUE
@@ -69,12 +75,6 @@ if (run_test1 | run_test2 | run_test3 | run_test5) {
   site.yearmonth <- sapply(fname.byfolder,'[[',8)
   site.domain <- sapply(fname.byfolder,'[[',2)
   
-  #limitSite <- "BARR"
-  #fnames <- fnames[site.code == limitSite]
-  #site.yearmonth <- site.yearmonth[site.code == limitSite]
-  #site.domain <- site.domain[site.code == limitSite]
-  #site.code <- site.code[site.code == limitSite]
-  
   # get names only.
   fnames.lst <- strsplit(fnames,split="/")
   fnames.tmp <- sapply(fnames.lst,'[[',7)
@@ -102,12 +102,6 @@ if (run_test7) {
   wsite.code <- sapply(wname.byfolder,'[[',3)
   wsite.yearmonth <- sapply(wname.byfolder,'[[',8)
   wsite.domain <- sapply(wname.byfolder,'[[',2)
-  
-  # limitSite <- "BARR"
-  # wnames <- wnames[wsite.code == limitSite]
-  # wsite.yearmonth <- wsite.yearmonth[wsite.code == limitSite]
-  # wsite.domain <- wsite.domain[wsite.code == limitSite]
-  # wsite.code <- wsite.code[wsite.code == limitSite]
   
   # get names only.
   wnames.lst <- strsplit(wnames,split="/")
@@ -137,6 +131,7 @@ foreach::getDoParRegistered()
 
 
 if (run_test1) {
+  
   print(paste(Sys.time(), "starting test 1"))
   dir.create(paste0('~/NEONcal/',test_date,"_tests/01"))
 
@@ -149,13 +144,15 @@ if (run_test1) {
     print(paste0("Calibration test set 1: ", round(100*i/length(fnames.out),3),"% complete"))
     calibrate_carbon_bymonth(fnames[i],fnames.out2[i],site=site.code[i], method = "Bowling_2003")
   },
-  mc.cores = 20)
+  mc.cores = 20, mc.preschedule = FALSE)
   
   # cleanup
   rm(outpaths, fnames.out2)
   print(paste(Sys.time(), "ending test 1"))
   
 }
+
+Sys.sleep(120)
 
 if (run_test2) {
   print(paste(Sys.time(), "starting test 2"))
@@ -171,12 +168,14 @@ if (run_test2) {
     calibrate_carbon_bymonth(fnames[i],fnames.out2[i],
                              site=site.code[i], method = "linreg")
   },
-  mc.cores = 20)
+  mc.cores = 20, mc.preschedule = FALSE)
 
   # cleanup
   rm(outpaths, fnames.out2)
   print(paste(Sys.time(), "ending test 2"))
 }
+
+Sys.sleep(120)
 
 #----------------------------------------------------
 # calibrate_carbon tests:
@@ -194,10 +193,12 @@ if (run_test3) {
   mclapply(seq_along(fnames), function(i){
     print(paste0("Calibration test set 3: ", round(100*i/length(fnames.out),3),"% complete...", fnames.out[i]))
     calibrate_carbon(fnames[i],fnames.out2[i],site=site.code[i], method = "Bowling_2003")
-  }, mc.cores = 20)
+  }, mc.cores = 20, mc.preschedule = FALSE)
   
   print(paste(Sys.time(), "ending test 3"))
 }
+
+Sys.sleep(120)
 
 if (run_test4) {
   dir.create(paste0('~/NEONcal/',test_date,'_tests/04'))
@@ -214,10 +215,12 @@ if (run_test4) {
                      site=csites[i], r2_thres = 0.95,
                      calibration_half_width = 100000)
   },
-  mc.cores = 20)
+  mc.cores = 20, mc.preschedule = FALSE)
   
   print(paste(Sys.time(), "ending test 4"))
 }
+
+Sys.sleep(120)
 
 if (run_test5) {
   
@@ -234,10 +237,12 @@ if (run_test5) {
     print(paste0("Calibration test set 5: ", round(100*i/length(fnames.out),3),"% complete"))
     calibrate_carbon(fnames[i],fnames.out2[i],site=site.code[i], method = "linreg")
   },
-  mc.cores = 20)
+  mc.cores = 20, mc.preschedule = FALSE)
 
   print(paste(Sys.time(), "ending test 5"))
 }
+
+Sys.sleep(120)
 
 if (run_test6) {
   
@@ -254,13 +259,13 @@ if (run_test6) {
                      site=csites[i], r2_thres = 0.95, method = 'linreg',
                      calibration_half_width = 100000)
   },
-  mc.cores = 20)
+  mc.cores = 20, mc.preschedule = FALSE)
   
   print(paste(Sys.time(), "ending test 6"))
   
 }
 
-
+Sys.sleep(120)
 #----------------------------------------------------
 # Water tests:
 #----------------------------------------------------
