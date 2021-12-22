@@ -17,7 +17,7 @@
 data.dir <- '~/DP4_00200_001/'
 
 # set test_date
-test_date <- "2021-12-21"
+test_date <- "2021-12-22"
 
 #devtools::load_all()
 
@@ -67,12 +67,6 @@ if (run_test1 | run_test2 | run_test3 | run_test5) {
   site.yearmonth <- sapply(fname.byfolder,'[[',8)
   site.domain <- sapply(fname.byfolder,'[[',2)
   
-  #limitSite <- "BARR"
-  #fnames <- fnames[site.code == limitSite]
-  #site.yearmonth <- site.yearmonth[site.code == limitSite]
-  #site.domain <- site.domain[site.code == limitSite]
-  #site.code <- site.code[site.code == limitSite]
-  
   # get names only.
   fnames.lst <- strsplit(fnames,split="/")
   fnames.tmp <- sapply(fnames.lst,'[[',7)
@@ -101,12 +95,6 @@ if (run_test7) {
   wsite.yearmonth <- sapply(wname.byfolder,'[[',8)
   wsite.domain <- sapply(wname.byfolder,'[[',2)
   
-  limitSite <- "BARR"
-  wnames <- wnames[wsite.code == limitSite]
-  wsite.yearmonth <- wsite.yearmonth[wsite.code == limitSite]
-  wsite.domain <- wsite.domain[wsite.code == limitSite]
-  wsite.code <- wsite.code[wsite.code == limitSite]
-  
   # get names only.
   wnames.lst <- strsplit(wnames,split="/")
   wnames.tmp <- sapply(wnames.lst,'[[',7)
@@ -129,7 +117,6 @@ if (rapid_test) {
 #==========================
 # Run carbon tests
 #==========================
-
 
 if (run_test1) {
   dir.create(paste0('~/NEONcal/',test_date,"_tests/01"))
