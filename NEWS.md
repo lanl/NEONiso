@@ -1,3 +1,7 @@
+# NEONiso 0.5.3
+
+* Small maintenance release that addresses a NOTE on CRAN.
+
 # NEONiso 0.5.2
 
 * Fixes a bug where an rhdf5 function was not being imported properly,
