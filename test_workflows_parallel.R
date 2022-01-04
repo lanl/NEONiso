@@ -3,6 +3,12 @@
 
 # run suite of tests for each version to make sure
 # that calibration scripts work, and id any problems.
+#
+# note on parallelizing - mclapply doesn't work well.
+# notes from a gidhub issue indiciate it's
+# due to the use of forking instead of socks. reimplementing with 
+# parLapply and sockets
+#
 # tests to run:
 # 1) calibrate_carbon_bymonth works B03 method (soon to be deprecated)
 # 2) calibrate_carbon_bymonth works linreg method (soon to be deprecated)
@@ -13,24 +19,25 @@
 # 7) calibrate_water_linreg_bymonth works
 # 8) calibrate_water_linreg_bysite works
 
+# set up parallel cluster
+# local.cluster <- parallel::makeCluster(4, type = "PSOCK")
+
 # where does uncalibrated data live?
 data.dir <- '~/DP4_00200_001/'
 
 # set test_date
-test_date <- "2021-12-22"
-
-#devtools::load_all()
+test_date <- "2021-12-20"
 
 # make output directory structure:
-dir.create(paste0('~/NEONcal/',test_date,"_tests"))
+dir.create(paste0('~/NEONcal/',test_date,"_parallel"))
 
 # which tests to run?
 run_test1 <- TRUE
-run_test2 <- FALSE
-run_test3 <- FALSE
-run_test4 <- FALSE
-run_test5 <- FALSE
-run_test6 <- FALSE
+run_test2 <- TRUE
+run_test3 <- TRUE
+run_test4 <- TRUE
+run_test5 <- TRUE
+run_test6 <- TRUE
 run_test7 <- FALSE
 run_test8 <- FALSE
 rapid_test <- FALSE # if rapid, only run ~5% of possible site months.
@@ -39,7 +46,9 @@ rapid_test <- FALSE # if rapid, only run ~5% of possible site months.
 library(rhdf5)
 library(dplyr)
 library(lubridate)
+library(parallel)
 
+devtools::load_all()
 
 #----------------------------------------------------
 # Carbon tests:
@@ -109,115 +118,157 @@ if (run_test8) {
 # if we're doing rapid testing!
 if (rapid_test) {
   fnames.out <- sample(fnames.out, floor(length(fnames.out)/20))
-  if (run_test4 | run_test6) {
-    csites <- sample(csites, 4)
-  }
+  csites <- sample(csites, 4)
 }
+
 
 #==========================
 # Run carbon tests
 #==========================
 
 if (run_test1) {
-  dir.create(paste0('~/NEONcal/',test_date,"_tests/01"))
+  
+  print(paste(Sys.time(), "starting test 1"))
+  dir.create(paste0('~/NEONcal/',test_date,"_parallel/01"))
 
-  outpaths <- paste0('~/NEONcal/',test_date,"_tests/01/", site.code)
+  outpaths <- paste0('~/NEONcal/',test_date,"_parallel/01/", site.code)
   
   sapply(unique(outpaths),dir.create,showWarnings=FALSE)
   fnames.out2 <- paste0(outpaths,"/",fnames.out)
   
-  for (i in 1:length(fnames.out)) {
-     print(paste0("Calibration test set 1: ", round(100*i/length(fnames.out),3),"% complete"))
-     calibrate_carbon_bymonth(fnames[i],fnames.out2[i],site=site.code[i], method = "Bowling_2003")
-  }
+ # parLapply(cl = local.cluster, seq_along(fnames), function(i){
+  #  print(paste0("Calibration test set 1: ", round(100*i/length(fnames.out),3),"% complete"))
+  #  calibrate_carbon_bymonth(fnames[i],fnames.out2[i],site=site.code[i], method = "Bowling_2003")
+  #})
+  mclapply(seq_along(fnames), function(i){
+    print(paste0("Calibration test set 1: ", round(100*i/length(fnames.out),3),"% complete"))
+    calibrate_carbon_bymonth(fnames[i],fnames.out2[i],
+                             site=site.code[i], method = "Bowling_2003")
+  },
+  mc.cores = 4, mc.preschedule = FALSE)
+  
   
   # cleanup
   rm(outpaths, fnames.out2)
+  print(paste(Sys.time(), "ending test 1"))
   
 }
 
+Sys.sleep(120)
+stop()
+
 if (run_test2) {
-  dir.create(paste0('~/NEONcal/',test_date,"_tests/02"))
+  print(paste(Sys.time(), "starting test 2"))
+  dir.create(paste0('~/NEONcal/',test_date,"_parallel/02"))
   
-  outpaths <- paste0('~/NEONcal/',test_date,"_tests/02/", site.code)
+  outpaths <- paste0('~/NEONcal/',test_date,"_parallel/02/", site.code)
   
   sapply(unique(outpaths),dir.create,showWarnings=FALSE)
   fnames.out2 <- paste0(outpaths,"/",fnames.out)
   
-  for (i in 1:length(fnames.out)) {
+  mclapply(seq_along(fnames), function(i){
     print(paste0("Calibration test set 2: ", round(100*i/length(fnames.out),3),"% complete"))
     calibrate_carbon_bymonth(fnames[i],fnames.out2[i],
                              site=site.code[i], method = "linreg")
-  }
+  },
+  mc.cores = 20, mc.preschedule = FALSE)
 
   # cleanup
   rm(outpaths, fnames.out2)
+  print(paste(Sys.time(), "ending test 2"))
 }
+
+Sys.sleep(120)
 
 #----------------------------------------------------
 # calibrate_carbon tests:
 #----------------------------------------------------
 
 if (run_test3) {
-  dir.create(paste0('~/NEONcal/',test_date,"_tests/03"))
+  print(paste(Sys.time(), "starting test 3"))
+  dir.create(paste0('~/NEONcal/',test_date,"_parallel/03"))
   
-  outpaths <- paste0('~/NEONcal/',test_date,"_tests/03/", site.code)
+  outpaths <- paste0('~/NEONcal/',test_date,"_parallel/03/", site.code)
   
   sapply(unique(outpaths),dir.create,showWarnings=FALSE)
   fnames.out2 <- paste0(outpaths,"/",fnames.out)
   
-  for (i in 1:length(fnames.out)) {
+  mclapply(seq_along(fnames), function(i){
     print(paste0("Calibration test set 3: ", round(100*i/length(fnames.out),3),"% complete...", fnames.out[i]))
     calibrate_carbon(fnames[i],fnames.out2[i],site=site.code[i], method = "Bowling_2003")
-  }
+  }, mc.cores = 20, mc.preschedule = FALSE)
+  
+  print(paste(Sys.time(), "ending test 3"))
 }
 
+Sys.sleep(120)
+
 if (run_test4) {
-  dir.create(paste0('~/NEONcal/',test_date,'_tests/04'))
+  dir.create(paste0('~/NEONcal/',test_date,'_parallel/04'))
   
-  for (i in 1:length(csites)) {
+  
+  print(paste(Sys.time(), "starting test 4"))
+  mclapply(seq_along(csites), function(i) {
     
     fin <- list.files(paste0(data.dir,csites[i],'/') , pattern = '.h5', full.names=TRUE)
     fout <- list.files(paste0(data.dir,csites[i],'/'), pattern = '.h5', full.names=FALSE)
     
     calibrate_carbon(fin,
-                     paste0('~/NEONcal/',test_date,'_tests/04/',fout[1]),
+                     paste0('~/NEONcal/',test_date,'_parallel/04/',fout[1]),
                      site=csites[i], r2_thres = 0.95,
                      calibration_half_width = 100000)
-  }
-
+  },
+  mc.cores = 20, mc.preschedule = FALSE)
+  
+  print(paste(Sys.time(), "ending test 4"))
 }
 
+Sys.sleep(120)
+
 if (run_test5) {
-  dir.create(paste0('~/NEONcal/',test_date,"_tests/05"))
   
-  outpaths <- paste0('~/NEONcal/',test_date,"_tests/05/", site.code)
+  print(paste(Sys.time(), "starting test 5"))
+  
+  dir.create(paste0('~/NEONcal/',test_date,"_parallel/05"))
+  
+  outpaths <- paste0('~/NEONcal/',test_date,"_parallel/05/", site.code)
   
   sapply(unique(outpaths),dir.create,showWarnings=FALSE)
   fnames.out2 <- paste0(outpaths,"/",fnames.out)
   
-  for (i in 1:length(fnames.out)) {
+  mclapply(seq_along(fnames), function(i) {
     print(paste0("Calibration test set 5: ", round(100*i/length(fnames.out),3),"% complete"))
     calibrate_carbon(fnames[i],fnames.out2[i],site=site.code[i], method = "linreg")
-  }
+  },
+  mc.cores = 20, mc.preschedule = FALSE)
+
+  print(paste(Sys.time(), "ending test 5"))
 }
 
+Sys.sleep(120)
+
 if (run_test6) {
-  dir.create(paste0('~/NEONcal/',test_date,"_tests/06"))
   
-  for (i in 1:length(csites)) {
-    
+  print(paste(Sys.time(), "starting test 6"))
+  
+  dir.create(paste0('~/NEONcal/',test_date,"_parallel/06"))
+  
+  mclapply(seq_along(csites), function(i) {
     fin <- list.files(paste0(data.dir,csites[i],'/'), pattern = '.h5', full.names=TRUE)
     fout <- list.files(paste0(data.dir,csites[i],'/'), pattern = '.h5', full.names=FALSE)
     
     calibrate_carbon(fin,
-                     paste0('~/NEONcal/',test_date,'_tests/06/',fout[1]),
+                     paste0('~/NEONcal/',test_date,'_parallel/06/',fout[1]),
                      site=csites[i], r2_thres = 0.95, method = 'linreg',
                      calibration_half_width = 100000)
-  }
+  },
+  mc.cores = 20, mc.preschedule = FALSE)
+  
+  print(paste(Sys.time(), "ending test 6"))
+  
 }
 
-
+Sys.sleep(120)
 #----------------------------------------------------
 # Water tests:
 #----------------------------------------------------
@@ -225,15 +276,15 @@ if (run_test6) {
 #----------------------------------------------------
 
 if (run_test7) {
-  dir.create(paste0('~/NEONcal/',test_date,"_tests/07"))
+  dir.create(paste0('~/NEONcal/',test_date,"_parallel/07"))
   
-  outpaths <- paste0('~/NEONcal/',test_date,"_tests/07/", wsite.code)
+  outpaths <- paste0('~/NEONcal/',test_date,"_parallel/07/", wsite.code)
   
   sapply(unique(outpaths),dir.create,showWarnings=FALSE)
   wnames.out2 <- paste0(outpaths,"/",wnames.out)
   
-  for (i in 1:length(wnames)) {
-    calibrate_water_linreg(wnames[i],
+  foreach (i = 1:length(wnames), .packages = "NEONiso") %dopar% {
+    NEONiso:::calibrate_water_linreg_bymonth(wnames[i],
                            wnames.out2[i],
                            site=wsite.code[i])
   }  
@@ -245,12 +296,14 @@ if (run_test7) {
 #----------------------------------------------------
 
 if (run_test8) {
-  dir.create(paste0('~/NEONcal/',test_date,"_tests/08"))
+  dir.create(paste0('~/NEONcal/',test_date,"_parallel/08"))
   
-  for (i in 1:length(wsites)) {
+  foreach (i = 1:length(wsites)) %dopar% {
     calibrate_water_linreg_bysite(paste0(data.dir,wsites[i],'/'),
-                                  paste0('~/NEONcal/',test_date,'_tests/08/'),
+                                  paste0('~/NEONcal/',test_date,'_parallel/08/'),
                                   site=wsites[i], r2_thres = 0.95,
                                  calibration_half_width = 100000)
   }  
 }
+
+stopCluster(local.cluster)

@@ -36,15 +36,19 @@ calibrate_standards_carbon <- function(cal_df,
 
   # calibrate standards using value for corresponding calibration period.
   ref_df$dlta13CCo2$mean_cal <- ref_df$dlta13CCo2$mean
-  ref_df$dlta13CCo2$mean_cal <- as.numeric(NA)
+  # ref_df$dlta13CCo2$mean_cal <- as.numeric(NA)
 
   ref_df$rtioMoleDryCo2$mean_cal <- ref_df$rtioMoleDryCo2$mean
 
   # convert start times to POSIXct.
-  ref_df$dlta13CCo2$timeBgn <- as.POSIXct(ref_df$dlta13CCo2$timeBgn,
-                                          format = "%Y-%m-%dT%H:%M:%OSZ",
-                                          tz = "UTC")
-
+  # ref_df$dlta13CCo2$timeBgn <- as.POSIXct(ref_df$dlta13CCo2$timeBgn,
+  #                                         format = "%Y-%m-%dT%H:%M:%OSZ",
+  #                                         tz = "UTC")
+  ref_df$dlta13CCo2$timeBgn <- convert_NEONhdf5_to_POSIXct_time(ref_df$dlta13CCo2$timeBgn)
+  ref_df$dlta13CCo2$timeEnd <- convert_NEONhdf5_to_POSIXct_time(ref_df$dlta13CCo2$timeEnd)
+  cal_df$timeBgn <- convert_NEONhdf5_to_POSIXct_time(cal_df$timeBgn)
+  cal_df$timeEnd <- convert_NEONhdf5_to_POSIXct_time(cal_df$timeEnd)
+  
   # check to see if we need to do corrections on bad reference gas values!
   if (correct_bad_refvals) {
     # ensure that a site and refGas were supplied.
@@ -231,149 +235,162 @@ calibrate_standards_carbon <- function(cal_df,
       }
     }
   }
-  
-  # # check to see how many rows cal_df has
-  # if ("gain12C" %in% names(cal_df)) {
-  #   
-  #   # check to ensure there are actual standard measurements for this month!
-  #   if (nrow(ref_df$dlta13CCo2) > 1) {
-  # 
-  #     for (i in 2:nrow(ref_df$dlta13CCo2)) {
-  #       # note: starts at 2 because periods are defined as
-  #       # extending to the end time of standard measurement i
-  #       # to the endtime of stanard measurement i + 1.
-  # 
-  #       # determine which row calibration point is in.
-  #       int <- lubridate::interval(cal_df$start, cal_df$end)
-  # 
-  #       cal_id <- which(ref_df$dlta13CCo2$timeBgn[i] %within% int)
-  # 
-  #       # now, calculate calibrated value ONLY IF CERTAIN CONDITIONS ARE MET:
-  #       # 1a-d. variables needed are not missing.
-  #       # 2. at least 200 ~1Hz measurements available (e.g., valve issues)
-  #       # 3. meets tolerance between ref and measured d13C
-  #       # 4. meets tolerance between ref and measured CO2
-  #       # 5. meets tolerance of d13C variance
-  #       # these conditions are listed in this order in the logical below.
-  #       if (!is.na(ref_df$dlta13CCo2$mean[i]) &
-  #           !is.na(ref_df$dlta13CCo2Refe$mean[i]) &
-  #           !is.na(ref_df$rtioMoleDryCo2$mean[i]) &
-  #           !is.na(ref_df$rtioMoleDryCo2Refe$mean[i]) &
-  #           ref_df$dlta13CCo2$numSamp[i] >= 200 &
-  #           abs(ref_df$dlta13CCo2$mean[i] -
-  #               ref_df$dlta13CCo2Refe$mean[i]) < 5 &
-  #           abs(ref_df$rtioMoleDryCo2$mean[i] -
-  #               ref_df$rtioMoleDryCo2Refe$mean[i]) < 10 &
-  #           ref_df$dlta13CCo2$vari[i] < 5) {
-  # 
-  #         if (!(length(cal_id) == 0)) {
-  #           # calibrate isotopologues using appropriate cal_id
-  #           uncal_12C <- ref_df$rtioMoleDryCo2$mean[i] * (1 - f) /
-  #             (1 + R_vpdb * (1 + ref_df$dlta13CCo2$mean[i] / 1000))
-  # 
-  #           uncal_13C <- ref_df$rtioMoleDryCo2$mean[i] * (1 - f) - uncal_12C
-  # 
-  #           cal_12C <- cal_df$gain12C[cal_id] * uncal_12C +
-  #             cal_df$offset12C[cal_id]
-  #           cal_13C <- cal_df$gain13C[cal_id] * uncal_13C +
-  #             cal_df$offset13C[cal_id]
-  # 
-  #           if (!is.na(cal_df$r2_12C[cal_id]) &
-  #               !is.na(cal_df$r2_13C[cal_id]) &
-  #               cal_df$r2_12C[cal_id] > r2_thres &
-  #               cal_df$r2_13C[cal_id] > r2_thres) {
-  #             ref_df$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C /
-  #                                                    cal_12C / R_vpdb - 1), 3)
-  #             ref_df$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) /
-  #                                                     (1 - f)
-  # 
-  #           } else {
-  # 
-  #             ref_df$dlta13CCo2$mean_cal[i] <- NA
-  #             ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
-  # 
-  #           }
-  # 
-  #         } else {
-  # 
-  #           ref_df$dlta13CCo2$mean_cal[i] <- NA
-  #           ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
-  # 
-  #         }
-  # 
-  #       } else {
-  # 
-  #         ref_df$dlta13CCo2$mean_cal[i] <- NA
-  #         ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
-  #       }
-  #     }
-  #   }
-  # 
-  # } else {
-  # 
-  #   if (nrow(ref_df$dlta13CCo2) > 1) {
-  #     for (i in 2:nrow(ref_df$dlta13CCo2)) { # use n-1 because of bracketing
-  # 
-  #       # determine which row calibration point is in.
-  #       int <- lubridate::interval(cal_df$start, cal_df$end)
-  #       cal_id <- which(ref_df$dlta13CCo2$timeBgn[i] %within% int)
-  # 
-  #       # now, calculate calibrated value ONLY IF CERTAIN CONDITIONS ARE MET:
-  #       # 1a-d. variables needed are not missing.
-  #       # 2. at least 200 ~1Hz measmnts available (filters out valve issues)
-  #       # 3. meets tolerance between ref and measured d13C
-  #       # 4. meets tolerance between ref and measured CO2
-  #       # 5. meets tolerance of d13C variance
-  #       # these conditions are listed in this order in the logical below.
-  #       if (!is.na(ref_df$dlta13CCo2$mean[i]) &
-  #           !is.na(ref_df$dlta13CCo2Refe$mean[i]) &
-  #           !is.na(ref_df$rtioMoleDryCo2$mean[i]) &
-  #           !is.na(ref_df$rtioMoleDryCo2Refe$mean[i]) &
-  #           ref_df$dlta13CCo2$numSamp[i] >= 200 &
-  #           abs(ref_df$dlta13CCo2$mean[i] -
-  #               ref_df$dlta13CCo2Refe$mean[i]) < 5 &
-  #           abs(ref_df$rtioMoleDryCo2$mean[i] -
-  #               ref_df$rtioMoleDryCo2Refe$mean[i]) < 10 &
-  #           ref_df$dlta13CCo2$vari[i] < 5) {
-  # 
-  #         if (!length(cal_id) == 0) {
-  # 
-  #           if (!is.na(cal_df$d13C_r2[cal_id]) &
-  #               !is.na(cal_df$co2_r2[cal_id]) &
-  #               cal_df$d13C_r2[cal_id] > r2_thres &
-  #               cal_df$co2_r2[cal_id] > r2_thres) {
-  # 
-  #             ref_df$dlta13CCo2$mean_cal[i] <- cal_df$d13C_intercept[cal_id] +
-  #               cal_df$d13C_slope[cal_id] * ref_df$dlta13CCo2$mean[i]
-  # 
-  #             ref_df$rtioMoleDryCo2$mean_cal[i] <- cal_df$co2_intercept[cal_id] +
-  #               cal_df$co2_slope[cal_id] * ref_df$rtioMoleDryCo2$mean[i]
-  # 
-  #           } else {
-  # 
-  #             ref_df$dlta13CCo2$mean_cal[i] <- NA
-  #             ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
-  #           }
-  # 
-  #         } else {
-  # 
-  #           ref_df$dlta13CCo2$mean_cal[i] <- NA
-  #           ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
-  # 
-  #         }
-  # 
-  #       } else {
-  # 
-  #         ref_df$dlta13CCo2$mean_cal[i] <- NA
-  #         ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
-  # 
-  #       }
-  #     }
-  #   }
-  # }
+
+  # check to see how many rows cal_df has
+  if ("gain12C" %in% names(cal_df)) {
+
+    # check to ensure there are actual standard measurements for this month!
+    if (nrow(ref_df$dlta13CCo2) > 1) {
+
+      for (i in 2:nrow(ref_df$dlta13CCo2)) {
+        # note: starts at 2 because periods are defined as
+        # extending to the end time of standard measurement i
+        # to the endtime of stanard measurement i + 1.
+        
+        # determine which row calibration point is in.
+        int <- lubridate::interval(cal_df$timeBgn[i], cal_df$timeEnd[i])
+
+        cal_id <- which(ref_df$dlta13CCo2$timeBgn %within% int)
+        
+        # now, calculate calibrated value ONLY IF CERTAIN CONDITIONS ARE MET:
+        # 1a-d. variables needed are not missing.
+        # 2. at least 200 ~1Hz measurements available (e.g., valve issues)
+        # 3. meets tolerance between ref and measured d13C
+        # 4. meets tolerance between ref and measured CO2
+        # 5. meets tolerance of d13C variance
+        # these conditions are listed in this order in the logical below.
+
+        if (!is.na(ref_df$dlta13CCo2$mean[i]) &
+            !is.na(ref_df$dlta13CCo2Refe$mean[i]) &
+            !is.na(ref_df$rtioMoleDryCo2$mean[i]) &
+            !is.na(ref_df$rtioMoleDryCo2Refe$mean[i]) &
+            ref_df$dlta13CCo2$numSamp[i] >= 200 &
+            abs(ref_df$dlta13CCo2$mean[i] -
+                ref_df$dlta13CCo2Refe$mean[i]) < 5 &
+            abs(ref_df$rtioMoleDryCo2$mean[i] -
+                ref_df$rtioMoleDryCo2Refe$mean[i]) < 10 &
+            ref_df$dlta13CCo2$vari[i] < 5) {
+          
+          if (!(length(cal_id) == 0)) { 
+            # calibrate isotopologues using appropriate cal_id
+            uncal_12C <- ref_df$rtioMoleDryCo2$mean[i] * (1 - f) /
+              (1 + R_vpdb * (1 + ref_df$dlta13CCo2$mean[i] / 1000))
+
+            uncal_13C <- ref_df$rtioMoleDryCo2$mean[i] * (1 - f) - uncal_12C
+
+            cal_12C <- cal_df$gain12C[cal_id] * uncal_12C +
+              cal_df$offset12C[cal_id]
+            cal_13C <- cal_df$gain13C[cal_id] * uncal_13C +
+              cal_df$offset13C[cal_id]
+
+          #  print(cal_df)
+            #print(paste0(uncal_12C, uncal_13C, cal_12C, cal_13C, cal_df$r2_12C[cal_id], cal_df$r2_13C[cal_id], cal_id, r2_thres))
+            
+           # print(paste0(cal_df$r2_12C[i], cal_df$r2_13C[i], 
+          #               ref_df$dlta13CCO2$mean_cal[i], cal_13C, cal_12C, R_vpdb, ref_df$rtioMoleDryCo2$mean_cal[i]))
+            
+            if (!is.na(cal_df$r2_12C[cal_id]) &
+                !is.na(cal_df$r2_13C[cal_id]) &
+                cal_df$r2_12C[cal_id] > r2_thres &
+                cal_df$r2_13C[cal_id] > r2_thres) {
+              ref_df$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C /
+                                                     cal_12C / R_vpdb - 1), 3)
+              ref_df$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) /
+                                                      (1 - f)
+
+           # print(paste0(cal_df$r2_12C[i], cal_df$r2_13C[i], 
+          #               ref_df$dlta13CCO2$mean_cal[i], cal_13C, cal_12C, R_vpdb, ref_df$rtioMoleDryCo2$mean_cal[i]))
+              
+            } else {
+
+              ref_df$dlta13CCo2$mean_cal[i] <- NA
+              ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
+
+            }
+
+          } else {
+
+            ref_df$dlta13CCo2$mean_cal[i] <- NA
+            ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
+
+          }
+
+        } else {
+
+          ref_df$dlta13CCo2$mean_cal[i] <- NA
+          ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
+        }
+      }
+    }
+
+  } else {
+
+    if (nrow(ref_df$dlta13CCo2) > 1) {
+      for (i in 2:nrow(ref_df$dlta13CCo2)) { # use n-1 because of bracketing
+
+        # determine which row calibration point is in.
+        int <- lubridate::interval(cal_df$start, cal_df$end)
+        cal_id <- which(ref_df$dlta13CCo2$timeBgn[i] %within% int)
+
+        # now, calculate calibrated value ONLY IF CERTAIN CONDITIONS ARE MET:
+        # 1a-d. variables needed are not missing.
+        # 2. at least 200 ~1Hz measmnts available (filters out valve issues)
+        # 3. meets tolerance between ref and measured d13C
+        # 4. meets tolerance between ref and measured CO2
+        # 5. meets tolerance of d13C variance
+        # these conditions are listed in this order in the logical below.
+        if (!is.na(ref_df$dlta13CCo2$mean[i]) &
+            !is.na(ref_df$dlta13CCo2Refe$mean[i]) &
+            !is.na(ref_df$rtioMoleDryCo2$mean[i]) &
+            !is.na(ref_df$rtioMoleDryCo2Refe$mean[i]) &
+            ref_df$dlta13CCo2$numSamp[i] >= 200 &
+            abs(ref_df$dlta13CCo2$mean[i] -
+                ref_df$dlta13CCo2Refe$mean[i]) < 5 &
+            abs(ref_df$rtioMoleDryCo2$mean[i] -
+                ref_df$rtioMoleDryCo2Refe$mean[i]) < 10 &
+            ref_df$dlta13CCo2$vari[i] < 5) {
+
+          if (!length(cal_id) == 0) {
+
+            if (!is.na(cal_df$d13C_r2[cal_id]) &
+                !is.na(cal_df$co2_r2[cal_id]) &
+                cal_df$d13C_r2[cal_id] > r2_thres &
+                cal_df$co2_r2[cal_id] > r2_thres) {
+
+              ref_df$dlta13CCo2$mean_cal[i] <- cal_df$d13C_intercept[cal_id] +
+                cal_df$d13C_slope[cal_id] * ref_df$dlta13CCo2$mean[i]
+
+              ref_df$rtioMoleDryCo2$mean_cal[i] <- cal_df$co2_intercept[cal_id] +
+                cal_df$co2_slope[cal_id] * ref_df$rtioMoleDryCo2$mean[i]
+
+            } else {
+
+              ref_df$dlta13CCo2$mean_cal[i] <- NA
+              ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
+            }
+
+          } else {
+
+            ref_df$dlta13CCo2$mean_cal[i] <- NA
+            ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
+
+          }
+
+        } else {
+
+          ref_df$dlta13CCo2$mean_cal[i] <- NA
+          ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
+
+        }
+      }
+    }
+  }
 
   # convert time back to NEON format.
   ref_df$dlta13CCo2$timeBgn <- convert_POSIXct_to_NEONhdf5_time(ref_df$dlta13CCo2$timeBgn)
+  ref_df$dlta13CCo2$timeEnd <- convert_POSIXct_to_NEONhdf5_time(ref_df$dlta13CCo2$timeEnd)
+  cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
+  cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
 
   # return ref_data_frame
   return(ref_df)

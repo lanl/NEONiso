@@ -50,7 +50,6 @@
 #'
 #' @return nothing to the workspace, but creates a new output file of
 #'         calibrated water isotope data.
-#' @export
 #'
 #' @importFrom magrittr %>%
 #' @importFrom lubridate %within%
@@ -58,6 +57,7 @@
 #' @import dplyr
 #' @import neonUtilities
 #' @importFrom data.table rleidv
+#' @importFrom utils packageVersion
 calibrate_water       <- function(inpath,
                                   outpath,
                                   site,
