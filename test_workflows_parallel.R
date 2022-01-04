@@ -26,7 +26,7 @@
 data.dir <- '~/DP4_00200_001/'
 
 # set test_date
-test_date <- "2021-12-20"
+test_date <- "2022-01-03"
 
 # make output directory structure:
 dir.create(paste0('~/NEONcal/',test_date,"_parallel"))
@@ -35,9 +35,9 @@ dir.create(paste0('~/NEONcal/',test_date,"_parallel"))
 run_test1 <- TRUE
 run_test2 <- TRUE
 run_test3 <- TRUE
-run_test4 <- TRUE
+run_test4 <- FALSE
 run_test5 <- TRUE
-run_test6 <- TRUE
+run_test6 <- FALSE
 run_test7 <- FALSE
 run_test8 <- FALSE
 rapid_test <- FALSE # if rapid, only run ~5% of possible site months.
@@ -145,17 +145,16 @@ if (run_test1) {
     calibrate_carbon_bymonth(fnames[i],fnames.out2[i],
                              site=site.code[i], method = "Bowling_2003")
   },
-  mc.cores = 4, mc.preschedule = FALSE)
+  mc.cores = 20, mc.preschedule = FALSE)
   
   
   # cleanup
   rm(outpaths, fnames.out2)
   print(paste(Sys.time(), "ending test 1"))
   
+  Sys.sleep(120)
+  
 }
-
-Sys.sleep(120)
-stop()
 
 if (run_test2) {
   print(paste(Sys.time(), "starting test 2"))
@@ -176,9 +175,10 @@ if (run_test2) {
   # cleanup
   rm(outpaths, fnames.out2)
   print(paste(Sys.time(), "ending test 2"))
+  
+  Sys.sleep(120)
 }
 
-Sys.sleep(120)
 
 #----------------------------------------------------
 # calibrate_carbon tests:
@@ -201,8 +201,6 @@ if (run_test3) {
   print(paste(Sys.time(), "ending test 3"))
 }
 
-Sys.sleep(120)
-
 if (run_test4) {
   dir.create(paste0('~/NEONcal/',test_date,'_parallel/04'))
   
@@ -221,9 +219,11 @@ if (run_test4) {
   mc.cores = 20, mc.preschedule = FALSE)
   
   print(paste(Sys.time(), "ending test 4"))
+  
+  Sys.sleep(120)
 }
 
-Sys.sleep(120)
+
 
 if (run_test5) {
   
@@ -306,4 +306,4 @@ if (run_test8) {
   }  
 }
 
-stopCluster(local.cluster)
+#stopCluster(local.cluster)

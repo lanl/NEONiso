@@ -17,23 +17,23 @@
 data.dir <- '~/DP4_00200_001/'
 
 # set test_date
-test_date <- "2021-12-22"
+test_date <- "2022-01-04"
 
-#devtools::load_all()
+devtools::load_all()
 
 # make output directory structure:
 dir.create(paste0('~/NEONcal/',test_date,"_tests"))
 
 # which tests to run?
-run_test1 <- TRUE
+run_test1 <- FALSE
 run_test2 <- FALSE
-run_test3 <- FALSE
+run_test3 <- TRUE
 run_test4 <- FALSE
-run_test5 <- FALSE
+run_test5 <- TRUE
 run_test6 <- FALSE
 run_test7 <- FALSE
 run_test8 <- FALSE
-rapid_test <- FALSE # if rapid, only run ~5% of possible site months.
+rapid_test <- TRUE # if rapid, only run ~5% of possible site months.
 
 # load required packages:
 library(rhdf5)
@@ -127,8 +127,8 @@ if (run_test1) {
   fnames.out2 <- paste0(outpaths,"/",fnames.out)
   
   for (i in 1:length(fnames.out)) {
-     print(paste0("Calibration test set 1: ", round(100*i/length(fnames.out),3),"% complete"))
-     calibrate_carbon_bymonth(fnames[i],fnames.out2[i],site=site.code[i], method = "Bowling_2003")
+    print(paste0("Calibration test set 1: ", round(100*i/length(fnames.out),3),"% complete"))
+    calibrate_carbon_bymonth(fnames[i],fnames.out2[i],site=site.code[i], method = "Bowling_2003")
   }
   
   # cleanup
@@ -150,7 +150,7 @@ if (run_test2) {
                              site=site.code[i], method = "linreg")
   }
 
-  # cleanup
+# cleanup
   rm(outpaths, fnames.out2)
 }
 
@@ -166,10 +166,11 @@ if (run_test3) {
   sapply(unique(outpaths),dir.create,showWarnings=FALSE)
   fnames.out2 <- paste0(outpaths,"/",fnames.out)
   
-  for (i in 1:length(fnames.out)) {
+  tryCatch(
+    for (i in 1:length(fnames.out)) {
     print(paste0("Calibration test set 3: ", round(100*i/length(fnames.out),3),"% complete...", fnames.out[i]))
     calibrate_carbon(fnames[i],fnames.out2[i],site=site.code[i], method = "Bowling_2003")
-  }
+  })
 }
 
 if (run_test4) {
