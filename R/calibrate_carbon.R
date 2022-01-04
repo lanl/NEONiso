@@ -180,6 +180,8 @@ calibrate_carbon         <- function(inname,
     #write_qfqm(inname, outname, site, 'co2')
     #write_ucrt(inname, outname, site, 'co2')
     
+    validate_output_file(inname, outname, site, 'co2')
+    
     # one last invocation of hdf5 close all, for good luck
     rhdf5::h5closeAll()
   }
