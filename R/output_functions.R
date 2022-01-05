@@ -5,7 +5,7 @@
 #################################################
 #' validate_analyte
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #' @param analyte Co2 or H2o?
 #'
 #' @return Standardized string for the water ('H2o') or
@@ -31,7 +31,7 @@ validate_analyte <- function(analyte) {
 #'
 #' Creates a skeleton hdf5 file for the calibrated data.
 #' 
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #' 
 #' @param inname Input file name.
 #' @param outname Output file name.
@@ -81,7 +81,7 @@ setup_output_file <- function(inname, outname, site, analyte) {
 #' Write NEON's qfqm data for an isotope species to 
 #' output file. Wraps copy_qfqm_group.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname Input file name.
 #' @param outname Output file name.
@@ -116,7 +116,7 @@ write_qfqm <- function(inname, outname, site, analyte) {
 #' Write NEON's ucrt data for an isotope species to 
 #' output file. Wraps copy_ucrt_group.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname Input file name.
 #' @param outname Output file name.
@@ -148,7 +148,7 @@ write_ucrt <- function(inname, outname, site, analyte) {
 
 #' copy_qfqm_group
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param data_list List of groups to retrieve qfqm data from.
 #' @param outname Output filename.
@@ -198,7 +198,7 @@ copy_qfqm_group <- function(data_list, outname, site, file, species) {
 
 #' copy_ucrt_group
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
@@ -250,7 +250,7 @@ copy_ucrt_group <- function(data_list, outname, site, file, species) {
 #######################################
 #' write_carbon_calibration_data
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
@@ -300,7 +300,7 @@ write_carbon_calibration_data <- function(outname, site, calDf, method) {
 #' towers where the isotope data (either H2O or CO2)
 #' have been calibrated using this package.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
@@ -344,7 +344,7 @@ write_carbon_ambient_data <- function(outname, site, amb_data_list) {
 
 #' write_carbon_reference_data
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname Input file name.
 #' @param outname Output file name.
@@ -365,7 +365,7 @@ write_carbon_reference_data <- function(inname, outname, site, calDf) {
 
 #' write_carbon_reference_data2
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
@@ -386,7 +386,7 @@ write_carbon_reference_data2 <- function(outname, site, allData, calDf) {
 
 #' calibrate_carbon_reference_data
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname Input file name.
 #' @param outname Output file name.
@@ -426,7 +426,7 @@ calibrate_carbon_reference_data <- function(inname, outname,
 
 #' calibrate_carbon_reference_data2
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param outname Output file name.
 #' @param standard Which standard are we working on? Must be "Low",
@@ -504,7 +504,7 @@ calibrate_carbon_reference_data2 <- function(outname,
 #######################################
 #' write_water_calibration_data
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
@@ -544,7 +544,7 @@ write_water_calibration_data <- function(outname, site, calDf) {
 
 #' write_water_reference_data
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname Input file name.
 #' @param outname Output file name.

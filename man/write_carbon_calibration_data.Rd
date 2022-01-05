@@ -27,5 +27,5 @@ hdf5 file.
 write_carbon_calibration_data
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

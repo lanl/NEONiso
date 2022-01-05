@@ -44,7 +44,7 @@
 #' error. This criterion clips clearly poor values. Selection of these criteria
 #' will become a function argument, and therefore customizable, in a future release.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname Name of the input file. (character)
 #' @param outname Name of the output file. (character)

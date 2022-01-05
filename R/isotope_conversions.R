@@ -4,7 +4,7 @@
 #------------------------------------------------------
 #' get_Rstd
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #' 
 #' @param element Which element to return standard ratio - 
 #'        carbon, oxygen, or hydrogen.
@@ -28,7 +28,7 @@ get_Rstd <- function(element) {
 
 #' R_to_delta
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param R_values A vector of isotope ratios (e.g., R values).
 #' @param element Which element to return delta values - 
@@ -53,7 +53,7 @@ R_to_delta <- function(R_values,element) {
 
 #' delta_to_R
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param delta_values A vector of isotope ratios in delta notation.
 #' @param element Which element to return R values - 
@@ -78,7 +78,7 @@ delta_to_R <- function(delta_values,element) {
 
 #' calculate_12CO2
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param total_co2 Vector of CO2 mole fractions.
 #' @param delta13C Vector of d13C values.
@@ -108,7 +108,7 @@ calculate_12CO2 <- function(total_co2,delta13C,f = 0.00474) {
 
 #' calculate_13CO2
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param total_co2 Vector of CO2 mole fractions.
 #' @param delta13C Vector of d13C values.

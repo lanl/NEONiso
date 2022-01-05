@@ -26,5 +26,5 @@ Nothing to the environment.
 calibrate_carbon_reference_data
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

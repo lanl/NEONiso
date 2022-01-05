@@ -27,7 +27,7 @@
 #' for a given site at the same time. A more flexible version that can handle all
 #' files or monthly files will be added to a future release.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param site Four-letter NEON code for site being processed.
 #' @param inpath Directory path to input (monthly) NEON HDF5 files.

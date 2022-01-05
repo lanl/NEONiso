@@ -19,5 +19,5 @@ VPDB for carbon.
 get_Rstd
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

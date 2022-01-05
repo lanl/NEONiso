@@ -123,5 +123,5 @@ calibrate_carbon_bymonth(inname = fin, outname = 'out.h5',
 
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

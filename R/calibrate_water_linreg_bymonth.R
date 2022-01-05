@@ -23,7 +23,7 @@
 #' Caution is suggested when analyzing data at low humidities, below ~5000 ppm,
 #' with likely higher biases at lower humidity values.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param site Four-letter NEON code for site being processed.
 #' @param time_diff_betweeen_standards Time (in seconds) required between

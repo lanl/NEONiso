@@ -18,5 +18,5 @@ are standardized across package functions.
 validate_analyte
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

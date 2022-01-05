@@ -23,5 +23,5 @@ are in output.
 validate_output_file
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

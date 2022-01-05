@@ -23,5 +23,5 @@ Write NEON's ucrt data for an isotope species to
 output file. Wraps copy_ucrt_group.
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

@@ -5,7 +5,7 @@
 #'
 #' Median absolute deviation filter of Brock 1986.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param data Vector to filter.
 #' @param width Width of filter, in rows.

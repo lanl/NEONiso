@@ -2,7 +2,7 @@
 
 #' validate_output_file
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #' 
 #' @param inname Input file name.
 #' @param outname Output file name.

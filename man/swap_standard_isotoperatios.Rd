@@ -26,5 +26,5 @@ they are corrected in the NEON database using a d-excess
 filter.
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

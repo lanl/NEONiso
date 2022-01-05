@@ -30,5 +30,5 @@ for d13C and CO2 values.
 fit_carbon_regression
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

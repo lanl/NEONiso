@@ -67,5 +67,5 @@ Caution is suggested when analyzing data at low humidities, below ~5000 ppm,
 with likely higher biases at lower humidity values.
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

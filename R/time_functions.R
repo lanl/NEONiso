@@ -5,7 +5,7 @@
 #' HDF eddy covariance files. Output format,  using strptime syntax,  is
 #' %Y-%m-%dT%H:%M:%OSZ.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param intime POSIXct vector to convert to NEON time format.
 #'
@@ -44,7 +44,7 @@ convert_POSIXct_to_NEONhdf5_time <- function(intime) {
 
 #' convert_NEONhdf5_to_POSIXct_time
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param intime Vector of datetimes in NEON data files (as string)
 #'           to convert to POSIXct class

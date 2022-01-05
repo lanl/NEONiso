@@ -49,7 +49,7 @@
 #' a list of files corresponding to a site can also be provided, and then a single output
 #' file per site will be generated.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname Input file(s) that are to be calibrated. If a single file is given,
 #'               output will be a single file per site per month. If a list of files

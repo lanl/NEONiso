@@ -1,6 +1,6 @@
 #' extract_carbon_calibration_data.R
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param data_list List containing data, from the /*/dp01/data/
 #'                  group in NEON HDF5 file.
@@ -38,7 +38,7 @@ extract_carbon_calibration_data <- function(data_list) {
 
 #' extract_water_calibration_data
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param standard String indicating whether to grab data from the high,
 #'                  medium, or low standard.

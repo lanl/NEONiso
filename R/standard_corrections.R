@@ -6,7 +6,7 @@
 #' they are corrected in the NEON database using a d-excess
 #' filter.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param std_frame Standard data frame to perform swap on.
 #' @param dxs_thres d-excess threshold to indicate when to swap.
@@ -50,7 +50,7 @@ swap_standard_isotoperatios <- function(std_frame, dxs_thres = 500) {
 #' immediately deprecated. As a result, this function is
 #' fairly messy but there is little incentive to improve it.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param std_frame Standard data frame to perform swap on.
 #' @param site NEON four letter site code.

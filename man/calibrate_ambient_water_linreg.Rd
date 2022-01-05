@@ -50,7 +50,7 @@ the output file. This function is not designed to be called on its own.
 calibrate_ambient_water_isotopes
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 
 Function called by \code{calibrate_ambient_water_linreg} to apply
 slope and intercept parameters to the ambient datasets (000_0x0_09m and

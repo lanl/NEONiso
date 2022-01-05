@@ -1,6 +1,6 @@
 #' calibrate_ambient_water_isotopes
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' Function called by `calibrate_ambient_water_linreg` to apply
 #' slope and intercept parameters to the ambient datasets (000_0x0_09m and

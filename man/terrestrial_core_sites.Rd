@@ -16,5 +16,5 @@ terrestrial_core_sites
 terrestrial_core_sites()
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

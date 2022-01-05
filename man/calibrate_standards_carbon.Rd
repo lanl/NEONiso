@@ -45,5 +45,5 @@ and d13C values.
 calibrate_standards_carbon
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

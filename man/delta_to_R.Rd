@@ -23,5 +23,5 @@ delta_to_R(delta_values = 0, element = 'oxygen') # returns 2005.2e-6 for VSMOW.
 
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

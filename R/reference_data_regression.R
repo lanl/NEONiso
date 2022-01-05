@@ -1,6 +1,6 @@
 #' fit_carbon_regression
 #' 
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param method Are we using the Bowling et al. 2003 method
 #'              ("Bowling_2003") or direct linear regression of

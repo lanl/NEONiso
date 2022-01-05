@@ -28,5 +28,5 @@ immediately deprecated. As a result, this function is
 fairly messy but there is little incentive to improve it.
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

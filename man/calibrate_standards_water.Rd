@@ -20,5 +20,5 @@ with r2 values less than \code{r2_thres} will be marked NA.}
 calibrate_standards_water
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }
