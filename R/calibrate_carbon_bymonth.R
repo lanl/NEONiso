@@ -129,7 +129,7 @@ calibrate_carbon_bymonth <- function(inname,
 #  calibrate ambient data.
 #  extract ambient measurements from ciso
   ciso <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2"))
-  ciso_logical <- grepl(pattern = "000", x = names(ciso))
+  ciso_logical <- grepl(pattern = "000", x = names(ciso)) & grepl(pattern = "09m", x = names(ciso))
   ciso_subset <- ciso[ciso_logical]
 
   if (method == "Bowling_2003") {
