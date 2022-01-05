@@ -17,9 +17,10 @@
 data.dir <- '~/DP4_00200_001/'
 
 # set test_date
-test_date <- "2022-01-04"
+#test_date <- "2022-01-01"
+test_date <- "debug_1"
 
-devtools::load_all()
+devtools::load_all()   
 
 # make output directory structure:
 dir.create(paste0('~/NEONcal/',test_date,"_tests"))
@@ -29,11 +30,11 @@ run_test1 <- FALSE
 run_test2 <- FALSE
 run_test3 <- TRUE
 run_test4 <- FALSE
-run_test5 <- TRUE
+run_test5 <- FALSE
 run_test6 <- FALSE
 run_test7 <- FALSE
 run_test8 <- FALSE
-rapid_test <- TRUE # if rapid, only run ~5% of possible site months.
+rapid_test <- FALSE # if rapid, only run ~5% of possible site months.
 
 # load required packages:
 library(rhdf5)
