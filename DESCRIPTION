@@ -1,7 +1,7 @@
 Package: NEONiso
 Type: Package
 Title: Tools to Calibrate and Work with NEON Atmospheric Isotope Data
-Version: 0.5.3
+Version: 0.5.4.9000
 Authors@R: c(person("Rich", "Fiorella", email = "rich.fiorella@utah.edu",
                 role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0824-4777")),
            person(c("Gabriel", "J."), "Bowen", email = 'gabe.bowen@utah.edu',
