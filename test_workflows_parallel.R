@@ -29,8 +29,8 @@ data.dir <- '~/DP4_00200_001/'
 #test_date <- "2022-01-03"
 test_date <- Sys.Date()
 
-# make output directory structure:
-dir.create(paste0('~/NEONcal/',test_date,"_parallel"))
+# make output directory structure: 
+dir.create(paste0('~/NEONcal/',test_date,"_2_parallel"))
 
 # which tests to run?
 run_test1 <- TRUE
@@ -146,7 +146,7 @@ if (run_test1) {
     calibrate_carbon_bymonth(fnames[i],fnames.out2[i],
                              site=site.code[i], method = "Bowling_2003")
   },
-  mc.cores = 20, mc.preschedule = FALSE)
+  mc.cores = 26, mc.preschedule = FALSE)
   
   
   # cleanup
@@ -171,7 +171,7 @@ if (run_test2) {
     calibrate_carbon_bymonth(fnames[i],fnames.out2[i],
                              site=site.code[i], method = "linreg")
   },
-  mc.cores = 20, mc.preschedule = FALSE)
+  mc.cores = 26, mc.preschedule = FALSE)
 
   # cleanup
   rm(outpaths, fnames.out2)
@@ -197,7 +197,7 @@ if (run_test3) {
   mclapply(seq_along(fnames), function(i){
     print(paste0("Calibration test set 3: ", round(100*i/length(fnames.out),3),"% complete...", fnames.out[i]))
     calibrate_carbon(fnames[i],fnames.out2[i],site=site.code[i], method = "Bowling_2003")
-  }, mc.cores = 20, mc.preschedule = FALSE)
+  }, mc.cores = 26, mc.preschedule = FALSE)
   
   print(paste(Sys.time(), "ending test 3"))
 }
@@ -217,7 +217,7 @@ if (run_test4) {
                      site=csites[i], r2_thres = 0.95,
                      calibration_half_width = 100000)
   },
-  mc.cores = 20, mc.preschedule = FALSE)
+  mc.cores = 26, mc.preschedule = FALSE)
   
   print(paste(Sys.time(), "ending test 4"))
   
@@ -241,7 +241,7 @@ if (run_test5) {
     print(paste0("Calibration test set 5: ", round(100*i/length(fnames.out),3),"% complete"))
     calibrate_carbon(fnames[i],fnames.out2[i],site=site.code[i], method = "linreg")
   },
-  mc.cores = 20, mc.preschedule = FALSE)
+  mc.cores = 26, mc.preschedule = FALSE)
 
   print(paste(Sys.time(), "ending test 5"))
 }
@@ -263,7 +263,7 @@ if (run_test6) {
                      site=csites[i], r2_thres = 0.95, method = 'linreg',
                      calibration_half_width = 100000)
   },
-  mc.cores = 20, mc.preschedule = FALSE)
+  mc.cores = 26, mc.preschedule = FALSE)
   
   print(paste(Sys.time(), "ending test 6"))
   
