@@ -14,11 +14,13 @@ calDf_B03 <- NEONiso:::fit_carbon_regression(co2data, method = "Bowling_2003", c
 calDf_LR <- NEONiso:::fit_carbon_regression(co2data, method = "linreg", calibration_half_width = 2)
 
 test_that("fit_carbon_regression returns data.frame", {
+  skip_on_cran()
   expect_s3_class(fit_carbon_regression(co2data, method = "Bowling_2003", calibration_half_width = 2), "data.frame")
   expect_s3_class(fit_carbon_regression(co2data, method = "linreg", calibration_half_width = 2), "data.frame")
 })
 
 test_that("calibration data frames have 8 columns", {
+  skip_on_cran()
   expect_equal(ncol(calDf_B03), 8)
   expect_equal(ncol(calDf_LR), 8)
 })
@@ -36,11 +38,13 @@ temp_gf <- calibrate_ambient_carbon_Bowling2003(co2test$ambient$`000_010_09m`,
                                            gap_fill_parameters = TRUE)
 
 test_that("calibrate_ambient_carbon_Bowling2003 returns a list",{
+  skip_on_cran()
   expect_equal(class(temp), "list")
   expect_equal(class(temp_gf), "list")
 })
 
 test_that("calibrate_ambient_carbon_Bowling2003 returns correct variables", {
+  skip_on_cran()
   vars <- c("dlta13CCo2", "pres", "presEnvHut", "rhEnvHut",
             "rtioMoleDry12CCo2", "rtioMoleDry13CCo2", "rtioMoleDryCo2", "rtioMoleDryH2o",
             "rtioMoleWet12CCo2", "rtioMoleWet13CCo2", "rtioMoleWetCo2", "rtioMoleWetH2o",
@@ -50,6 +54,7 @@ test_that("calibrate_ambient_carbon_Bowling2003 returns correct variables", {
 })
 
 test_that("calibrated d13C values have been added to calibrate_ambient_cabron_Bowling2003 output", {
+  skip_on_cran()
   expect_gt(ncol(temp$dlta13CCo2), ncol(co2test$ambient$`000_010_09m`$dlta13CCo2))
   expect_gt(ncol(temp_gf$dlta13CCo2), ncol(co2test$ambient$`000_010_09m`$dlta13CCo2))
 })
@@ -64,11 +69,13 @@ temp_gf <- calibrate_ambient_carbon_linreg(co2test$ambient$`000_010_09m`,
                                 gap_fill_parameters = TRUE)
 
 test_that("calibrate_ambient_carbon_linreg returns a list",{
+  skip_on_cran()
   expect_equal(class(temp), "list")
   expect_equal(class(temp_gf), "list")
 })
 
 test_that("calibrate_ambient_carbon_linreg returns correct variables", {
+  skip_on_cran()
   vars <- c("dlta13CCo2", "pres", "presEnvHut", "rhEnvHut",
             "rtioMoleDry12CCo2", "rtioMoleDry13CCo2", "rtioMoleDryCo2", "rtioMoleDryH2o",
             "rtioMoleWet12CCo2", "rtioMoleWet13CCo2", "rtioMoleWetCo2", "rtioMoleWetH2o",
@@ -78,6 +85,7 @@ test_that("calibrate_ambient_carbon_linreg returns correct variables", {
 })
 
 test_that("calibrated d13C values have been added to calibrate_ambient_cabron_linreg output", {
+  skip_on_cran()
   expect_gt(ncol(temp$dlta13CCo2), ncol(co2test$ambient$`000_010_09m`$dlta13CCo2))
   expect_gt(ncol(temp_gf$dlta13CCo2), ncol(co2test$ambient$`000_010_09m`$dlta13CCo2))
 })
@@ -154,6 +162,7 @@ low_rs <- low_rs %>%
 stds <- do.call(rbind, list(high_rs, med_rs, low_rs))
 
 test_that("fit_water_regression returns dataframe with 8 columns", {
+  skip_on_cran()
   expect_equal(ncol(fit_water_regression(stds,
                                     calibration_half_width = 14,
                                     slope_tolerance = 9999,
