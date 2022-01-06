@@ -12,7 +12,6 @@
 #' @return Nothing to environment, simply checks to make sure expected groups
 #'         are in output.
 #'
-#' @examples
 validate_output_file <- function(inname, outname, site, analyte) {
   
   analyte <- validate_analyte(analyte)
