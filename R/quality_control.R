@@ -17,7 +17,7 @@ validate_output_file <- function(inname, outname, site, analyte) {
   analyte <- validate_analyte(analyte)
   
   # retrieve groups from input and output files
-  groups_in <- rhdf5::h5ls(inname, recursive = 5)
+  groups_in <- rhdf5::h5ls(inname[[1]], recursive = 5)
   groups_out <- rhdf5::h5ls(outname, recursive = 5)
   
   if (analyte == 'Co2') {
