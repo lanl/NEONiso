@@ -21,6 +21,12 @@ ingest_data <- function(inname, analyte) {
   
   analyte <- validate_analyte(analyte)
   
+  # read attributes from (first file in) inname
+  site <- rhdf5::h5ls(inname[1],recursive = 1)[1,2] # grab name from file structure
+  attrs <- rhdf5::h5readAttributes(inname[1], name = paste0('/',site))
+  
+  nheights <- attrs$LvlMeasTow
+  
   if (analyte == 'Co2') {
     
     if (packageVersion("neonUtilities") >= "2.1.1") {
@@ -33,7 +39,7 @@ ingest_data <- function(inname, analyte) {
     data <- data %>% 
       dplyr::select(.data$verticalPosition, .data$timeBgn, .data$timeEnd, tidyselect::contains('isoCo2')) 
     
-    data <- data[rowSums(is.na(data)) < 145, ]
+   # data <- data[rowSums(is.na(data)) < 145, ] # not sure this works if there's a case where all data from a height are missing.
     
     # stack required variables.
     ambToStack <- c('dlta13CCo2', 'pres', 'presEnvHut', 'rhEnvHut',
@@ -49,6 +55,25 @@ ingest_data <- function(inname, analyte) {
     ambient <- data %>% 
       dplyr::filter(.data$verticalPosition %in% c("010", "020", "030", "040", "050", "060", "070", "080"))
     
+    # check how many heights are present in ambient.
+    if (length(unique(ambient$verticalPosition)) < nheights) {
+      print("Height missing, attempting to resolve:")
+
+      # determine which height is missing:
+      hgts_present <- seq(from = 1, to = nheights, by = 1) %in% (as.numeric(unique(ambient$verticalPosition))/10)
+      
+      hgts_absentl <- !hgts_present
+      
+      hgts_absent <- seq(from = 1, to = nheights, by = 1)[hgts_absentl] 
+      
+      # add a row to data, and then change verticalPosition to missing heights
+      for (i in hgts_absent) {
+        target_row <- nrow(ambient) + 1
+        ambient[target_row, ] <- NA
+        ambient[target_row, "verticalPosition"] <- paste0("0",i,"0")
+      }
+    }
+    
     reference <- data %>%
       dplyr::filter(.data$verticalPosition %in% c("co2Low", "co2Med", "co2High", "co2Arch"))
     
@@ -58,7 +83,7 @@ ingest_data <- function(inname, analyte) {
 
   ambi_by_height <- base::split(ambient, factor(ambient$verticalPosition)) 
   refe_by_height <- base::split(reference, factor(reference$verticalPosition))
-  
+
   #-------------------------
   # RESTRUCTURE AMBIENT
   # feed into restructure carbon variables:
@@ -71,6 +96,13 @@ ingest_data <- function(inname, analyte) {
 
   # loop through again to rename data frames.
   ambi_out <- lapply(ambi_out, setNames, ambToStack)
+  
+  # check length, and error out if a height has been dropped.
+  test_var <- identical(as.integer(nheights), length(ambi_out))
+  
+  if (!test_var) {
+    stop("Tower height dropped somewhere within ingest_data...")
+  }
   
   #-------------------------
   # RESTRUCTURE REFERENCE

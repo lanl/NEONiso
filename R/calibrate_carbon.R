@@ -140,7 +140,7 @@ calibrate_carbon         <- function(inname,
 #  extract ambient measurements from ciso
 
   ciso_subset <- ciso$ambient
-
+  
   if (method == "Bowling_2003") {
     ciso_subset_cal <- lapply(names(ciso_subset),
                               function(x) {
