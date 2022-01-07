@@ -443,7 +443,7 @@ calibrate_carbon_reference_data2 <- function(outname,
   
   std <- allData[[base::paste0("co2", standard)]]
   
-  std <- calibrate_standards_carbon(calParams, std, correct_bad_refvals = TRUE,
+  std <- calibrate_standards_carbon2(calParams, std, correct_bad_refvals = TRUE,
                                     site = site, refGas = standard)
   
   # get year/month combo from outname:

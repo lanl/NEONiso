@@ -113,10 +113,10 @@ ingest_data <- function(inname, analyte) {
                                                                                 varname = x,
                                                                                 mode = 'reference',
                                                                                 group = 'data')})}) # replace the of the variables.
-  
+
   # loop through again to rename data frames.
   refe_out <- lapply(refe_out, setNames, refToStack)
-  
+
   # remove variable name from ambi_out data frames - could be used here though to validate in future version.
   # variable name has been removed in restructure_carbon_variables - could move it back here to validate!
 
