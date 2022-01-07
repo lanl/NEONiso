@@ -5,13 +5,11 @@
 #inst/doc
 doc
 Meta
-
 # remove spotlight files.
 .DS_Store
-
 # don't upload any pdfs.
 *.pdf
 inst/doc
-
 # ignore local logs
 *.log
+test_workflows_parallel.log
