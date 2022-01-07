@@ -30,7 +30,7 @@ data.dir <- '~/DP4_00200_001/'
 test_date <- Sys.Date()
 
 # make output directory structure: 
-dir.create(paste0('~/NEONcal/',test_date,"_2_parallel"))
+dir.create(paste0('~/NEONcal/',test_date,"_parallel"))
 
 # which tests to run?
 run_test1 <- TRUE
@@ -146,7 +146,7 @@ if (run_test1) {
     calibrate_carbon_bymonth(fnames[i],fnames.out2[i],
                              site=site.code[i], method = "Bowling_2003")
   },
-  mc.cores = 26, mc.preschedule = FALSE)
+  mc.cores = 20, mc.preschedule = FALSE)
   
   
   # cleanup
@@ -171,7 +171,7 @@ if (run_test2) {
     calibrate_carbon_bymonth(fnames[i],fnames.out2[i],
                              site=site.code[i], method = "linreg")
   },
-  mc.cores = 26, mc.preschedule = FALSE)
+  mc.cores = 20, mc.preschedule = FALSE)
 
   # cleanup
   rm(outpaths, fnames.out2)

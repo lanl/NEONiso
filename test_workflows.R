@@ -18,7 +18,7 @@ data.dir <- '~/DP4_00200_001/'
 
 # set test_date
 #test_date <- "2022-01-01"
-test_date <- "debug_1"
+test_date <- "debug_8"
 
 devtools::load_all()   
 
@@ -28,21 +28,20 @@ dir.create(paste0('~/NEONcal/',test_date,"_tests"))
 # which tests to run?
 run_test1 <- FALSE
 run_test2 <- FALSE
-run_test3 <- TRUE
-run_test4 <- FALSE
+run_test3 <- FALSE  
+run_test4 <- TRUE
 run_test5 <- FALSE
-run_test6 <- FALSE
+run_test6 <- FALSE  
 run_test7 <- FALSE
 run_test8 <- FALSE
 rapid_test <- FALSE # if rapid, only run ~5% of possible site months.
-
-# load required packages:
+   
+# load required packages: 
 library(rhdf5)
 library(dplyr)
 library(lubridate)
 
-
-#----------------------------------------------------
+#----------------------------- -----------------------
 # Carbon tests:
 #----------------------------------------------------
 # calibrate_carbon_bymonth tests:
@@ -171,7 +170,7 @@ if (run_test3) {
     for (i in 1:length(fnames.out)) {
     print(paste0("Calibration test set 3: ", round(100*i/length(fnames.out),3),"% complete...", fnames.out[i]))
     calibrate_carbon(fnames[i],fnames.out2[i],site=site.code[i], method = "Bowling_2003")
-  })
+  })   
 }
 
 if (run_test4) {
