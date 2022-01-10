@@ -28,10 +28,16 @@ ciso_subset_cal <- lapply(names(ciso_subset),
 
 names(ciso_subset_cal) <- names(ciso_subset)
 
-test_that("calibrated carbon values in B03 are within a plausible range", {
+test_that("calibrated ambient co2 delta values in B03 are within a plausible range", {
   expect_lt(max(ciso_subset_cal$`000_010_09m`$dlta13CCo2$mean_cal, na.rm = TRUE), 10)
   expect_gt(min(ciso_subset_cal$`000_010_09m`$dlta13CCo2$mean_cal, na.rm = TRUE), -50)
 })
+
+test_that("calibrated ambient co2 mixing ratios in B03 are within a plausible range", {
+  expect_lt(max(ciso_subset_cal$`000_010_09m`$rtioMoleDryCo2$mean_cal, na.rm = TRUE), 1500)
+  expect_gt(min(ciso_subset_cal$`000_010_09m`$rtioMoleDryCo2$mean_cal, na.rm = TRUE), 300)
+})
+
 
 
 ciso_subset_cal <- lapply(names(ciso_subset),
@@ -52,3 +58,9 @@ test_that("calibrated carbon values linreg are within a plausible range", {
   expect_lt(max(ciso_subset_cal$`000_010_09m`$dlta13CCo2$mean_cal, na.rm = TRUE), 10)
   expect_gt(min(ciso_subset_cal$`000_010_09m`$dlta13CCo2$mean_cal, na.rm = TRUE), -50)
 })
+
+test_that("calibrated ambient co2 mixing ratios linreg are within a plausible range", {
+  expect_lt(max(ciso_subset_cal$`000_010_09m`$rtioMoleDryCo2$mean_cal, na.rm = TRUE), 1500)
+  expect_gt(min(ciso_subset_cal$`000_010_09m`$rtioMoleDryCo2$mean_cal, na.rm = TRUE), 300)
+})
+
