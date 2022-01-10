@@ -126,12 +126,14 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
 
   # calibrate data at this height.
   #-------------------------------------
-  # extract 12CO2 and 13CO2 concentrations from the ambient data
-  mean12c <- max12c <- min12c <- amb_delta$mean # placeholders for 12CO2 vecs
-  mean13c <- max13c <- min13c <- amb_delta$mean # placeholders for 13CO2 vecs
+  # extract 12CO2 and 13CO2 concentrations from the ambient data, 
+  # set as NA, unless overwritten
+  mean12c <- max12c <- min12c <- rep(NA, length(amb_delta$mean)) # placeholders for 12CO2 vecs
+  mean13c <- max13c <- min13c <- rep(NA, length(amb_delta$mean)) # placeholders for 13CO2 vecs
 
-  amb_co2$mean_cal <- amb_delta$mean
-
+  amb_co2$mean_cal <- rep(NA, length(amb_delta$mean))
+  amb_delta$mean_cal <- rep(NA, length(amb_delta$mean))
+  
   for (i in seq_len(length(var_inds_in_calperiod))) {
     # calculate calibrated 12CO2 concentrations
     mean12c[var_inds_in_calperiod[[i]]] <- caldf$gain12C[i] *
@@ -150,7 +152,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
       amb_13CO2$max[var_inds_in_calperiod[[i]]] + caldf$offset13C[i]
 
   }
-
+  
   # output calibrated delta values.
   amb_delta$mean_cal <- round(R_to_delta(mean13c / mean12c,"carbon"), 2)
   amb_delta$min_cal  <- round(R_to_delta(min13c / min12c, "carbon"), 2)

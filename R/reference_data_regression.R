@@ -403,8 +403,7 @@ fit_water_regression <- function(stds, calibration_half_width, slope_tolerance, 
         hyd_cal_rsq[i]    <- NA
       }
     }
-    
-    print(start_time)
+
     
     # start time is numeric here at some point - hence, format not necessary 
     # to be specified below.
