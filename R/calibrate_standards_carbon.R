@@ -244,7 +244,7 @@ calibrate_standards_carbon <- function(cal_df,
         # to the endtime of stanard measurement i + 1.
 
         # determine which row calibration point is in.
-        int <- lubridate::interval(cal_df$start, cal_df$end)
+        int <- lubridate::interval(cal_df$timeBgn, cal_df$timeEnd)
 
         cal_id <- which(ref_df$dlta13CCo2$timeBgn[i] %within% int)
 
@@ -315,7 +315,7 @@ calibrate_standards_carbon <- function(cal_df,
       for (i in 2:nrow(ref_df$dlta13CCo2)) { # use n-1 because of bracketing
 
         # determine which row calibration point is in.
-        int <- lubridate::interval(cal_df$start, cal_df$end)
+        int <- lubridate::interval(cal_df$timeBgn, cal_df$timeEnd)
         cal_id <- which(ref_df$dlta13CCo2$timeBgn[i] %within% int)
 
         # now, calculate calibrated value ONLY IF CERTAIN CONDITIONS ARE MET:
