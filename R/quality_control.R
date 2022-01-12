@@ -1,5 +1,30 @@
 # quality control - functions that help to validate the output data file structure
 
+#' validate_analyte
+#'
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
+#' @param analyte Co2 or H2o?
+#'
+#' @return Standardized string for the water ('H2o') or
+#'         carbon ('Co2') systems to make sure strings
+#'         are standardized across package functions.
+#'
+#' 
+#' 
+validate_analyte <- function(analyte) {
+  # helper function to make sure all of the variaous output functions are consistent.
+  # check to make sure first letter of analyte is capitalized,
+  # or capitalize if it's not (also make sure it's co2 or h2o)
+  if (analyte == 'co2' | analyte == 'h2o') {
+    analyte <- paste0(toupper(substring(analyte,1,1)),substring(analyte,2))
+  } else if (analyte != 'Co2' & analyte != 'H2o') {
+    stop("Invalid analyte selected in setup output file.")
+  }
+  
+  return(analyte)
+}
+
+
 #' validate_output_file
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
