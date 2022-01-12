@@ -135,6 +135,11 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
       out$timeBgn <- as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01")
       out$timeEnd <- as.POSIXct(end_time, tz = "UTC", origin = "1970-01-01")
       
+      # re-order columns to ensure that they are consistent across methods
+      out <- out[, c("timeBgn", "timeEnd",
+                     "gain12C", "offset12C", "r2_12C",
+                     "gain13C", "offset13C", "r2_13C")]
+      
     }
   } else if (method == "linreg") {
     
@@ -235,9 +240,16 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
       out$timeBgn <- as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01")
       out$timeEnd <- as.POSIXct(end_time, tz = "UTC", origin = "1970-01-01")
+
+      # re-order columns to ensure that they are consistent across methods
+      out <- out[, c("timeBgn", "timeEnd",
+                     "d13C_slope", "d13C_intercept", "d13C_r2",
+                     "co2_slope", "co2_intercept", "co2_r2")]
+      
     }
   }
    
+  
   # ensure that not all dates are missing...narrowly defined here to 
   # be if out only has 1 row (should be the only case where this happens!)
   if (nrow(out) == 1) {
@@ -246,7 +258,12 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
       out$timeEnd <- as.POSIXct("2010-01-01",format = "%Y-%m-%d")
     }
   }
-  
+
+  # check to see if any out$timeBgn or end are NA
+  if (sum(is.na(out$timeBgn)) > 0 | sum(is.na(out$timeEnd)) > 0) {
+    stop("NA in calibration data frame time - how did I get here?")
+  }
+    
   return(out)
     
 }
