@@ -59,6 +59,7 @@ There will be two major changes and a minor change coming to this package in the
 
 Several months of data on the NEON data portal have an issue where the Picarro time clock has diverged from the valve manifold time. A fix has been developed, but has not been propagated to the NEON data portal.
 
+
 ## Copyright notice:
 
 © 2022. Triad National Security, LLC. All rights reserved.
