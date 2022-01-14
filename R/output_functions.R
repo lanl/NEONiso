@@ -354,9 +354,9 @@ write_carbon_reference_data <- function(inname, outname, site, calDf) {
 write_carbon_reference_data2 <- function(outname, site, allData, calDf) {
   
   print("Writing calibrated reference data...")
-  calibrate_carbon_reference_data(outname, "Low", site, allData = allData$reference, calParams = calDf)
-  calibrate_carbon_reference_data(outname, "Med", site, allData = allData$reference, calParams = calDf)
-  calibrate_carbon_reference_data(outname, "High", site, allData = allData$reference, calParams = calDf)
+  calibrate_carbon_reference_data2(outname, "Low", site, allData = allData$reference, calParams = calDf)
+  calibrate_carbon_reference_data2(outname, "Med", site, allData = allData$reference, calParams = calDf)
+  calibrate_carbon_reference_data2(outname, "High", site, allData = allData$reference, calParams = calDf)
   
 }
 
@@ -419,7 +419,7 @@ calibrate_carbon_reference_data2 <- function(outname,
   
   std <- allData[[base::paste0("co2", standard)]]
   
-  std <- calibrate_standards_carbon2(calParams, std, correct_bad_refvals = TRUE,
+  std <- calibrate_standards_carbon(calParams, std, correct_bad_refvals = TRUE,
                                     site = site, refGas = standard)
   
   # get year/month combo from outname:

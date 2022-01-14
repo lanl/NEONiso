@@ -33,12 +33,13 @@ calibrate_standards_carbon <- function(cal_df,
   
   # want to implement same tolerances used to generate calibration regression!
   # need to assess the CO2 and d13C tolerances wrt reference values.
-
+  print(paste("point a", refGas))
+  print(nrow(ref_df$dlta13CCo2))
+  print(nrow(ref_df$rtioMoleDryCo2))
+    
   # calibrate standards using value for corresponding calibration period.
-  ref_df$dlta13CCo2$mean_cal <- ref_df$dlta13CCo2$mean
-  ref_df$dlta13CCo2$mean_cal <- as.numeric(NA)
-
-  ref_df$rtioMoleDryCo2$mean_cal <- ref_df$rtioMoleDryCo2$mean
+  ref_df$dlta13CCo2$mean_cal <- rep(NA, length(ref_df$dlta13CCo2$mean))
+  ref_df$rtioMoleDryCo2$mean_cal <- rep(NA, length(ref_df$rtioMoleDryCo2$mean))
 
   # convert start times to POSIXct.
   ref_df$dlta13CCo2$timeBgn <- as.POSIXct(ref_df$dlta13CCo2$timeBgn,
@@ -232,6 +233,10 @@ calibrate_standards_carbon <- function(cal_df,
     }
   }
   
+  print(paste("point b", refGas))
+  print(nrow(ref_df$dlta13CCo2))
+  print(nrow(ref_df$rtioMoleDryCo2))
+  
   # check to see how many rows cal_df has
   if ("gain12C" %in% names(cal_df)) {
 
@@ -262,7 +267,7 @@ calibrate_standards_carbon <- function(cal_df,
             ref_df$dlta13CCo2$numSamp[i] >= 200 &
             abs(ref_df$dlta13CCo2$mean[i] -
                 ref_df$dlta13CCo2Refe$mean[i]) < 5 &
-            abs(ref_df$rtioMoleDryCo2$mean[i] -
+            abs(ref_df$rtioMoleDryCo2$mean[i] - 
                 ref_df$rtioMoleDryCo2Refe$mean[i]) < 10 &
             ref_df$dlta13CCo2$vari[i] < 5) {
 

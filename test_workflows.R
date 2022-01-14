@@ -18,7 +18,8 @@ data.dir <- '~/DP4_00200_001/'
 
 # set test_date
 #test_date <- "2022-01-01"
-test_date <- "debug_8"
+test_date <- "debug_103"
+#test_date <- Sys.Date()
 
 devtools::load_all()   
 
@@ -177,6 +178,8 @@ if (run_test4) {
   dir.create(paste0('~/NEONcal/',test_date,'_tests/04'))
   
   for (i in 1:length(csites)) {
+    
+    print(csites[i])
     
     fin <- list.files(paste0(data.dir,csites[i],'/') , pattern = '.h5', full.names=TRUE)
     fout <- list.files(paste0(data.dir,csites[i],'/'), pattern = '.h5', full.names=FALSE)
