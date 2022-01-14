@@ -301,7 +301,6 @@ correct_carbon_ref_cval <- function(std_frame,site) {
       
     }
     
-    
   }
   # return fixed dataframe
   return(std_frame)

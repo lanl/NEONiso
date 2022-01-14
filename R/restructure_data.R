@@ -129,13 +129,16 @@ ingest_data <- function(inname, analyte) {
     }
     names(ambi_out) <- names_vector
   }
-    
+
+  # append _09m to refe_out....MAY CAUSE PROBLEMS FOR OTHER METHODS!!!!!!
+  names(refe_out) <- paste0(names(refe_out), "_09m")
+  print(names(refe_out))
+
   output <- list(ambi_out, refe_out, reference)
   names(output) <- c("ambient", "reference", "refe_stacked")
-  
+
   return(output)
 }
-
 
 #-----------------------------------------
 #' restructure_carbon_variables

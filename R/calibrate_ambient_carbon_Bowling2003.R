@@ -47,11 +47,37 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
 
   #-----------------------------------------------------------
   # should be able to get a calGainsOffsets object from the H5 file.
-
+  
   # only working on the d13C of the amb_data_list, so extract just this...
   amb_delta <- amb_data_list$dlta13CCo2
   amb_co2   <- amb_data_list$rtioMoleDryCo2
+  
+  # in some cases, there's an issue where nrow(amb_delta) and nrow(amb_co2) 
+  # are not the same - time arrays need to be merged prior to continuing.
+  if (!setequal(amb_delta$timeBgn, amb_co2$timeBgn)) {
 
+    # get rows that are only present in both data frames
+    amb_co2   <- amb_co2[amb_co2$timeBgn %in% amb_delta$timeBgn,]
+    amb_delta <- amb_delta[amb_delta$timeBgn %in% amb_co2$timeBgn,]
+
+    # #=====# strategy 2::
+    # # add missing rows:
+    # print(ncol(amb_delta))
+    # print(ncol(amb_delta) - 1)
+    # missing_rows_df      <- amb_delta[1:length(missing_rows), ]
+    # missing_rows_df[, 1] <- as.POSIXct(missing_rows, origin = "1970-01-01")
+    # missing_rows_df[, 2:ncol(amb_delta)] <- NA
+    # 
+    # names(missing_rows_df) <- names(amb_delta)
+    # 
+    # amb_delta <- rbind(amb_delta, missing_rows_df)
+    # 
+    # # convert back to NEONhdf5
+    # amb_delta$timeBgn <- convert_POSIXct_to_NEONhdf5_time(amb_delta$timeBgn)
+    # amb_co2$timeBgn   <- convert_POSIXct_to_NEONhdf5_time(amb_co2$timeBgn)
+    # 
+  }
+  
   # instead of using the [12CO2] and [13CO2] values, calculate from
   # the isotope ratio instead.
   amb_12CO2 <- amb_13CO2 <- amb_co2
@@ -128,12 +154,10 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   #-------------------------------------
   # extract 12CO2 and 13CO2 concentrations from the ambient data, 
   # set as NA, unless overwritten
+  
   mean12c <- max12c <- min12c <- rep(NA, length(amb_delta$mean)) # placeholders for 12CO2 vecs
   mean13c <- max13c <- min13c <- rep(NA, length(amb_delta$mean)) # placeholders for 13CO2 vecs
 
-  amb_co2$mean_cal <- rep(NA, length(amb_delta$mean))
-  amb_delta$mean_cal <- rep(NA, length(amb_delta$mean))
-  
   for (i in seq_len(length(var_inds_in_calperiod))) {
     # calculate calibrated 12CO2 concentrations
     mean12c[var_inds_in_calperiod[[i]]] <- caldf$gain12C[i] *
@@ -173,7 +197,6 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   amb_data_list$dlta13CCo2 <- amb_delta
 
   amb_data_list$rtioMoleDryCo2 <- amb_co2
-  
-  return(amb_data_list)
 
+  return(amb_data_list)
 }

@@ -139,11 +139,15 @@ calibrate_carbon         <- function(inname,
 #  calibrate ambient data.
 #  extract ambient measurements from ciso
 
-  ciso_subset <- ciso$ambient
+  ciso_subset <- c(ciso$ambient, ciso$reference)
   
   if (method == "Bowling_2003") {
+    
     ciso_subset_cal <- lapply(names(ciso_subset),
-                              function(x) {
+                              function(x) { 
+                                print(names(ciso_subset[[x]]))
+                                print(nrow(ciso_subset[[x]]$dlta13CCo2))
+                                
                                 calibrate_ambient_carbon_Bowling2003(
                                   amb_data_list = ciso_subset[[x]],
                                   caldf = cal_df,
@@ -176,7 +180,7 @@ calibrate_carbon         <- function(inname,
     setup_output_file(inname, outname, site, 'co2')
     write_carbon_calibration_data(outname, site, cal_df, method = method)
     write_carbon_ambient_data(outname, site, ciso_subset_cal)
-    write_carbon_reference_data2(outname, site, ciso, cal_df)
+    #write_carbon_reference_data2(outname, site, ciso, cal_df) - does this work? would be awesome if so.
     #write_qfqm(inname, outname, site, 'co2')
     #write_ucrt(inname, outname, site, 'co2')
     
