@@ -1,3 +1,16 @@
+# NEONiso 0.5.4.9000
+
+* The calibrate_carbon_bymonth() function has been marked as deprecated, and will
+be removed no earlier than version 0.7.0. The more flexible calibrate_carbon()
+function should be used.
+* A bug that generated non-nonsensical CO2 and d13C values has been fixed (#72).
+* The calibrate_carbon() function now also provides calibrated values for
+reference material measurement. These are useful for determining calibration
+error when one of the reference materials is omitted from the calibration (e.g., 
+generate calibration relationships to the high and medium standards, then estimate
+error as the difference between calibrated measurement and known reference values).
+* Reduced the number of tests that run on CRAN to minimize compute resources requested.
+
 # NEONiso 0.5.3
 
 * Small maintenance release that addresses a NOTE on CRAN.
