@@ -2,16 +2,21 @@
 
 
 #' ingest_data
+#' 
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname A file (or list of files) to extract data from for calibration.
 #' @param analyte Carbon (Co2) or water (H2o)?
+#' @param name_fix Fix to data frame required for next-generation calibration 
+#'                 functions, but breaks old 'by_month()' functions. This parameter
+#'                 provides a necessary work around until these functions are removed.
 #'
 #' @return List of data frames, taken from files specified in `inname`
 #' @export
 #'
 #' @importFrom stats setNames
 #' @importFrom utils packageVersion
-ingest_data <- function(inname, analyte) {
+ingest_data <- function(inname, analyte, name_fix = TRUE) {
   
   # this function needs to:
   # 1. read in and stack variables.
@@ -130,10 +135,12 @@ ingest_data <- function(inname, analyte) {
     names(ambi_out) <- names_vector
   }
 
-  # append _09m to refe_out....MAY CAUSE PROBLEMS FOR OTHER METHODS!!!!!!
-  names(refe_out) <- paste0(names(refe_out), "_09m")
-  print(names(refe_out))
-
+  
+  if (name_fix) {
+    # append _09m to refe_out....MAY CAUSE PROBLEMS FOR OTHER METHODS!!!!!!
+    names(refe_out) <- paste0(names(refe_out), "_09m")
+  }
+  
   output <- list(ambi_out, refe_out, reference)
   names(output) <- c("ambient", "reference", "refe_stacked")
 
