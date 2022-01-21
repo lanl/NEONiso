@@ -180,7 +180,6 @@ calibrate_carbon         <- function(inname,
     setup_output_file(inname, outname, site, 'co2')
     write_carbon_calibration_data(outname, site, cal_df, method = method)
     write_carbon_ambient_data(outname, site, ciso_subset_cal)
-    #write_carbon_reference_data2(outname, site, ciso, cal_df) - does this work? would be awesome if so.
     #write_qfqm(inname, outname, site, 'co2')
     #write_ucrt(inname, outname, site, 'co2')
     
