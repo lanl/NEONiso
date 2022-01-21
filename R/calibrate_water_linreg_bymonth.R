@@ -55,7 +55,7 @@ calibrate_water_linreg_bymonth <- function(inname,
                                    force_cal_to_end = TRUE,
                                    r2_thres = 0.95) {
   
-  lifecycle::deprecate_warn("0.5.0","calibrate_water_linreg_bymonth","calibrate_water_linreg")
+  lifecycle::deprecate_warn("0.5.0","calibrate_water_linreg_bymonth()","calibrate_water_linreg()")
   
   # print status.
   print("Processing water calibration data...")

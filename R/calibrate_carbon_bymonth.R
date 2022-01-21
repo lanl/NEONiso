@@ -1,6 +1,6 @@
 #' calibrate_carbon_bymonth
 #'
-#' `r lifecycle::badge("stable")`
+#' `r lifecycle::badge("deprecated")`
 #' This function drives a workflow that reads in NEON carbon isotope data
 #' of atmospheric CO2, calibrates it to the VPDB scale, and (optionally)
 #' writes the calibrated data to a new HDF5 file. Two different approaches
@@ -104,11 +104,13 @@ calibrate_carbon_bymonth <- function(inname,
                                      correct_refData = TRUE,
                                      write_to_file = TRUE) {
 
+  lifecycle::deprecate_warn("0.6.0","calibrate_carbon_bymonth()","calibrate_carbon()")
+  
   #-----------------------------------------------------------
   # Extract reference data from input HDF5 file.
   #-----------------------------------------------------------
   # pull all carbon isotope data into a list.
-  ciso <- ingest_data(inname, analyte = 'Co2')
+  ciso <- ingest_data(inname, analyte = 'Co2', name_fix = FALSE)
   
   # extract the data we need from ciso list
   refe <- extract_carbon_calibration_data(ciso$refe_stacked)
