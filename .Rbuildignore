@@ -14,3 +14,4 @@
 ^uncertainty_testing\.R$
 ^test_workflows_parallel\.R$
 ^test_workflows_parallel\.log$
+^uncertainty_analysis\.R$

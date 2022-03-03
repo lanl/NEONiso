@@ -9,8 +9,10 @@ library(doParallel)
 library(foreach)
 # script to drive multiple tests of half_width size.
 
+devtools::load_all()
+
 # where does uncalibrated data live?
-data.dir <- '~/NEON/DP4_00200_001/'
+data.dir <- '~/DP4_00200_001/'
 
 which_test <- 'medlow'
 
@@ -51,30 +53,30 @@ foreach (i = 1:12) %dopar% {test_half_width(nday_list[i])}
 stopCluster(local.cluster)
 
 
-# if doing one time, parallelize over sites instead:
-test_half_width_parallel <- function(ndays, ncores) {
-  dir.create(paste0('~/NEONcal/carbon_halfwidth_tests/',which_test,'/',ndays))
-  
-  # start cluster
-  local.cluster <- parallel::makeCluster(ncores, type = "FORK")
-  doParallel::registerDoParallel(cl = local.cluster)
-  foreach::getDoParRegistered()
-  
-  foreach (i = 1:47) %dopar% {
-    
-    print(paste(csites[i], ndays))
-    
-    fin <- list.files(paste0(data.dir,csites[i],'/') , pattern = '.h5', full.names=TRUE)
-    fout <- list.files(paste0(data.dir,csites[i],'/'), pattern = '.h5', full.names=FALSE)
-    
-    calibrate_carbon(fin,
-                     paste0(paste0('~/NEONcal/carbon_halfwidth_tests/',which_test,'/',ndays,'/'),fout[1]),
-                     site=csites[i], r2_thres = 0.95,
-                     calibration_half_width = ndays)
-  }
-  
-  stopCluster(local.cluster)
-}
+# # if doing one time, parallelize over sites instead:
+# test_half_width_parallel <- function(ndays, ncores) {
+#   dir.create(paste0('~/NEONcal/carbon_halfwidth_tests/',which_test,'/',ndays))
+#   
+#   # start cluster
+#   local.cluster <- parallel::makeCluster(ncores, type = "FORK")
+#   doParallel::registerDoParallel(cl = local.cluster)
+#   foreach::getDoParRegistered()
+#   
+#   foreach (i = 1:47) %dopar% {
+#     
+#     print(paste(csites[i], ndays))
+#     
+#     fin <- list.files(paste0(data.dir,csites[i],'/') , pattern = '.h5', full.names=TRUE)
+#     fout <- list.files(paste0(data.dir,csites[i],'/'), pattern = '.h5', full.names=FALSE)
+#     
+#     calibrate_carbon(fin,
+#                      paste0(paste0('~/NEONcal/carbon_halfwidth_tests/',which_test,'/',ndays,'/'),fout[1]),
+#                      site=csites[i], r2_thres = 0.95,
+#                      calibration_half_width = ndays)
+#   }
+#   
+#   stopCluster(local.cluster)
+# }
 
 
 
