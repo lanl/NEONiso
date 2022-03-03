@@ -10,8 +10,10 @@ NOTE: some restructuring of this package, and working to adding new functions, m
 [![CRAN status](https://www.r-pkg.org/badges/version/NEONiso)](https://CRAN.R-project.org/package=NEONiso)
 <!-- badges: end -->
 
-Author: Rich Fiorella \
-Last Updated: March 19, 2021.
+Author: Rich Fiorella
+March 2, 2022.
+
+*UPDATES ARE COMING - NEW PACKAGE VERSIONS WAITING FOR APPROVAL FROM NEW INSTITUTION IP DEPARTMENT*
 
 This repository contains an R package to calibrate NEON atmospheric isotope data. A stable version of the package can be installed from CRAN, and a development version of this package can be installed here using devtools (see below).
 
