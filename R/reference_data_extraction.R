@@ -21,9 +21,9 @@ extract_carbon_calibration_data <- function(data_list) {
     dplyr::select(.data$verticalPosition, .data$timeBgn, .data$timeEnd,
            tidyselect::starts_with("data.isoCo2.dlta13CCo2"),
            tidyselect::starts_with("data.isoCo2.rtioMoleDryCo2")) %>%
-    #dplyr::filter(.data$verticalPosition %in% c("co2High", "co2Med", "co2Low"))
+    dplyr::filter(.data$verticalPosition %in% c("co2High", "co2Med", "co2Low"))
     # uncertainty testing:
-    dplyr::filter(.data$verticalPosition %in% c("co2Low", "co2Med"))
+    #dplyr::filter(.data$verticalPosition %in% c("co2Low", "co2Med"))
   
   # simplify names
   names(data) <- sub("data.isoCo2.", "", names(data))

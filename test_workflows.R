@@ -14,12 +14,12 @@
 # 8) calibrate_water_linreg_bysite works
 
 # where does uncalibrated data live?
-data.dir <- '/Volumes/Elements/NEON/airflow/data/DP4_00200_001/'
+data.dir <- '~/airflow/data/01-DP4_00200_001/'
 
 # set test_date
 #test_date <- "2022-01-01"
-test_date <- "debug_103"
-#test_date <- Sys.Date()
+#test_date <- "debug_103"
+test_date <- Sys.Date()
 
 devtools::load_all()   
 
@@ -252,7 +252,7 @@ if (run_test8) {
   dir.create(paste0('~/NEONcal/',test_date,"_tests/08"))
   
   for (i in 1:length(wsites)) {
-    calibrate_water(paste0(data.dir,wsites[i],'/'),
+    NEONiso:::calibrate_water(paste0(data.dir,wsites[i],'/'),
                                   paste0('~/NEONcal/',test_date,'_tests/08/'),
                                   site=wsites[i], r2_thres = 0.95,
                                  calibration_half_width = 100000)
