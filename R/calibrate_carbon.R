@@ -84,6 +84,9 @@
 #' @param calibration_half_width Determines the period (in days)
 #'        from which reference data are selected (period
 #'        is 2*calibration_half_width).
+#' @param filter_known_bad_months There are a few site months with known spectral
+#'        issues where the isotope ratios are likely unrecoverable. This parameter
+#'        allows removal of these files, but allows them to remain in archive.
 #'
 #' @return Returns nothing to the environment, but creates a new output HDF5
 #'         file containing calibrated carbon isotope values.
@@ -111,11 +114,23 @@ calibrate_carbon         <- function(inname,
                                      filter_ambient = TRUE,
                                      r2_thres = 0.95,
                                      correct_refData = TRUE,
-                                     write_to_file = TRUE) {
-
+                                     write_to_file = TRUE,
+                                     remove_known_bad_months = TRUE) {
+  
+  if (remove_known_bad_months) {
+    if (site == "UNDE") {
+      inname <- inname[!grepl("2019-05|2019-06|2019-07|2019-08|2019-09",inname)]
+    } else if (site == "TEAK") {
+      inname <- inname[!grepl("2018-08|2018-09",inname)]
+    } else if (site == "SRER") {
+      inname <- inname[!grepl("2019-07",inname)]
+    }
+  }
+  
   #-----------------------------------------------------------
   # Extract reference data from input HDF5 file.
   #-----------------------------------------------------------
+
   # pull all carbon isotope data into a list.
   #inname <- list.files('~/Desktop/DP4_00200_001/ABBY/',full.names=TRUE)
   ciso <- ingest_data(inname, analyte = 'Co2')
