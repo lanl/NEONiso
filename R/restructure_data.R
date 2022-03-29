@@ -80,7 +80,7 @@ ingest_data <- function(inname, analyte, name_fix = TRUE) {
     }
     
     reference <- data %>%
-      dplyr::filter(.data$verticalPosition %in% c("co2Low", "co2Med", "co2High", "co2Arch"))
+      dplyr::filter(.data$verticalPosition %in% c("co2Low", "co2Med", "co2High"))
     
   } else if (analyte == 'H2o') {
     stop("ingest_data does not work yet for H2o.")
