@@ -12,20 +12,20 @@ library(foreach)
 devtools::load_all()
 
 # where does uncalibrated data live?
-data.dir <- '~/DP4_00200_001/'
+data.dir <- '~/airflow/data/01-DP4_00200_001/'
 
 which_test <- 'medlow'
 
 # set test_date
 # make output directory structure:
-dir.create(paste0('~/NEONcal/carbon_halfwidth_tests/',which_test), recursive = TRUE)
+dir.create(paste0('~/NEONcal/carbon_halfwidth_tests/'), recursive = TRUE)
 
 csites <- c(NEONiso:::terrestrial_core_sites(), NEONiso:::terrestrial_relocatable_sites())
 
 # set up a function to drive calibration across sites:
 
 test_half_width <- function(ndays) {
-  dir.create(paste0('~/NEONcal/carbon_halfwidth_tests/',which_test,'/',ndays))
+  dir.create(paste0('~/NEONcal/carbon_halfwidth_tests/',ndays))
   
   for (i in 1:length(csites)) {
     
@@ -35,7 +35,7 @@ test_half_width <- function(ndays) {
     fout <- list.files(paste0(data.dir,csites[i],'/'), pattern = '.h5', full.names=FALSE)
     
     calibrate_carbon(fin,
-                     paste0(paste0('~/NEONcal/carbon_halfwidth_tests/',which_test,'/',ndays,'/'),fout[1]),
+                     paste0(paste0('~/NEONcal/carbon_halfwidth_tests/',ndays,'/'),fout[1]),
                      site=csites[i], r2_thres = 0.95,
                      calibration_half_width = ndays)
   }
