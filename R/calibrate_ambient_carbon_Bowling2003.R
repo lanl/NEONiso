@@ -180,7 +180,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   }
   
   # output calibrated delta values.
-  amb_delta$mean_cal <- round(R_to_delta(mean13c / mean12c,"carbon"), 2)
+  amb_delta$mean_cal <- round(R_to_delta(mean13c / mean12c, "carbon"), 2)
   amb_delta$min_cal  <- round(R_to_delta(min13c / min12c, "carbon"), 2)
   amb_delta$max_cal  <- round(R_to_delta(max13c / max12c, "carbon"), 2)
   amb_delta$vari     <- round(amb_delta$vari, 2)
@@ -195,10 +195,12 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
     amb_delta$max_cal  <- filter_median_Brock86(amb_delta$max_cal)
   }
 
+  print(do.call(cbind, list(mean12c, mean13c, rmse12c, rmse13c)))
+  
   # calculate uncertainties:
-  amb_delta$cal_ucrt <- round(abs(amb_delta$mean_cal * 1000 / get_Rstd('carbon')) *
+  amb_delta$cal_ucrt <- round(abs(amb_delta$mean_cal) *
                                 sqrt((rmse12c/mean12c)^2 + (rmse13c/mean13c)^2), 2)
-  amb_co2$cal_ucrt   <- round(sqrt(rmse12c^2 + rmse13c^2), 2)
+  amb_co2$cal_ucrt   <- round(sqrt(rmse12c^2 + rmse13c^2), 3)
   
   # replace ambdf in amb_data_list, return amb_data_list
   amb_data_list$dlta13CCo2 <- amb_delta
