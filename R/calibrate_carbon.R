@@ -84,7 +84,7 @@
 #' @param calibration_half_width Determines the period (in days)
 #'        from which reference data are selected (period
 #'        is 2*calibration_half_width).
-#' @param filter_known_bad_months There are a few site months with known spectral
+#' @param remove_known_bad_months There are a few site months with known spectral
 #'        issues where the isotope ratios are likely unrecoverable. This parameter
 #'        allows removal of these files, but allows them to remain in archive.
 #'
@@ -159,9 +159,7 @@ calibrate_carbon         <- function(inname,
   if (method == "Bowling_2003") {
     
     ciso_subset_cal <- lapply(names(ciso_subset),
-                              function(x) { 
-                                print(names(ciso_subset[[x]]))
-                                print(nrow(ciso_subset[[x]]$dlta13CCo2))
+                              function(x) {
                                 
                                 calibrate_ambient_carbon_Bowling2003(
                                   amb_data_list = ciso_subset[[x]],
@@ -172,7 +170,9 @@ calibrate_carbon         <- function(inname,
                                   force_to_beginning = force_cal_to_beginning,
                                   r2_thres = r2_thres)
                               })
+    
   } else if (method == "linreg") {
+
     ciso_subset_cal <- lapply(names(ciso_subset),
                               function(x) {
                                 calibrate_ambient_carbon_linreg(
@@ -185,6 +185,7 @@ calibrate_carbon         <- function(inname,
                                   r2_thres = r2_thres)
                               })
   }
+  
   names(ciso_subset_cal) <- names(ciso_subset)
   #-----------------------------------------------------------
   # write out these data.frames to a new output file.

@@ -21,7 +21,7 @@ test_that("fit_carbon_regression returns data.frame", {
 
 test_that("calibration data frames have 8 columns", {
   skip_on_cran()
-  expect_equal(ncol(calDf_B03), 8)
+  expect_equal(ncol(calDf_B03), 14)
   expect_equal(ncol(calDf_LR), 8)
 })
 

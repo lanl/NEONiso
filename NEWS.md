@@ -1,8 +1,13 @@
-# NEONiso 0.5.4.9000
+# NEONiso 0.6.0.9000
 
-* The calibrate_carbon_bymonth() function has been marked as deprecated, and will
-be removed no earlier than version 0.7.0. The more flexible calibrate_carbon()
-function should be used.
+* An experimental calibration routine for water isotopes has been added. It does
+have some known issues (e.g., no correction is made for concentration dependence
+of the analyzers yet), and any data produced from this function should be considered
+provisional.
+* Added cross-validation error estimates to carbon calibration routines.
+* The calibrate_carbon_bymonth() function has been marked as deprecated, but will
+be removed no earlier than version 0.7.0 or 6 months from this release. 
+The more flexible calibrate_carbon() function should be used.
 * A bug that generated non-nonsensical CO2 and d13C values has been fixed (#72).
 * The calibrate_carbon() function now also provides calibrated values for
 reference material measurement. These are useful for determining calibration

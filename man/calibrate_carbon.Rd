@@ -16,7 +16,8 @@ calibrate_carbon(
   filter_ambient = TRUE,
   r2_thres = 0.95,
   correct_refData = TRUE,
-  write_to_file = TRUE
+  write_to_file = TRUE,
+  remove_known_bad_months = TRUE
 )
 }
 \arguments{
@@ -64,6 +65,10 @@ Users will be warned prior to removal of this argument.}
 
 \item{write_to_file}{Write calibrated ambient data to file?
 (Mostly used for testing)}
+
+\item{remove_known_bad_months}{There are a few site months with known spectral
+issues where the isotope ratios are likely unrecoverable. This parameter
+allows removal of these files, but allows them to remain in archive.}
 }
 \value{
 Returns nothing to the environment, but creates a new output HDF5

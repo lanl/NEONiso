@@ -155,8 +155,8 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   # extract 12CO2 and 13CO2 concentrations from the ambient data, 
   # set as NA, unless overwritten
   
-  mean12c <- max12c <- min12c <- rep(NA, length(amb_delta$mean)) # placeholders for 12CO2 vecs
-  mean13c <- max13c <- min13c <- rep(NA, length(amb_delta$mean)) # placeholders for 13CO2 vecs
+  mean12c <- max12c <- min12c <- rmse12c <- rep(NA, length(amb_delta$mean)) # placeholders for 12CO2 vecs
+  mean13c <- max13c <- min13c <- rmse13c <- rep(NA, length(amb_delta$mean)) # placeholders for 13CO2 vecs
 
   for (i in seq_len(length(var_inds_in_calperiod))) {
     # calculate calibrated 12CO2 concentrations
@@ -166,6 +166,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
       amb_12CO2$min[var_inds_in_calperiod[[i]]] + caldf$offset12C[i]
     max12c[var_inds_in_calperiod[[i]]] <- caldf$gain12C[i] *
       amb_12CO2$max[var_inds_in_calperiod[[i]]] + caldf$offset12C[i]
+    rmse12c[var_inds_in_calperiod[[i]]] <- caldf$cv5rmse_12C[i]
 
     # calculate calibrated 13CO2 concentrations
     mean13c[var_inds_in_calperiod[[i]]] <- caldf$gain13C[i] *
@@ -174,6 +175,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
       amb_13CO2$min[var_inds_in_calperiod[[i]]] + caldf$offset13C[i]
     max13c[var_inds_in_calperiod[[i]]] <- caldf$gain13C[i] *
       amb_13CO2$max[var_inds_in_calperiod[[i]]] + caldf$offset13C[i]
+    rmse13c[var_inds_in_calperiod[[i]]] <- caldf$cv5rmse_13C[i]
 
   }
   
@@ -183,7 +185,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   amb_delta$max_cal  <- round(R_to_delta(max13c / max12c, "carbon"), 2)
   amb_delta$vari     <- round(amb_delta$vari, 2)
 
-  # calibrate co2 mole fractions.
+  # calibrate co2 mole fractions and uncertainty
   amb_co2$mean_cal <- (mean13c + mean12c) / (1 - 0.00474)
 
   # apply median filter to data
@@ -193,6 +195,11 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
     amb_delta$max_cal  <- filter_median_Brock86(amb_delta$max_cal)
   }
 
+  # calculate uncertainties:
+  amb_delta$cal_ucrt <- round(abs(amb_delta$mean_cal * 1000 / get_Rstd('carbon')) *
+                                sqrt((rmse12c/mean12c)^2 + (rmse13c/mean13c)^2), 2)
+  amb_co2$cal_ucrt   <- round(sqrt(rmse12c^2 + rmse13c^2), 2)
+  
   # replace ambdf in amb_data_list, return amb_data_list
   amb_data_list$dlta13CCo2 <- amb_delta
 
