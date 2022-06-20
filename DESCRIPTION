@@ -35,7 +35,9 @@ Imports:
     data.table,
     rlang,
     lifecycle,
-    caret
+    caret,
+    ggplot2,
+    gridExtra
 Suggests: 
     knitr,
     rmarkdown,

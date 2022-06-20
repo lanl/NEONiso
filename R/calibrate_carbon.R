@@ -87,6 +87,10 @@
 #' @param remove_known_bad_months There are a few site months with known spectral
 #'        issues where the isotope ratios are likely unrecoverable. This parameter
 #'        allows removal of these files, but allows them to remain in archive.
+#' @param plot_regression_data Default false; this is useful for diagnostics.
+#' @param plot_directory Only used if plot_regression_data is TRUE, but specify
+#'        where to write out diagnostic plot of regression data.
+#'        
 #'
 #' @return Returns nothing to the environment, but creates a new output HDF5
 #'         file containing calibrated carbon isotope values.
@@ -115,7 +119,9 @@ calibrate_carbon         <- function(inname,
                                      r2_thres = 0.95,
                                      correct_refData = TRUE,
                                      write_to_file = TRUE,
-                                     remove_known_bad_months = TRUE) {
+                                     remove_known_bad_months = TRUE,
+                                     plot_regression_data = FALSE,
+                                     plot_directory = NULL) {
   
   if (remove_known_bad_months) {
     if (site == "UNDE") {
@@ -148,7 +154,10 @@ calibrate_carbon         <- function(inname,
 
   # get calibration parameters data.frame.
   cal_df <- fit_carbon_regression(ref_data = refe, method = method,
-                                  calibration_half_width = calibration_half_width)
+                                  calibration_half_width = calibration_half_width,
+                                  plot_regression_data = plot_regression_data,
+                                  plot_dir = plot_directory,
+                                  site = site)
 
 #----------------------------------------------------------------------------
 #  calibrate ambient data.

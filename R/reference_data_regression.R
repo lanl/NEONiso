@@ -45,6 +45,11 @@ estimate_calibration_error <- function(formula, data) {
 #'        is 2*calibration_half_width).
 #' @param ref_data Reference data.frame from which to estimate 
 #'        calibration parameters.
+#' @param plot_regression_data True or false - should we plot the data used in 
+#'        the regression? Useful for debugging.
+#' @param plot_directory If plot_regression_data is true, where should the 
+#'        plots be saved?
+#' @param site Needed for regression plots.
 #'
 #' @return Returns a data.frame of calibration parameters. If
 #'        `method == "Bowling_2003"`, then data.frame includes 
@@ -55,7 +60,10 @@ estimate_calibration_error <- function(formula, data) {
 #'
 #' @importFrom stats coef lm
 
-fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
+fit_carbon_regression <- function(ref_data, method, calibration_half_width,
+                                  plot_regression_data = FALSE,
+                                  plot_dir ='/dev/null',
+                                  site) {
   
   # First, identify year/month combination and then select data.
   yrmn <- paste(lubridate::year(ref_data$timeBgn)[1],
@@ -125,6 +133,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
       start_time <- end_time <- vector()
       
       # okay, now run calibrations...
+      
       for (i in 1:length(date_seq)) {
         start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"), # odd workaround to prevent R from converting this to NA.
                                     tz = "UTC", origin = "1970-01-01")
@@ -139,12 +148,20 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
         cal_subset <- ref_data %>%
           dplyr::filter(.data$timeBgn %within% cal_period)
         
+        if (plot_regression_data) {
+          carbon_regression_plots(cal_subset,
+                                  plot_filename = paste0(plot_dir, "/", site, "_", date_seq[i],".pdf"),
+                                  method = method,
+                                  mtitle = paste0(site, date_seq[i]))
+        }
         #---------------------------------------------
         # do some light validation of these points.
         cal_subset <- cal_subset %>%
           dplyr::filter(.data$dlta13CCo2.vari < 5 &
                           abs(.data$rtioMoleDryCo2.mean - .data$rtioMoleDryCo2Refe.mean) < 10 &
                           abs(.data$dlta13CCo2.mean - .data$dlta13CCo2Refe.mean) < 5)
+        
+
         
         if (length(unique(cal_subset$verticalPosition)) >= 2 & # >= 2 standards
             !all(is.na(cal_subset$dlta13CCo2.mean)) & # not all obs missing

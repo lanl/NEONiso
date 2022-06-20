@@ -75,3 +75,41 @@ validate_output_file <- function(inname, outname, site, analyte) {
     stop("Output file structure does not contain expected groups, has diverged from input file!")
   }
 }
+
+#--------------------------------------------------------------------
+# Diagnostic plots:::
+
+#' carbon_regression_plost
+#' 
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
+#'
+#' @param caldata 
+#' @param plot_filename 
+#' @param method 
+#' @param mtitle 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' @import ggplot2
+carbon_regression_plots <- function(caldata, plot_filename, method, mtitle) {
+  
+  if (method == "Bowling_2003") {
+    p1 <- ggplot(data = caldata, aes(x = .data$conc12CCO2_obs, y = .data$conc12CCO2_ref)) +
+      geom_point() + 
+      geom_smooth(method = 'lm') 
+    
+    p2 <- ggplot(data = caldata, aes(x = .data$conc13CCO2_obs, y = .data$conc13CCO2_ref)) +
+      geom_point() +
+      geom_smooth(method = 'lm')
+    
+  
+    grDevices::pdf(plot_filename, height = 8, width = 12)
+    gridExtra::grid.arrange(p1, p2, nrow = 1, top = grid::textGrob(mtitle))
+    grDevices::dev.off()
+  }
+  
+  
+  
+}

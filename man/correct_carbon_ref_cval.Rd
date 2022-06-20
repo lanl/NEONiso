@@ -27,6 +27,9 @@ corrected, this function has no need to exist and will be
 immediately deprecated. As a result, this function is
 fairly messy but there is little incentive to improve it.
 }
+\details{
+Current sites and time periods affected:
+}
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}
 }

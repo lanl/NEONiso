@@ -37,14 +37,16 @@ test_half_width <- function(ndays) {
     calibrate_carbon(fin,
                      paste0(paste0('~/NEONcal/r2_99/carbon_halfwidth_tests/',ndays,'/'),fout[1]),
                      site=csites[i], r2_thres = 0.99,
-                     calibration_half_width = ndays)
+                     calibration_half_width = ndays,
+                     plot_regression_data = TRUE, # VERYYYY SLOW
+                     plot_directory = paste0('~/NEONcal/r2_99/',ndays,'/'))
   }
 }
 
 # set up a cluster to run across possible nday options
 nday_list <- c(1, 2, 3, 4, 7, 14, 21, 28, 90, 180, 365, 100000)
 
-test_half_width(nday_list[12])
+test_half_width(nday_list[1])
 
 #local.cluster <- parallel::makeCluster(12, type = "FORK", outfile="~/Desktop/cluster_output.txt")
 #doParallel::registerDoParallel(cl = local.cluster)

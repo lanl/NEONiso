@@ -50,6 +50,8 @@ swap_standard_isotoperatios <- function(std_frame, dxs_thres = 500) {
 #' immediately deprecated. As a result, this function is
 #' fairly messy but there is little incentive to improve it.
 #'
+#' Current sites and time periods affected:
+#'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param std_frame Standard data frame to perform swap on.
@@ -58,6 +60,8 @@ swap_standard_isotoperatios <- function(std_frame, dxs_thres = 500) {
 #' @return A data.frame, based on `std_frame`, where NEON-supplied
 #' reference values have been corrected if a mismatch has previously 
 #' been identified. 
+#' @export
+#' 
 
 correct_carbon_ref_cval <- function(std_frame,site) {
 
