@@ -4,6 +4,9 @@
 have some known issues (e.g., no correction is made for concentration dependence
 of the analyzers yet), and any data produced from this function should be considered
 provisional.
+* Added capability to plot data used in carbon calibration regression in order
+to help identify periods where calibration paramters seem to be okay, but
+quality of calibrated data is degraded.
 * Added cross-validation error estimates to carbon calibration routines.
 * The calibrate_carbon_bymonth() function has been marked as deprecated, but will
 be removed no earlier than version 0.7.0 or 6 months from this release. 
@@ -15,6 +18,8 @@ error when one of the reference materials is omitted from the calibration (e.g.,
 generate calibration relationships to the high and medium standards, then estimate
 error as the difference between calibrated measurement and known reference values).
 * Reduced the number of tests that run on CRAN to minimize compute resources requested.
+* Made a function that corrects a few mismatched reference values more visible,
+and added a few more instances where reference data needs to be corrected.
 
 # NEONiso 0.5.3
 
