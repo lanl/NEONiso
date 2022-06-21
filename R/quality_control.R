@@ -79,17 +79,17 @@ validate_output_file <- function(inname, outname, site, analyte) {
 #--------------------------------------------------------------------
 # Diagnostic plots:::
 
-#' carbon_regression_plost
+#' carbon_regression_plots
 #' 
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
-#' @param caldata 
-#' @param plot_filename 
-#' @param method 
-#' @param mtitle 
+#' @param caldata Data frame corresponding to a specific calibration 
+#'                period.
+#' @param plot_filename What should the output file name for diagnostic plot be?
+#' @param method Which method are we using? Currently only works for gain/offset.
+#' @param mtitle Fed from above routine - what should the plot title be?
 #'
-#' @return
-#' @export
+#' @return Nothing to the environment, but a pdf plot to a file.
 #'
 #' @examples
 #' @import ggplot2

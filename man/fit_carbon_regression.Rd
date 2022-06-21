@@ -28,10 +28,10 @@ is 2*calibration_half_width).}
 \item{plot_regression_data}{True or false - should we plot the data used in
 the regression? Useful for debugging.}
 
-\item{site}{Needed for regression plots.}
-
-\item{plot_directory}{If plot_regression_data is true, where should the
+\item{plot_dir}{If plot_regression_data is true, where should the
 plots be saved?}
+
+\item{site}{Needed for regression plots.}
 }
 \value{
 Returns a data.frame of calibration parameters. If
