@@ -1,5 +1,7 @@
 #' calibrate_standards_carbon
 #'
+#' Not sure this is used anymore.
+#'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param cal_df Data.frame containing calibration parameters

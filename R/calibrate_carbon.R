@@ -140,16 +140,28 @@ calibrate_carbon         <- function(inname,
   # pull all carbon isotope data into a list.
   #inname <- list.files('~/Desktop/DP4_00200_001/ABBY/',full.names=TRUE)
   ciso <- ingest_data(inname, analyte = 'Co2')
-  
+
   # extract the data we need from ciso list
   refe <- extract_carbon_calibration_data(ciso$refe_stacked)
 
   # Okay this function now needs some work. *************
   if (correct_refData == TRUE) {
-    
+
+    print("Correcting reference calibration df...")    
     # do some work to correct the reference data frame
     refe <- correct_carbon_ref_cval(refe,site)
     
+    tmp_names <- names(ciso$reference)
+    
+    print("correcting reference output df.,..")
+    #apply seems to strip names from ciso$reference, so need to save above
+    # and reassign below.
+    ciso$reference <- lapply(names(ciso$reference),
+                             function(x) {
+                               ciso$reference[[x]] <- correct_carbon_ref_output(ciso$reference[[x]], site = site, refGas = x)
+                             })
+    
+    names(ciso$reference) <- tmp_names
   }
 
   # get calibration parameters data.frame.
@@ -162,14 +174,13 @@ calibrate_carbon         <- function(inname,
 #----------------------------------------------------------------------------
 #  calibrate ambient data.
 #  extract ambient measurements from ciso
-
+  
   ciso_subset <- c(ciso$ambient, ciso$reference)
   
   if (method == "Bowling_2003") {
     
     ciso_subset_cal <- lapply(names(ciso_subset),
                               function(x) {
-                                
                                 calibrate_ambient_carbon_Bowling2003(
                                   amb_data_list = ciso_subset[[x]],
                                   caldf = cal_df,

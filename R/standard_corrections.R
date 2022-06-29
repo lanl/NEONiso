@@ -77,7 +77,7 @@ correct_carbon_ref_cval <- function(std_frame,
   # uses internal dataset, carb, which has columns:
   # site, refGas, startDate, endDate, co2_old, co2_corr, co2_repairedRaw,
   # d13C_old, d13C_corr, d13C_repairedRaw, versionAdded, notes
-  
+
   # if data have already been corrected in raw files, no need to correct again.
   if (omit_already_corrected) {
     carb_red <- subset(carb, carb$co2_repairedRaw == FALSE | carb$d13C_repairedRaw == FALSE)
@@ -85,20 +85,19 @@ correct_carbon_ref_cval <- function(std_frame,
     carb_red <- carb 
   }
   
+  carb_red <- carb_red[carb_red$site == site,]
+
   # check to see if site is in carb$site, otherwise, we can skip.
-  if ((site %in% unique(carb$site))) {
-    
-    # okay, we know there's an entry in carb - now see if changes are needed.
-    carb_red <- carb_red[carb_red$site == site,]
+  if (nrow(carb_red) > 0 & (site %in% unique(carb$site))) {  # nrow > 0 needed due to omit_already_corrected flag.
     
     for (z in 1:nrow(carb_red)) {
       
-      print(paste("Correcting data for", site, "between", carb_red$startDate[z], "and", carb_red$startDate[z]))
+      print(paste("Correcting data for", site, "between", carb_red$startDate[z], "and", carb_red$endDate[z]))
       
       co2_min <- carb_red$co2_old[z] - co2_tol
       co2_max <- carb_red$co2_old[z] + co2_tol
-      d13c_min <- carb_red$d13c_old[z] - d13c_tol
-      d13c_max <- carb_red$d13c_old[z] + d13c_tol
+      d13c_min <- carb_red$d13C_old[z] - d13c_tol
+      d13c_max <- carb_red$d13C_old[z] + d13c_tol
       
       if (carb_red$co2_repairedRaw[z] == FALSE) {
         std_frame$rtioMoleDryCo2Refe.mean[std_frame$timeBgn > carb_red$startDate[z] &
@@ -113,13 +112,81 @@ correct_carbon_ref_cval <- function(std_frame,
               std_frame$timeBgn <= carb_red$endDate[z] &
               std_frame$verticalPosition == carb_red$refGas[z] &
               std_frame$dlta13CCo2Refe.mean <= d13c_max &
-              std_frame$dlta13CCo2Refe.mean >= d13c_max] <- carb_red$d13C_corr[z]
+              std_frame$dlta13CCo2Refe.mean >= d13c_min] <- carb_red$d13C_corr[z]
       }
     }
   }
   return(std_frame)
 }
+
+#' Title
+#'
+#' @param std_list 
+#' @param site 
+#' @param omit_already_corrected 
+#' @param co2_tol 
+#' @param d13c_tol 
+#' @param refGas 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+correct_carbon_ref_output <- function(std_list,
+                                      site,
+                                      omit_already_corrected = TRUE,
+                                      co2_tol = 5, d13c_tol = 0.25,
+                                      refGas) {
   
+  # note: this one operates on lists! function above operates on data frames
+  # uses internal dataset, carb, which has columns:
+  # site, refGas, startDate, endDate, co2_old, co2_corr, co2_repairedRaw,
+  # d13C_old, d13C_corr, d13C_repairedRaw, versionAdded, notes
+  
+  # if data have already been corrected in raw files, no need to correct again.
+  if (omit_already_corrected) {
+    carb_red <- subset(carb, carb$co2_repairedRaw == FALSE | carb$d13C_repairedRaw == FALSE)
+  } else { 
+    carb_red <- carb 
+  }
+  
+  carb_red <- carb_red[carb_red$site == site & carb_red$refGas == substr(refGas, 1, nchar(refGas) - 4),] # strip off time indices
+  
+  # check to see if site is in carb$site, otherwise, we can skip.
+  if (nrow(carb_red) > 0 & (site %in% unique(carb$site))) {
+    
+    print(nrow(carb_red))
+    print(carb_red)
+    # check name of list to see if any corrections are needed for this standard
+    for (z in 1:nrow(carb_red)) {
+      
+      print(paste("Correcting data for", site, substr(refGas, 1, nchar(refGas) - 4),
+                  "between", carb_red$startDate[z], "and", carb_red$endDate[z]))
+      
+      co2_min <- carb_red$co2_old[z] - co2_tol
+      co2_max <- carb_red$co2_old[z] + co2_tol
+      d13c_min <- carb_red$d13C_old[z] - d13c_tol
+      d13c_max <- carb_red$d13C_old[z] + d13c_tol
+      
+      if (carb_red$co2_repairedRaw[z] == FALSE) {
+        std_list$rtioMoleDryCo2Refe$mean[std_list$rtioMoleDryCo2Refe$timeBgn > carb_red$startDate[z] &
+                                            std_list$rtioMoleDryCo2Refe$timeBgn <= carb_red$endDate[z] &
+                                            std_list$rtioMoleDryCo2Refe$mean <= co2_max &
+                                            std_list$rtioMoleDryCo2Refe$mean >= co2_min] <- carb_red$co2_corr[z]
+      }
+      
+      if (carb_red$d13C_repairedRaw[z] == FALSE) {
+        std_list$dlta13CCo2Refe$mean[std_list$dlta13CCo2Refe$timeBgn > carb_red$startDate[z] &
+                                        std_list$dlta13CCo2Refe$timeBgn <= carb_red$endDate[z] &
+                                        std_list$dlta13CCo2Refe$mean <= d13c_max &
+                                        std_list$dlta13CCo2Refe$mean >= d13c_min] <- carb_red$d13C_corr[z]
+      }
+    }
+  }
+  return(std_list)
+  
+}
+
 #   # implementing the change here:
 #   if (site == "ONAQ") {
 #     print("Correcting ONAQ reference values between 6/18/18 and 2/7/19...")

@@ -288,12 +288,16 @@ write_carbon_calibration_data <- function(outname, site, calDf, method) {
 write_carbon_ambient_data <- function(outname, site, amb_data_list) {
   
   print("Writing calibrated ambient data...")
+
   
   fid <- rhdf5::H5Fopen(outname)
   
   if (length(amb_data_list) > 0) {
     for (i in 1:length(amb_data_list)) {
       amb_data_subset <- amb_data_list[i]
+      
+      print(names(amb_data_subset))
+      print(site)
       
       co2_data_outloc <- rhdf5::H5Gcreate(fid,
                                           paste0("/", site, "/dp01/data/isoCo2/", 

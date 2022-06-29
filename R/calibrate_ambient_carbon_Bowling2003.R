@@ -185,7 +185,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   amb_delta$mean_cal <- round(R_to_delta(mean13c / mean12c, "carbon"), 2)
   amb_delta$min_cal  <- round(R_to_delta(min13c / min12c, "carbon"), 2)
   amb_delta$max_cal  <- round(R_to_delta(max13c / max12c, "carbon"), 2)
-  amb_delta$vari     <- round(amb_delta$vari, 2)
+  #amb_delta$vari     <- round(amb_delta$vari, 2) # <- not sure why, but this crashes code some times as ab_delta$vari is not numeric??
 
   # calibrate co2 mole fractions and uncertainty
   amb_co2$mean_cal <- (mean13c + mean12c) / (1 - 0.00474)
@@ -196,8 +196,6 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
     amb_delta$min_cal  <- filter_median_Brock86(amb_delta$min_cal)
     amb_delta$max_cal  <- filter_median_Brock86(amb_delta$max_cal)
   }
-
-  print(do.call(cbind, list(mean12c, mean13c, cv5rmse12c, cv5rmse13c, loocv12c, loocv13c)))
   
   # calculate uncertainties:
   amb_delta$CVcalUcrt <- round(abs(amb_delta$mean_cal) *

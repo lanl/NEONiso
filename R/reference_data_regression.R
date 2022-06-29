@@ -32,7 +32,6 @@ estimate_calibration_error <- function(formula, data) {
   
 }
 
-
 #' fit_carbon_regression
 #' 
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
@@ -149,6 +148,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
           dplyr::filter(.data$timeBgn %within% cal_period)
         
         if (plot_regression_data) {
+          print("Plotting regression data...this step will take some time...")
           carbon_regression_plots(cal_subset,
                                   plot_filename = paste0(plot_dir, "/", site, "_", date_seq[i],".pdf"),
                                   method = method,
@@ -160,8 +160,6 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
           dplyr::filter(.data$dlta13CCo2.vari < 5 &
                           abs(.data$rtioMoleDryCo2.mean - .data$rtioMoleDryCo2Refe.mean) < 10 &
                           abs(.data$dlta13CCo2.mean - .data$dlta13CCo2Refe.mean) < 5)
-        
-
         
         if (length(unique(cal_subset$verticalPosition)) >= 2 & # >= 2 standards
             !all(is.na(cal_subset$dlta13CCo2.mean)) & # not all obs missing
