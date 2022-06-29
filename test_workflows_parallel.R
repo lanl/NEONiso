@@ -23,7 +23,7 @@
 # local.cluster <- parallel::makeCluster(4, type = "PSOCK")
 
 # where does uncalibrated data live?
-data.dir <- '~/DP4_00200_001/'
+data.dir <- '~/airflow/data/01-DP4_00200_001/'
 
 # set test_date
 #test_date <- "2022-01-03"
@@ -36,11 +36,11 @@ dir.create(paste0('~/NEONcal/',test_date,"_parallel"))
 run_test1 <- FALSE
 run_test2 <- FALSE
 run_test3 <- FALSE
-run_test4 <- FALSE
+run_test4 <- TRUE
 run_test5 <- FALSE
 run_test6 <- FALSE
 run_test7 <- FALSE
-run_test8 <- TRUE
+run_test8 <- FALSE
 rapid_test <- FALSE # if rapid, only run ~5% of possible site months.
 
 # load required packages:
@@ -215,7 +215,7 @@ if (run_test4) {
     calibrate_carbon(fin,
                      paste0('~/NEONcal/',test_date,'_parallel/04/',fout[1]),
                      site=csites[i], r2_thres = 0.95,
-                     calibration_half_width = 100000)
+                     calibration_half_width = 3)
   },
   mc.cores = 26, mc.preschedule = FALSE)
   
