@@ -22,10 +22,10 @@ for (j in 1:length(sites)) {
     
     
     # get list of files.
-    flist <- list.files(paste0('~/NEONcal/r2_95/carbon_halfwidth_tests/',time_windows[i],'/'), 
+    flist <- list.files(paste0('~/NEONcal/r2_99/carbon_halfwidth_tests/',time_windows[i],'/'), 
                         full.names = TRUE)
     
-    glist <- list.files(paste0('~/NEONcal/r2_95/carbon_halfwidth_tests/',time_windows[i],'/'))
+    glist <- list.files(paste0('~/NEONcal/r2_99/carbon_halfwidth_tests/',time_windows[i],'/'))
     slist <- substr(glist, 10, 13)
     
     
@@ -59,7 +59,7 @@ for (j in 1:length(sites)) {
     tmp3 <- do.call(rbind, tmp3)
     
     print("continue merging data")
-    tmp4 <- merge(tmp2, tmp3, by = 'timeBgn')
+    tmp4 <- merge(tmp2, tmp3, by = 'timeBgn', all = TRUE)
     
     plot_out[[i]] <- tmp4 %>%
       dplyr::select(-timeBgn) %>%
