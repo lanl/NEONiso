@@ -1,7 +1,5 @@
 # NEONiso
 
-NOTE: some restructuring of this package, and working to adding new functions, may have caused some workflows to break. If you are having trouble with this version, please try the CRAN version.
-
 <!-- badges: start -->
 [![DOI](https://zenodo.org/badge/188347333.svg)](https://zenodo.org/badge/latestdoi/188347333)
 [![R-CMD-check](https://github.com/rfiorella/NEONiso/workflows/R-CMD-check/badge.svg)](https://github.com/rfiorella/NEONiso/actions)
@@ -11,15 +9,13 @@ NOTE: some restructuring of this package, and working to adding new functions, m
 <!-- badges: end -->
 
 Author: Rich Fiorella
-March 2, 2022.
+July 8, 2022.
 
 *UPDATES ARE COMING - NEW PACKAGE VERSIONS WAITING FOR APPROVAL FROM NEW INSTITUTION IP DEPARTMENT*
 
 This repository contains an R package to calibrate NEON atmospheric isotope data. A stable version of the package can be installed from CRAN, and a development version of this package can be installed here using devtools (see below).
 
 Please report any issues you have, bugs found, or enhancement suggestions as issues to this repository.
-
-
 
 ## Installing the development version:
 1) You will need the rhdf5 package, which is not on CRAN. rhdf5 is available from bioconductor using:
@@ -63,3 +59,14 @@ There will be two major changes and a minor change coming to this package in the
 
 Several months of data on the NEON data portal have an issue where the Picarro time clock has diverged from the valve manifold time. A fix has been developed, but has not been propagated to the NEON data portal.
 
+## Copyright notice:
+
+© 2022. Triad National Security, LLC. All rights reserved.
+This program was produced under U.S. Government contract 89233218CNA000001 for Los Alamos
+National Laboratory (LANL), which is operated by Triad National Security, LLC for the U.S.
+Department of Energy/National Nuclear Security Administration. All rights in the program are
+reserved by Triad National Security, LLC, and the U.S. Department of Energy/National Nuclear
+Security Administration. The Government is granted for itself and others acting on its behalf a
+nonexclusive, paid-up, irrevocable worldwide license in this material to reproduce, prepare
+derivative works, distribute copies to the public, perform publicly and display publicly, and to permit
+others to do so.
