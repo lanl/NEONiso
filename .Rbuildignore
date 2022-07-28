@@ -18,3 +18,4 @@
 ^extract_data_for_Gabe\.R$
 ^refCorrections\.xlsx$
 ^make_ref_corrections_data\.R$
+^LICENSE\.md$
