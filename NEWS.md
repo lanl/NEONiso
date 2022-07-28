@@ -9,7 +9,7 @@ to help identify periods where calibration paramters seem to be okay, but
 quality of calibrated data is degraded.
 * Added cross-validation error estimates to carbon calibration routines.
 * The calibrate_carbon_bymonth() function has been marked as deprecated, but will
-be removed no earlier than version 0.7.0 or 6 months from this release. 
+be removed no earlier than version 0.7.0 or the end of 2022. 
 The more flexible calibrate_carbon() function should be used.
 * A bug that generated non-nonsensical CO2 and d13C values has been fixed (#72).
 * The calibrate_carbon() function now also provides calibrated values for
