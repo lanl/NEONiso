@@ -2,8 +2,8 @@
 
 <!-- badges: start -->
 [![DOI](https://zenodo.org/badge/188347333.svg)](https://zenodo.org/badge/latestdoi/188347333)
-[![R-CMD-check](https://github.com/rfiorella/NEONiso/workflows/R-CMD-check/badge.svg)](https://github.com/rfiorella/NEONiso/actions)
-[![codecov](https://codecov.io/gh/rfiorella/NEONiso/branch/main/graph/badge.svg?token=ZHDFEU5NZW)](https://app.codecov.io/gh/rfiorella/NEONiso)
+[![R-CMD-check](https://github.com/lanl/NEONiso/workflows/R-CMD-check/badge.svg)](https://github.com/lanl/NEONiso/actions)
+[![codecov](https://codecov.io/gh/lanl/NEONiso/branch/main/graph/badge.svg?token=ZHDFEU5NZW)](https://app.codecov.io/gh/lanl/NEONiso)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/NEONiso)](https://CRAN.R-project.org/package=NEONiso)
 <!-- badges: end -->
@@ -28,12 +28,12 @@ BiocManager::install("rhdf5")
 2) Install devtools, which is available on CRAN.
 3) Install NEONiso from GitHub. Development version can be installed using:
 ```R
-devtools::install_github("rfiorella/NEONiso")
+devtools::install_github("lanl/NEONiso")
 ```
 Alternatively, you can install a specific version of the package (e.g., v0.1)
 by specifying the version tag:
 ```R
-devtools::install_github("rfiorella/NEONiso@v0.1")
+devtools::install_github("lanl/NEONiso@v0.1")
 ```
 
 ## Citation information:
