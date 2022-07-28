@@ -1,15 +1,19 @@
+#' loocv
+#' 
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
+#' 
 #' helper function for the leave-one-out cross variance
 #'
 #' @param mod Fitted model to estimate leave-one-out CV on.
 #'
-#'
-#' @examples
 loocv <- function(mod) {
   h = stats::lm.influence(mod)$hat
   return(base::mean((stats::residuals(mod)/(1-h))^2)) # might need to add na.rm
 }
 
 #' estimate_calibration_error
+#'
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param data Data frame to perform cross-validation on.
 #' @param formula Formula to pass to caret::train to perform cross validation.

@@ -119,19 +119,28 @@ correct_carbon_ref_cval <- function(std_frame,
   return(std_frame)
 }
 
-#' Title
+#' Correct carbon ref output
+#' 
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
-#' @param std_list 
-#' @param site 
-#' @param omit_already_corrected 
-#' @param co2_tol 
-#' @param d13c_tol 
-#' @param refGas 
+#' @param std_list List containing reference/validation gas measurements.
+#' @param site Four-letter NEON site code.
+#' @param omit_already_corrected Skip correction if the reference gas
+#'             values have already been corrected in the files (default TRUE)
+#'             If you have older versions of the files, you may want to set
+#'             this to FALSE.
+#' @param co2_tol Tolerance used to identify a mismatch in CO2 values. Will
+#'             correct measured CO2 values within +/- co2_tol within time period
+#'             identified as having incorrect reference values.
+#' @param d13c_tol Tolerance used to identify a mismatch in d13C values. Will
+#'             correct measured d13C values within +/- d13c_tol within time period
+#'             identified as having incorrect reference values.
+#' @param refGas Which reference gas is being corrected? Expects "co2High", 
+#'             "co2Med", or "co2Low"
 #'
-#' @return
+#' @return A version of std_list with corrected reference values.
 #' @export
 #'
-#' @examples
 correct_carbon_ref_output <- function(std_list,
                                       site,
                                       omit_already_corrected = TRUE,

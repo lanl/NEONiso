@@ -14,3 +14,6 @@ estimate_calibration_error(formula, data)
 \description{
 estimate_calibration_error
 }
+\author{
+Rich Fiorella \email{rfiorella@lanl.gov}
+}

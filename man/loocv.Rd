@@ -2,7 +2,7 @@
 % Please edit documentation in R/reference_data_regression.R
 \name{loocv}
 \alias{loocv}
-\title{helper function for the leave-one-out cross variance}
+\title{loocv}
 \usage{
 loocv(mod)
 }
@@ -10,5 +10,10 @@ loocv(mod)
 \item{mod}{Fitted model to estimate leave-one-out CV on.}
 }
 \description{
+loocv
+}
+\author{
+Rich Fiorella \email{rfiorella@lanl.gov}
+
 helper function for the leave-one-out cross variance
 }

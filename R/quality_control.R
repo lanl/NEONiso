@@ -91,7 +91,6 @@ validate_output_file <- function(inname, outname, site, analyte) {
 #'
 #' @return Nothing to the environment, but a pdf plot to a file.
 #'
-#' @examples
 #' @import ggplot2
 carbon_regression_plots <- function(caldata, plot_filename, method, mtitle) {
   

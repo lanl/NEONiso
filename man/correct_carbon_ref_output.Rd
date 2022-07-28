@@ -2,7 +2,7 @@
 % Please edit documentation in R/standard_corrections.R
 \name{correct_carbon_ref_output}
 \alias{correct_carbon_ref_output}
-\title{Title}
+\title{Correct carbon ref output}
 \usage{
 correct_carbon_ref_output(
   std_list,
@@ -14,18 +14,32 @@ correct_carbon_ref_output(
 )
 }
 \arguments{
-\item{std_list}{}
+\item{std_list}{List containing reference/validation gas measurements.}
 
-\item{site}{}
+\item{site}{Four-letter NEON site code.}
 
-\item{omit_already_corrected}{}
+\item{omit_already_corrected}{Skip correction if the reference gas
+values have already been corrected in the files (default TRUE)
+If you have older versions of the files, you may want to set
+this to FALSE.}
 
-\item{co2_tol}{}
+\item{co2_tol}{Tolerance used to identify a mismatch in CO2 values. Will
+correct measured CO2 values within +/- co2_tol within time period
+identified as having incorrect reference values.}
 
-\item{d13c_tol}{}
+\item{d13c_tol}{Tolerance used to identify a mismatch in d13C values. Will
+correct measured d13C values within +/- d13c_tol within time period
+identified as having incorrect reference values.}
 
-\item{refGas}{}
+\item{refGas}{Which reference gas is being corrected? Expects "co2High",
+"co2Med", or "co2Low"}
+}
+\value{
+A version of std_list with corrected reference values.
 }
 \description{
-Title
+Correct carbon ref output
+}
+\author{
+Rich Fiorella \email{rfiorella@lanl.gov}
 }
