@@ -35,9 +35,6 @@ calibrate_standards_carbon <- function(cal_df,
   
   # want to implement same tolerances used to generate calibration regression!
   # need to assess the CO2 and d13C tolerances wrt reference values.
-  print(paste("point a", refGas))
-  print(nrow(ref_df$dlta13CCo2))
-  print(nrow(ref_df$rtioMoleDryCo2))
     
   # calibrate standards using value for corresponding calibration period.
   ref_df$dlta13CCo2$mean_cal <- rep(NA, length(ref_df$dlta13CCo2$mean))

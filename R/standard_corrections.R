@@ -155,8 +155,6 @@ correct_carbon_ref_output <- function(std_list,
   # check to see if site is in carb$site, otherwise, we can skip.
   if (nrow(carb_red) > 0 & (site %in% unique(carb$site))) {
     
-    print(nrow(carb_red))
-    print(carb_red)
     # check name of list to see if any corrections are needed for this standard
     for (z in 1:nrow(carb_red)) {
       
