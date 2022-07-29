@@ -29,5 +29,5 @@ Nothing to the environment, but writes calibrated reference data to hdf5 file.
 write_water_reference_data
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

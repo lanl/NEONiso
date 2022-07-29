@@ -23,21 +23,22 @@
 # local.cluster <- parallel::makeCluster(4, type = "PSOCK")
 
 # where does uncalibrated data live?
-data.dir <- '~/DP4_00200_001/'
+data.dir <- '~/airflow/data/01-DP4_00200_001/'
 
 # set test_date
-test_date <- "2021-12-20"
+#test_date <- "2022-01-03"
+test_date <- Sys.Date()
 
-# make output directory structure:
+# make output directory structure: 
 dir.create(paste0('~/NEONcal/',test_date,"_parallel"))
 
 # which tests to run?
-run_test1 <- TRUE
-run_test2 <- TRUE
-run_test3 <- TRUE
+run_test1 <- FALSE
+run_test2 <- FALSE
+run_test3 <- FALSE
 run_test4 <- TRUE
-run_test5 <- TRUE
-run_test6 <- TRUE
+run_test5 <- FALSE
+run_test6 <- FALSE
 run_test7 <- FALSE
 run_test8 <- FALSE
 rapid_test <- FALSE # if rapid, only run ~5% of possible site months.
@@ -145,17 +146,16 @@ if (run_test1) {
     calibrate_carbon_bymonth(fnames[i],fnames.out2[i],
                              site=site.code[i], method = "Bowling_2003")
   },
-  mc.cores = 4, mc.preschedule = FALSE)
+  mc.cores = 20, mc.preschedule = FALSE)
   
   
   # cleanup
   rm(outpaths, fnames.out2)
   print(paste(Sys.time(), "ending test 1"))
   
+  Sys.sleep(120)
+  
 }
-
-Sys.sleep(120)
-stop()
 
 if (run_test2) {
   print(paste(Sys.time(), "starting test 2"))
@@ -176,9 +176,10 @@ if (run_test2) {
   # cleanup
   rm(outpaths, fnames.out2)
   print(paste(Sys.time(), "ending test 2"))
+  
+  Sys.sleep(120)
 }
 
-Sys.sleep(120)
 
 #----------------------------------------------------
 # calibrate_carbon tests:
@@ -196,12 +197,10 @@ if (run_test3) {
   mclapply(seq_along(fnames), function(i){
     print(paste0("Calibration test set 3: ", round(100*i/length(fnames.out),3),"% complete...", fnames.out[i]))
     calibrate_carbon(fnames[i],fnames.out2[i],site=site.code[i], method = "Bowling_2003")
-  }, mc.cores = 20, mc.preschedule = FALSE)
+  }, mc.cores = 26, mc.preschedule = FALSE)
   
   print(paste(Sys.time(), "ending test 3"))
 }
-
-Sys.sleep(120)
 
 if (run_test4) {
   dir.create(paste0('~/NEONcal/',test_date,'_parallel/04'))
@@ -216,14 +215,16 @@ if (run_test4) {
     calibrate_carbon(fin,
                      paste0('~/NEONcal/',test_date,'_parallel/04/',fout[1]),
                      site=csites[i], r2_thres = 0.95,
-                     calibration_half_width = 100000)
+                     calibration_half_width = 3)
   },
-  mc.cores = 20, mc.preschedule = FALSE)
+  mc.cores = 26, mc.preschedule = FALSE)
   
   print(paste(Sys.time(), "ending test 4"))
+  
+  Sys.sleep(120)
 }
 
-Sys.sleep(120)
+
 
 if (run_test5) {
   
@@ -240,7 +241,7 @@ if (run_test5) {
     print(paste0("Calibration test set 5: ", round(100*i/length(fnames.out),3),"% complete"))
     calibrate_carbon(fnames[i],fnames.out2[i],site=site.code[i], method = "linreg")
   },
-  mc.cores = 20, mc.preschedule = FALSE)
+  mc.cores = 26, mc.preschedule = FALSE)
 
   print(paste(Sys.time(), "ending test 5"))
 }
@@ -262,7 +263,7 @@ if (run_test6) {
                      site=csites[i], r2_thres = 0.95, method = 'linreg',
                      calibration_half_width = 100000)
   },
-  mc.cores = 20, mc.preschedule = FALSE)
+  mc.cores = 26, mc.preschedule = FALSE)
   
   print(paste(Sys.time(), "ending test 6"))
   
@@ -299,11 +300,11 @@ if (run_test8) {
   dir.create(paste0('~/NEONcal/',test_date,"_parallel/08"))
   
   foreach (i = 1:length(wsites)) %dopar% {
-    calibrate_water_linreg_bysite(paste0(data.dir,wsites[i],'/'),
+    NEONiso::calibrate_water_linreg_bysite(paste0(data.dir,wsites[i],'/'),
                                   paste0('~/NEONcal/',test_date,'_parallel/08/'),
                                   site=wsites[i], r2_thres = 0.95,
                                  calibration_half_width = 100000)
   }  
 }
 
-stopCluster(local.cluster)
+#stopCluster(local.cluster)

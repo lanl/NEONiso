@@ -2,16 +2,21 @@
 
 
 #' ingest_data
+#' 
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname A file (or list of files) to extract data from for calibration.
 #' @param analyte Carbon (Co2) or water (H2o)?
+#' @param name_fix Fix to data frame required for next-generation calibration 
+#'                 functions, but breaks old 'by_month()' functions. This parameter
+#'                 provides a necessary work around until these functions are removed.
 #'
 #' @return List of data frames, taken from files specified in `inname`
 #' @export
 #'
 #' @importFrom stats setNames
 #' @importFrom utils packageVersion
-ingest_data <- function(inname, analyte) {
+ingest_data <- function(inname, analyte, name_fix = TRUE) {
   
   # this function needs to:
   # 1. read in and stack variables.
@@ -20,6 +25,12 @@ ingest_data <- function(inname, analyte) {
   # c) ambient ucrt, d-f) same, but for ref vars.
   
   analyte <- validate_analyte(analyte)
+  
+  # read attributes from (first file in) inname
+  site <- rhdf5::h5ls(inname[1],recursive = 1)[1,2] # grab name from file structure
+  attrs <- rhdf5::h5readAttributes(inname[1], name = paste0('/',site))
+  
+  nheights <- attrs$LvlMeasTow
   
   if (analyte == 'Co2') {
     
@@ -33,7 +44,7 @@ ingest_data <- function(inname, analyte) {
     data <- data %>% 
       dplyr::select(.data$verticalPosition, .data$timeBgn, .data$timeEnd, tidyselect::contains('isoCo2')) 
     
-    data <- data[rowSums(is.na(data)) < 145, ]
+   # data <- data[rowSums(is.na(data)) < 145, ] # not sure this works if there's a case where all data from a height are missing.
     
     # stack required variables.
     ambToStack <- c('dlta13CCo2', 'pres', 'presEnvHut', 'rhEnvHut',
@@ -49,8 +60,27 @@ ingest_data <- function(inname, analyte) {
     ambient <- data %>% 
       dplyr::filter(.data$verticalPosition %in% c("010", "020", "030", "040", "050", "060", "070", "080"))
     
+    # check how many heights are present in ambient.
+    if (length(unique(ambient$verticalPosition)) < nheights) {
+      print("Height missing, attempting to resolve:")
+
+      # determine which height is missing:
+      hgts_present <- seq(from = 1, to = nheights, by = 1) %in% (as.numeric(unique(ambient$verticalPosition))/10)
+      
+      hgts_absentl <- !hgts_present
+      
+      hgts_absent <- seq(from = 1, to = nheights, by = 1)[hgts_absentl] 
+      
+      # add a row to data, and then change verticalPosition to missing heights
+      for (i in hgts_absent) {
+        target_row <- nrow(ambient) + 1
+        ambient[target_row, ] <- NA
+        ambient[target_row, "verticalPosition"] <- paste0("0",i,"0")
+      }
+    }
+    
     reference <- data %>%
-      dplyr::filter(.data$verticalPosition %in% c("co2Low", "co2Med", "co2High", "co2Arch"))
+      dplyr::filter(.data$verticalPosition %in% c("co2Low", "co2Med", "co2High"))
     
   } else if (analyte == 'H2o') {
     stop("ingest_data does not work yet for H2o.")
@@ -59,6 +89,9 @@ ingest_data <- function(inname, analyte) {
   ambi_by_height <- base::split(ambient, factor(ambient$verticalPosition)) 
   refe_by_height <- base::split(reference, factor(reference$verticalPosition))
   
+  print(names(ambi_by_height))
+  print(names(refe_by_height))
+
   #-------------------------
   # RESTRUCTURE AMBIENT
   # feed into restructure carbon variables:
@@ -72,6 +105,13 @@ ingest_data <- function(inname, analyte) {
   # loop through again to rename data frames.
   ambi_out <- lapply(ambi_out, setNames, ambToStack)
   
+  # check length, and error out if a height has been dropped.
+  test_var <- identical(as.integer(nheights), length(ambi_out))
+  
+  if (!test_var) {
+    stop("Tower height dropped somewhere within ingest_data...")
+  }
+  
   #-------------------------
   # RESTRUCTURE REFERENCE
   # feed into restructure carbon variables:
@@ -81,10 +121,10 @@ ingest_data <- function(inname, analyte) {
                                                                                 varname = x,
                                                                                 mode = 'reference',
                                                                                 group = 'data')})}) # replace the of the variables.
-  
+
   # loop through again to rename data frames.
   refe_out <- lapply(refe_out, setNames, refToStack)
-  
+
   # remove variable name from ambi_out data frames - could be used here though to validate in future version.
   # variable name has been removed in restructure_carbon_variables - could move it back here to validate!
 
@@ -97,13 +137,21 @@ ingest_data <- function(inname, analyte) {
     }
     names(ambi_out) <- names_vector
   }
-    
+
+  
+  if (name_fix) {
+    # append _09m to refe_out....MAY CAUSE PROBLEMS FOR OTHER METHODS!!!!!!
+    names(refe_out) <- paste0(names(refe_out), "_09m")
+  }
+  
+  print(names(refe_out))
+  print(names(ambi_out))
+  
   output <- list(ambi_out, refe_out, reference)
   names(output) <- c("ambient", "reference", "refe_stacked")
-  
+
   return(output)
 }
-
 
 #-----------------------------------------
 #' restructure_carbon_variables

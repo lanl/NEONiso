@@ -60,7 +60,7 @@ and is not exported to the namespace.
 calibrate_ambient_carbon_linreg
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 
 Function called by \code{calibrate_ambient_carbon_linreg} to apply
 gain and offset parameters to the ambient datasets (000_0x0_09m and

@@ -1,3 +1,26 @@
+# NEONiso 0.6.0.9000
+
+* An experimental calibration routine for water isotopes has been added. It does
+have some known issues (e.g., no correction is made for concentration dependence
+of the analyzers yet), and any data produced from this function should be considered
+provisional.
+* Added capability to plot data used in carbon calibration regression in order
+to help identify periods where calibration paramters seem to be okay, but
+quality of calibrated data is degraded.
+* Added cross-validation error estimates to carbon calibration routines.
+* The calibrate_carbon_bymonth() function has been marked as deprecated, but will
+be removed no earlier than version 0.7.0 or the end of 2022. 
+The more flexible calibrate_carbon() function should be used.
+* A bug that generated non-nonsensical CO2 and d13C values has been fixed (#72).
+* The calibrate_carbon() function now also provides calibrated values for
+reference material measurement. These are useful for determining calibration
+error when one of the reference materials is omitted from the calibration (e.g., 
+generate calibration relationships to the high and medium standards, then estimate
+error as the difference between calibrated measurement and known reference values).
+* Reduced the number of tests that run on CRAN to minimize compute resources requested.
+* Made a function that corrects a few mismatched reference values more visible,
+and added a few more instances where reference data needs to be corrected.
+
 # NEONiso 0.5.3
 
 * Small maintenance release that addresses a NOTE on CRAN.

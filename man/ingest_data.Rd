@@ -4,16 +4,23 @@
 \alias{ingest_data}
 \title{ingest_data}
 \usage{
-ingest_data(inname, analyte)
+ingest_data(inname, analyte, name_fix = TRUE)
 }
 \arguments{
 \item{inname}{A file (or list of files) to extract data from for calibration.}
 
 \item{analyte}{Carbon (Co2) or water (H2o)?}
+
+\item{name_fix}{Fix to data frame required for next-generation calibration
+functions, but breaks old 'by_month()' functions. This parameter
+provides a necessary work around until these functions are removed.}
 }
 \value{
 List of data frames, taken from files specified in \code{inname}
 }
 \description{
 ingest_data
+}
+\author{
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

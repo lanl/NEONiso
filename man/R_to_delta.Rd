@@ -22,5 +22,5 @@ R_to_delta
 R_to_delta(R_values = 2005.20e-6, element = 'oxygen') # returns 0.
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

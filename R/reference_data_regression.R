@@ -1,6 +1,44 @@
+#' loocv
+#' 
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
+#' 
+#' helper function for the leave-one-out cross variance
+#'
+#' @param mod Fitted model to estimate leave-one-out CV on.
+#'
+loocv <- function(mod) {
+  h = stats::lm.influence(mod)$hat
+  return(base::mean((stats::residuals(mod)/(1-h))^2)) # might need to add na.rm
+}
+
+#' estimate_calibration_error
+#'
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
+#'
+#' @param data Data frame to perform cross-validation on.
+#' @param formula Formula to pass to caret::train to perform cross validation.
+#'
+estimate_calibration_error <- function(formula, data) {
+  
+  # force data to be a dataframe, as caret chokes on tibbles evidently.
+  data2 <- as.data.frame(data)
+  
+  ctrl <- caret::trainControl(method = 'cv', number = 5)
+  
+  model <- suppressWarnings(caret::train(form = formula, data = data2,
+                        method = 'lm',
+                        trControl = ctrl,
+                        na.action = stats::na.omit))
+  
+  output <- model$results[c("RMSE","Rsquared","MAE")]
+  
+  return(output)
+  
+}
+
 #' fit_carbon_regression
 #' 
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param method Are we using the Bowling et al. 2003 method
 #'              ("Bowling_2003") or direct linear regression of
@@ -10,6 +48,11 @@
 #'        is 2*calibration_half_width).
 #' @param ref_data Reference data.frame from which to estimate 
 #'        calibration parameters.
+#' @param plot_regression_data True or false - should we plot the data used in 
+#'        the regression? Useful for debugging.
+#' @param plot_dir If plot_regression_data is true, where should the 
+#'        plots be saved?
+#' @param site Needed for regression plots.
 #'
 #' @return Returns a data.frame of calibration parameters. If
 #'        `method == "Bowling_2003"`, then data.frame includes 
@@ -20,7 +63,10 @@
 #'
 #' @importFrom stats coef lm
 
-fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
+fit_carbon_regression <- function(ref_data, method, calibration_half_width,
+                                  plot_regression_data = FALSE,
+                                  plot_dir ='/dev/null',
+                                  site) {
   
   # First, identify year/month combination and then select data.
   yrmn <- paste(lubridate::year(ref_data$timeBgn)[1],
@@ -57,7 +103,13 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
                         offset12C = as.numeric(NA),
                         offset13C = as.numeric(NA),
                         r2_12C = as.numeric(NA),
-                        r2_13C = as.numeric(NA))
+                        r2_13C = as.numeric(NA),
+                        loocv_12C = as.numeric(NA),
+                        loocv_13C = as.numeric(NA),
+                        cv5mae_12C = as.numeric(NA),
+                        cv5mae_13C = as.numeric(NA),
+                        cv5rmse_12C = as.numeric(NA),
+                        cv5rmse_13C = as.numeric(NA))
     } else {
       
       out <- data.frame(gain12C   = numeric(length = 2e5),
@@ -65,7 +117,13 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
                         offset12C = numeric(length = 2e5),
                         offset13C = numeric(length = 2e5),
                         r2_12C    = numeric(length = 2e5),
-                        r2_13C    = numeric(length = 2e5))
+                        r2_13C    = numeric(length = 2e5),
+                        loocv_12C = numeric(length = 2e5),
+                        loocv_13C = numeric(length = 2e5),
+                        cv5mae_12C = numeric(length = 2e5),
+                        cv5mae_13C = numeric(length = 2e5),
+                        cv5rmse_12C = numeric(length = 2e5),
+                        cv5rmse_13C = numeric(length = 2e5))
       
       # get start and end days.
       start_date <- as.Date(min(ref_data$timeBgn))
@@ -78,6 +136,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
       start_time <- end_time <- vector()
       
       # okay, now run calibrations...
+      
       for (i in 1:length(date_seq)) {
         start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"), # odd workaround to prevent R from converting this to NA.
                                     tz = "UTC", origin = "1970-01-01")
@@ -92,6 +151,13 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
         cal_subset <- ref_data %>%
           dplyr::filter(.data$timeBgn %within% cal_period)
         
+        if (plot_regression_data) {
+          print("Plotting regression data...this step will take some time...")
+          carbon_regression_plots(cal_subset,
+                                  plot_filename = paste0(plot_dir, "/", site, "_", date_seq[i],".pdf"),
+                                  method = method,
+                                  mtitle = paste0(site, date_seq[i]))
+        }
         #---------------------------------------------
         # do some light validation of these points.
         cal_subset <- cal_subset %>%
@@ -116,24 +182,52 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
           out$r2_12C[i] <- summary(tmpmod12C)$r.squared
           out$r2_13C[i] <- summary(tmpmod13C)$r.squared
           
-        } else {
+          # extract leave-one-out CV value
+          out$loocv_12C[i] <- loocv(tmpmod12C)
+          out$loocv_13C[i] <- loocv(tmpmod13C)
           
-          out$gain12C[i]   <- NA
-          out$gain13C[i]   <- NA
-          out$offset12C[i] <- NA
-          out$offset13C[i] <- NA
-          out$r2_12C[i]    <- NA
-          out$r2_13C[i]    <- NA
+          # get cv5 values  
+          tmp <- stats::formula(conc12CCO2_ref ~ conc12CCO2_obs)
+          cv12C <- estimate_calibration_error(tmp, cal_subset)
+          tmp <- stats::formula(conc13CCO2_ref ~ conc13CCO2_obs)
+          cv13C <- estimate_calibration_error(tmp, cal_subset)
+          
+          # assign cv values:
+          out$cv5mae_12C[i] <- cv12C$MAE
+          out$cv5mae_13C[i] <- cv13C$MAE
+          out$cv5rmse_12C[i] <- cv12C$RMSE
+          out$cv5rmse_13C[i] <- cv13C$RMSE
+          
+        } else {
+      
+          out$gain12C[i]      <- NA
+          out$gain13C[i]      <- NA
+          out$offset12C[i]    <- NA
+          out$offset13C[i]    <- NA
+          out$r2_12C[i]       <- NA
+          out$r2_13C[i]       <- NA
+          out$loocv_12C[i]    <- NA
+          out$loocv_13C[i]    <- NA          
+          out$cv5mae_12C[i]   <- NA
+          out$cv5mae_13C[i]   <- NA
+          out$cv5rmse_12C[i]  <- NA
+          out$cv5rmse_13C[i]  <- NA
         }
       }
 
-      
       #subset out data frame.
       out <- out[1:length(start_time),]
       
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
       out$timeBgn <- as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01")
       out$timeEnd <- as.POSIXct(end_time, tz = "UTC", origin = "1970-01-01")
+      
+      # re-order columns to ensure that they are consistent across methods
+      out <- out[, c("timeBgn", "timeEnd",
+                     "gain12C", "offset12C", "r2_12C", 
+                     "loocv_12C", "cv5mae_12C", "cv5rmse_12C",
+                     "gain13C", "offset13C", "r2_13C",
+                     "loocv_13C", "cv5mae_13C", "cv5rmse_13C")]
       
     }
   } else if (method == "linreg") {
@@ -235,9 +329,16 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
       out$timeBgn <- as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01")
       out$timeEnd <- as.POSIXct(end_time, tz = "UTC", origin = "1970-01-01")
+
+      # re-order columns to ensure that they are consistent across methods
+      out <- out[, c("timeBgn", "timeEnd",
+                     "d13C_slope", "d13C_intercept", "d13C_r2",
+                     "co2_slope", "co2_intercept", "co2_r2")]
+      
     }
   }
    
+  
   # ensure that not all dates are missing...narrowly defined here to 
   # be if out only has 1 row (should be the only case where this happens!)
   if (nrow(out) == 1) {
@@ -246,7 +347,12 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width) {
       out$timeEnd <- as.POSIXct("2010-01-01",format = "%Y-%m-%d")
     }
   }
-  
+
+  # check to see if any out$timeBgn or end are NA
+  if (sum(is.na(out$timeBgn)) > 0 | sum(is.na(out$timeEnd)) > 0) {
+    stop("NA in calibration data frame time - how did I get here?")
+  }
+    
   return(out)
     
 }
@@ -403,8 +509,7 @@ fit_water_regression <- function(stds, calibration_half_width, slope_tolerance, 
         hyd_cal_rsq[i]    <- NA
       }
     }
-    
-    print(start_time)
+
     
     # start time is numeric here at some point - hence, format not necessary 
     # to be specified below.

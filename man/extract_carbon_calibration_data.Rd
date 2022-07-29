@@ -17,5 +17,5 @@ Returns data frame of required variables.
 extract_carbon_calibration_data.R
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

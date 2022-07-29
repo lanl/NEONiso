@@ -1,6 +1,6 @@
 #' calibrate_carbon_bymonth
 #'
-#' `r lifecycle::badge("stable")`
+#' `r lifecycle::badge("deprecated")`
 #' This function drives a workflow that reads in NEON carbon isotope data
 #' of atmospheric CO2, calibrates it to the VPDB scale, and (optionally)
 #' writes the calibrated data to a new HDF5 file. Two different approaches
@@ -44,7 +44,7 @@
 #' error. This criterion clips clearly poor values. Selection of these criteria
 #' will become a function argument, and therefore customizable, in a future release.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname Name of the input file. (character)
 #' @param outname Name of the output file. (character)
@@ -104,11 +104,13 @@ calibrate_carbon_bymonth <- function(inname,
                                      correct_refData = TRUE,
                                      write_to_file = TRUE) {
 
+  lifecycle::deprecate_warn("0.6.0","calibrate_carbon_bymonth()","calibrate_carbon()")
+  
   #-----------------------------------------------------------
   # Extract reference data from input HDF5 file.
   #-----------------------------------------------------------
   # pull all carbon isotope data into a list.
-  ciso <- ingest_data(inname, analyte = 'Co2')
+  ciso <- ingest_data(inname, analyte = 'Co2', name_fix = FALSE)
   
   # extract the data we need from ciso list
   refe <- extract_carbon_calibration_data(ciso$refe_stacked)
@@ -129,7 +131,7 @@ calibrate_carbon_bymonth <- function(inname,
 #  calibrate ambient data.
 #  extract ambient measurements from ciso
   ciso <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2"))
-  ciso_logical <- grepl(pattern = "000", x = names(ciso))
+  ciso_logical <- grepl(pattern = "000", x = names(ciso)) & grepl(pattern = "09m", x = names(ciso))
   ciso_subset <- ciso[ciso_logical]
 
   if (method == "Bowling_2003") {
@@ -172,6 +174,8 @@ calibrate_carbon_bymonth <- function(inname,
     write_carbon_reference_data(inname, outname, site, cal_df)
     write_qfqm(inname, outname, site, 'co2')
     write_ucrt(inname, outname, site, 'co2')
+    
+    validate_output_file(inname, outname, site, 'co2')
     
     # one last invocation of hdf5 close all, for good luck
     rhdf5::h5closeAll()

@@ -42,8 +42,8 @@ additional columns added for calibrated CO2 mole fractions
 and d13C values.
 }
 \description{
-calibrate_standards_carbon
+Not sure this is used anymore.
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

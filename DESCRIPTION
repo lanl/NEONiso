@@ -1,12 +1,10 @@
 Package: NEONiso
 Type: Package
 Title: Tools to Calibrate and Work with NEON Atmospheric Isotope Data
-Version: 0.5.3
-Authors@R: c(person("Rich", "Fiorella", email = "rich.fiorella@utah.edu",
-                role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0824-4777")),
-           person(c("Gabriel", "J."), "Bowen", email = 'gabe.bowen@utah.edu',
-                role = 'rth'))
-Maintainer: Rich Fiorella <rich.fiorella@utah.edu>
+Version: 0.6.0.9000
+Authors@R: c(person("Rich", "Fiorella", email = "rfiorella@lanl.gov",
+                role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0824-4777")))
+Maintainer: Rich Fiorella <rfiorella@lanl.gov>
 Depends: 
     R (>= 4.0.0)
 Description: Functions for downloading,
@@ -23,7 +21,7 @@ BugReports: https://github.com/SPATIAL-Lab/NEONiso/issues
 URL: https://github.com/SPATIAL-Lab/NEONiso
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Imports:
     dplyr,
     zoo,
@@ -36,7 +34,10 @@ Imports:
     tidyselect,
     data.table,
     rlang,
-    lifecycle
+    lifecycle,
+    caret,
+    ggplot2,
+    gridExtra
 Suggests: 
     knitr,
     rmarkdown,

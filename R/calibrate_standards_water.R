@@ -1,6 +1,6 @@
 #' calibrate_standards_water
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param cal_df Data.frame containing calibration parameters
 #' @param ref_df Data.frame containing reference gas measurements

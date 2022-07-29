@@ -49,7 +49,7 @@
 #' a list of files corresponding to a site can also be provided, and then a single output
 #' file per site will be generated.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname Input file(s) that are to be calibrated. If a single file is given,
 #'               output will be a single file per site per month. If a list of files
@@ -84,6 +84,13 @@
 #' @param calibration_half_width Determines the period (in days)
 #'        from which reference data are selected (period
 #'        is 2*calibration_half_width).
+#' @param remove_known_bad_months There are a few site months with known spectral
+#'        issues where the isotope ratios are likely unrecoverable. This parameter
+#'        allows removal of these files, but allows them to remain in archive.
+#' @param plot_regression_data Default false; this is useful for diagnostics.
+#' @param plot_directory Only used if plot_regression_data is TRUE, but specify
+#'        where to write out diagnostic plot of regression data.
+#'        
 #'
 #' @return Returns nothing to the environment, but creates a new output HDF5
 #'         file containing calibrated carbon isotope values.
@@ -111,37 +118,67 @@ calibrate_carbon         <- function(inname,
                                      filter_ambient = TRUE,
                                      r2_thres = 0.95,
                                      correct_refData = TRUE,
-                                     write_to_file = TRUE) {
-
+                                     write_to_file = TRUE,
+                                     remove_known_bad_months = TRUE,
+                                     plot_regression_data = FALSE,
+                                     plot_directory = NULL) {
+  
+  if (remove_known_bad_months) {
+    if (site == "UNDE") {
+      inname <- inname[!grepl("2019-05|2019-06|2019-07|2019-08|2019-09",inname)]
+    } else if (site == "TEAK") {
+      inname <- inname[!grepl("2018-08|2018-09",inname)]
+    } else if (site == "SRER") {
+      inname <- inname[!grepl("2019-07",inname)]
+    }
+  }
+  
   #-----------------------------------------------------------
   # Extract reference data from input HDF5 file.
   #-----------------------------------------------------------
+
   # pull all carbon isotope data into a list.
   #inname <- list.files('~/Desktop/DP4_00200_001/ABBY/',full.names=TRUE)
   ciso <- ingest_data(inname, analyte = 'Co2')
-  
+
   # extract the data we need from ciso list
   refe <- extract_carbon_calibration_data(ciso$refe_stacked)
 
   # Okay this function now needs some work. *************
   if (correct_refData == TRUE) {
-    
+
+    print("Correcting reference calibration df...")    
     # do some work to correct the reference data frame
     refe <- correct_carbon_ref_cval(refe,site)
     
+    tmp_names <- names(ciso$reference)
+    
+    print("correcting reference output df.,..")
+    #apply seems to strip names from ciso$reference, so need to save above
+    # and reassign below.
+    ciso$reference <- lapply(names(ciso$reference),
+                             function(x) {
+                               ciso$reference[[x]] <- correct_carbon_ref_output(ciso$reference[[x]], site = site, refGas = x)
+                             })
+    
+    names(ciso$reference) <- tmp_names
   }
 
   # get calibration parameters data.frame.
   cal_df <- fit_carbon_regression(ref_data = refe, method = method,
-                                  calibration_half_width = calibration_half_width)
+                                  calibration_half_width = calibration_half_width,
+                                  plot_regression_data = plot_regression_data,
+                                  plot_dir = plot_directory,
+                                  site = site)
 
 #----------------------------------------------------------------------------
 #  calibrate ambient data.
 #  extract ambient measurements from ciso
-
-  ciso_subset <- ciso$ambient
-
+  
+  ciso_subset <- c(ciso$ambient, ciso$reference)
+  
   if (method == "Bowling_2003") {
+    
     ciso_subset_cal <- lapply(names(ciso_subset),
                               function(x) {
                                 calibrate_ambient_carbon_Bowling2003(
@@ -153,7 +190,9 @@ calibrate_carbon         <- function(inname,
                                   force_to_beginning = force_cal_to_beginning,
                                   r2_thres = r2_thres)
                               })
+    
   } else if (method == "linreg") {
+
     ciso_subset_cal <- lapply(names(ciso_subset),
                               function(x) {
                                 calibrate_ambient_carbon_linreg(
@@ -166,6 +205,7 @@ calibrate_carbon         <- function(inname,
                                   r2_thres = r2_thres)
                               })
   }
+  
   names(ciso_subset_cal) <- names(ciso_subset)
   #-----------------------------------------------------------
   # write out these data.frames to a new output file.
@@ -176,9 +216,10 @@ calibrate_carbon         <- function(inname,
     setup_output_file(inname, outname, site, 'co2')
     write_carbon_calibration_data(outname, site, cal_df, method = method)
     write_carbon_ambient_data(outname, site, ciso_subset_cal)
-    write_carbon_reference_data2(outname, site, ciso, cal_df)
     #write_qfqm(inname, outname, site, 'co2')
     #write_ucrt(inname, outname, site, 'co2')
+    
+    validate_output_file(inname, outname, site, 'co2')
     
     # one last invocation of hdf5 close all, for good luck
     rhdf5::h5closeAll()

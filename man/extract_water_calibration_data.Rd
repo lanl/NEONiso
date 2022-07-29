@@ -37,5 +37,5 @@ Returns data frame of required variables.
 extract_water_calibration_data
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

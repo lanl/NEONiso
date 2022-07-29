@@ -9,7 +9,7 @@
 #'
 #' @return A vector listing NEON core terrestrial sites.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @export
 #' @examples 
@@ -30,7 +30,7 @@ terrestrial_core_sites <- function() {
 #'
 #' @return A vector listing NEON core terrestrial sites.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #' 
 #' @export
 #' @examples 
@@ -54,7 +54,7 @@ terrestrial_relocatable_sites <- function() {
 #'
 #' @return A vector listing NEON sites measuring water vapor isotope ratios.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #' 
 
 water_isotope_sites <- function() {
@@ -76,7 +76,7 @@ water_isotope_sites <- function() {
 #' as NEON provisions new data or re-provisions data for an existing site 
 #' and month.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param file_dir Specify the root directory where the local EC store is kept.
 #' @param get Pull down data from NEON API that does not exist locally?
@@ -173,7 +173,7 @@ manage_local_EC_archive <- function(file_dir,
             if (!length(dl_names[k])==0) {
               if (!is.na(dl_names[k])) {
                 # check to see if file exists in folder
-                if (file.exists(paste0(file_dir, site_name, "/", dl_names[k])) |
+                if (file.exists(paste0(file_dir, site_name, "/", dl_names[k])) | # check for zipped or unzipped
                     file.exists(paste0(file_dir, site_name, "/", 
                                        substr(dl_names[k],1,nchar(dl_names[k])-3)))) {
                   print(paste(dl_names[k], "exists...skipping..."))
@@ -209,7 +209,8 @@ manage_local_EC_archive <- function(file_dir,
     
     if (length(files) > 0) {
       lapply(files, function(x) {
-        R.utils::gunzip(x, skip = TRUE, remove = FALSE)
+        #R.utils::gunzip(x, skip = TRUE, remove = FALSE)
+        R.utils::gunzip(x)
       })
     }
   }

@@ -4,12 +4,27 @@
 \alias{correct_carbon_ref_cval}
 \title{correct_carbon_ref_cval}
 \usage{
-correct_carbon_ref_cval(std_frame, site)
+correct_carbon_ref_cval(
+  std_frame,
+  site,
+  omit_already_corrected = TRUE,
+  co2_tol = 5,
+  d13c_tol = 0.25
+)
 }
 \arguments{
 \item{std_frame}{Standard data frame to perform swap on.}
 
 \item{site}{NEON four letter site code.}
+
+\item{omit_already_corrected}{Should we attempt correction, if it's
+already been corrected in the raw files.}
+
+\item{co2_tol}{Tolerance to use to select co2 values that need to be
+replaced, in ppm. Default = 5 ppm.}
+
+\item{d13c_tol}{Tolerance to use to select d13C values that need to be
+replaced, in ppm. Default = 0.25 per mil.}
 }
 \value{
 A data.frame, based on \code{std_frame}, where NEON-supplied
@@ -27,6 +42,9 @@ corrected, this function has no need to exist and will be
 immediately deprecated. As a result, this function is
 fairly messy but there is little incentive to improve it.
 }
+\details{
+Current sites and time periods affected:
+}
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

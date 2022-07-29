@@ -78,5 +78,5 @@ for a given site at the same time. A more flexible version that can handle all
 files or monthly files will be added to a future release.
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

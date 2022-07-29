@@ -21,5 +21,5 @@ Returns filtered vector.
 Median absolute deviation filter of Brock 1986.
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

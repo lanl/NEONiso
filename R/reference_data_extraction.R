@@ -1,6 +1,6 @@
 #' extract_carbon_calibration_data.R
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param data_list List containing data, from the /*/dp01/data/
 #'                  group in NEON HDF5 file.
@@ -22,6 +22,8 @@ extract_carbon_calibration_data <- function(data_list) {
            tidyselect::starts_with("data.isoCo2.dlta13CCo2"),
            tidyselect::starts_with("data.isoCo2.rtioMoleDryCo2")) %>%
     dplyr::filter(.data$verticalPosition %in% c("co2High", "co2Med", "co2Low"))
+    # uncertainty testing:
+    #dplyr::filter(.data$verticalPosition %in% c("co2Low", "co2Med"))
   
   # simplify names
   names(data) <- sub("data.isoCo2.", "", names(data))
@@ -38,7 +40,7 @@ extract_carbon_calibration_data <- function(data_list) {
 
 #' extract_water_calibration_data
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param standard String indicating whether to grab data from the high,
 #'                  medium, or low standard.

@@ -16,5 +16,5 @@ terrestrial_relocatable_sites
 terrestrial_relocatable_sites()
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

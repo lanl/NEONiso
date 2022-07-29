@@ -23,7 +23,7 @@
 #' Caution is suggested when analyzing data at low humidities, below ~5000 ppm,
 #' with likely higher biases at lower humidity values.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param site Four-letter NEON code for site being processed.
 #' @param time_diff_betweeen_standards Time (in seconds) required between
@@ -55,7 +55,7 @@ calibrate_water_linreg_bymonth <- function(inname,
                                    force_cal_to_end = TRUE,
                                    r2_thres = 0.95) {
   
-  lifecycle::deprecate_warn("0.5.0","calibrate_water_linreg_bymonth","calibrate_water_linreg")
+  lifecycle::deprecate_warn("0.5.0","calibrate_water_linreg_bymonth()","calibrate_water_linreg()")
   
   # print status.
   print("Processing water calibration data...")

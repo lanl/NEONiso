@@ -16,7 +16,10 @@ calibrate_carbon(
   filter_ambient = TRUE,
   r2_thres = 0.95,
   correct_refData = TRUE,
-  write_to_file = TRUE
+  write_to_file = TRUE,
+  remove_known_bad_months = TRUE,
+  plot_regression_data = FALSE,
+  plot_directory = NULL
 )
 }
 \arguments{
@@ -64,6 +67,15 @@ Users will be warned prior to removal of this argument.}
 
 \item{write_to_file}{Write calibrated ambient data to file?
 (Mostly used for testing)}
+
+\item{remove_known_bad_months}{There are a few site months with known spectral
+issues where the isotope ratios are likely unrecoverable. This parameter
+allows removal of these files, but allows them to remain in archive.}
+
+\item{plot_regression_data}{Default false; this is useful for diagnostics.}
+
+\item{plot_directory}{Only used if plot_regression_data is TRUE, but specify
+where to write out diagnostic plot of regression data.}
 }
 \value{
 Returns nothing to the environment, but creates a new output HDF5
@@ -131,5 +143,5 @@ calibrate_carbon_bymonth(inname = fin, outname = 'out.h5',
 
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

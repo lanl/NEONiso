@@ -25,5 +25,5 @@ calculate_12CO2(total_co2 = 410, delta13C = -8.5)
 
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

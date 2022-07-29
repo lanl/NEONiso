@@ -24,5 +24,5 @@ NEON's data files.
 Creates a skeleton hdf5 file for the calibrated data.
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }

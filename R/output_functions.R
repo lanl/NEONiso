@@ -3,35 +3,11 @@
 #################################################
 ### FUNCTIONS THAT WORK FOR BOTH H2O AND CO2 ####
 #################################################
-#' validate_analyte
-#'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
-#' @param analyte Co2 or H2o?
-#'
-#' @return Standardized string for the water ('H2o') or
-#'         carbon ('Co2') systems to make sure strings
-#'         are standardized across package functions.
-#'
-#' 
-#' 
-validate_analyte <- function(analyte) {
-  # helper function to make sure all of the variaous output functions are consistent.
-  # check to make sure first letter of analyte is capitalized,
-  # or capitalize if it's not (also make sure it's co2 or h2o)
-  if (analyte == 'co2' | analyte == 'h2o') {
-    analyte <- paste0(toupper(substring(analyte,1,1)),substring(analyte,2))
-  } else if (analyte != 'Co2' & analyte != 'H2o') {
-    stop("Invalid analyte selected in setup output file.")
-  }
-  
-  return(analyte)
-}
-
 #' setup_output_file
 #'
 #' Creates a skeleton hdf5 file for the calibrated data.
 #' 
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #' 
 #' @param inname Input file name.
 #' @param outname Output file name.
@@ -81,7 +57,7 @@ setup_output_file <- function(inname, outname, site, analyte) {
 #' Write NEON's qfqm data for an isotope species to 
 #' output file. Wraps copy_qfqm_group.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname Input file name.
 #' @param outname Output file name.
@@ -116,7 +92,7 @@ write_qfqm <- function(inname, outname, site, analyte) {
 #' Write NEON's ucrt data for an isotope species to 
 #' output file. Wraps copy_ucrt_group.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname Input file name.
 #' @param outname Output file name.
@@ -148,7 +124,7 @@ write_ucrt <- function(inname, outname, site, analyte) {
 
 #' copy_qfqm_group
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param data_list List of groups to retrieve qfqm data from.
 #' @param outname Output filename.
@@ -198,7 +174,7 @@ copy_qfqm_group <- function(data_list, outname, site, file, species) {
 
 #' copy_ucrt_group
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
@@ -250,7 +226,7 @@ copy_ucrt_group <- function(data_list, outname, site, file, species) {
 #######################################
 #' write_carbon_calibration_data
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
@@ -300,7 +276,7 @@ write_carbon_calibration_data <- function(outname, site, calDf, method) {
 #' towers where the isotope data (either H2O or CO2)
 #' have been calibrated using this package.
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
@@ -312,12 +288,16 @@ write_carbon_calibration_data <- function(outname, site, calDf, method) {
 write_carbon_ambient_data <- function(outname, site, amb_data_list) {
   
   print("Writing calibrated ambient data...")
+
   
   fid <- rhdf5::H5Fopen(outname)
   
   if (length(amb_data_list) > 0) {
     for (i in 1:length(amb_data_list)) {
       amb_data_subset <- amb_data_list[i]
+      
+      print(names(amb_data_subset))
+      print(site)
       
       co2_data_outloc <- rhdf5::H5Gcreate(fid,
                                           paste0("/", site, "/dp01/data/isoCo2/", 
@@ -344,7 +324,7 @@ write_carbon_ambient_data <- function(outname, site, amb_data_list) {
 
 #' write_carbon_reference_data
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname Input file name.
 #' @param outname Output file name.
@@ -363,30 +343,9 @@ write_carbon_reference_data <- function(inname, outname, site, calDf) {
   
 }
 
-#' write_carbon_reference_data2
-#'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
-#'
-#' @param outname Output file name.
-#' @param site NEON 4-letter site code.
-#' @param calDf Calibration data frame - 
-#'              this is the output from fit_carbon_regression
-#' @param allData Uncalibrated reference data frames.
-#'
-#' @return Nothing to the environment, but writes calibrated reference data to hdf5 file.
-#'
-write_carbon_reference_data2 <- function(outname, site, allData, calDf) {
-  
-  print("Writing calibrated reference data...")
-  calibrate_carbon_reference_data2(outname, "Low", site, allData = allData$reference, calParams = calDf)
-  calibrate_carbon_reference_data2(outname, "Med", site, allData = allData$reference, calParams = calDf)
-  calibrate_carbon_reference_data2(outname, "High", site, allData = allData$reference, calParams = calDf)
-  
-}
-
 #' calibrate_carbon_reference_data
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname Input file name.
 #' @param outname Output file name.
@@ -423,88 +382,12 @@ calibrate_carbon_reference_data <- function(inname, outname,
   rhdf5::H5Fclose(fid)
   rhdf5::h5closeAll()
 }
-
-#' calibrate_carbon_reference_data2
-#'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
-#'
-#' @param outname Output file name.
-#' @param standard Which standard are we working on? Must be "Low",
-#'                 "Med", or "High"
-#' @param allData Uncalibrated reference data frames.
-#' @param calParams Calibration data frame - 
-#'              this is the output from fit_carbon_regression
-#' @param site NEON 4-letter site code.
-#'
-#' @return Nothing to the environment.  
-#'
-calibrate_carbon_reference_data2 <- function(outname,
-                                            standard, site, allData, calParams)  {
-  
-  std <- allData[[base::paste0("co2", standard)]]
-  
-  std <- calibrate_standards_carbon(calParams, std, correct_bad_refvals = TRUE,
-                                    site = site, refGas = standard)
-  
-  # get year/month combo from outname:
-  tmp <- base::strsplit(outname, split = '.', fixed = TRUE)
-  yrmn <- tmp[[1]][8]
-  
-  fid <- rhdf5::H5Fopen(outname)
-  rhdf5::H5Gcreate(fid, paste0("/", site, "/dp01/data/isoCo2/co2",standard,"_09m"))
-  std_outloc <- rhdf5::H5Gopen(fid,
-                               paste0("/", site, "/dp01/data/isoCo2/co2",standard,"_09m"))
-  
-  # loop through each variable amb.data.list and write out as a dataframe.
-  lapply(names(std), function(x) {
-    if (!is.null(nrow(std[[x]]))) {
-      if (nrow(std[[x]]) > 0) {
-        rhdf5::h5writeDataset(obj = std[[x]],
-                                         h5loc = std_outloc,
-                                         name = x,
-                                         DataFrameAsCompound = TRUE)
-      } else {
-        dummyDf <- data.frame(timeBgn = paste0(yrmn,"-01T00:00:00.000Z"),
-                              timeEnd = paste0(yrmn,"-01T01:00:00.000Z"),
-                              mean = NA,
-                              min = NA,
-                              max = NA,
-                              vari = NA,
-                              numSamp = NA)
-        
-        rhdf5::h5writeDataset(obj = dummyDf,
-                                         h5loc = std_outloc,
-                                         name = x,
-                                         DataFrameAsCompound = TRUE)
-      }
-    } else {
-        dummyDf <- data.frame(timeBgn = paste0(yrmn,"-01T00:00:00.000Z"),
-                              timeEnd = paste0(yrmn,"-01T01:00:00.000Z"),
-                              mean = NA,
-                              min = NA,
-                              max = NA,
-                              vari = NA,
-                              numSamp = NA)
-        
-        rhdf5::h5writeDataset(obj = dummyDf,
-                                         h5loc = std_outloc,
-                                         name = x,
-                                         DataFrameAsCompound = TRUE)
-    }
-  })
-  
-  rhdf5::H5Gclose(std_outloc)
-  rhdf5::H5Fclose(fid)
-  rhdf5::h5closeAll()
-}
-
-
 #######################################
 ### FUNCTIONS THAT WORK ON ONLY H2O ###
 #######################################
 #' write_water_calibration_data
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
@@ -544,7 +427,7 @@ write_water_calibration_data <- function(outname, site, calDf) {
 
 #' write_water_reference_data
 #'
-#' @author Rich Fiorella \email{rich.fiorella@@utah.edu}
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname Input file name.
 #' @param outname Output file name.

@@ -4,7 +4,14 @@
 \alias{fit_carbon_regression}
 \title{fit_carbon_regression}
 \usage{
-fit_carbon_regression(ref_data, method, calibration_half_width)
+fit_carbon_regression(
+  ref_data,
+  method,
+  calibration_half_width,
+  plot_regression_data = FALSE,
+  plot_dir = "/dev/null",
+  site
+)
 }
 \arguments{
 \item{ref_data}{Reference data.frame from which to estimate
@@ -17,6 +24,14 @@ d13C and CO2 mole fractions ("linreg")?}
 \item{calibration_half_width}{Determines the period (in days)
 from which reference data are selected (period
 is 2*calibration_half_width).}
+
+\item{plot_regression_data}{True or false - should we plot the data used in
+the regression? Useful for debugging.}
+
+\item{plot_dir}{If plot_regression_data is true, where should the
+plots be saved?}
+
+\item{site}{Needed for regression plots.}
 }
 \value{
 Returns a data.frame of calibration parameters. If
@@ -30,5 +45,5 @@ for d13C and CO2 values.
 fit_carbon_regression
 }
 \author{
-Rich Fiorella \email{rich.fiorella@utah.edu}
+Rich Fiorella \email{rfiorella@lanl.gov}
 }
