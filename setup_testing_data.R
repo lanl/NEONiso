@@ -8,9 +8,9 @@ library(rhdf5)
 # exists in rbuildignore, so should not be bundled with package.
 # requires install and restart w/ NEONiso.
 
-master_file <- "/Volumes/GradSchoolBackup/NEON/DP4_00200_001/ONAQ/NEON.D15.ONAQ.DP4.00200.001.nsae.2019-06.basic.h5"
-master_ccalB03_file <- "~/Desktop/NEONcal/210303_CisoEC/ONAQ/NEON.D15.ONAQ.DP4.00200.001.nsae.2019-06.basic.20201020T212232Z.calibrated.h5"
-master_ccalLR_file <- "~/Desktop/NEONcal/210303_CisoLR/ONAQ/NEON.D15.ONAQ.DP4.00200.001.nsae.2019-06.basic.20201020T212232Z.calibrated.h5"
+master_file <- "NEON/DP4_00200_001/ONAQ/NEON.D15.ONAQ.DP4.00200.001.nsae.2019-06.basic.h5"
+master_ccalB03_file <- "210303_CisoEC/ONAQ/NEON.D15.ONAQ.DP4.00200.001.nsae.2019-06.basic.20201020T212232Z.calibrated.h5"
+master_ccalLR_file <- "210303_CisoLR/ONAQ/NEON.D15.ONAQ.DP4.00200.001.nsae.2019-06.basic.20201020T212232Z.calibrated.h5"
 
 #---------------------------------------
 # extract co2 data for unit testing:
@@ -462,5 +462,5 @@ h5delete(fid, '/YELL/dp01/data/isoCo2/co2High_30m')
 
 H5Fclose(fid)
 
-system('/Users/rfiorella/opt/anaconda3/bin/h5repack inst/extdata/NEON.D12.YELL.DP4.00200.001.nsae.2020-11.basic.20210209T161116Z.h5 inst/extdata/NEON.D12.YELL.DP4.00200.001.nsae.2020-11.basic.packed.h5')
+system('~/opt/anaconda3/bin/h5repack inst/extdata/NEON.D12.YELL.DP4.00200.001.nsae.2020-11.basic.20210209T161116Z.h5 inst/extdata/NEON.D12.YELL.DP4.00200.001.nsae.2020-11.basic.packed.h5')
 
