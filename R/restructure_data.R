@@ -88,9 +88,6 @@ ingest_data <- function(inname, analyte, name_fix = TRUE) {
 
   ambi_by_height <- base::split(ambient, factor(ambient$verticalPosition)) 
   refe_by_height <- base::split(reference, factor(reference$verticalPosition))
-  
-  print(names(ambi_by_height))
-  print(names(refe_by_height))
 
   #-------------------------
   # RESTRUCTURE AMBIENT
@@ -143,9 +140,6 @@ ingest_data <- function(inname, analyte, name_fix = TRUE) {
     # append _09m to refe_out....MAY CAUSE PROBLEMS FOR OTHER METHODS!!!!!!
     names(refe_out) <- paste0(names(refe_out), "_09m")
   }
-  
-  print(names(refe_out))
-  print(names(ambi_out))
   
   output <- list(ambi_out, refe_out, reference)
   names(output) <- c("ambient", "reference", "refe_stacked")
