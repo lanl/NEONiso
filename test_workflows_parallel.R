@@ -33,14 +33,14 @@ test_date <- Sys.Date()
 dir.create(paste0('~/NEONcal/',test_date,"_parallel"))
 
 # which tests to run?
-run_test1 <- FALSE
-run_test2 <- FALSE
-run_test3 <- FALSE
+run_test1 <- TRUE
+run_test2 <- TRUE
+run_test3 <- TRUE
 run_test4 <- TRUE
-run_test5 <- FALSE
-run_test6 <- FALSE
-run_test7 <- FALSE
-run_test8 <- FALSE
+run_test5 <- TRUE
+run_test6 <- TRUE
+run_test7 <- TRUE
+run_test8 <- TRUE
 rapid_test <- FALSE # if rapid, only run ~5% of possible site months.
 
 # load required packages:
