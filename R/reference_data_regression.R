@@ -104,8 +104,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                         offset13C = as.numeric(NA),
                         r2_12C = as.numeric(NA),
                         r2_13C = as.numeric(NA),
-                        loocv_12C = as.numeric(NA),
-                        loocv_13C = as.numeric(NA),
+                        cvloo_12C = as.numeric(NA),
+                        cvloo_13C = as.numeric(NA),
                         cv5mae_12C = as.numeric(NA),
                         cv5mae_13C = as.numeric(NA),
                         cv5rmse_12C = as.numeric(NA),
@@ -118,8 +118,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                         offset13C = numeric(length = 2e5),
                         r2_12C    = numeric(length = 2e5),
                         r2_13C    = numeric(length = 2e5),
-                        loocv_12C = numeric(length = 2e5),
-                        loocv_13C = numeric(length = 2e5),
+                        cvloo_12C = numeric(length = 2e5),
+                        cvloo_13C = numeric(length = 2e5),
                         cv5mae_12C = numeric(length = 2e5),
                         cv5mae_13C = numeric(length = 2e5),
                         cv5rmse_12C = numeric(length = 2e5),
@@ -183,8 +183,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
           out$r2_13C[i] <- summary(tmpmod13C)$r.squared
           
           # extract leave-one-out CV value
-          out$loocv_12C[i] <- loocv(tmpmod12C)
-          out$loocv_13C[i] <- loocv(tmpmod13C)
+          out$cvloo_12C[i] <- loocv(tmpmod12C)
+          out$cvloo_13C[i] <- loocv(tmpmod13C)
           
           # get cv5 values  
           tmp <- stats::formula(conc12CCO2_ref ~ conc12CCO2_obs)
@@ -206,8 +206,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
           out$offset13C[i]    <- NA
           out$r2_12C[i]       <- NA
           out$r2_13C[i]       <- NA
-          out$loocv_12C[i]    <- NA
-          out$loocv_13C[i]    <- NA          
+          out$cvloo_12C[i]    <- NA
+          out$cvloo_13C[i]    <- NA          
           out$cv5mae_12C[i]   <- NA
           out$cv5mae_13C[i]   <- NA
           out$cv5rmse_12C[i]  <- NA

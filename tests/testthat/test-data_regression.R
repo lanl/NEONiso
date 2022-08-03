@@ -19,10 +19,10 @@ test_that("fit_carbon_regression returns data.frame", {
   expect_s3_class(fit_carbon_regression(co2data, method = "linreg", calibration_half_width = 2), "data.frame")
 })
 
-test_that("calibration data frames have 8 columns", {
+test_that("calibration data frames have 14 columns", {
   skip_on_cran()
   expect_equal(ncol(calDf_B03), 14)
-  expect_equal(ncol(calDf_LR), 8)
+  expect_equal(ncol(calDf_LR), 14)
 })
 
 

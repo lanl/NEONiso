@@ -155,8 +155,8 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   # extract 12CO2 and 13CO2 concentrations from the ambient data, 
   # set as NA, unless overwritten
   
-  mean12c <- max12c <- min12c <- cv5rmse12c <- loocv12c <- rep(NA, length(amb_delta$mean)) # placeholders for 12CO2 vecs
-  mean13c <- max13c <- min13c <- cv5rmse13c <- loocv13c <- rep(NA, length(amb_delta$mean)) # placeholders for 13CO2 vecs
+  mean12c <- max12c <- min12c <- cv5rmse12c <- cvloo12c <- rep(NA, length(amb_delta$mean)) # placeholders for 12CO2 vecs
+  mean13c <- max13c <- min13c <- cv5rmse13c <- cvloo13c <- rep(NA, length(amb_delta$mean)) # placeholders for 13CO2 vecs
 
   for (i in seq_len(length(var_inds_in_calperiod))) {
     # calculate calibrated 12CO2 concentrations
@@ -167,7 +167,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
     max12c[var_inds_in_calperiod[[i]]] <- caldf$gain12C[i] *
       amb_12CO2$max[var_inds_in_calperiod[[i]]] + caldf$offset12C[i]
     cv5rmse12c[var_inds_in_calperiod[[i]]] <- caldf$cv5rmse_12C[i]
-    loocv12c[var_inds_in_calperiod[[i]]] <- caldf$loocv_12C[i]
+    cvloo12c[var_inds_in_calperiod[[i]]] <- caldf$cvloo_12C[i]
 
     # calculate calibrated 13CO2 concentrations
     mean13c[var_inds_in_calperiod[[i]]] <- caldf$gain13C[i] *
@@ -177,7 +177,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
     max13c[var_inds_in_calperiod[[i]]] <- caldf$gain13C[i] *
       amb_13CO2$max[var_inds_in_calperiod[[i]]] + caldf$offset13C[i]
     cv5rmse13c[var_inds_in_calperiod[[i]]] <- caldf$cv5rmse_13C[i]
-    loocv13c[var_inds_in_calperiod[[i]]] <- caldf$loocv_13C[i]
+    cvloo13c[var_inds_in_calperiod[[i]]] <- caldf$cvloo_13C[i]
 
   }
   
@@ -201,9 +201,9 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   amb_delta$CVcalUcrt <- round(abs(amb_delta$mean_cal) *
                                 sqrt((cv5rmse12c/mean12c)^2 + (cv5rmse13c/mean13c)^2), 3)
   amb_delta$LOOcalUcrt <- round(abs(amb_delta$mean_cal) *
-                                 sqrt((loocv12c/mean12c)^2 + (loocv13c/mean13c)^2), 3)
+                                 sqrt((cvloo12c/mean12c)^2 + (cvloo13c/mean13c)^2), 3)
   amb_co2$CVcalUcrt   <- round(sqrt(cv5rmse12c^2 + cv5rmse13c^2), 3)
-  amb_co2$LOOcalUcrt  <- round(sqrt(loocv12c^2 + loocv13c^2), 3)
+  amb_co2$LOOcalUcrt  <- round(sqrt(cvloo12c^2 + cvloo13c^2), 3)
   
   # replace ambdf in amb_data_list, return amb_data_list
   amb_data_list$dlta13CCo2 <- amb_delta
