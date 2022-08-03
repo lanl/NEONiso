@@ -205,6 +205,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   #                               sqrt((cvloo12c/mean12c)^2 + (cvloo13c/mean13c)^2), 3)
   #amb_co2$CVcalUcrt   <- round(sqrt(cv5rmse12c^2 + cv5rmse13c^2), 3)
   #amb_co2$LOOcalUcrt  <- round(sqrt(cvloo12c^2 + cvloo13c^2), 3)
+
   
   # replace ambdf in amb_data_list, return amb_data_list
   amb_data_list$dlta13CCo2 <- amb_delta
