@@ -296,9 +296,6 @@ write_carbon_ambient_data <- function(outname, site, amb_data_list) {
     for (i in 1:length(amb_data_list)) {
       amb_data_subset <- amb_data_list[i]
       
-      print(names(amb_data_subset))
-      print(site)
-      
       co2_data_outloc <- rhdf5::H5Gcreate(fid,
                                           paste0("/", site, "/dp01/data/isoCo2/", 
                                                  names(amb_data_subset)))

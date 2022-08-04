@@ -104,8 +104,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                         offset13C = as.numeric(NA),
                         r2_12C = as.numeric(NA),
                         r2_13C = as.numeric(NA),
-                        loocv_12C = as.numeric(NA),
-                        loocv_13C = as.numeric(NA),
+                        cvloo_12C = as.numeric(NA),
+                        cvloo_13C = as.numeric(NA),
                         cv5mae_12C = as.numeric(NA),
                         cv5mae_13C = as.numeric(NA),
                         cv5rmse_12C = as.numeric(NA),
@@ -118,8 +118,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                         offset13C = numeric(length = 2e5),
                         r2_12C    = numeric(length = 2e5),
                         r2_13C    = numeric(length = 2e5),
-                        loocv_12C = numeric(length = 2e5),
-                        loocv_13C = numeric(length = 2e5),
+                        cvloo_12C = numeric(length = 2e5),
+                        cvloo_13C = numeric(length = 2e5),
                         cv5mae_12C = numeric(length = 2e5),
                         cv5mae_13C = numeric(length = 2e5),
                         cv5rmse_12C = numeric(length = 2e5),
@@ -183,8 +183,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
           out$r2_13C[i] <- summary(tmpmod13C)$r.squared
           
           # extract leave-one-out CV value
-          out$loocv_12C[i] <- loocv(tmpmod12C)
-          out$loocv_13C[i] <- loocv(tmpmod13C)
+          out$cvloo_12C[i] <- loocv(tmpmod12C)
+          out$cvloo_13C[i] <- loocv(tmpmod13C)
           
           # get cv5 values  
           tmp <- stats::formula(conc12CCO2_ref ~ conc12CCO2_obs)
@@ -206,8 +206,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
           out$offset13C[i]    <- NA
           out$r2_12C[i]       <- NA
           out$r2_13C[i]       <- NA
-          out$loocv_12C[i]    <- NA
-          out$loocv_13C[i]    <- NA          
+          out$cvloo_12C[i]    <- NA
+          out$cvloo_13C[i]    <- NA          
           out$cv5mae_12C[i]   <- NA
           out$cv5mae_13C[i]   <- NA
           out$cv5rmse_12C[i]  <- NA
@@ -225,9 +225,9 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       # re-order columns to ensure that they are consistent across methods
       out <- out[, c("timeBgn", "timeEnd",
                      "gain12C", "offset12C", "r2_12C", 
-                     "loocv_12C", "cv5mae_12C", "cv5rmse_12C",
+                     "cvloo_12C", "cv5mae_12C", "cv5rmse_12C",
                      "gain13C", "offset13C", "r2_13C",
-                     "loocv_13C", "cv5mae_13C", "cv5rmse_13C")]
+                     "cvloo_13C", "cv5mae_13C", "cv5rmse_13C")]
       
     }
   } else if (method == "linreg") {
@@ -245,18 +245,30 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                         d13C_slope     = as.numeric(NA),
                         d13C_intercept = as.numeric(NA),
                         d13C_r2        = as.numeric(NA),
+                        d13C_cvloo     = as.numeric(NA),
+                        d13C_cv5mae    = as.numeric(NA),
+                        d13C_cv5rmse   = as.numeric(NA),
                         co2_slope      = as.numeric(NA),
                         co2_intercept  = as.numeric(NA),
-                        co2_r2         = as.numeric(NA))
+                        co2_r2         = as.numeric(NA),
+                        co2_cvloo      = as.numeric(NA),
+                        co2_cv5mae     = as.numeric(NA),
+                        co2_cv5rmse    = as.numeric(NA))
     } else {
       
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
       out <- data.frame(d13C_slope     = numeric(length = 2e5),
                         d13C_intercept = numeric(length = 2e5),
                         d13C_r2        = numeric(length = 2e5),
+                        d13C_cvloo     = numeric(length = 2e5),
+                        d13C_cv5mae    = numeric(length = 2e5),
+                        d13C_cv5rmse   = numeric(length = 2e5),
                         co2_slope      = numeric(length = 2e5),
                         co2_intercept  = numeric(length = 2e5),
-                        co2_r2         = numeric(length = 2e5))
+                        co2_r2         = numeric(length = 2e5),
+                        co2_cvloo      = numeric(length = 2e5),
+                        co2_cv5mae     = numeric(length = 2e5),
+                        co2_cv5rmse    = numeric(length = 2e5))
       
       # get start and end days.
       start_date <- as.Date(min(ref_data$timeBgn))
@@ -302,6 +314,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
           tmpmod_co2 <- stats::lm(rtioMoleDryCo2Refe.mean ~ rtioMoleDryCo2.mean,
                                   data = cal_subset)
           
+          
           out$d13C_slope[i]     <- coef(tmpmod_d13)[[2]]
           out$d13C_intercept[i] <- coef(tmpmod_d13)[[1]]
           out$d13C_r2[i]        <- summary(tmpmod_d13)$r.squared
@@ -309,6 +322,23 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
           out$co2_slope[i]      <- coef(tmpmod_co2)[[2]]
           out$co2_intercept[i]  <- coef(tmpmod_co2)[[1]]
           out$co2_r2[i]         <- summary(tmpmod_co2)$r.squared
+          
+          # extract uncertainties:
+          # extract leave-one-out CV value
+          out$d13C_cvloo[i] <- loocv(tmpmod_d13)
+          out$co2_cvloo[i]  <- loocv(tmpmod_co2)
+          
+          # get cv5 values  
+          tmp <- stats::formula(dlta13CCo2Refe.mean ~ dlta13CCo2.mean)
+          cv_d13C <- estimate_calibration_error(tmp, cal_subset)
+          tmp <- stats::formula(rtioMoleDryCo2Refe.mean ~ rtioMoleDryCo2.mean)
+          cv_co2 <- estimate_calibration_error(tmp, cal_subset)
+          
+          # assign cv values:
+          out$d13C_cv5mae[i]  <- cv_d13C$MAE
+          out$co2_cv5mae[i]   <- cv_co2$MAE
+          out$d13C_cv5rmse[i] <- cv_d13C$RMSE
+          out$co2_cv5rmse[i]  <- cv_co2$RMSE
           
         } else {
           
@@ -319,6 +349,14 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
           out$co2_slope[i]      <- NA
           out$co2_intercept[i]  <- NA
           out$co2_r2[i]         <- NA
+          
+          # set uncertainty values to NA as well.
+          out$d13C_cvloo[i]   <- NA
+          out$d13C_cv5mae[i]  <- NA
+          out$d13C_cv5rmse[i] <- NA
+          out$co2_cvloo[i]    <- NA
+          out$co2_cv5mae[i]   <- NA
+          out$co2_cv5rmse[i]  <- NA
           
         }
       }
@@ -333,7 +371,9 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       # re-order columns to ensure that they are consistent across methods
       out <- out[, c("timeBgn", "timeEnd",
                      "d13C_slope", "d13C_intercept", "d13C_r2",
-                     "co2_slope", "co2_intercept", "co2_r2")]
+                     "d13C_cvloo", "d13C_cv5mae", "d13C_cv5rmse",
+                     "co2_slope", "co2_intercept", "co2_r2",
+                     "co2_cvloo", "co2_cv5mae", "co2_cv5rmse")]
       
     }
   }

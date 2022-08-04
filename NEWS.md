@@ -5,7 +5,7 @@ have some known issues (e.g., no correction is made for concentration dependence
 of the analyzers yet), and any data produced from this function should be considered
 provisional.
 * Added capability to plot data used in carbon calibration regression in order
-to help identify periods where calibration paramters seem to be okay, but
+to help identify periods where calibration parameters seem to be okay, but
 quality of calibrated data is degraded.
 * Added cross-validation error estimates to carbon calibration routines.
 * The calibrate_carbon_bymonth() function has been marked as deprecated, but will
