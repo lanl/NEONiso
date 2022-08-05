@@ -1,7 +1,7 @@
 Package: NEONiso
 Type: Package
 Title: Tools to Calibrate and Work with NEON Atmospheric Isotope Data
-Version: 0.6.0.9000
+Version: 0.6.0
 Authors@R: c(person("Rich", "Fiorella", email = "rfiorella@lanl.gov",
                 role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0824-4777")))
 Maintainer: Rich Fiorella <rfiorella@lanl.gov>
@@ -11,11 +11,12 @@ Description: Functions for downloading,
     calibrating, and analyzing atmospheric isotope data bundled
     into the eddy covariance data products of the National Ecological
     Observatory Network (NEON) <https://www.neonscience.org>. 
-    In this version, calibration tools are provided for only the 
-    carbon isotope products. Tools for calibrating water isotope 
-    products are under development. More details are found in Fiorella et al. (2021)
+    Calibration tools are provided for carbon and water isotope products.
+    Carbon isotope calibration details are found in Fiorella et al. (2021)
     <doi:10.1029/2020JG005862>, and the readme 
-    file at <https://github.com/lanl/NEONiso>.
+    file at <https://github.com/lanl/NEONiso>. Tools for calibrating water 
+    isotope products have been added as of 0.6.0, but have known deficiencies
+    and should be considered very experimental currently.
 License: GPL-3
 BugReports: https://github.com/lanl/NEONiso/issues
 URL: https://github.com/lanl/NEONiso
