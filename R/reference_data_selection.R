@@ -40,7 +40,7 @@ select_daily_reference_data <- function(standard_df, analyte, min_nobs=NA) {
       dplyr::filter(.data$dlta13CCo2.numSamp > min_nobs | is.na(.data$dlta13CCo2.numSamp)) %>%
       dplyr::slice(1) %>%
       dplyr::ungroup() %>%
-      dplyr::select(-date) %>%
+      dplyr::select(-"date") %>%
       dplyr::arrange(.data$timeBgn)
     
   } else if (analyte == "h2o") {
@@ -51,7 +51,7 @@ select_daily_reference_data <- function(standard_df, analyte, min_nobs=NA) {
       dplyr::filter(.data$d18O_meas_n > min_nobs | is.na(.data$d18O_meas_n)) %>%
       dplyr::slice(tail(row_number(), 3)) %>%
       dplyr::ungroup() %>%
-      dplyr::select(-date)
+      dplyr::select(-"date")
     
   } else {
     

@@ -167,9 +167,9 @@ calibrate_water_linreg_bymonth <- function(inname,
     
     # make dataframe of calibration data.
     times <- stds %>%
-      dplyr::select(.data$d18O_meas_btime, .data$d18O_meas_etime, .data$d18O_ref_btime,
-                    .data$d18O_ref_etime, .data$d2H_meas_btime, .data$d2H_meas_etime,
-                    .data$d2H_ref_btime, .data$d2H_ref_etime, .data$cal_period) %>%
+      dplyr::select("d18O_meas_btime", "d18O_meas_etime", "d18O_ref_btime",
+                    "d18O_ref_etime", "d2H_meas_btime", "d2H_meas_etime",
+                    "d2H_ref_btime", "d2H_ref_etime", "cal_period") %>%
       dplyr::group_by(.data$cal_period) %>%
       dplyr::summarize(etime = max(c(.data$d18O_meas_etime, .data$d18O_ref_etime,
                                      .data$d2H_meas_etime, .data$d2H_ref_etime)))

@@ -28,8 +28,8 @@ test_that("ingest_data returns list with correct sublist names", {
 
 # test restructure_carbon_variables function
 rest_raw <- neonUtilities::stackEddy(fin, avg = 9, level = 'dp01')[[1]] %>%
-  dplyr::select(.data$verticalPosition, .data$timeBgn, 
-                .data$timeEnd, tidyselect::contains('isoCo2'))
+  dplyr::select("verticalPosition", "timeBgn", 
+                "timeEnd", tidyselect::contains('isoCo2'))
 
 rest_raw <- rest_raw[rowSums(is.na(rest_raw)) < 145, ] # Needed to remove merge error where times are slightly different between h2o and co2.
 
