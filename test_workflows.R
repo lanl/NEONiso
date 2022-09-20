@@ -14,7 +14,7 @@
 # 8) calibrate_water_linreg_bysite works
 
 # where does uncalibrated data live?
-data.dir <- '~/airflow/data/01-DP4_00200_001/'
+data.dir <- '~/Desktop/DP4_00200_001/'
 
 # set test_date
 #test_date <- "2022-01-01"
@@ -27,14 +27,14 @@ devtools::load_all()
 dir.create(paste0('~/NEONcal/',test_date,"_tests"))
 
 # which tests to run?
-run_test1 <- TRUE
+run_test1 <- FALSE
 run_test2 <- FALSE
-run_test3 <- FALSE 
+run_test3 <- FALSE
 run_test4 <- FALSE
 run_test5 <- FALSE
 run_test6 <- FALSE  
 run_test7 <- FALSE
-run_test8 <- FALSE
+run_test8 <- TRUE
 rapid_test <- FALSE # if rapid, only run ~5% of possible site months.
    
 # load required packages: 
@@ -42,7 +42,7 @@ library(rhdf5)
 library(dplyr)
 library(lubridate)
 
-#----------------------------- -----------------------
+#----------------------------------------------------
 # Carbon tests:
 #----------------------------------------------------
 # calibrate_carbon_bymonth tests:
@@ -78,7 +78,8 @@ if (run_test1 | run_test2 | run_test3 | run_test5) {
 }
 
 if (run_test4 | run_test6) {
-  csites <- c(NEONiso:::terrestrial_core_sites(), NEONiso:::terrestrial_relocatable_sites())
+  #csites <- c(NEONiso:::terrestrial_core_sites(), NEONiso:::terrestrial_relocatable_sites())
+  csites <- "ONAQ"
 }
 
 # water files
@@ -100,13 +101,14 @@ if (run_test7) {
   
   # get names only.
   wnames.lst <- strsplit(wnames,split="/")
-  wnames.tmp <- sapply(wnames.lst,'[[',7)
+  wnames.tmp <- sapply(wnames.lst,'[[',8)
   
   wnames.out <- gsub(".h5",".calibrated.h5",wnames.tmp)
 }
 
 if (run_test8) {
-  wsites <- NEONiso:::water_isotope_sites()
+ # wsites <- NEONiso:::water_isotope_sites()
+ wsites <- "ONAQ"
 }
 
 # if we're doing rapid testing!
@@ -187,7 +189,7 @@ if (run_test4) {
     fout <- list.files(paste0(data.dir,csites[i],'/'), pattern = '.h5', full.names=FALSE)
     
     calibrate_carbon(fin,
-                     paste0('~/NEONcal/',test_date,'_tests/04/',fout[1]),
+                     paste0('~/NEONcal/',test_date,'_tests/04/',fout[length(fout)]),
                      site=csites[i], r2_thres = 0.95,
                      calibration_half_width = 100000)
   }

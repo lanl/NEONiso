@@ -14,8 +14,6 @@
 ^uncertainty_testing\.R$
 ^test_workflows_parallel\.R$
 ^test_workflows_parallel\.log$
-^uncertainty_analysis\.R$
-^extract_data_for_Gabe\.R$
 ^refCorrections\.xlsx$
 ^make_ref_corrections_data\.R$
 ^LICENSE\.md$
