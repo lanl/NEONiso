@@ -12,6 +12,9 @@ A vector listing NEON sites measuring water vapor isotope ratios.
 \description{
 water_isotope_sites
 }
+\examples{
+water_isotope_sites()
+}
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}
 }
