@@ -10,12 +10,12 @@
 #'
 #' @param std_frame Standard data frame to perform swap on.
 #' @param dxs_thres d-excess threshold to indicate when to swap.
-#' 
+#'
 #' @return A data.frame based on `std_frame`, where d18O and
 #'         d2H values have been swapped from NEON input files if
 #'         determined to have a reference value mismatch. Mismatch
-#'         is determined based on the d-excess of the standard (= 
-#'         d2H - 8*d18O), using a value of 500 by default. 
+#'         is determined based on the d-excess of the standard (=
+#'         d2H - 8*d18O), using a value of 500 by default.
 
 swap_standard_isotoperatios <- function(std_frame, dxs_thres = 500) {
   # calculate d excess
@@ -62,43 +62,45 @@ swap_standard_isotoperatios <- function(std_frame, dxs_thres = 500) {
 #'             replaced, in ppm. Default = 5 ppm.
 #' @param d13c_tol Tolerance to use to select d13C values that need to be
 #'             replaced, in ppm. Default = 0.25 per mil.
-#' 
+#'
 #' @return A data.frame, based on `std_frame`, where NEON-supplied
-#' reference values have been corrected if a mismatch has previously 
-#' been identified. 
+#' reference values have been corrected if a mismatch has previously
+#' been identified.
 #' @export
-#' 
+#'
 
 correct_carbon_ref_cval <- function(std_frame,
                                     site,
                                     omit_already_corrected = TRUE,
                                     co2_tol = 5, d13c_tol = 0.25) {
-  
+
   # uses internal dataset, carb, which has columns:
   # site, refGas, startDate, endDate, co2_old, co2_corr, co2_repairedRaw,
   # d13C_old, d13C_corr, d13C_repairedRaw, versionAdded, notes
 
   # if data have already been corrected in raw files, no need to correct again.
   if (omit_already_corrected) {
-    carb_red <- subset(carb, carb$co2_repairedRaw == FALSE | carb$d13C_repairedRaw == FALSE)
-  } else { 
-    carb_red <- carb 
+    carb_red <- subset(carb,
+                  carb$co2_repairedRaw == FALSE | carb$d13C_repairedRaw == FALSE)
+  } else {
+    carb_red <- carb
   }
-  
-  carb_red <- carb_red[carb_red$site == site,]
+
+  carb_red <- carb_red[carb_red$site == site, ]
 
   # check to see if site is in carb$site, otherwise, we can skip.
   if (nrow(carb_red) > 0 & (site %in% unique(carb$site))) {  # nrow > 0 needed due to omit_already_corrected flag.
-    
+
     for (z in 1:nrow(carb_red)) {
-      
-      print(paste("Correcting data for", site, "between", carb_red$startDate[z], "and", carb_red$endDate[z]))
-      
+
+      print(paste("Correcting data for", site, "between",
+                  carb_red$startDate[z], "and", carb_red$endDate[z]))
+
       co2_min <- carb_red$co2_old[z] - co2_tol
       co2_max <- carb_red$co2_old[z] + co2_tol
       d13c_min <- carb_red$d13C_old[z] - d13c_tol
       d13c_max <- carb_red$d13C_old[z] + d13c_tol
-      
+
       if (carb_red$co2_repairedRaw[z] == FALSE) {
         std_frame$rtioMoleDryCo2Refe.mean[std_frame$timeBgn > carb_red$startDate[z] &
               std_frame$timeBgn <= carb_red$endDate[z] &
@@ -106,7 +108,7 @@ correct_carbon_ref_cval <- function(std_frame,
               std_frame$rtioMoleDryCo2Refe.mean <= co2_max &
               std_frame$rtioMoleDryCo2Refe.mean >= co2_min] <- carb_red$co2_corr[z]
       }
-      
+
       if (carb_red$d13C_repairedRaw[z] == FALSE) {
         std_frame$dlta13CCo2Refe.mean[std_frame$timeBgn > carb_red$startDate[z] &
               std_frame$timeBgn <= carb_red$endDate[z] &
@@ -120,7 +122,7 @@ correct_carbon_ref_cval <- function(std_frame,
 }
 
 #' Correct carbon ref output
-#' 
+#'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param std_list List containing reference/validation gas measurements.
@@ -133,9 +135,9 @@ correct_carbon_ref_cval <- function(std_frame,
 #'             correct measured CO2 values within +/- co2_tol within time period
 #'             identified as having incorrect reference values.
 #' @param d13c_tol Tolerance used to identify a mismatch in d13C values. Will
-#'             correct measured d13C values within +/- d13c_tol within time period
-#'             identified as having incorrect reference values.
-#' @param refGas Which reference gas is being corrected? Expects "co2High", 
+#'             correct measured d13C values within +/- d13c_tol within time
+#'             period identified as having incorrect reference values.
+#' @param refGas Which reference gas is being corrected? Expects "co2High",
 #'             "co2Med", or "co2Low"
 #'
 #' @return A version of std_list with corrected reference values.
@@ -146,42 +148,42 @@ correct_carbon_ref_output <- function(std_list,
                                       omit_already_corrected = TRUE,
                                       co2_tol = 5, d13c_tol = 0.25,
                                       refGas) {
-  
+
   # note: this one operates on lists! function above operates on data frames
   # uses internal dataset, carb, which has columns:
   # site, refGas, startDate, endDate, co2_old, co2_corr, co2_repairedRaw,
   # d13C_old, d13C_corr, d13C_repairedRaw, versionAdded, notes
-  
+
   # if data have already been corrected in raw files, no need to correct again.
   if (omit_already_corrected) {
     carb_red <- subset(carb, carb$co2_repairedRaw == FALSE | carb$d13C_repairedRaw == FALSE)
-  } else { 
-    carb_red <- carb 
+  } else {
+    carb_red <- carb
   }
-  
+
   carb_red <- carb_red[carb_red$site == site & carb_red$refGas == substr(refGas, 1, nchar(refGas) - 4),] # strip off time indices
-  
+
   # check to see if site is in carb$site, otherwise, we can skip.
   if (nrow(carb_red) > 0 & (site %in% unique(carb$site))) {
-    
+
     # check name of list to see if any corrections are needed for this standard
     for (z in 1:nrow(carb_red)) {
-      
+
       print(paste("Correcting data for", site, substr(refGas, 1, nchar(refGas) - 4),
                   "between", carb_red$startDate[z], "and", carb_red$endDate[z]))
-      
+
       co2_min <- carb_red$co2_old[z] - co2_tol
       co2_max <- carb_red$co2_old[z] + co2_tol
       d13c_min <- carb_red$d13C_old[z] - d13c_tol
       d13c_max <- carb_red$d13C_old[z] + d13c_tol
-      
+
       if (carb_red$co2_repairedRaw[z] == FALSE) {
         std_list$rtioMoleDryCo2Refe$mean[std_list$rtioMoleDryCo2Refe$timeBgn > carb_red$startDate[z] &
                                             std_list$rtioMoleDryCo2Refe$timeBgn <= carb_red$endDate[z] &
                                             std_list$rtioMoleDryCo2Refe$mean <= co2_max &
                                             std_list$rtioMoleDryCo2Refe$mean >= co2_min] <- carb_red$co2_corr[z]
       }
-      
+
       if (carb_red$d13C_repairedRaw[z] == FALSE) {
         std_list$dlta13CCo2Refe$mean[std_list$dlta13CCo2Refe$timeBgn > carb_red$startDate[z] &
                                         std_list$dlta13CCo2Refe$timeBgn <= carb_red$endDate[z] &
@@ -191,247 +193,5 @@ correct_carbon_ref_output <- function(std_list,
     }
   }
   return(std_list)
-  
+
 }
-
-#   # implementing the change here:
-#   if (site == "ONAQ") {
-#     print("Correcting ONAQ reference values between 6/18/18 and 2/7/19...")
-#     # all reference gases have incorrect d13C and CO2 mol frac
-#     # between 6/18/18 and 2/7/2019
-#     
-#     corr_start <- as.POSIXct("06/18/2018", format = "%m/%d/%Y")
-#     corr_end   <- as.POSIXct("02/07/2019", format = "%m/%d/%Y")
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2High" &
-#                                         (std_frame$rtioMoleDryCo2Refe.mean > 465)] <- 466.643
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2High" &
-#                                     (std_frame$dlta13CCo2Refe.mean < -11)] <- -10.539
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2Med" &
-#                                         (std_frame$rtioMoleDryCo2Refe.mean > 450)] <- 412.103
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2Med" &
-#                                     (std_frame$dlta13CCo2Refe.mean < -10)] <- -9.102
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2Low" &
-#                                         (std_frame$rtioMoleDryCo2Refe.mean > 415)] <- 366.939
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2Low" &
-#                                     (std_frame$dlta13CCo2Refe.mean < -9.2)] <- -9.054
-#     
-#   } else if (site == "WOOD") {
-#     
-#     corr_start <- as.POSIXct("06/18/2018", format = "%m/%d/%Y")
-#     corr_end   <- as.POSIXct("02/07/2019", format = "%m/%d/%Y")
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2Low" &
-#                                         (std_frame$rtioMoleDryCo2Refe.mean > 363 & std_frame$rtioMoleDryCo2Refe.mean < 364)] <- 366.56
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2Low" &
-#                                     (std_frame$dlta13CCo2Refe.mean < -8.5 & std_frame$dlta13CCo2Refe.mean < -9)] <- -9.267
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2Med" &
-#                                         (std_frame$rtioMoleDryCo2Refe.mean > 450 & std_frame$rtioMoleDryCo2Refe.mean < 461)] <- 412.503
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2Med" &
-#                                     (std_frame$dlta13CCo2Refe.mean < -10.4 & std_frame$dlta13CCo2Refe.mean > -10.6)] <- -9.448
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2High" &
-#                                         (std_frame$rtioMoleDryCo2Refe.mean > 560 & std_frame$rtioMoleDryCo2Refe.mean < 570)] <- 454.619
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2High" &
-#                                     (std_frame$dlta13CCo2Refe.mean < -11.4 & std_frame$dlta13CCo2Refe.mean > -11.8)] <- -10.392
-#     
-#   } else if (site == "BLAN") {
-#     
-#     corr_start <- as.POSIXct("04/01/2019", format = "%m/%d/%Y")
-#     corr_end   <- as.POSIXct("08/22/2019", format = "%m/%d/%Y")
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2Low" & (is.na(std_frame$rtioMoleDryCo2Refe.mean) | 
-#                                                                                     (std_frame$rtioMoleDryCo2Refe.mean > 360 & std_frame$rtioMoleDryCo2Refe.mean < 362))] <- 362.54
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2Low" & (is.na(std_frame$dlta13CCo2Refe.mean) | 
-#                                                                                 (std_frame$dlta13CCo2Refe.mean < -8.3 & std_frame$dlta13CCo2Refe.mean > -8.6))] <- -8.955
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2Med" & (is.na(std_frame$rtioMoleDryCo2Refe.mean) | 
-#                                                                                     (std_frame$rtioMoleDryCo2Refe.mean > 410 & std_frame$rtioMoleDryCo2Refe.mean < 415))] <- 435.80
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2Med" & (is.na(std_frame$dlta13CCo2Refe.mean) |
-#                                                                                 (std_frame$dlta13CCo2Refe.mean < -9.4 & std_frame$dlta13CCo2Refe.mean > -9.6))] <- -10.116
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2High" & (is.na(std_frame$rtioMoleDryCo2Refe.mean) |
-#                                                                                      (std_frame$rtioMoleDryCo2Refe.mean > 505 & std_frame$rtioMoleDryCo2Refe.mean < 515))] <- 521.08
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2High" & (is.na(std_frame$dlta13CCo2Refe.mean) |
-#                                                                                  (std_frame$dlta13CCo2Refe.mean < -10.5 & std_frame$dlta13CCo2Refe.mean > -11.0))] <- -15.418
-#     
-#   } else if (site == "STER") {
-#     
-#     corr_start <- as.POSIXct("01/16/2019", format = "%m/%d/%Y")
-#     corr_end   <- as.POSIXct("05/08/2019", format = "%m/%d/%Y")
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2Low" & (is.na(std_frame$rtioMoleDryCo2Refe.mean) | 
-#                                                                                     (std_frame$rtioMoleDryCo2Refe.mean > 350 & std_frame$rtioMoleDryCo2Refe.mean < 352))] <- 360.047
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2Low" & (is.na(std_frame$dlta13CCo2Refe.mean) | 
-#                                                                                 (std_frame$dlta13CCo2Refe.mean < -8.4 & std_frame$dlta13CCo2Refe.mean > -8.6))] <- -8.763
-#     
-#   } else if (site == "ORNL") {
-#     
-#     # ORNL is a mess...different wrong dates for the high/med standards than for the low standard.
-#     corr_start <- as.POSIXct("01/01/2020", format = "%m/%d/%Y")
-#     corr_end   <- as.POSIXct("05/31/2020", format = "%m/%d/%Y")
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2Low" & 
-#                                         (std_frame$rtioMoleDryCo2Refe.mean > 350 & std_frame$rtioMoleDryCo2Refe.mean < 352)] <- 367.82
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2Low" & 
-#                                     (std_frame$dlta13CCo2Refe.mean < -8.5 & std_frame$dlta13CCo2Refe.mean > -8.7)] <- -9.049
-#     
-#     # set correct start time for med/high.
-#     corr_start <- as.POSIXct("11/14/2019", format = "%m/%d/%Y")
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2Med" &  
-#                                         (std_frame$rtioMoleDryCo2Refe.mean > 450 | std_frame$rtioMoleDryCo2Refe.mean < 425)] <- 442.565
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2Med" & 
-#                                     (std_frame$dlta13CCo2Refe.mean > -10.5 | std_frame$dlta13CCo2Refe.mean < -10.6)] <- -10.575
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2High" &
-#                                         std_frame$rtioMoleDryCo2Refe.mean < 530] <- 530.234
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2High" &
-#                                     std_frame$dlta13CCo2Refe.mean > -15.0] <- -15.575
-#     
-#   } else if (site == "TREE") {
-#     
-#     corr_start <- as.POSIXct("01/01/2020", format = "%m/%d/%Y")
-#     corr_end   <- as.POSIXct("05/31/2020", format = "%m/%d/%Y")
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2High" &
-#                                         (std_frame$rtioMoleDryCo2Refe.mean > 520)] <- 511.21
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2High" &
-#                                     (std_frame$dlta13CCo2Refe.mean < -16)] <- -14.828
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2Med" &
-#                                         (std_frame$rtioMoleDryCo2Refe.mean < 400)] <- 437.92
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2Med" &
-#                                     (std_frame$dlta13CCo2Refe.mean > -10)] <- -10.284
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2Low" &
-#                                         (std_frame$rtioMoleDryCo2Refe.mean < 350)] <- 368.58
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2Low" &
-#                                     (std_frame$dlta13CCo2Refe.mean > -9)] <- -9.175
-#     
-#   } else if (site == "BARR") {
-#     
-#     corr_start <- as.POSIXct("06/01/2018", format = "%m/%d/%Y")
-#     corr_end   <- as.POSIXct("03/28/2019", format = "%m/%d/%Y")
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2High" &
-#                                         (std_frame$rtioMoleDryCo2Refe.mean > 420 & std_frame$rtioMoleDryCo2Refe.mean < 430)] <- 555.26
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2High" &
-#                                     (std_frame$dlta13CCo2Refe.mean < -9.9 & std_frame$dlta13CCo2Refe.mean > -10)] <- -11.501
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2Low" &
-#                                         (std_frame$rtioMoleDryCo2Refe.mean < 390 & std_frame$rtioMoleDryCo2Refe.mean > 380)] <- 359.05
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2Low" &
-#                                     (std_frame$dlta13CCo2Refe.mean > -8.9 & std_frame$dlta13CCo2Refe.mean < -8.8)] <- -8.607
-#     
-#   } else if (site == "SRER") {
-#     
-#     corr_start <- as.POSIXct("04/01/2018", format = "%m/%d/%Y")
-#     corr_end   <- as.POSIXct("08/01/2018", format = "%m/%d/%Y")
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2Low" & 
-#                                         (std_frame$rtioMoleDryCo2Refe.mean > 380 | is.na(std_frame$rtioMoleDryCo2Refe.mean))] <- 356.166
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2Low" & 
-#                                     (std_frame$dlta13CCo2Refe.mean < -9 | is.na(std_frame$dlta13CCo2Refe.mean))] <- -8.702
-#     
-#     std_frame$rtioMoleDryCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                          std_frame$timeBgn < corr_end) &
-#                                         std_frame$verticalPosition == "co2Med" & 
-#                                         (std_frame$rtioMoleDryCo2Refe.mean > 485 | is.na(std_frame$rtioMoleDryCo2Refe.mean))] <- 428.784
-#     std_frame$dlta13CCo2Refe.mean[(std_frame$timeBgn > corr_start &
-#                                      std_frame$timeBgn < corr_end) &
-#                                     std_frame$verticalPosition == "co2Med" & 
-#                                     (std_frame$dlta13CCo2Refe.mean < -14 | is.na(std_frame$dlta13CCo2Refe.mean))] <- -10.401
-#     
-#   } else if (site == "JERC") {
-#     
-#     corr_start <- as.POSIXct("11/13/2019", format = "%m/%d/%Y")
-#     corr_end   <- as.POSIXct("03/29/2021", format = "%m/%d/%Y")
-#     
-#     
-#     
-#   }
-#     
-#   # return fixed dataframe
-#   return(std_frame)
-# }
-
