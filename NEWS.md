@@ -1,4 +1,13 @@
-# NEONiso 0.6.0.9000
+# NEONiso 0.6.1.9000
+
+* Exports new helper function for getting sites with water isotopes, 
+water_isotope_sites().
+* The reference_corrections vignette was blank in the previous release - 
+it is updated in this release (#81)
+* Makes select functions used internally consistent with upcoming changes
+to tidyselect (h/t Hadley Wickham)
+
+# NEONiso 0.6.0
 
 * An experimental calibration routine for water isotopes has been added. It does
 have some known issues (e.g., no correction is made for concentration dependence
