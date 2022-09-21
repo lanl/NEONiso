@@ -49,18 +49,18 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
                                             r2_thres = 0.9) {
 
     # only working on the d13C of the amb.data.list, so extract just this...
-    d13C_ambdf <- amb_data_list$dlta13CCo2
+    d13c_ambdf <- amb_data_list$dlta13CCo2
     co2_ambdf  <- amb_data_list$rtioMoleDryCo2
 
-    if (!setequal(d13C_ambdf$timeBgn, co2_ambdf$timeBgn)) {
+    if (!setequal(d13c_ambdf$timeBgn, co2_ambdf$timeBgn)) {
       # get rows that are only present in both data frames
-      co2_ambdf   <- co2_ambdf[co2_ambdf$timeBgn %in% d13C_ambdf$timeBgn,]
-      d13C_ambdf <- d13C_ambdf[d13C_ambdf$timeBgn %in% co2_ambdf$timeBgn,]
+      co2_ambdf   <- co2_ambdf[co2_ambdf$timeBgn %in% d13c_ambdf$timeBgn, ]
+      d13c_ambdf <- d13c_ambdf[d13c_ambdf$timeBgn %in% co2_ambdf$timeBgn, ]
     }
-    
+
     # ensure that time variables are in POSIXct.
-    amb_start_times <- convert_NEONhdf5_to_POSIXct_time(d13C_ambdf$timeBgn)
-    amb_end_times   <- convert_NEONhdf5_to_POSIXct_time(d13C_ambdf$timeEnd)
+    amb_start_times <- convert_NEONhdf5_to_POSIXct_time(d13c_ambdf$timeBgn)
+    amb_end_times   <- convert_NEONhdf5_to_POSIXct_time(d13c_ambdf$timeEnd)
 
     # if force.to.end and/or force.to.beginning are true,
     # match out$start[1] to min(amb time)
@@ -80,11 +80,11 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
       int <- lubridate::interval(caldf$timeBgn[i], caldf$timeEnd[i])
       var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
 
-      if (gap_fill_parameters) {      
-        
+      if (gap_fill_parameters) {
+
         # print notice that we're gap filling
         print("Gap filling calibrations...")
-        
+
         if (!is.na(caldf$d13C_r2[i]) & caldf$d13C_r2[i] < r2_thres) {
           # if we're in calibration period 2 or later, carry previous
           # calibration period forward. else if the first calibration period
@@ -101,7 +101,7 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
             caldf$d13C_r2[i] <- caldf$d13C_r2[first_good_val]
           }
         }
-        
+
         # apply same logic to CO2 calibration.
         if (!is.na(caldf$co2_r2[i]) & caldf$co2_r2[i] < r2_thres) {
           if (i > 1) {
@@ -121,31 +121,31 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
     # calibrate data at this height.
     #-------------------------------------
     # extract d13C and CO2 concentrations from the ambient data
-    d13C_ambdf$mean_cal <- d13C_ambdf$mean
+    d13c_ambdf$mean_cal <- d13c_ambdf$mean
     co2_ambdf$mean_cal  <- co2_ambdf$mean
-    
+
     # add columns to d13C_ambdf and co2_ambdf for uncertainty calculation
-    d13C_ambdf$cvloo   <- d13C_ambdf$mean
-    d13C_ambdf$cv5rmse <- d13C_ambdf$mean
-    d13C_ambdf$cv5mae  <- d13C_ambdf$mean
+    d13c_ambdf$cvloo   <- d13c_ambdf$mean
+    d13c_ambdf$cv5rmse <- d13c_ambdf$mean
+    d13c_ambdf$cv5mae  <- d13c_ambdf$mean
 
     co2_ambdf$cvloo    <- co2_ambdf$mean
     co2_ambdf$cv5rmse  <- co2_ambdf$mean
     co2_ambdf$cv5mae   <- co2_ambdf$mean
-    
+
     for (i in 1:length(var_inds_in_calperiod)) {
 
-      d13C_ambdf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$d13C_intercept[i] +
-        d13C_ambdf$mean[var_inds_in_calperiod[[i]]] * caldf$d13C_slope[i]
+      d13c_ambdf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$d13C_intercept[i] +
+        d13c_ambdf$mean[var_inds_in_calperiod[[i]]] * caldf$d13C_slope[i]
 
-      d13C_ambdf$min[var_inds_in_calperiod[[i]]]  <- caldf$d13C_intercept[i] +
-        d13C_ambdf$min[var_inds_in_calperiod[[i]]] * caldf$d13C_slope[i]
+      d13c_ambdf$min[var_inds_in_calperiod[[i]]]  <- caldf$d13C_intercept[i] +
+        d13c_ambdf$min[var_inds_in_calperiod[[i]]] * caldf$d13C_slope[i]
 
-      d13C_ambdf$max[var_inds_in_calperiod[[i]]]  <- caldf$d13C_intercept[i] +
-        d13C_ambdf$max[var_inds_in_calperiod[[i]]] * caldf$d13C_slope[i]
+      d13c_ambdf$max[var_inds_in_calperiod[[i]]]  <- caldf$d13C_intercept[i] +
+        d13c_ambdf$max[var_inds_in_calperiod[[i]]] * caldf$d13C_slope[i]
 
-     # d13C_ambdf$cvloo[var_inds_in_calperiod[[i]]] <-  
-      
+     # d13C_ambdf$cvloo[var_inds_in_calperiod[[i]]] <-
+
       co2_ambdf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$co2_intercept[i] +
         co2_ambdf$mean[var_inds_in_calperiod[[i]]] * caldf$co2_slope[i]
 
@@ -158,24 +158,24 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
     }
 
     # round variance down to 2 digits
-    d13C_ambdf$vari <- round(d13C_ambdf$vari, digits = 2)
+    d13c_ambdf$vari <- round(d13c_ambdf$vari, digits = 2)
     co2_ambdf$vari <- round(co2_ambdf$vari, digits = 2)
 
     # apply median filter to data
     if (filter_data == TRUE) {
-      
-      d13C_ambdf$mean_cal <- filter_median_Brock86(d13C_ambdf$mean_cal)
-      d13C_ambdf$min      <- filter_median_Brock86(d13C_ambdf$min)
-      d13C_ambdf$max      <- filter_median_Brock86(d13C_ambdf$max)
-      
+
+      d13c_ambdf$mean_cal <- filter_median_Brock86(d13c_ambdf$mean_cal)
+      d13c_ambdf$min      <- filter_median_Brock86(d13c_ambdf$min)
+      d13c_ambdf$max      <- filter_median_Brock86(d13c_ambdf$max)
+
       co2_ambdf$mean_cal <- filter_median_Brock86(co2_ambdf$mean_cal)
       co2_ambdf$min      <- filter_median_Brock86(co2_ambdf$min)
       co2_ambdf$max      <- filter_median_Brock86(co2_ambdf$max)
 
     }
-    
+
     # replace ambdf in amb.data.list, return amb.data.list
-    amb_data_list$dlta13CCo2 <- d13C_ambdf
+    amb_data_list$dlta13CCo2 <- d13c_ambdf
     amb_data_list$rtioMoleDryCo2 <- co2_ambdf
 
     return(amb_data_list)

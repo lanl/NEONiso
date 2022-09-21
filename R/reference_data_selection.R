@@ -18,19 +18,21 @@
 #' at least a certain number of high-frequency observations in order to
 #' qualify as a valid measurement. For the water system, this function
 #' also keeps only the last three injections for each reference water
-#' per day. 
-#' 
+#' per day.
+#'
 #' @importFrom utils tail
 #' @import dplyr
-#' 
-select_daily_reference_data <- function(standard_df, analyte, min_nobs=NA) {
-  
+#'
+select_daily_reference_data <- function(standard_df,
+                                        analyte,
+                                        min_nobs = NA) {
+
   # set default min_nobs based on analyte if not user supplied
   if (is.na(min_nobs)) {
     # set to 200 if co2, 30 if water.
-    min_nobs <- ifelse(analyte == "co2", 200, 30) 
+    min_nobs <- ifelse(analyte == "co2", 200, 30)
   }
-  
+
   if (analyte == "co2") {
 
     standard_df <- standard_df %>%
@@ -42,9 +44,9 @@ select_daily_reference_data <- function(standard_df, analyte, min_nobs=NA) {
       dplyr::ungroup() %>%
       dplyr::select(-"date") %>%
       dplyr::arrange(.data$timeBgn)
-    
+
   } else if (analyte == "h2o") {
-    
+
     standard_df <- standard_df %>%
       dplyr::mutate(date = lubridate::date(.data$d18O_meas_btime)) %>% # get day of month
       dplyr::group_by(.data$date) %>%
@@ -52,13 +54,13 @@ select_daily_reference_data <- function(standard_df, analyte, min_nobs=NA) {
       dplyr::slice(tail(row_number(), 3)) %>%
       dplyr::ungroup() %>%
       dplyr::select(-"date")
-    
+
   } else {
-    
+
     stop("invalid analyte selected in select_reference_data. please change to 'co2' or 'h2o'")
 
   }
 
   return(standard_df)
-  
+
 }
