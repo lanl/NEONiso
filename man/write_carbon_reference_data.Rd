@@ -17,7 +17,8 @@ write_carbon_reference_data(inname, outname, site, calDf)
 this is the output from fit_carbon_regression}
 }
 \value{
-Nothing to the environment, but writes calibrated reference data to hdf5 file.
+Nothing to the environment, but writes calibrated
+reference data to hdf5 file.
 }
 \description{
 write_carbon_reference_data

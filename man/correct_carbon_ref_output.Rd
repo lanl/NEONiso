@@ -28,8 +28,8 @@ correct measured CO2 values within +/- co2_tol within time period
 identified as having incorrect reference values.}
 
 \item{d13c_tol}{Tolerance used to identify a mismatch in d13C values. Will
-correct measured d13C values within +/- d13c_tol within time period
-identified as having incorrect reference values.}
+correct measured d13C values within +/- d13c_tol within time
+period identified as having incorrect reference values.}
 
 \item{refGas}{Which reference gas is being corrected? Expects "co2High",
 "co2Med", or "co2Low"}

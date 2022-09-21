@@ -9,7 +9,8 @@ calibrate_water_reference_data(outname, standard, site, stdDf, calDf)
 \arguments{
 \item{outname}{Output file name.}
 
-\item{standard}{Which reference material is being 'calibrated'? (Low, med, or high)}
+\item{standard}{Which reference material is being 'calibrated'?
+(Low, med, or high)}
 
 \item{site}{NEON 4-letter site code.}
 
