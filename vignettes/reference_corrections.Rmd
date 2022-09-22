@@ -36,7 +36,7 @@ the 'carb' data object bundled with NEONiso:
 
 ```{r, echo = FALSE}
 #manually load data file:
-load('../R/sysdata.Rda')
+carb <- readRDS("carb.rds")
 print(carb[,-4], width = Inf, n = 27)
 ```
 

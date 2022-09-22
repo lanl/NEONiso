@@ -2,7 +2,7 @@
 title: "Getting Started with NEONiso"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{example_workflow}
+  %\VignetteIndexEntry{Getting Started with NEONiso}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
