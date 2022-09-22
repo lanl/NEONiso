@@ -110,7 +110,7 @@ manage_local_EC_archive <- function(file_dir,
 
     # script to pull down EC data files.
     data_product <- "DP4.00200.001"
-    neon_api_address <- "http://data.neonscience.org/api/v0/products/"
+    neon_api_address <- "https://data.neonscience.org/api/v0/products/"
 
     # make copy of site list available to this function
     csites <- terrestrial_core_sites()
