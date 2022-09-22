@@ -22,15 +22,17 @@
 #'              first calibration, using the first calibration? (default true)
 #' @param r2_thres Minimum r2 value for calibration to be considered "good" and
 #'             applied to ambient data.
-#' @param gap_fill_parameters Should function attempt to 'gap-fill' across a 
-#'            bad calibration by carrying the last known good calibration forward?
-#'            Implementation is fairly primitive currently, as it only carries 
-#'            the last known good calibration that's available forward rather
-#'            than interpolating, etc. Default FALSE.
+#' @param gap_fill_parameters Should function attempt to 'gap-fill' across a
+#'            bad calibration by carrying the last known good calibration
+#'            forward? Implementation is fairly primitive currently, as
+#'            it only carries the last known good calibration that's
+#'            available forward rather than interpolating, etc. Default FALSE.
 #'
-#' @return Depends on `write_to_file` argument. If true, returns nothing to environment; 
-#'    but returns calibrated ambient observations to the output file. If false, returns
-#'    modified version of amb_data_list that include calibrated ambient data.
+#' @return Depends on `write_to_file` argument.
+#'    If true, returns nothing to environment;
+#'    but returns calibrated ambient observations to the output file.
+#'    If false, returns modified version of amb_data_list that include
+#'    calibrated ambient data.
 #'
 #'
 #' @importFrom magrittr %>%
@@ -47,49 +49,33 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
 
   #-----------------------------------------------------------
   # should be able to get a calGainsOffsets object from the H5 file.
-  
+
   # only working on the d13C of the amb_data_list, so extract just this...
   amb_delta <- amb_data_list$dlta13CCo2
   amb_co2   <- amb_data_list$rtioMoleDryCo2
-  
+
   # in some cases, there's an issue where nrow(amb_delta) and nrow(amb_co2) 
   # are not the same - time arrays need to be merged prior to continuing.
   if (!setequal(amb_delta$timeBgn, amb_co2$timeBgn)) {
 
     # get rows that are only present in both data frames
-    amb_co2   <- amb_co2[amb_co2$timeBgn %in% amb_delta$timeBgn,]
-    amb_delta <- amb_delta[amb_delta$timeBgn %in% amb_co2$timeBgn,]
+    amb_co2   <- amb_co2[amb_co2$timeBgn %in% amb_delta$timeBgn, ]
+    amb_delta <- amb_delta[amb_delta$timeBgn %in% amb_co2$timeBgn, ]
 
-    # #=====# strategy 2::
-    # # add missing rows:
-    # print(ncol(amb_delta))
-    # print(ncol(amb_delta) - 1)
-    # missing_rows_df      <- amb_delta[1:length(missing_rows), ]
-    # missing_rows_df[, 1] <- as.POSIXct(missing_rows, origin = "1970-01-01")
-    # missing_rows_df[, 2:ncol(amb_delta)] <- NA
-    # 
-    # names(missing_rows_df) <- names(amb_delta)
-    # 
-    # amb_delta <- rbind(amb_delta, missing_rows_df)
-    # 
-    # # convert back to NEONhdf5
-    # amb_delta$timeBgn <- convert_POSIXct_to_NEONhdf5_time(amb_delta$timeBgn)
-    # amb_co2$timeBgn   <- convert_POSIXct_to_NEONhdf5_time(amb_co2$timeBgn)
-    # 
   }
-  
+
   # instead of using the [12CO2] and [13CO2] values, calculate from
   # the isotope ratio instead.
-  amb_12CO2 <- amb_13CO2 <- amb_co2
+  amb_12co2 <- amb_13co2 <- amb_co2
 
-  amb_12CO2$mean <- calculate_12CO2(amb_co2$mean, amb_delta$mean)
-  amb_13CO2$mean <- calculate_13CO2(amb_co2$mean, amb_delta$mean)
+  amb_12co2$mean <- calculate_12CO2(amb_co2$mean, amb_delta$mean)
+  amb_13co2$mean <- calculate_13CO2(amb_co2$mean, amb_delta$mean)
 
-  amb_12CO2$min  <- calculate_12CO2(amb_co2$min, amb_delta$min)
-  amb_13CO2$min  <- calculate_13CO2(amb_co2$min, amb_delta$min)
+  amb_12co2$min  <- calculate_12CO2(amb_co2$min, amb_delta$min)
+  amb_13co2$min  <- calculate_13CO2(amb_co2$min, amb_delta$min)
 
-  amb_12CO2$max  <- calculate_12CO2(amb_co2$max, amb_delta$max)
-  amb_13CO2$max  <- calculate_13CO2(amb_co2$max, amb_delta$max)
+  amb_12co2$max  <- calculate_12CO2(amb_co2$max, amb_delta$max)
+  amb_13co2$max  <- calculate_13CO2(amb_co2$max, amb_delta$max)
 
   # ensure that time variables are in POSIXct.
   amb_start_times <- convert_NEONhdf5_to_POSIXct_time(amb_delta$timeBgn)
@@ -113,7 +99,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
     var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
 
     if (gap_fill_parameters) {
-      
+
       # print notice that we're gap filling
       print("Gap filling calibrations...")
       # 12CO2 calibration parameters.
@@ -133,7 +119,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
           caldf$r2_12C[i] <- caldf$r2_12C[first_good_val]
         }
       }
-      
+
       # 13CO2 calibration parameters - equivalent logic to 12Co2.
       if (!is.na(caldf$r2_13C[i]) & caldf$r2_13C[i] < r2_thres) {
         if (i > 1) {
@@ -152,40 +138,45 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
 
   # calibrate data at this height.
   #-------------------------------------
-  # extract 12CO2 and 13CO2 concentrations from the ambient data, 
+  # extract 12CO2 and 13CO2 concentrations from the ambient data,
   # set as NA, unless overwritten
-  
-  mean12c <- max12c <- min12c <- cv5rmse12c <- cvloo12c <- rep(NA, length(amb_delta$mean)) # placeholders for 12CO2 vecs
-  mean13c <- max13c <- min13c <- cv5rmse13c <- cvloo13c <- rep(NA, length(amb_delta$mean)) # placeholders for 13CO2 vecs
+
+  # placeholders for 12CO2 vecs
+  mean12c <- max12c <- min12c <- rep(NA, length(amb_delta$mean))
+  cv5rmse12c <- cvloo12c      <- rep(NA, length(amb_delta$mean))
+  # placeholders for 13CO2 vecs
+  mean13c <- max13c <- min13c <- rep(NA, length(amb_delta$mean))
+  cv5rmse13c <- cvloo13c      <- rep(NA, length(amb_delta$mean))
 
   for (i in seq_len(length(var_inds_in_calperiod))) {
     # calculate calibrated 12CO2 concentrations
     mean12c[var_inds_in_calperiod[[i]]] <- caldf$gain12C[i] *
-      amb_12CO2$mean[var_inds_in_calperiod[[i]]] + caldf$offset12C[i]
+      amb_12co2$mean[var_inds_in_calperiod[[i]]] + caldf$offset12C[i]
     min12c[var_inds_in_calperiod[[i]]] <- caldf$gain12C[i] *
-      amb_12CO2$min[var_inds_in_calperiod[[i]]] + caldf$offset12C[i]
+      amb_12co2$min[var_inds_in_calperiod[[i]]] + caldf$offset12C[i]
     max12c[var_inds_in_calperiod[[i]]] <- caldf$gain12C[i] *
-      amb_12CO2$max[var_inds_in_calperiod[[i]]] + caldf$offset12C[i]
+      amb_12co2$max[var_inds_in_calperiod[[i]]] + caldf$offset12C[i]
   #  cv5rmse12c[var_inds_in_calperiod[[i]]] <- caldf$cv5rmse_12C[i]
   #  cvloo12c[var_inds_in_calperiod[[i]]] <- caldf$cvloo_12C[i]
 
     # calculate calibrated 13CO2 concentrations
     mean13c[var_inds_in_calperiod[[i]]] <- caldf$gain13C[i] *
-      amb_13CO2$mean[var_inds_in_calperiod[[i]]] + caldf$offset13C[i]
+      amb_13co2$mean[var_inds_in_calperiod[[i]]] + caldf$offset13C[i]
     min13c[var_inds_in_calperiod[[i]]] <- caldf$gain13C[i] *
-      amb_13CO2$min[var_inds_in_calperiod[[i]]] + caldf$offset13C[i]
+      amb_13co2$min[var_inds_in_calperiod[[i]]] + caldf$offset13C[i]
     max13c[var_inds_in_calperiod[[i]]] <- caldf$gain13C[i] *
-      amb_13CO2$max[var_inds_in_calperiod[[i]]] + caldf$offset13C[i]
+      amb_13co2$max[var_inds_in_calperiod[[i]]] + caldf$offset13C[i]
    # cv5rmse13c[var_inds_in_calperiod[[i]]] <- caldf$cv5rmse_13C[i]
   #  cvloo13c[var_inds_in_calperiod[[i]]] <- caldf$cvloo_13C[i]
 
   }
-  
+
   # output calibrated delta values.
   amb_delta$mean_cal <- round(R_to_delta(mean13c / mean12c, "carbon"), 2)
   amb_delta$min_cal  <- round(R_to_delta(min13c / min12c, "carbon"), 2)
   amb_delta$max_cal  <- round(R_to_delta(max13c / max12c, "carbon"), 2)
-  #amb_delta$vari     <- round(amb_delta$vari, 2) # <- not sure why, but this crashes code some times as ab_delta$vari is not numeric??
+  #amb_delta$vari     <- round(amb_delta$vari, 2) # <- not sure why,
+         # but this crashes code some times as ab_delta$vari is not numeric??
 
   # calibrate co2 mole fractions and uncertainty
   amb_co2$mean_cal <- (mean13c + mean12c) / (1 - 0.00474)
@@ -196,7 +187,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
     amb_delta$min_cal  <- filter_median_Brock86(amb_delta$min_cal)
     amb_delta$max_cal  <- filter_median_Brock86(amb_delta$max_cal)
   }
-  
+
   # calculate uncertainties:
   # save this ucrt propogation for later version.
   #amb_delta$CVcalUcrt <- round(abs(amb_delta$mean_cal) *
@@ -205,7 +196,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   #                               sqrt((cvloo12c/mean12c)^2 + (cvloo13c/mean13c)^2), 3)
   #amb_co2$CVcalUcrt   <- round(sqrt(cv5rmse12c^2 + cv5rmse13c^2), 3)
   #amb_co2$LOOcalUcrt  <- round(sqrt(cvloo12c^2 + cvloo13c^2), 3)
-  
+
   # replace ambdf in amb_data_list, return amb_data_list
   amb_data_list$dlta13CCo2 <- amb_delta
 

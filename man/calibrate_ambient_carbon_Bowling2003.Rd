@@ -35,18 +35,20 @@ calibration, using the last calibration? (default true)}
 first calibration, using the first calibration? (default true)}
 
 \item{gap_fill_parameters}{Should function attempt to 'gap-fill' across a
-bad calibration by carrying the last known good calibration forward?
-Implementation is fairly primitive currently, as it only carries
-the last known good calibration that's available forward rather
-than interpolating, etc. Default FALSE.}
+bad calibration by carrying the last known good calibration
+forward? Implementation is fairly primitive currently, as
+it only carries the last known good calibration that's
+available forward rather than interpolating, etc. Default FALSE.}
 
 \item{r2_thres}{Minimum r2 value for calibration to be considered "good" and
 applied to ambient data.}
 }
 \value{
-Depends on \code{write_to_file} argument. If true, returns nothing to environment;
-but returns calibrated ambient observations to the output file. If false, returns
-modified version of amb_data_list that include calibrated ambient data.
+Depends on \code{write_to_file} argument.
+If true, returns nothing to environment;
+but returns calibrated ambient observations to the output file.
+If false, returns modified version of amb_data_list that include
+calibrated ambient data.
 }
 \description{
 calibrate_ambient_carbon_Bowling2003

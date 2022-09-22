@@ -18,7 +18,7 @@
 #'             Only used if `correct_bad_refvals = TRUE`.
 #' @param refGas One of "low", "med", or "high."
 #'             Only used if `correct_bad_refvals = TRUE`.
-#'             
+#'
 #' @return A data.frame having the same number of rows of `cal_df`, with
 #'        additional columns added for calibrated CO2 mole fractions
 #'        and d13C values.
@@ -32,10 +32,10 @@ calibrate_standards_carbon <- function(cal_df,
 
   # get R_vpdb
   R_vpdb <- get_Rstd("carbon")
-  
+
   # want to implement same tolerances used to generate calibration regression!
   # need to assess the CO2 and d13C tolerances wrt reference values.
-    
+
   # calibrate standards using value for corresponding calibration period.
   ref_df$dlta13CCo2$mean_cal <- rep(NA, length(ref_df$dlta13CCo2$mean))
   ref_df$rtioMoleDryCo2$mean_cal <- rep(NA, length(ref_df$rtioMoleDryCo2$mean))
@@ -44,7 +44,7 @@ calibrate_standards_carbon <- function(cal_df,
   ref_df$dlta13CCo2$timeBgn <- as.POSIXct(ref_df$dlta13CCo2$timeBgn,
                                           format = "%Y-%m-%dT%H:%M:%OSZ",
                                           tz = "UTC")
-  
+
   # check to see how many rows cal_df has
   if ("gain12C" %in% names(cal_df)) {
 
@@ -75,7 +75,7 @@ calibrate_standards_carbon <- function(cal_df,
             ref_df$dlta13CCo2$numSamp[i] >= 200 &
             abs(ref_df$dlta13CCo2$mean[i] -
                 ref_df$dlta13CCo2Refe$mean[i]) < 5 &
-            abs(ref_df$rtioMoleDryCo2$mean[i] - 
+            abs(ref_df$rtioMoleDryCo2$mean[i] -
                 ref_df$rtioMoleDryCo2Refe$mean[i]) < 10 &
             ref_df$dlta13CCo2$vari[i] < 5) {
 
@@ -195,7 +195,7 @@ calibrate_standards_carbon <- function(cal_df,
 
 
 #' calibrate_standards_carbon2
-#' 
+#'
 #' I'm not sure any function calls this one any more - maybe try commenting out
 #' and see if anything fails?
 #'
@@ -215,7 +215,7 @@ calibrate_standards_carbon <- function(cal_df,
 #'             Only used if `correct_bad_refvals = TRUE`.
 #' @param refGas One of "low", "med", or "high."
 #'             Only used if `correct_bad_refvals = TRUE`.
-#'             
+#'
 #' @return A data.frame having the same number of rows of `cal_df`, with
 #'        additional columns added for calibrated CO2 mole fractions
 #'        and d13C values.
@@ -226,31 +226,31 @@ calibrate_standards_carbon <- function(cal_df,
 #                                        correct_bad_refvals = FALSE,
 #                                        site,
 #                                        refGas) {
-#   
+#
 #   # get R_vpdb
 #   R_vpdb <- get_Rstd("carbon")
-#   
+#
 #   # want to implement same tolerances used to generate calibration regression!
 #   # need to assess the CO2 and d13C tolerances wrt reference values.
-#   
+#
 #   # calibrate standards using value for corresponding calibration period.
 #   ref_df$dlta13CCo2$mean_cal <- ref_df$dlta13CCo2$mean
 #   ref_df$dlta13CCo2$mean_cal <- as.numeric(NA)
-#   
+#
 #   ref_df$rtioMoleDryCo2$mean_cal <- ref_df$rtioMoleDryCo2$mean
-#   
+#
 #   # convert start times to POSIXct.
 #   ref_df$dlta13CCo2$timeBgn <- as.POSIXct(ref_df$dlta13CCo2$timeBgn,
 #                                           format = "%Y-%m-%dT%H:%M:%OSZ",
 #                                           tz = "UTC")
-#   
+#
 #   # check to see if we need to do corrections on bad reference gas values!
 #   if (correct_bad_refvals) {
 #     # ensure that a site and refGas were supplied.
 #     if (missing(site) | missing(refGas)) {
 #       stop("If trying to correct bad reference values, must supply site and refGas as arguments")
 #     }
-#     
+#
 #     # okay, now apply corrections if necessary.
 #     if (site == "ONAQ") {
 #       if (refGas == "low") {
@@ -298,7 +298,7 @@ calibrate_standards_carbon <- function(cal_df,
 #         ref_df$rtioMoleDryCo2Refe$mean[ref_df$rtioMoleDryCo2Refe$timeBgn > as.POSIXct("06/18/2018", format = "%m/%d/%Y") &
 #                                          ref_df$rtioMoleDryCo2Refe$timeBgn < as.POSIXct("02/07/2019", format = "%m/%d/%Y") &
 #                                          ref_df$rtioMoleDryCo2Refe$mean > 560 & ref_df$rtioMoleDryCo2Refe$mean < 570] <- 454.619
-#         
+#
 #       }
 #     } else if (site == "BLAN") {
 #       # okay, now apply corrections if necessary.
@@ -329,7 +329,7 @@ calibrate_standards_carbon <- function(cal_df,
 #                                          ref_df$rtioMoleDryCo2Refe$timeBgn < as.POSIXct("08/22/2019", format = "%m/%d/%Y") &
 #                                          (is.na(ref_df$rtioMoleDryCo2Refe$mean) | 
 #                                             ref_df$rtioMoleDryCo2Refe$mean > 505 & ref_df$rtioMoleDryCo2Refe$mean < 515)] <- 521.08
-#         
+#
 #       }
 #     } else if (site == "STER") {
 #       if (refGas == "low") {
@@ -342,7 +342,7 @@ calibrate_standards_carbon <- function(cal_df,
 #                                          (is.na(ref_df$rtioMoleDryCo2Refe$mean) | 
 #                                             ref_df$rtioMoleDryCo2Refe$mean > 350 & ref_df$rtioMoleDryCo2Refe$mean < 352)] <- 360.047
 #       }
-#       
+#
 #     } else if (site == "ORNL") {
 #       # okay, now apply corrections if necessary.
 #       if (refGas == "low") {
@@ -366,7 +366,7 @@ calibrate_standards_carbon <- function(cal_df,
 #         ref_df$rtioMoleDryCo2Refe$mean[ref_df$rtioMoleDryCo2Refe$timeBgn > as.POSIXct("11/14/2019", format = "%m/%d/%Y") &
 #                                          ref_df$rtioMoleDryCo2Refe$timeBgn < as.POSIXct("05/31/2020", format = "%m/%d/%Y") &
 #                                          ref_df$rtioMoleDryCo2Refe$mean < 530] <- 530.234
-#         
+#
 #       }
 #     } else if (site == "TREE") {
 #       # okay, now apply corrections if necessary.
@@ -391,7 +391,7 @@ calibrate_standards_carbon <- function(cal_df,
 #         ref_df$rtioMoleDryCo2Refe$mean[ref_df$rtioMoleDryCo2Refe$timeBgn > as.POSIXct("01/01/2020", format = "%m/%d/%Y") &
 #                                          ref_df$rtioMoleDryCo2Refe$timeBgn < as.POSIXct("05/31/2020", format = "%m/%d/%Y") &
 #                                          ref_df$rtioMoleDryCo2Refe$mean > 530] <- 511.21
-#         
+#
 #       }
 #     } else if (site == "BARR") {
 #       # okay, now apply corrections if necessary.
@@ -409,7 +409,7 @@ calibrate_standards_carbon <- function(cal_df,
 #         ref_df$rtioMoleDryCo2Refe$mean[ref_df$rtioMoleDryCo2Refe$timeBgn > as.POSIXct("06/01/2018", format = "%m/%d/%Y") &
 #                                          ref_df$rtioMoleDryCo2Refe$timeBgn < as.POSIXct("03/28/2019", format = "%m/%d/%Y") &
 #                                          ref_df$rtioMoleDryCo2Refe$mean > 420 & ref_df$rtioMoleDryCo2Refe$mean < 430] <- 555.26
-#         
+#
 #       }
 #     } else if (site == "SRER") {
 #       if (refGas == "low") {
@@ -426,27 +426,26 @@ calibrate_standards_carbon <- function(cal_df,
 #         ref_df$rtioMoleDryCo2Refe$mean[ref_df$rtioMoleDryCo2Refe$timeBgn > as.POSIXct("04/01/2018", format = "%m/%d/%Y") &
 #                                          ref_df$rtioMoleDryCo2Refe$timeBgn < as.POSIXct("08/01/2018", format = "%m/%d/%Y") &
 #                                          (ref_df$rtioMoleDryCo2Refe$mean > 485 | is.na(ref_df$rtioMoleDryCo2Refe$mean))] <- 428.784
-#         
+#
 #       }
 #     }
 #   }
-  
   # # check to see how many rows cal_df has
   # if ("gain12C" %in% names(cal_df)) {
-  #   
+  #
   #   # check to ensure there are actual standard measurements for this month!
   #   if (nrow(ref_df$dlta13CCo2) > 1) {
-  # 
+  #
   #     for (i in 2:nrow(ref_df$dlta13CCo2)) {
   #       # note: starts at 2 because periods are defined as
   #       # extending to the end time of standard measurement i
   #       # to the endtime of stanard measurement i + 1.
-  # 
+  #
   #       # determine which row calibration point is in.
   #       int <- lubridate::interval(cal_df$start, cal_df$end)
-  # 
+  #
   #       cal_id <- which(ref_df$dlta13CCo2$timeBgn[i] %within% int)
-  # 
+  #
   #       # now, calculate calibrated value ONLY IF CERTAIN CONDITIONS ARE MET:
   #       # 1a-d. variables needed are not missing.
   #       # 2. at least 200 ~1Hz measurements available (e.g., valve issues)
@@ -464,19 +463,19 @@ calibrate_standards_carbon <- function(cal_df,
   #           abs(ref_df$rtioMoleDryCo2$mean[i] -
   #               ref_df$rtioMoleDryCo2Refe$mean[i]) < 10 &
   #           ref_df$dlta13CCo2$vari[i] < 5) {
-  # 
+  #
   #         if (!(length(cal_id) == 0)) {
   #           # calibrate isotopologues using appropriate cal_id
   #           uncal_12C <- ref_df$rtioMoleDryCo2$mean[i] * (1 - f) /
   #             (1 + R_vpdb * (1 + ref_df$dlta13CCo2$mean[i] / 1000))
-  # 
+  #
   #           uncal_13C <- ref_df$rtioMoleDryCo2$mean[i] * (1 - f) - uncal_12C
-  # 
+  #
   #           cal_12C <- cal_df$gain12C[cal_id] * uncal_12C +
   #             cal_df$offset12C[cal_id]
   #           cal_13C <- cal_df$gain13C[cal_id] * uncal_13C +
   #             cal_df$offset13C[cal_id]
-  # 
+  #
   #           if (!is.na(cal_df$r2_12C[cal_id]) &
   #               !is.na(cal_df$r2_13C[cal_id]) &
   #               cal_df$r2_12C[cal_id] > r2_thres &
@@ -485,38 +484,38 @@ calibrate_standards_carbon <- function(cal_df,
   #                                                    cal_12C / R_vpdb - 1), 3)
   #             ref_df$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) /
   #                                                     (1 - f)
-  # 
+  #
   #           } else {
-  # 
+  #
   #             ref_df$dlta13CCo2$mean_cal[i] <- NA
   #             ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
-  # 
+  #
   #           }
-  # 
+  #
   #         } else {
-  # 
+  #
   #           ref_df$dlta13CCo2$mean_cal[i] <- NA
   #           ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
-  # 
+  #
   #         }
-  # 
+  #
   #       } else {
-  # 
+  #
   #         ref_df$dlta13CCo2$mean_cal[i] <- NA
   #         ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
   #       }
   #     }
   #   }
-  # 
+  #
   # } else {
-  # 
+  #
   #   if (nrow(ref_df$dlta13CCo2) > 1) {
   #     for (i in 2:nrow(ref_df$dlta13CCo2)) { # use n-1 because of bracketing
-  # 
+  #
   #       # determine which row calibration point is in.
   #       int <- lubridate::interval(cal_df$start, cal_df$end)
   #       cal_id <- which(ref_df$dlta13CCo2$timeBgn[i] %within% int)
-  # 
+  #
   #       # now, calculate calibrated value ONLY IF CERTAIN CONDITIONS ARE MET:
   #       # 1a-d. variables needed are not missing.
   #       # 2. at least 200 ~1Hz measmnts available (filters out valve issues)
@@ -534,49 +533,47 @@ calibrate_standards_carbon <- function(cal_df,
   #           abs(ref_df$rtioMoleDryCo2$mean[i] -
   #               ref_df$rtioMoleDryCo2Refe$mean[i]) < 10 &
   #           ref_df$dlta13CCo2$vari[i] < 5) {
-  # 
+  #
   #         if (!length(cal_id) == 0) {
-  # 
+  #
   #           if (!is.na(cal_df$d13C_r2[cal_id]) &
   #               !is.na(cal_df$co2_r2[cal_id]) &
   #               cal_df$d13C_r2[cal_id] > r2_thres &
   #               cal_df$co2_r2[cal_id] > r2_thres) {
-  # 
+  #
   #             ref_df$dlta13CCo2$mean_cal[i] <- cal_df$d13C_intercept[cal_id] +
   #               cal_df$d13C_slope[cal_id] * ref_df$dlta13CCo2$mean[i]
-  # 
+  #
   #             ref_df$rtioMoleDryCo2$mean_cal[i] <- cal_df$co2_intercept[cal_id] +
   #               cal_df$co2_slope[cal_id] * ref_df$rtioMoleDryCo2$mean[i]
-  # 
+  #
   #           } else {
-  # 
+  #
   #             ref_df$dlta13CCo2$mean_cal[i] <- NA
   #             ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
   #           }
-  # 
+  #
   #         } else {
-  # 
+  #
   #           ref_df$dlta13CCo2$mean_cal[i] <- NA
   #           ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
-  # 
+  #
   #         }
-  # 
+  #
   #       } else {
-  # 
+  #
   #         ref_df$dlta13CCo2$mean_cal[i] <- NA
   #         ref_df$rtioMoleDryCo2$mean_cal[i] <- NA
-  # 
+  #
   #       }
   #     }
   #   }
   # }
-  
+
 #   # convert time back to NEON format.
 #   ref_df$dlta13CCo2$timeBgn <- convert_POSIXct_to_NEONhdf5_time(ref_df$dlta13CCo2$timeBgn)
-#   
+#
 #   # return ref_data_frame
 #   return(ref_df)
-#   
+#
 # }
-
-

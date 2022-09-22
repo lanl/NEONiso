@@ -23,7 +23,8 @@ write_water_reference_data(inname, outname, site, lowDf, medDf, highDf, calDf)
 this is the output from fit_water_regression}
 }
 \value{
-Nothing to the environment, but writes calibrated reference data to hdf5 file.
+Nothing to the environment, but writes calibrated
+reference data to hdf5 file.
 }
 \description{
 write_water_reference_data

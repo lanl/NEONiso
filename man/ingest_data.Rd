@@ -12,8 +12,9 @@ ingest_data(inname, analyte, name_fix = TRUE)
 \item{analyte}{Carbon (Co2) or water (H2o)?}
 
 \item{name_fix}{Fix to data frame required for next-generation calibration
-functions, but breaks old 'by_month()' functions. This parameter
-provides a necessary work around until these functions are removed.}
+functions, but breaks old 'by_month()' functions. This
+parameter provides a necessary work around until these
+functions are removed.}
 }
 \value{
 List of data frames, taken from files specified in \code{inname}
