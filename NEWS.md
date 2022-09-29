@@ -1,4 +1,9 @@
-# NEONiso 0.6.1.9000
+# NEONiso 0.6.2
+
+* Exports get_Rstd, a helper function to return the heavy-to-light isotope
+ratio of the relevant international standard.
+
+# NEONiso 0.6.1
 
 * Exports new helper function for getting sites with water isotopes, 
 water_isotope_sites().

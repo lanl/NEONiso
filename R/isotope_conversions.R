@@ -13,6 +13,8 @@
 #'         stable isotope standard. VSMOW for water,
 #'         VPDB for carbon.
 #'
+#' @export
+#' @examples 
 #'
 get_Rstd <- function(element) {
   # return the standard isotope ratio
