@@ -147,13 +147,11 @@ calibrate_carbon         <- function(inname,
   # Okay this function now needs some work. *************
   if (correct_refData == TRUE) {
 
-    print("Correcting reference calibration df...")    
     # do some work to correct the reference data frame
     refe <- correct_carbon_ref_cval(refe,site)
     
     tmp_names <- names(ciso$reference)
     
-    print("correcting reference output df...")
     #apply seems to strip names from ciso$reference, so need to save above
     # and reassign below.
     ciso$reference <- lapply(names(ciso$reference),
