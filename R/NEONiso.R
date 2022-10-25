@@ -8,4 +8,5 @@
 NULL
 
 # suppress R CMD CHECK notes on variables that are internal to this package.
-globalVariables(c("..density..","level","varname","verticalPosition","dom","yr","mn"))
+#globalVariables(c("..density..","level","varname","verticalPosition","dom","yr","mn"))
+globalVariables(c("..density..", "varname"))
