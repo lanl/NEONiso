@@ -43,11 +43,11 @@ test_that("calibrate_carbon returns 'Extracting data' if write_to_file = FALSE" 
 })
 
 
-test_that("calibrate_carbon_bymonth returns 'Extracting data' if write_to_file = FALSE", {
+test_that("calibrate_carbon_bymonth returns warning, as it is deprecated", {
   
   skip_on_cran()
   # these tests could probably be made more useful!!
-  expect_output(calibrate_carbon_bymonth(fin, fout, "ONAQ",
+  expect_warning(calibrate_carbon_bymonth(fin, fout, "ONAQ",
                                  method = "Bowling_2003",
                                  calibration_half_width = 0.5,
                                  force_cal_to_beginning = TRUE,
@@ -56,9 +56,9 @@ test_that("calibrate_carbon_bymonth returns 'Extracting data' if write_to_file =
                                  filter_ambient = TRUE,
                                  r2_thres = 0.95,
                                  correct_refData = TRUE,
-                                 write_to_file = FALSE), "Extracting data")
+                                 write_to_file = FALSE))
   
-  expect_output(calibrate_carbon_bymonth(fin, fout, "ONAQ",
+  expect_warning(calibrate_carbon_bymonth(fin, fout, "ONAQ",
                                  method = "linreg",
                                  calibration_half_width = 0.5,
                                  force_cal_to_beginning = TRUE,
@@ -67,5 +67,5 @@ test_that("calibrate_carbon_bymonth returns 'Extracting data' if write_to_file =
                                  filter_ambient = TRUE,
                                  r2_thres = 0.95,
                                  correct_refData = TRUE,
-                                 write_to_file = FALSE), "Extracting data")
+                                 write_to_file = FALSE))
 })
