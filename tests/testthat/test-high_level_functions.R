@@ -42,8 +42,8 @@ test_that("calibrate_carbon returns 'Extracting data' if write_to_file = FALSE" 
   
 })
 
-test_that("calibrate_carbon_bymonth returns 'Extracting data' if write_to_file = FALSE", {
-  
+
+test_that("calibrate_carbon_bymonth returns warning, as it is deprecated", {
   skip_on_cran()
   # these tests could probably be made more useful!!
   expect_warning(calibrate_carbon_bymonth(fin, fout, "ONAQ",

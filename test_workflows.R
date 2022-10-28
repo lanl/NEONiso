@@ -14,7 +14,7 @@
 # 8) calibrate_water_linreg_bysite works
 
 # where does uncalibrated data live?
-data.dir <- '~/Desktop/DP4_00200_001/'
+data.dir <- '~/airflow/data/001-DP4_00200_001/'
 
 # set test_date
 #test_date <- "2022-01-01"
@@ -30,12 +30,12 @@ dir.create(paste0('~/NEONcal/',test_date,"_tests"))
 run_test1 <- FALSE
 run_test2 <- FALSE
 run_test3 <- FALSE
-run_test4 <- FALSE
+run_test4 <- TRUE
 run_test5 <- FALSE
 run_test6 <- FALSE  
 run_test7 <- FALSE
-run_test8 <- TRUE
-rapid_test <- FALSE # if rapid, only run ~5% of possible site months.
+run_test8 <- FALSE
+rapid_test <- TRUE # if rapid, only run ~5% of possible site months.
    
 # load required packages: 
 library(rhdf5)
@@ -78,8 +78,8 @@ if (run_test1 | run_test2 | run_test3 | run_test5) {
 }
 
 if (run_test4 | run_test6) {
-  #csites <- c(NEONiso:::terrestrial_core_sites(), NEONiso:::terrestrial_relocatable_sites())
-  csites <- "ONAQ"
+  csites <- c(NEONiso:::terrestrial_core_sites(), NEONiso:::terrestrial_relocatable_sites())
+  #csites <- "ONAQ"
 }
 
 # water files
@@ -113,7 +113,9 @@ if (run_test8) {
 
 # if we're doing rapid testing!
 if (rapid_test) {
-  fnames.out <- sample(fnames.out, floor(length(fnames.out)/20))
+  if (exists("fnames.out")) { 
+    fnames.out <- sample(fnames.out, floor(length(fnames.out)/20)) 
+  }
   if (run_test4 | run_test6) {
     csites <- sample(csites, 4)
   }
