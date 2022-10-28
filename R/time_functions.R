@@ -62,8 +62,8 @@ convert_NEONhdf5_to_POSIXct_time <- function(intime) {
 
   outtime <- as.POSIXct(intime,
                         format = "%Y-%m-%dT%H:%M:%OSZ",
-                        tz = "UTC",
-                        origin = "1970-01-01")
+                        tz = "GMT",
+                        origin = "1970-01-01 00:00:00")
 
   return(outtime)
 }
