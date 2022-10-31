@@ -17,3 +17,6 @@
 ^refCorrections\.xlsx$
 ^make_ref_corrections_data\.R$
 ^LICENSE\.md$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
