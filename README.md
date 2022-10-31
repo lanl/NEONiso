@@ -9,9 +9,7 @@
 <!-- badges: end -->
 
 Author: Rich Fiorella
-July 8, 2022.
-
-*UPDATES ARE COMING*
+October 31, 2022.
 
 This repository contains an R package to calibrate NEON atmospheric isotope data. A stable version of the package can be installed from CRAN, and a development version of this package can be installed here using devtools (see below).
 
@@ -49,11 +47,6 @@ Two methods are available to calibrate NEON Carbon isotope data and they take sl
 This function is meant to be applied to a list or vector of uncalibrated data files, and produce output hdf5 files that have (currently) only the CO2 and d13C variables instead of the entire data bundle. Development was targeted and tested on monthly basic files, but the functions should also work on the extended data files.
 
 neonUtilities:::stackEddy *should* work on these output files - please file an issue if it does not.
-
-## Future plans
-There will be two major changes and a minor change coming to this package in the next few months:
-1) We are starting to work on calibration routines for the NEON water isotope products - more info soon. This will likely not make it into the CRAN package until at least two minor releases from now (0.6.0).
-2) We are also working on versions of the carbon routines that work on the entire data series in a single pass (e.g., instead of monthly files - a single output file is created for the whole time series). This allows for more flexibility for which calibration data may be included in the calibration data file, and this functionality may be part of the next minor release (0.5.0).
 
 ## DATA ALERT:
 
