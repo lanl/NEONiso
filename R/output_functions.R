@@ -99,12 +99,12 @@ write_carbon_calibration_data <- function(outname, site, calDf, method) {
                                    paste0("/", site, "/dp01/data/isoCo2/calData"))
 
   if (method == "Bowling_2003") {
-    rhdf5::h5writeDataset.data.frame(obj = calDf,
+    rhdf5::h5writeDataset(obj = calDf,
                                      h5loc = co2_cal_outloc,
                                      name = "calGainsOffsets",
                                      DataFrameAsCompound = TRUE)
   } else if (method == "linreg") {
-    rhdf5::h5writeDataset.data.frame(obj = calDf,
+    rhdf5::h5writeDataset(obj = calDf,
                                      h5loc = co2_cal_outloc,
                                      name = "calRegressions",
                                      DataFrameAsCompound = TRUE)
@@ -150,7 +150,7 @@ write_carbon_ambient_data <- function(outname, site, amb_data_list) {
     
     # loop through variables in list amb_data_list and write out as a dataframe.
     lapply(names(amb_data_subset), function(x) {
-      rhdf5::h5writeDataset.data.frame(obj = amb_data_subset[[x]],
+      rhdf5::h5writeDataset(obj = amb_data_subset[[x]],
                                        h5loc = co2_data_outloc,
                                        name = x,
                                        DataFrameAsCompound = TRUE)})
@@ -216,7 +216,7 @@ calibrate_carbon_reference_data <- function(inname, outname,
                                paste0("/", site, "/dp01/data/isoCo2/co2",standard,"_09m"))
   # loop through each variable amb.data.list and write out as a dataframe.
   lapply(names(std), function(x) {
-    rhdf5::h5writeDataset.data.frame(obj = std[[x]],
+    rhdf5::h5writeDataset(obj = std[[x]],
                                      h5loc = std_outloc,
                                      name = x,
                                      DataFrameAsCompound = TRUE)})
@@ -321,7 +321,7 @@ copy_qfqm_group <- function(data_list, outname, site, file, species) {
     # loop through each of the variables in list amb.data.list
     # and write out as a dataframe.
     lapply(names(data_list), function(x) {
-      rhdf5::h5writeDataset.data.frame(obj = data_list[[x]],
+      rhdf5::h5writeDataset(obj = data_list[[x]],
                                        h5loc = co2_data_outloc,
                                        name = x,
                                        DataFrameAsCompound = TRUE)})
@@ -334,7 +334,7 @@ copy_qfqm_group <- function(data_list, outname, site, file, species) {
     # loop through each of the variables in list amb.data.list
     # and write out as a dataframe.
     lapply(names(data_list), function(x) {
-      rhdf5::h5writeDataset.data.frame(obj = data_list[[x]],
+      rhdf5::h5writeDataset(obj = data_list[[x]],
                                        h5loc = h2o_data_outloc,
                                        name = x,
                                        DataFrameAsCompound = TRUE)})
@@ -371,7 +371,7 @@ copy_ucrt_group <- function(data_list, outname, site, file, species) {
 
     # loop through each variable in amb.data.list and write out as a dataframe
     lapply(names(data_list), function(x) {
-      rhdf5::h5writeDataset.data.frame(obj = data_list[[x]],
+      rhdf5::h5writeDataset(obj = data_list[[x]],
                                        h5loc = co2_data_outloc,
                                        name = x,
                                        DataFrameAsCompound = TRUE)})
@@ -383,7 +383,7 @@ copy_ucrt_group <- function(data_list, outname, site, file, species) {
 
     # loop through each variable in amb.data.list and write out as a dataframe.
     lapply(names(data_list), function(x) {
-      rhdf5::h5writeDataset.data.frame(obj = data_list[[x]],
+      rhdf5::h5writeDataset(obj = data_list[[x]],
                                        h5loc = h2o_data_outloc,
                                        name = x,
                                        DataFrameAsCompound = TRUE)})

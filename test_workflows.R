@@ -70,7 +70,7 @@ if (run_test1 | run_test2 | run_test3 | run_test5) {
   
   # get names only.
   fnames.lst <- strsplit(fnames,split="/")
-  fnames.tmp <- sapply(fnames.lst,'[[',8)
+  fnames.tmp <- sapply(fnames.lst,'[[',9)
 
   fnames.out <- gsub(".h5",".calibrated.h5",fnames.tmp)
   
@@ -134,8 +134,8 @@ if (run_test1) {
   fnames.out2 <- paste0(outpaths,"/",fnames.out)
   
   for (i in 1:length(fnames.out)) {
-    print(paste0("Calibration test set 1: ", round(100*i/length(fnames.out),3),"% complete"))
-    calibrate_carbon_bymonth(fnames[i],fnames.out2[i],site=site.code[i], method = "Bowling_2003")
+   try({ print(paste0("Calibration test set 1: ", round(100*i/length(fnames.out),3),"% complete"))
+    calibrate_carbon_bymonth(fnames[i],fnames.out2[i],site=site.code[i], method = "Bowling_2003")})
   }
   
   # cleanup
