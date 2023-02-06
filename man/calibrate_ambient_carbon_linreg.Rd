@@ -9,7 +9,6 @@ calibrate_ambient_carbon_linreg(
   caldf,
   outname,
   site,
-  file,
   filter_data = TRUE,
   force_to_end = TRUE,
   force_to_beginning = TRUE,
@@ -28,9 +27,6 @@ Will include all variables in 000_0x0_xxm. (character)}
 \code{calibrate_ambient_carbon_linreg}}
 
 \item{site}{Four-letter NEON code corresponding to site being processed.}
-
-\item{file}{Output file name. Inherited from
-\code{calibrate_ambient_carbon_linreg}}
 
 \item{filter_data}{Apply median absolute deviation filter from Brock 86 to
 remove impulse spikes? Inherited from
@@ -53,7 +49,8 @@ applied to ambient data.}
 }
 \value{
 Nothing to environment; returns calibrated ambient observations to
-the output file. This function is not designed to be called on its own,
+the function orchestrating calibration (calibrate_carbon).
+This function is not designed to be called on its own,
 and is not exported to the namespace.
 }
 \description{

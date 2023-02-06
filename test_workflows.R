@@ -30,9 +30,9 @@ dir.create(paste0('~/NEONcal/',test_date,"_tests"))
 run_test1 <- FALSE
 run_test2 <- FALSE
 run_test3 <- FALSE
-run_test4 <- TRUE
+run_test4 <- FALSE
 run_test5 <- FALSE
-run_test6 <- FALSE  
+run_test6 <- TRUE  
 run_test7 <- FALSE
 run_test8 <- FALSE
 rapid_test <- TRUE # if rapid, only run ~5% of possible site months.
