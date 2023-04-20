@@ -40,7 +40,7 @@ Para <- list()
 
 # user selection in case corresponding environmenal variable is not assigned
 if(!"METH" %in% base::names(base::Sys.getenv())) {
-  Para$Flow$Meth <- c("dflt",  "host", "slct")[1]
+  Para$Flow$Meth <- c("dflt",  "host", "slct")[3]
   # if corresponding environmenal variable is assigned, use that value
 } else {
   Para$Flow$Meth <- base::Sys.getenv("METH")
@@ -69,7 +69,7 @@ if(Para$Flow$Meth == "slct") {
   Para$Flow$OutSub <- NA
   Para$Flow$PrdIncrCalc <- 1
   Para$Flow$PrdIncrPf <- 1
-  Para$Flow$PrdWndwCalc <- 1
+  Para$Flow$PrdWndwCalc <- 7
   Para$Flow$PrdWndwPf <- NA
   Para$Flow$Read <- c("hdf5", "ff")[1]
   Para$Flow$VersDp <- NA
@@ -77,10 +77,50 @@ if(Para$Flow$Meth == "slct") {
   
 }
 
+# INITIALIZE ENVIRONMENT
 
-install.packages("NEONiso")
-library(NEONiso)
-library(rhdf5)
+# define global environment
+eddy4R.base::def.env.glob()
+
+logLevel <- Sys.getenv('LOG_LEVEL')
+if (is.null(logLevel) || logLevel == "") {
+  assign("rlog", NEONprocIS.base::def.log.init(Lvl="debug"), envir = .GlobalEnv)
+} else {
+  assign("rlog", NEONprocIS.base::def.log.init(), envir = .GlobalEnv)
+}
+rlog$info("Start ECSE CO2 isotope correction from flow.isoCo2.cor.R")
+
+
+#check if require packages are installed 
+packReq <- c("NEONiso", "parsedate", "Hmisc", "neonUtilities")
+
+lapply(packReq, function(x) {
+  tryCatch({rlog$debug(x)}, error=function(cond){print(x)})
+  if(require(x, character.only = TRUE) == FALSE) {
+    install.packages(x)
+    library(x, character.only = TRUE)
+  }})
+#Remove workflow package list
+rm(packReq)
+# load and attach packages
+
+# names of packages
+namePack <- c("DataCombine", "eddy4R.base", "eddy4R.turb", "NEONiso", "neonUtilities", "methods", "rhdf5", "deming") 
+
+
+# load and attach
+tmp <- sapply(namePack, library, character.only = TRUE); rm(tmp)
+
+# initial checks
+
+# check if number of processing files (Para$Flow$FileInp) cover calculation window (Para$Flow$PrdWndwCalc)
+# i.e. if Para$Flow$PrdWndwCalc is equal to 7, Para$Flow$FileInp should be equal to 7 files
+if(Para$Flow$PrdWndwCalc > base::length(Para$Flow$FileInp)) {
+  msg <- "number of daily input files < Para$Flow$PrdWndwCalc."
+  tryCatch({rlog$fatal(msg)}, error=function(cond){print(msg)})
+  stop(msg)
+}
+
 #NEON site
 site <- "ONAQ"
 
