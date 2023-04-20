@@ -68,9 +68,9 @@ if(Para$Flow$Meth == "slct") {
   Para$Flow$OutMeth <- c("hdf5", "diag")[1]
   Para$Flow$OutSub <- NA
   Para$Flow$PrdIncrCalc <- 1
-  Para$Flow$PrdIncrPf <- 1
+  #Para$Flow$PrdIncrPf <- 1
   Para$Flow$PrdWndwCalc <- 7
-  Para$Flow$PrdWndwPf <- NA
+  #Para$Flow$PrdWndwPf <- 1
   Para$Flow$Read <- c("hdf5", "ff")[1]
   Para$Flow$VersDp <- NA
   Para$Flow$VersEddy <- NA
@@ -117,6 +117,40 @@ tmp <- sapply(namePack, library, character.only = TRUE); rm(tmp)
 # i.e. if Para$Flow$PrdWndwCalc is equal to 7, Para$Flow$FileInp should be equal to 7 files
 if(Para$Flow$PrdWndwCalc > base::length(Para$Flow$FileInp)) {
   msg <- "number of daily input files < Para$Flow$PrdWndwCalc."
+  tryCatch({rlog$fatal(msg)}, error=function(cond){print(msg)})
+  stop(msg)
+}
+
+# check that Para$Flow$DateOut is a strictly regular, daily sequence
+if(!base::all(base::diff(base::as.Date(Para$Flow$DateOut)) == 1)) {
+  msg <- "please ensure that Para$Flow$DateOut consists of subsequent days."
+  tryCatch({rlog$fatal(msg)}, error=function(cond){print(msg)})
+  stop(msg)
+}
+
+# determine center days
+dateCntr <- Para$Flow$DateOut[base::seq(from = 1, to = base::length(Para$Flow$DateOut), by = Para$Flow$PrdIncrCalc)]
+
+# for each center day, determine the date sequence covering its planar-fit window
+for(idx in dateCntr) {
+  
+  Para$Flow$DateCalc[[idx]] <- base::as.character(base::seq.Date(
+    from = base::as.Date(idx) - ((base::as.integer(Para$Flow$PrdWndwCalc) - 1) / 2),
+    to = base::as.Date(idx) + ((base::as.integer(Para$Flow$PrdWndwCalc) - 1) / 2),
+    by = "day"))
+  
+}; rm(idx)
+
+# check if there is an input file for each day over all calculation windows
+
+# determine if there is an input file corresponding to each day
+dateCalcAll <- sapply(base::sort(base::unique(base::unlist(Para$Flow$DateCalc))), function(x)
+  base::any(base::grepl(pattern = base::paste0(".*", x, ".*.h5?"), Para$Flow$FileInp))
+)
+
+# issue an error in case one or more files are missing
+if(!base::all(dateCalcAll)) {
+  msg <- base::paste("data for", base::paste0(base::names(dateCalcAll)[!dateCalcAll], collapse = ", "), "is missing.")
   tryCatch({rlog$fatal(msg)}, error=function(cond){print(msg)})
   stop(msg)
 }
