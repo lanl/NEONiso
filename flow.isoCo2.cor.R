@@ -77,7 +77,7 @@ if(Para$Flow$Meth == "slct") {
   
 }
 
-# INITIALIZE ENVIRONMENT
+# INITIALIZE ENVIRONMENT #######################################################
 
 # define global environment
 eddy4R.base::def.env.glob()
@@ -91,7 +91,7 @@ if (is.null(logLevel) || logLevel == "") {
 rlog$info("Start ECSE CO2 isotope correction from flow.isoCo2.cor.R")
 
 
-#check if require packages are installed 
+# check if require packages are installed 
 packReq <- c("NEONiso", "parsedate", "Hmisc", "neonUtilities")
 
 lapply(packReq, function(x) {
@@ -100,7 +100,7 @@ lapply(packReq, function(x) {
     install.packages(x)
     library(x, character.only = TRUE)
   }})
-#Remove workflow package list
+# remove workflow package list
 rm(packReq)
 # load and attach packages
 
@@ -111,9 +111,10 @@ namePack <- c("DataCombine", "eddy4R.base", "eddy4R.turb", "NEONiso", "neonUtili
 # load and attach
 tmp <- sapply(namePack, library, character.only = TRUE); rm(tmp)
 
-# initial checks
 
-# check if number of processing files (Para$Flow$FileInp) cover calculation window (Para$Flow$PrdWndwCalc)
+# INITIAL CHECKS ###############################################################
+
+# check if number of input files (Para$Flow$FileInp) cover calculation window (Para$Flow$PrdWndwCalc)
 # i.e. if Para$Flow$PrdWndwCalc is equal to 7, Para$Flow$FileInp should be equal to 7 files
 if(Para$Flow$PrdWndwCalc > base::length(Para$Flow$FileInp)) {
   msg <- "number of daily input files < Para$Flow$PrdWndwCalc."
@@ -142,7 +143,6 @@ for(idx in dateCntr) {
 }; rm(idx)
 
 # check if there is an input file for each day over all calculation windows
-
 # determine if there is an input file corresponding to each day
 dateCalcAll <- sapply(base::sort(base::unique(base::unlist(Para$Flow$DateCalc))), function(x)
   base::any(base::grepl(pattern = base::paste0(".*", x, ".*.h5?"), Para$Flow$FileInp))
@@ -155,9 +155,17 @@ if(!base::all(dateCalcAll)) {
   stop(msg)
 }
 
-#NEON site
-site <- "ONAQ"
+# Processing ###################################################################
+# determine full input file path for current center day in moving planar fit window
+# this day is used as reference for reading parametric information
+DirFilePara <- base::file.path(Para$Flow$DirInp, grep(pattern = base::paste0(".*", dateCntr, ".*.h5?"), Para$Flow$FileInp, value = TRUE))
 
+# Grab the NEON specific 4-letter code for the site location (Loc) from the dp0p input file
+Para$Flow$Loc <- eddy4R.base::def.para.site(FileInp = DirFilePara)$Loc
+
+
+tmp <- eddy4R.base::def.hdf5.extr(FileInp = DirFilePara,
+                                  FileOut = base::paste0(Para$Flow$DirOut,"/",Para$Flow$FileOutBase,".calibrated.h5"))
 #working directory path
 dir <- paste0("~/eddy/data/tmp/",site)
 #input data directory path
