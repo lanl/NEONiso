@@ -164,8 +164,25 @@ DirFilePara <- base::file.path(Para$Flow$DirInp, grep(pattern = base::paste0(".*
 Para$Flow$Loc <- eddy4R.base::def.para.site(FileInp = DirFilePara)$Loc
 
 
+# import data into workspace
+# create list to hold data
+data <- base::list()
+for(idx in base::names(dateCalcAll)) {
+  # idx <- base::names(dateCalcAll)[1]
+  
+  if(length(Para$Flow$FileInp[idx]) == 1){
+    
+    rlog$debug(base::paste("begin: reading", Para$Flow$FileInp[[idx]]))
+    data[[idx]] <- eddy4R.base::def.hdf5.extr(FileInp = base::file.path(Para$Flow$DirInp, grep(pattern = base::paste0(".*", idx, ".*.h5?"), Para$Flow$FileInp, value = TRUE)))
+    rlog$debug(base::paste("complete: reading", Para$Flow$FileInp[[idx]]))
+    
+  } else {stop(base::paste("file missing for", idx), ".")}
+}
+
+#extract data from input hdf5 files
 tmp <- eddy4R.base::def.hdf5.extr(FileInp = DirFilePara,
                                   FileOut = base::paste0(Para$Flow$DirOut,"/",Para$Flow$FileOutBase,".calibrated.h5"))
+
 #working directory path
 dir <- paste0("~/eddy/data/tmp/",site)
 #input data directory path
