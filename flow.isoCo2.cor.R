@@ -218,3 +218,69 @@ for (i in 1:length(nameOutFileOut)) {
 
 
 
+################################################
+##TEST####
+inname <- nameFile
+outname <- nameOutFileOut[1]
+site <- Para$Flow$Loc
+method <- "Bowling_2003"
+calibration_half_width <- 0.5
+force_cal_to_beginning <- TRUE
+force_cal_to_end <- TRUE
+gap_fill_parameters <- FALSE
+filter_ambient <- TRUE
+r2_thres <- 0.95
+correct_refData <- TRUE
+write_to_file <- TRUE
+remove_known_bad_months <- TRUE
+plot_regression_data <- FALSE
+plot_directory <- NULL
+
+for (i in 1:length(nameOutFileOut)) {
+  calibrate_carbon_bymonth(nameFile[i],nameOutFileOut[i],site=site, method = "Bowling_2003")
+}
+
+test <- NEONiso:::ingest_data(inname[1], analyte = 'Co2')
+
+
+
+ciso0 <- list()
+
+for (i in 1:length(inname)){
+  #i <- 1
+  tmp <- NEONiso:::ingest_data(inname[i], analyte = 'Co2')
+  if(i == 1){
+    ciso0 <- tmp
+  } else {
+    #ciso0$ambient
+    
+    for(j in 1:length(names(tmp$ambient))) {
+      ciso0$ambient[j] <- lapply(names(ciso0$ambient), function(x) {lapply(names(ciso0$ambient[[x]]), function(y){
+        tmp2 <- rbind(ciso0$ambient[[x]][[y]], tmp$ambient[[x]][[y]])
+        #rbind(ciso0$ambient[[x]][[y]], tmp$ambient[[x]][[y]])
+        #names(tmp2) <- names(tmp$ambient[[x]][[y]])
+        print(names(tmp$ambient[[x]]))
+        return(tmp2)
+      })})
+      names(ciso0$ambient[[j]]) <- names(tmp$ambient[[j]])
+    }
+    
+    for(k in 1:length(names(tmp$reference))) {
+      ciso0$reference[k] <- lapply(names(ciso0$reference), function(x) {lapply(names(ciso0$reference[[x]]), function(y){
+        tmp2 <- rbind(ciso0$reference[[x]][[y]], tmp$reference[[x]][[y]])
+        #rbind(ciso0$ambient[[x]][[y]], tmp$ambient[[x]][[y]])
+        #names(tmp2) <- names(tmp$ambient[[x]][[y]])
+        print(names(tmp$reference[[x]]))
+        return(tmp2)
+      })})
+      names(ciso0$reference[[k]]) <- names(tmp$reference[[k]])
+    }
+    
+    ciso0$refe_stacked <- rbind(ciso0$refe_stacked, tmp$refe_stacked)
+  }
+  
+}
+
+
+
+
