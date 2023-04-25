@@ -171,33 +171,13 @@ DirFilePara <- base::file.path(Para$Flow$DirInp, grep(pattern = base::paste0(".*
 # Grab the NEON specific 4-letter code for the site location (Loc) from the dp0p input file
 Para$Flow$Loc <- eddy4R.base::def.para.site(FileInp = DirFilePara)$Loc
 
-
-# import data into workspace
-# create list to hold data
-data <- base::list()
-for(idx in base::names(dateCalcAll)) {
-  # idx <- base::names(dateCalcAll)[1]
-  
-  if(length(Para$Flow$FileInp[idx]) == 1){
-    
-    rlog$debug(base::paste("begin: reading", Para$Flow$FileInp[[idx]]))
-    data[[idx]] <- eddy4R.base::def.hdf5.extr(FileInp = base::file.path(Para$Flow$DirInp, grep(pattern = base::paste0(".*", idx, ".*.h5?"), Para$Flow$FileInp, value = TRUE)))
-    rlog$debug(base::paste("complete: reading", Para$Flow$FileInp[[idx]]))
-    
-  } else {stop(base::paste("file missing for", idx), ".")}
-}
-
-#extract data from input hdf5 files
-tmp <- eddy4R.base::def.hdf5.extr(FileInp = DirFilePara,
-                                  FileOut = base::paste0(Para$Flow$DirOut,"/",Para$Flow$FileOutBase,".calibrated.h5"))
-
 #working directory path
-dir <- paste0("~/eddy/data/iso/",site)
+#dir <- paste0("~/eddy/data/iso/",site)
 #input data directory path
-inpDir <- paste0(dir,"/inp")
-  
+#inpDir <- paste0(dir,"/inp")
+
 #list all file names in inpDir
-nameFile <- list.files(path = inpDir,
+nameFile <- list.files(path = Para$Flow$DirInp,
                        pattern = '.h5',
                        recursive = TRUE,
                        full.names = TRUE)
@@ -208,7 +188,7 @@ nameOutFileSplt <- strsplit(nameOutFileTmp, split = "/")
 nameOutFileOut <- sapply(nameOutFileSplt, '[[', length(nameOutFileSplt[[1]]))
 
 #output data directory path
-outDir <- paste0(dir,"/out")
+outDir <- Para$Flow$DirOut
 #output file names
 nameOutFileOut <- paste0(outDir,"/",nameOutFileOut)
 
@@ -216,4 +196,25 @@ nameOutFileOut <- paste0(outDir,"/",nameOutFileOut)
 for (i in 1:length(nameOutFileOut)) {
   calibrate_carbon_bymonth(nameFile[i],nameOutFileOut[i],site=site, method = "Bowling_2003")
 }
+
+# # import data into workspace
+# # create list to hold data
+# data <- base::list()
+# for(idx in base::names(dateCalcAll)) {
+#   # idx <- base::names(dateCalcAll)[1]
+#   
+#   if(length(Para$Flow$FileInp[idx]) == 1){
+#     
+#     rlog$debug(base::paste("begin: reading", Para$Flow$FileInp[[idx]]))
+#     data[[idx]] <- eddy4R.base::def.hdf5.extr(FileInp = base::file.path(Para$Flow$DirInp, grep(pattern = base::paste0(".*", idx, ".*.h5?"), Para$Flow$FileInp, value = TRUE)))
+#     rlog$debug(base::paste("complete: reading", Para$Flow$FileInp[[idx]]))
+#     
+#   } else {stop(base::paste("file missing for", idx), ".")}
+# }
+# 
+# #extract data from input hdf5 files
+# tmp <- eddy4R.base::def.hdf5.extr(FileInp = DirFilePara,
+#                                   FileOut = base::paste0(Para$Flow$DirOut,"/",Para$Flow$FileOutBase,".calibrated.h5"))
+
+
 
