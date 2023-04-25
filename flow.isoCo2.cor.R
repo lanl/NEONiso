@@ -243,44 +243,47 @@ for (i in 1:length(nameOutFileOut)) {
 test <- NEONiso:::ingest_data(inname[1], analyte = 'Co2')
 
 
+# if there are more than 1 file in inname, merge all files together after running ingest_data()
 
-ciso0 <- list()
+if (length(inname) > 1) {
+  ciso <- list()
 
 for (i in 1:length(inname)){
   #i <- 1
   tmp <- NEONiso:::ingest_data(inname[i], analyte = 'Co2')
   if(i == 1){
-    ciso0 <- tmp
+    ciso <- tmp
   } else {
-    #ciso0$ambient
     
     for(j in 1:length(names(tmp$ambient))) {
-      ciso0$ambient[j] <- lapply(names(ciso0$ambient), function(x) {lapply(names(ciso0$ambient[[x]]), function(y){
-        tmp2 <- rbind(ciso0$ambient[[x]][[y]], tmp$ambient[[x]][[y]])
-        #rbind(ciso0$ambient[[x]][[y]], tmp$ambient[[x]][[y]])
+      ciso$ambient[j] <- lapply(names(ciso$ambient), function(x) {lapply(names(ciso$ambient[[x]]), function(y){
+        #tmp2 <- rbind(ciso$ambient[[x]][[y]], tmp$ambient[[x]][[y]])
+        rbind(ciso$ambient[[x]][[y]], tmp$ambient[[x]][[y]])
         #names(tmp2) <- names(tmp$ambient[[x]][[y]])
-        print(names(tmp$ambient[[x]]))
-        return(tmp2)
+        #print(names(tmp$ambient[[x]]))
+        #return(tmp2)
       })})
-      names(ciso0$ambient[[j]]) <- names(tmp$ambient[[j]])
+      names(ciso$ambient[[j]]) <- names(tmp$ambient[[j]])
     }
     
     for(k in 1:length(names(tmp$reference))) {
-      ciso0$reference[k] <- lapply(names(ciso0$reference), function(x) {lapply(names(ciso0$reference[[x]]), function(y){
-        tmp2 <- rbind(ciso0$reference[[x]][[y]], tmp$reference[[x]][[y]])
-        #rbind(ciso0$ambient[[x]][[y]], tmp$ambient[[x]][[y]])
-        #names(tmp2) <- names(tmp$ambient[[x]][[y]])
-        print(names(tmp$reference[[x]]))
-        return(tmp2)
+      ciso$reference[k] <- lapply(names(ciso$reference), function(x) {lapply(names(ciso$reference[[x]]), function(y){
+        #tmp2 <- rbind(ciso$reference[[x]][[y]], tmp$reference[[x]][[y]])
+        rbind(ciso$reference[[x]][[y]], tmp$reference[[x]][[y]])
+        #names(tmp2) <- names(tmp$reference[[x]][[y]])
+        #print(names(tmp$reference[[x]]))
+        #return(tmp2)
       })})
-      names(ciso0$reference[[k]]) <- names(tmp$reference[[k]])
+      names(ciso$reference[[k]]) <- names(tmp$reference[[k]])
     }
     
-    ciso0$refe_stacked <- rbind(ciso0$refe_stacked, tmp$refe_stacked)
+    ciso$refe_stacked <- rbind(ciso$refe_stacked, tmp$refe_stacked)
   }
   
-}
+}}
 
+# extract the data we need from ciso list
+refe <- NEONiso:::extract_carbon_calibration_data(ciso$refe_stacked)
 
 
 
