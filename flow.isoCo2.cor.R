@@ -262,15 +262,14 @@ for (i in 1:length(inname)){
       })
       names(ciso$ambient[[j]]) <- names(tmp$ambient[[j]])
       }#End of for loop around levels
-      #names(ciso$ambient[[j]]) <- names(tmp$ambient[[j]])
-    }
+     
     #append all ingest reference data 
-    for(k in 1:length(names(tmp$reference))) {
-      ciso$reference[k] <- lapply(names(ciso$reference), function(x) {lapply(names(ciso$reference[[x]]), function(y){
-        rbind(ciso$reference[[x]][[y]], tmp$reference[[x]][[y]])
-      })})
+    for(k in names(tmp$reference)) {
+      ciso$reference[[k]] <- lapply(names(tmp$reference[[k]]), function(y){
+        rbind(ciso$reference[[k]][[y]], tmp$reference[[k]][[y]])
+      })
       names(ciso$reference[[k]]) <- names(tmp$reference[[k]])
-    }
+    }#End of for loop around levels
     #append all refe_stacked 
     ciso$refe_stacked <- rbind(ciso$refe_stacked, tmp$refe_stacked)
   }
