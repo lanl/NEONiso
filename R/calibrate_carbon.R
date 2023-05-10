@@ -139,7 +139,7 @@ calibrate_carbon         <- function(inname,
   if (length(inname) == 1){
     # pull all carbon isotope data into a list.
     #inname <- list.files('~/Desktop/DP4_00200_001/ABBY/',full.names=TRUE)
-    ciso <- ingest_data(inname, analyte = 'Co2')
+    ciso <- NEONiso:::ingest_data(inname, analyte = 'Co2')
     
   } else{ 
     # if there are more than 1 file in inname, merge all files together after running ingest_data()
@@ -196,7 +196,7 @@ calibrate_carbon         <- function(inname,
   }
 
   # get calibration parameters data.frame.
-  cal_df <- NEONiso:::fit_carbon_regression(ref_data = refe, method = method,
+  cal_df <- fit_carbon_regression(ref_data = refe, method = method,
                                   calibration_half_width = calibration_half_width,
                                   plot_regression_data = plot_regression_data,
                                   plot_dir = plot_directory,
@@ -226,7 +226,7 @@ calibrate_carbon         <- function(inname,
 
     ciso_subset_cal <- lapply(names(ciso_subset),
                               function(x) {
-                                calibrate_ambient_carbon_linreg(
+                                NEONiso:::calibrate_ambient_carbon_linreg(
                                   amb_data_list = ciso_subset[[x]],
                                   caldf = cal_df,
                                   site = site,
@@ -242,8 +242,8 @@ calibrate_carbon         <- function(inname,
   # write out these data.frames to a new output file.
   #-----------------------------------------------------------
   if (write_to_file) {
-    cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
-    cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
+    cal_df$timeBgn <- NEONiso:::convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
+    cal_df$timeEnd <- NEONiso:::convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
     setup_output_file(inname, outname, site, 'co2')
     write_carbon_calibration_data(outname, site, cal_df, method = method)
     write_carbon_ambient_data(outname, site, ciso_subset_cal)
@@ -257,8 +257,8 @@ calibrate_carbon         <- function(inname,
   } else{#export output directly
     outData <- list()
     #convert time to NEON HDF5 time
-    cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
-    cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
+    cal_df$timeBgn <- NEONiso:::convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
+    cal_df$timeEnd <- NEONiso:::convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
     outData$ciso_subset_cal <- ciso_subset_cal
     outData$cal_df <- cal_df
     
