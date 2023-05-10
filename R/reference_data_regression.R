@@ -77,18 +77,18 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
   #---------------------------------------------------------------
   # Select which validation data to carry through to calibration
   #---------------------------------------------------------------
-  ref_data <- select_daily_reference_data(ref_data, analyte = "co2")
+  ref_data <- NEONiso:::select_daily_reference_data(ref_data, analyte = "co2")
 
   if (method == "Bowling_2003") {
 
     # calculate mole fraction (12CO2 / 13CO2) for ref gases and observed values
-    ref_data$conc12CCO2_ref <- calculate_12CO2(ref_data$rtioMoleDryCo2Refe.mean,
+    ref_data$conc12CCO2_ref <- NEONiso:::calculate_12CO2(ref_data$rtioMoleDryCo2Refe.mean,
                                               ref_data$dlta13CCo2Refe.mean)
-    ref_data$conc13CCO2_ref <- calculate_13CO2(ref_data$rtioMoleDryCo2Refe.mean,
+    ref_data$conc13CCO2_ref <- NEONiso:::calculate_13CO2(ref_data$rtioMoleDryCo2Refe.mean,
                                               ref_data$dlta13CCo2Refe.mean)
-    ref_data$conc12CCO2_obs <- calculate_12CO2(ref_data$rtioMoleDryCo2.mean,
+    ref_data$conc12CCO2_obs <- NEONiso:::calculate_12CO2(ref_data$rtioMoleDryCo2.mean,
                                               ref_data$dlta13CCo2.mean)
-    ref_data$conc13CCO2_obs <- calculate_13CO2(ref_data$rtioMoleDryCo2.mean,
+    ref_data$conc13CCO2_obs <- NEONiso:::calculate_13CO2(ref_data$rtioMoleDryCo2.mean,
                                               ref_data$dlta13CCo2.mean)
 
     if (nrow(ref_data) == 0) {
@@ -157,7 +157,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 
         if (plot_regression_data) {
           print("Plotting regression data...this step will take some time...")
-          carbon_regression_plots(cal_subset,
+          NEONiso:::carbon_regression_plots(cal_subset,
                                   plot_filename = paste0(plot_dir,
                                                          "/", site,
                                                          "_", date_seq[i],
@@ -292,11 +292,11 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       # okay, now run calibrations...
       for (i in 1:length(date_seq)) {
 
-        start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00"),
-                                    format = "%Y-%m-%d %H:%M:%S",
+        start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"),
+                                    #format = "%Y-%m-%d %H:%M:%S",
                                     tz = "UTC", origin = "1970-01-01")
-        end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59"),
-                                    format = "%Y-%m-%d %H:%M:%S",
+        end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59.0000"),
+                                    #format = "%Y-%m-%d %H:%M:%S",
                                     tz = "UTC", origin = "1970-01-01")
 
         # define calibration interval
