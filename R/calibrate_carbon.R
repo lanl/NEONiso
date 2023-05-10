@@ -254,6 +254,16 @@ calibrate_carbon         <- function(inname,
     
     # one last invocation of hdf5 close all, for good luck
     rhdf5::h5closeAll()
+  } else{#export output directly
+    outData <- list()
+    #convert time to NEON HDF5 time
+    cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
+    cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
+    outData$ciso_subset_cal <- ciso_subset_cal
+    outData$cal_df <- cal_df
+    
+    return(outData)
+    
   }
 
 }
