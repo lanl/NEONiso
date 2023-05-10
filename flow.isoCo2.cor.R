@@ -92,7 +92,7 @@ rlog$info("Start ECSE CO2 isotope correction from flow.isoCo2.cor.R")
 
 
 # check if require packages are installed 
-packReq <- c("NEONiso", "parsedate", "Hmisc", "neonUtilities")
+packReq <- c("NEONiso", "parsedate", "Hmisc", "neonUtilities", "dplyr")
 
 lapply(packReq, function(x) {
   tryCatch({rlog$debug(x)}, error=function(cond){print(x)})
@@ -113,7 +113,7 @@ rm(packReq)
 #‘rlang’ >= 1.1.0 is required
 
 # names of packages
-namePack <- c("DataCombine", "eddy4R.base", "eddy4R.turb", "NEONiso", "neonUtilities", "methods", "rhdf5", "deming") 
+namePack <- c("DataCombine", "eddy4R.base", "eddy4R.turb", "NEONiso", "neonUtilities", "methods", "rhdf5", "deming", "dplyr") 
 
 
 # load and attach
@@ -164,7 +164,7 @@ if(!base::all(dateCalcAll)) {
 }
 
 # Processing ###################################################################
-# determine full input file path for current center day in moving planar fit window
+# determine full input file path for current center day in data processing window
 # this day is used as reference for reading parametric information
 DirFilePara <- base::file.path(Para$Flow$DirInp, grep(pattern = base::paste0(".*", dateCntr, ".*.h5?"), Para$Flow$FileInp, value = TRUE))
 
@@ -181,21 +181,25 @@ nameFile <- list.files(path = Para$Flow$DirInp,
                        pattern = '.h5',
                        recursive = TRUE,
                        full.names = TRUE)
-#Output file names
-nameOutFileTmp <- gsub(".h5",".calibrated.h5",nameFile)
+#Output file names (center day)
+nameOutFileTmp <- gsub(".h5",".calibrated.h5",DirFilePara)
 nameOutFileSplt <- strsplit(nameOutFileTmp, split = "/")
 #get output file names
 nameOutFileOut <- sapply(nameOutFileSplt, '[[', length(nameOutFileSplt[[1]]))
 
 #output data directory path
 outDir <- Para$Flow$DirOut
-#output file names
+#output file names with directory
 nameOutFileOut <- paste0(outDir,"/",nameOutFileOut)
 
 #correction processing
-for (i in 1:length(nameOutFileOut)) {
-  calibrate_carbon_bymonth(nameFile[i],nameOutFileOut[i],site=site, method = "Bowling_2003")
-}
+#correcting data using Bowling_2003 method
+#outData01 <- outData
+outData01 <- calibrate_carbon(nameFile,nameOutFileOut,site=Para$Flow$Loc, method = "Bowling_2003", write_to_file = FALSE)
+
+#correcting data using Linear regression (linreg) method
+#outData02 <- outData
+outData02 <- calibrate_carbon(nameFile,nameOutFileOut,site=Para$Flow$Loc, method = "linreg", write_to_file = FALSE)
 
 # # import data into workspace
 # # create list to hold data
@@ -221,9 +225,9 @@ for (i in 1:length(nameOutFileOut)) {
 ################################################
 ##TEST####
 inname <- nameFile
-outname <- nameOutFileOut[1]
+outname <- nameOutFileOut
 site <- Para$Flow$Loc
-method <- "Bowling_2003"
+method <- c("Bowling_2003", "linreg")[2]
 calibration_half_width <- 0.5
 force_cal_to_beginning <- TRUE
 force_cal_to_end <- TRUE
@@ -231,16 +235,11 @@ gap_fill_parameters <- FALSE
 filter_ambient <- TRUE
 r2_thres <- 0.95
 correct_refData <- TRUE
-write_to_file <- TRUE
+write_to_file <- FALSE
 remove_known_bad_months <- TRUE
 plot_regression_data <- FALSE
 plot_directory <- NULL
 
-#for (i in 1:length(nameOutFileOut)) {
-#  calibrate_carbon_bymonth(nameFile[i],nameOutFileOut[i],site=site, method = "Bowling_2003")
-#}
-
-#test <- NEONiso:::ingest_data(inname[1], analyte = 'Co2')
 
 
 # if there are more than 1 file in inname, merge all files together after running ingest_data()
