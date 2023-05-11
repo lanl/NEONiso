@@ -201,10 +201,31 @@ outData01 <- calibrate_carbon(nameFile,nameOutFileOut,site=Para$Flow$Loc, method
 #NOTE: values of min, max output from linreg method are the corrected values not raw values
 #outData02 <- outData
 outData02 <- calibrate_carbon(nameFile,nameOutFileOut,site=Para$Flow$Loc, method = "linreg", write_to_file = FALSE)
-
+#change column names
+colnames()
 #combine data from both method into one list
 outData <- list()
+#combine cal_df
 outData$cal_df <- cbind(outData01$cal_df, outData02$cal_df[,-which(names(outData02$cal_df) %in% c("timeBgn", "timeEnd"))])
+
+#adding columns, combine results, clean up, organizing, and changing column names
+for(j in names(outData01$ciso_subset_cal)) {
+  for (k in names (outData01$ciso_subset_cal[[j]])){
+  if (k %in% c("dlta13CCo2", "rtioMoleDryCo2")){
+    #change column names to NEON terms
+    names(outData01$ciso_subset_cal[[j]][[k]]) <- c("timeBgn","timeEnd","mean","min","max","vari","numSamp","meanCorBowl","minCorBowl","maxCorBowl")
+    #NOTE: values of min, max output from linreg method are the corrected values not raw values
+    #replace column names of min & max to minCor and maxCor
+    names(outData02$ciso_subset_cal[[j]][[k]]) <- c("timeBgn","timeEnd","mean","minCorLinReg","maxLinReg","vari","numSamp","meanLinReg","cvLooLinReg","cv5RmseLinReg","cv5MaeLinReg")
+    
+    outData$ciso_subset_cal[[j]][[k]] <-  cbind(outData01$ciso_subset_cal[[j]][[k]], 
+                                                outData02$ciso_subset_cal[[j]][[k]][,-which(names(outData02$ciso_subset_cal[[j]][[k]]) %in% c("timeBgn", "timeEnd", "vari", "numSamp"))])
+  }
+    else{outData$ciso_subset_cal[[j]][[k]] <- outData01$ciso_subset_cal[[j]][[k]]}
+    }
+  names(outData$ciso_subset_cal[[j]]) <- names(outData01$ciso_subset_cal[[j]])
+}
+
 # # import data into workspace
 # # create list to hold data
 # data <- base::list()
@@ -231,7 +252,7 @@ outData$cal_df <- cbind(outData01$cal_df, outData02$cal_df[,-which(names(outData
 inname <- nameFile
 outname <- nameOutFileOut
 site <- Para$Flow$Loc
-method <- c("Bowling_2003", "linreg")[2]
+method <- c("Bowling_2003", "linreg")[1]
 calibration_half_width <- 0.5
 force_cal_to_beginning <- TRUE
 force_cal_to_end <- TRUE
