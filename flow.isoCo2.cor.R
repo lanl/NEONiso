@@ -198,9 +198,13 @@ nameOutFileOut <- paste0(outDir,"/",nameOutFileOut)
 outData01 <- calibrate_carbon(nameFile,nameOutFileOut,site=Para$Flow$Loc, method = "Bowling_2003", write_to_file = FALSE)
 
 #correcting data using Linear regression (linreg) method
+#NOTE: values of min, max output from linreg method are the corrected values not raw values
 #outData02 <- outData
 outData02 <- calibrate_carbon(nameFile,nameOutFileOut,site=Para$Flow$Loc, method = "linreg", write_to_file = FALSE)
 
+#combine data from both method into one list
+outData <- list()
+outData$cal_df <- cbind(outData01$cal_df, outData02$cal_df[,-which(names(outData02$cal_df) %in% c("timeBgn", "timeEnd"))])
 # # import data into workspace
 # # create list to hold data
 # data <- base::list()
