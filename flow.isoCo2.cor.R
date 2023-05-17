@@ -212,8 +212,9 @@ for(j in names(outData01$ciso_subset_cal)) {
   if (k %in% c("dlta13CCo2", "rtioMoleDryCo2")){
     #change column names to NEON terms
     #original column names of outData01 (Bowling_2003 method)
-    #c("timeBgn","timeEnd","mean","min","max","vari","numSamp","mean_cal","min_cal","max_cal","CVcalUcrt","LOOcalUcrt")
-    colnames(outData01$ciso_subset_cal[[j]][[k]]) <- c("timeBgn","timeEnd","mean","min","max","vari","numSamp","meanCorBowl","minCorBowl","maxCorBowl","cvCalUcrt","looCalUcrt")
+    #dlta13CCo2 = c("timeBgn","timeEnd","mean","min","max","vari","numSamp","mean_cal","min_cal","max_cal","CVcalUcrt","LOOcalUcrt")
+    #rtioMoleDryCo2 = c("timeBgn","timeEnd","mean","min","max","vari","numSamp","mean_cal","CVcalUcrt","LOOcalUcrt")
+    #colnames(outData01$ciso_subset_cal[[j]][[k]]) <- c("timeBgn","timeEnd","mean","min","max","vari","numSamp","meanCorBowl","minCorBowl","maxCorBowl","cvCalUcrt","looCalUcrt")
     
     #original column names of outData02 (linreg method)
     #c("timeBgn","timeEnd","mean","min","max","vari","numSamp","mean_cal","cvloo", "cv5rmse", "cv5mae")
@@ -221,14 +222,30 @@ for(j in names(outData01$ciso_subset_cal)) {
     #replace column names of min & max to minCor and maxCor
     #names(outData02$ciso_subset_cal[[j]][[k]]) <- c("timeBgn","timeEnd","mean","minCorLinReg","maxLinReg","vari","numSamp","meanCorLinReg","cvLoo","cv5Rmse","cv5Mae")
     
-    #create temporary table before combine results from both methods
+    #create temporary table to combine results from both methods in NEON format
     tmpData <- data.frame(
+      #provided best estimated (output from Bowling_2003 method)
+      mean = outData01$ciso_subset_cal[[j]][[k]]$mean_cal,
+      min = outData01$ciso_subset_cal[[j]][[k]]$min_cal,
+      max = outData01$ciso_subset_cal[[j]][[k]]$max_cal,
+      vari = outData01$ciso_subset_cal[[j]][[k]]$vari, #vari not calculate after applying calibration (should talk to Rich)
+      numSamp = outData01$ciso_subset_cal[[j]][[k]]$numSamp,
+      timeBgn = outData01$ciso_subset_cal[[j]][[k]]$timeBgn,
+      timeEnd = outData01$ciso_subset_cal[[j]][[k]]$timeEnd,
+      #output from Bowling_2003 method
+      meanCorBowl = outData01$ciso_subset_cal[[j]][[k]]$mean_cal,
+      minCorBowl = outData01$ciso_subset_cal[[j]][[k]]$min_cal,
+      maxCorBowl = outData01$ciso_subset_cal[[j]][[k]]$max_cal,
+      cvCalUcrt =outData01$ciso_subset_cal[[j]][[k]]$CVcalUcrt,
+      looCalUcrt =outData01$ciso_subset_cal[[j]][[k]]$LOOcalUcrt,
+      #output from linreg
       meanCorLinReg = outData02$ciso_subset_cal[[j]][[k]]$mean_cal,
-      minCorLinReg =  outData02$ciso_subset_cal[[j]][[k]]$min,
-      maxCorLinReg =  outData02$ciso_subset_cal[[j]][[k]]$max,
+      minCorLinReg =  outData02$ciso_subset_cal[[j]][[k]]$min,#not calculate after applying calibration (should talk to Rich)
+      maxCorLinReg =  outData02$ciso_subset_cal[[j]][[k]]$max,#not calculate after applying calibration (should talk to Rich)
       cvLoo = outData02$ciso_subset_cal[[j]][[k]]$cvloo,
       cv5Rmse = outData02$ciso_subset_cal[[j]][[k]]$cv5rmse,
       cv5Mae = outData02$ciso_subset_cal[[j]][[k]]$cv5mae,
+      #raw/non corrected data
       meanRaw = outData01$ciso_subset_cal[[j]][[k]]$mean,
       minRaw = outData01$ciso_subset_cal[[j]][[k]]$min,
       maxRaw = outData01$ciso_subset_cal[[j]][[k]]$max,
@@ -236,7 +253,7 @@ for(j in names(outData01$ciso_subset_cal)) {
     )
     #outData$ciso_subset_cal[[j]][[k]] <-  cbind(outData01$ciso_subset_cal[[j]][[k]], 
      #                                           outData02$ciso_subset_cal[[j]][[k]][,-which(names(outData02$ciso_subset_cal[[j]][[k]]) %in% c("timeBgn", "timeEnd", "mean", "vari", "numSamp"))])
-    outData$ciso_subset_cal[[j]][[k]] <- cbind(outData01$ciso_subset_cal[[j]][[k]], tmpData)
+    outData$ciso_subset_cal[[j]][[k]] <- tmpData
   }
     else{outData$ciso_subset_cal[[j]][[k]] <- outData01$ciso_subset_cal[[j]][[k]]}
     }
