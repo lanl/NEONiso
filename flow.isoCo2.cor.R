@@ -203,17 +203,6 @@ outData01 <- calibrate_carbon(nameFile,nameOutFileOut,site=Para$Flow$Loc, method
 outData02 <- calibrate_carbon(nameFile,nameOutFileOut,site=Para$Flow$Loc, method = "linreg", write_to_file = FALSE)
 #combine data from both method into one list
 outData <- list()
-#combine cal_df
-outData$cal_df <- cbind(outData01$cal_df[,-which(names(outData01$cal_df) %in% c("timeBgn", "timeEnd"))],
-                        outData02$cal_df[,-which(names(outData02$cal_df) %in% c("timeBgn", "timeEnd"))],
-                        timeBgn = outData01$cal_df$timeBgn, 
-                        timeEnd = outData01$cal_df$timeEnd)
-#change column names to NEON terms
-colnames(outData$cal_df) <- c("slp12C", "ofst12C", "rsq12C", "cvLoo12C", "cv5Mae12C", "cv5Rmse12C",
-                              "slp13C", "ofst13C", "rsq13C", "cvLoo13C", "cv5Mae13C", "cv5Rmse13C",
-                              "slpDlta13CCo2", "ofstDlta13CCo2", "rsqDlta13CCo2", "cvLooDlta13CCo2", "cv5MaeDlta13CCo2", "cv5RmseDlta13CCo2",
-                              "slpRtioMoleDryCo2", "ofstRtioMoleDryCo2", "rsqRtioMoleDryCo2", "cvLooRtioMoleDryCo2", "cv5MaeRtioMoleDryCo2", "cv5RmseRtioMoleDryCo2",
-                              "timeBgn", "timeEnd")
 
 #adding columns, combine results, clean up, organizing, and changing column names
 for(j in names(outData01$ciso_subset_cal)) {
@@ -276,6 +265,34 @@ for(j in names(outData01$ciso_subset_cal)) {
     }
   names(outData$ciso_subset_cal[[j]]) <- names(outData01$ciso_subset_cal[[j]])
 }
+
+#combine cal_df
+outData$cal_df <- cbind(outData01$cal_df[,-which(names(outData01$cal_df) %in% c("timeBgn", "timeEnd"))],
+                        outData02$cal_df[,-which(names(outData02$cal_df) %in% c("timeBgn", "timeEnd"))],
+                        timeBgn = outData01$cal_df$timeBgn, 
+                        timeEnd = outData01$cal_df$timeEnd)
+#change column names to NEON terms
+colnames(outData$cal_df) <- c("slp12C", "ofst12C", "rsq12C", "cvLoo12C", "cv5Mae12C", "cv5Rmse12C",
+                              "slp13C", "ofst13C", "rsq13C", "cvLoo13C", "cv5Mae13C", "cv5Rmse13C",
+                              "slpDlta13CCo2", "ofstDlta13CCo2", "rsqDlta13CCo2", "cvLooDlta13CCo2", "cv5MaeDlta13CCo2", "cv5RmseDlta13CCo2",
+                              "slpRtioMoleDryCo2", "ofstRtioMoleDryCo2", "rsqRtioMoleDryCo2", "cvLooRtioMoleDryCo2", "cv5MaeRtioMoleDryCo2", "cv5RmseRtioMoleDryCo2",
+                              "timeBgn", "timeEnd")
+
+#grab center day data
+# get start and end time
+timeBgn <- base::as.POSIXlt(paste(dateCntr, " ", "00:00:00.000", sep=""), format="%Y-%m-%d %H:%M:%OS", tz="UTC")
+timeEnd   <- base::as.POSIXlt(paste(dateCntr, " ", "23:59:59.950", sep=""), format="%Y-%m-%d %H:%M:%OS", tz="UTC")
+
+#convert NEON time to POSIXct
+outData$cal_df$timeBgn <- as.POSIXct(outData$cal_df$timeBgn, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "GMT", origin = "1970-01-01 00:00:00")
+outData$cal_df$timeEnd <- as.POSIXct(outData$cal_df$timeEnd, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "GMT", origin = "1970-01-01 00:00:00")
+
+#Writing data to HDF5 ############
+#create list to hold data
+data <- list()
+#extract 
+data <- eddy4R.base::def.hdf5.extr(FileInp = DirFilePara)
+
 
 # # import data into workspace
 # # create list to hold data
