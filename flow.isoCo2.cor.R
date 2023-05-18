@@ -279,13 +279,18 @@ colnames(outData$cal_df) <- c("slp12C", "ofst12C", "rsq12C", "cvLoo12C", "cv5Mae
                               "timeBgn", "timeEnd")
 
 #grab center day data
-# get start and end time
-timeBgn <- base::as.POSIXlt(paste(dateCntr, " ", "00:00:00.000", sep=""), format="%Y-%m-%d %H:%M:%OS", tz="UTC")
-timeEnd   <- base::as.POSIXlt(paste(dateCntr, " ", "23:59:59.950", sep=""), format="%Y-%m-%d %H:%M:%OS", tz="UTC")
+dataDateCntr <- outData
+#get start and end time
+timeBgn <- base::as.POSIXct(paste(dateCntr, " ", "00:00:00.0001", sep=""), format="%Y-%m-%d %H:%M:%OS", tz="UTC")
+timeEnd   <- base::as.POSIXct(paste(dateCntr, " ", "23:59:59.950", sep=""), format="%Y-%m-%d %H:%M:%OS", tz="UTC")
 
 #convert NEON time to POSIXct
-outData$cal_df$timeBgn <- as.POSIXct(outData$cal_df$timeBgn, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "GMT", origin = "1970-01-01 00:00:00")
-outData$cal_df$timeEnd <- as.POSIXct(outData$cal_df$timeEnd, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "GMT", origin = "1970-01-01 00:00:00")
+dataDateCntr$cal_df$timeBgn <- as.POSIXct(paste(dataDateCntr$cal_df$timeBgn, " ", "00:00:00.00", sep=""), format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC", origin = "1970-01-01 00:00:00")
+dataDateCntr$cal_df$timeBgn <- base::as.POSIXct(paste(dataDateCntr$cal_df$timeBgn, " ", "00:00:00.001", sep=""), format="%Y-%m-%d %H:%M:%OS", tz="UTC")
+dataDateCntr$cal_df$timeEnd <- as.POSIXct(dataDateCntr$cal_df$timeEnd, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC", origin = "1970-01-01 00:00:00")
+
+#subset center day data
+test <- dataDateCntr$cal_df[which(dataDateCntr$cal_df$timeEnd >= timeBgn & dataDateCntr$cal_df$timeBgn <= timeEnd),]
 
 #Writing data to HDF5 ############
 #create list to hold data
