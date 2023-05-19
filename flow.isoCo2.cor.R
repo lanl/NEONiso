@@ -289,9 +289,21 @@ dataDateCntr$cal_df$timeBgn <- as.POSIXct(paste(dataDateCntr$cal_df$timeBgn, " "
 dataDateCntr$cal_df$timeBgn <- base::as.POSIXct(paste(dataDateCntr$cal_df$timeBgn, " ", "00:00:00.001", sep=""), format="%Y-%m-%d %H:%M:%OS", tz="UTC")
 dataDateCntr$cal_df$timeEnd <- as.POSIXct(dataDateCntr$cal_df$timeEnd, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC", origin = "1970-01-01 00:00:00")
 
-#subset center day data
-test <- dataDateCntr$cal_df[which(dataDateCntr$cal_df$timeEnd >= timeBgn & dataDateCntr$cal_df$timeBgn <= timeEnd),]
+#subset center day data for cal_df table
+dataDateCntr$cal_df <- dataDateCntr$cal_df[which(dataDateCntr$cal_df$timeEnd >= timeBgn & dataDateCntr$cal_df$timeBgn <= timeEnd),]
 
+#subset center day data for ciso_subset_cal
+for(j in names(dataDateCntr$ciso_subset_cal)) {
+  for (k in names (dataDateCntr$ciso_subset_cal[[j]])){
+    #convert NEON time to POSIXct
+    dataDateCntr$ciso_subset_cal[[j]][[k]]$timeBgn <- as.POSIXct(dataDateCntr$ciso_subset_cal[[j]][[k]]$timeBgn, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC", origin = "1970-01-01 00:00:00")
+    dataDateCntr$ciso_subset_cal[[j]][[k]]$timeEnd <- as.POSIXct(dataDateCntr$ciso_subset_cal[[j]][[k]]$timeEnd, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC", origin = "1970-01-01 00:00:00")
+    #subset data
+    dataDateCntr$ciso_subset_cal[[j]][[k]] <-dataDateCntr$ciso_subset_cal[[j]][[k]][which(dataDateCntr$ciso_subset_cal[[j]][[k]]$timeEnd >= timeBgn & dataDateCntr$ciso_subset_cal[[j]][[k]]$timeBgn <= timeEnd),]
+  }#end loop k
+}#end loop j
+
+dataDateCntr$ciso_subset_cal
 #Writing data to HDF5 ############
 #create list to hold data
 data <- list()
