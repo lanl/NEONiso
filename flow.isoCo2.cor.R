@@ -266,15 +266,23 @@ for(j in names(outData01$ciso_subset_cal)) {
   names(outData$ciso_subset_cal[[j]]) <- names(outData01$ciso_subset_cal[[j]])
 }
 
-#combine cal_df
-outData$cal_df <- cbind(outData01$cal_df[,-which(names(outData01$cal_df) %in% c("timeBgn", "timeEnd"))],
-                        outData02$cal_df[,-which(names(outData02$cal_df) %in% c("timeBgn", "timeEnd"))],
-                        timeBgn = outData01$cal_df$timeBgn, 
-                        timeEnd = outData01$cal_df$timeEnd)
+#create a new cal_df table for each calibration method
+outData$cal_df_Bowl <- outData01$cal_df
+outData$cal_df_Linreg <- cbind(outData02$cal_df[,-which(names(outData02$cal_df) %in% c("timeBgn", "timeEnd"))],
+                               timeBgn = outData01$cal_df$timeBgn, 
+                               timeEnd = outData01$cal_df$timeEnd)#there was an issue of time output from this method
+
+#outData$cal_df <- cbind(outData01$cal_df[,-which(names(outData01$cal_df) %in% c("timeBgn", "timeEnd"))],
+#                        outData02$cal_df[,-which(names(outData02$cal_df) %in% c("timeBgn", "timeEnd"))],
+#                        timeBgn = outData01$cal_df$timeBgn, 
+#                        timeEnd = outData01$cal_df$timeEnd)
+
 #change column names to NEON terms
-colnames(outData$cal_df) <- c("slp12C", "ofst12C", "rsq12C", "cvLoo12C", "cv5Mae12C", "cv5Rmse12C",
+colnames(outData$cal_df_Bowl) <- c("slp12C", "ofst12C", "rsq12C", "cvLoo12C", "cv5Mae12C", "cv5Rmse12C",
                               "slp13C", "ofst13C", "rsq13C", "cvLoo13C", "cv5Mae13C", "cv5Rmse13C",
-                              "slpDlta13CCo2", "ofstDlta13CCo2", "rsqDlta13CCo2", "cvLooDlta13CCo2", "cv5MaeDlta13CCo2", "cv5RmseDlta13CCo2",
+                              "timeBgn", "timeEnd")
+                              
+colnames(outData$cal_df_Linreg) <- c("slpDlta13CCo2", "ofstDlta13CCo2", "rsqDlta13CCo2", "cvLooDlta13CCo2", "cv5MaeDlta13CCo2", "cv5RmseDlta13CCo2",
                               "slpRtioMoleDryCo2", "ofstRtioMoleDryCo2", "rsqRtioMoleDryCo2", "cvLooRtioMoleDryCo2", "cv5MaeRtioMoleDryCo2", "cv5RmseRtioMoleDryCo2",
                               "timeBgn", "timeEnd")
 
