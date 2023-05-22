@@ -261,7 +261,12 @@ for(j in names(outData01$ciso_subset_cal)) {
      #                                           outData02$ciso_subset_cal[[j]][[k]][,-which(names(outData02$ciso_subset_cal[[j]][[k]]) %in% c("timeBgn", "timeEnd", "mean", "vari", "numSamp"))])
     outData$ciso_subset_cal[[j]][[k]] <- tmpData
   }
-    else{outData$ciso_subset_cal[[j]][[k]] <- outData01$ciso_subset_cal[[j]][[k]]}
+    else{
+      #rearrange timeBgn & timeEnd to last column (NEON format)
+      outData$ciso_subset_cal[[j]][[k]] <- cbind(outData01$ciso_subset_cal[[j]][[k]][,-which(names(outData01$ciso_subset_cal[[j]][[k]]) %in% c("timeBgn", "timeEnd"))],
+                                                 timeBgn = outData01$ciso_subset_cal[[j]][[k]]$timeBgn, 
+                                                 timeEnd = outData01$ciso_subset_cal[[j]][[k]]$timeEnd)
+        }#end else
     }
   names(outData$ciso_subset_cal[[j]]) <- names(outData01$ciso_subset_cal[[j]])
 }
