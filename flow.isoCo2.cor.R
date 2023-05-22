@@ -267,7 +267,9 @@ for(j in names(outData01$ciso_subset_cal)) {
 }
 
 #create a new cal_df table for each calibration method
-outData$cal_df_Bowl <- outData01$cal_df
+outData$cal_df_Bowl <- cbind(outData01$cal_df[,-which(names(outData01$cal_df) %in% c("timeBgn", "timeEnd"))],
+                             timeBgn = outData01$cal_df$timeBgn, 
+                             timeEnd = outData01$cal_df$timeEnd)
 outData$cal_df_Linreg <- cbind(outData02$cal_df[,-which(names(outData02$cal_df) %in% c("timeBgn", "timeEnd"))],
                                timeBgn = outData01$cal_df$timeBgn, 
                                timeEnd = outData01$cal_df$timeEnd)#there was an issue of time output from this method
@@ -293,12 +295,14 @@ timeBgn <- base::as.POSIXct(paste(dateCntr, " ", "00:00:00.0001", sep=""), forma
 timeEnd   <- base::as.POSIXct(paste(dateCntr, " ", "23:59:59.950", sep=""), format="%Y-%m-%d %H:%M:%OS", tz="UTC")
 
 #convert NEON time to POSIXct
-dataDateCntr$cal_df$timeBgn <- as.POSIXct(paste(dataDateCntr$cal_df$timeBgn, " ", "00:00:00.00", sep=""), format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC", origin = "1970-01-01 00:00:00")
-dataDateCntr$cal_df$timeBgn <- base::as.POSIXct(paste(dataDateCntr$cal_df$timeBgn, " ", "00:00:00.001", sep=""), format="%Y-%m-%d %H:%M:%OS", tz="UTC")
-dataDateCntr$cal_df$timeEnd <- as.POSIXct(dataDateCntr$cal_df$timeEnd, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC", origin = "1970-01-01 00:00:00")
-
+for (i in c("cal_df_Bowl", "cal_df_Linreg")){
+dataDateCntr[[i]]$timeBgn <- as.POSIXct(paste(dataDateCntr[[i]]$timeBgn, " ", "00:00:00.00", sep=""), format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC", origin = "1970-01-01 00:00:00")
+dataDateCntr[[i]]$timeBgn <- base::as.POSIXct(paste(dataDateCntr[[i]]$timeBgn, " ", "00:00:00.001", sep=""), format="%Y-%m-%d %H:%M:%OS", tz="UTC")
+dataDateCntr[[i]]$timeEnd <- as.POSIXct(dataDateCntr[[i]]$timeEnd, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC", origin = "1970-01-01 00:00:00")
 #subset center day data for cal_df table
-dataDateCntr$cal_df <- dataDateCntr$cal_df[which(dataDateCntr$cal_df$timeEnd >= timeBgn & dataDateCntr$cal_df$timeBgn <= timeEnd),]
+dataDateCntr[[i]] <- dataDateCntr[[i]][which(dataDateCntr[[i]]$timeEnd >= timeBgn & dataDateCntr[[i]]$timeBgn <= timeEnd),]
+}#end loop i
+
 
 #subset center day data for ciso_subset_cal
 for(j in names(dataDateCntr$ciso_subset_cal)) {
