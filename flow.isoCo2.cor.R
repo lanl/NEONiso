@@ -301,6 +301,9 @@ dataDateCntr[[i]]$timeBgn <- base::as.POSIXct(paste(dataDateCntr[[i]]$timeBgn, "
 dataDateCntr[[i]]$timeEnd <- as.POSIXct(dataDateCntr[[i]]$timeEnd, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC", origin = "1970-01-01 00:00:00")
 #subset center day data for cal_df table
 dataDateCntr[[i]] <- dataDateCntr[[i]][which(dataDateCntr[[i]]$timeEnd >= timeBgn & dataDateCntr[[i]]$timeBgn <= timeEnd),]
+#convert time back to NEON hdf5 time
+dataDateCntr[[i]]$timeBgn <- NEONiso:::convert_POSIXct_to_NEONhdf5_time(dataDateCntr[[i]]$timeBgn)
+dataDateCntr[[i]]$timeEnd <- NEONiso:::convert_POSIXct_to_NEONhdf5_time(dataDateCntr[[i]]$timeEnd)
 }#end loop i
 
 
@@ -312,10 +315,13 @@ for(j in names(dataDateCntr$ciso_subset_cal)) {
     dataDateCntr$ciso_subset_cal[[j]][[k]]$timeEnd <- as.POSIXct(dataDateCntr$ciso_subset_cal[[j]][[k]]$timeEnd, format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC", origin = "1970-01-01 00:00:00")
     #subset data
     dataDateCntr$ciso_subset_cal[[j]][[k]] <-dataDateCntr$ciso_subset_cal[[j]][[k]][which(dataDateCntr$ciso_subset_cal[[j]][[k]]$timeEnd >= timeBgn & dataDateCntr$ciso_subset_cal[[j]][[k]]$timeBgn <= timeEnd),]
-  }#end loop k
+    #convert time back to NEON hdf5 time
+    dataDateCntr$ciso_subset_cal[[j]][[k]]$timeBgn <- NEONiso:::convert_POSIXct_to_NEONhdf5_time(dataDateCntr$ciso_subset_cal[[j]][[k]]$timeBgn)
+      dataDateCntr$ciso_subset_cal[[j]][[k]]$timeEnd <-  NEONiso:::convert_POSIXct_to_NEONhdf5_time(dataDateCntr$ciso_subset_cal[[j]][[k]]$timeEnd) 
+    }#end loop k
 }#end loop j
 
-dataDateCntr$ciso_subset_cal
+
 #Writing data to HDF5 ############
 #create list to hold data
 data <- list()
