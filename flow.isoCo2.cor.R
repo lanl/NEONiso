@@ -333,7 +333,20 @@ data <- list()
 #extract 
 data <- eddy4R.base::def.hdf5.extr(FileInp = DirFilePara)
 
+#replace isoCo2 calibrate data
+for(j in names(dataDateCntr$ciso_subset_cal)) {
+  for (k in c("dlta13CCo2", "rtioMoleDryCo2")){
+    var <- paste0("/",Para$Flow$Loc, "/dp01/data/isoCo2","/",j,"/",k)
+  data$listData[[var]] <- dataDateCntr$ciso_subset_cal[[j]][[k]]
+}#end k loop
+}#end j loop
 
+#write out to hdf5
+tmp <- eddy4R.base::def.hdf5.extr(FileInp = NULL,
+                                  rpt = data,
+                                  FileOut = base::paste0(Para$Flow$DirOut,"/",Para$Flow$FileOutBase, ".h5"))
+
+rm(tmp)
 # # import data into workspace
 # # create list to hold data
 # data <- base::list()
