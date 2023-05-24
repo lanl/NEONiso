@@ -63,7 +63,7 @@ if(Para$Flow$Meth == "slct") {
   Para$Flow$DirTmp <- base::paste0("/home/", Sys.getenv("USER"), "/eddy/tmp")
   Para$Flow$DirWrk <- NA
   Para$Flow$FileInp <- base::dir(Para$Flow$DirInp, pattern = "*.h5")
-  Para$Flow$FileOutBase <- c("ECSE_dp04_ONAQ_2017-09-17.expanded", "ECSE_dp04_ONAQ_2017-09-17.basic")[1]
+  Para$Flow$FileOutBase <- c("ECSE_dp04_ONAQ_2017-09-17.expanded", "ECSE_dp04_ONAQ_2017-09-17.basic")
   Para$Flow$NameDataExt <- NA
   Para$Flow$OutMeth <- c("hdf5", "diag")[1]
   Para$Flow$OutSub <- NA
@@ -140,7 +140,7 @@ if(!base::all(base::diff(base::as.Date(Para$Flow$DateOut)) == 1)) {
 # determine center days
 dateCntr <- Para$Flow$DateOut[base::seq(from = 1, to = base::length(Para$Flow$DateOut), by = Para$Flow$PrdIncrCalc)]
 
-# for each center day, determine the date sequence covering its planar-fit window
+# for each center day, determine the date sequence covering calculate window (i.e. 7)
 for(idx in dateCntr) {
   
   Para$Flow$DateCalc[[idx]] <- base::as.character(base::seq.Date(
@@ -150,35 +150,54 @@ for(idx in dateCntr) {
   
 }; rm(idx)
 
-# check if there is an input file for each day over all calculation windows
+# check if there is an input file (expanded file) for each day over all calculation windows
 # determine if there is an input file corresponding to each day
-dateCalcAll <- sapply(base::sort(base::unique(base::unlist(Para$Flow$DateCalc))), function(x)
-  base::any(base::grepl(pattern = base::paste0(".*", x, ".*.h5?"), Para$Flow$FileInp))
+dateCalcExpd <- sapply(base::sort(base::unique(base::unlist(Para$Flow$DateCalc))), function(x)
+  base::any(base::grepl(pattern = base::paste0(".*", x, ".expanded.h5?"), Para$Flow$FileInp))
 )
 
 # issue an error in case one or more files are missing
-if(!base::all(dateCalcAll)) {
-  msg <- base::paste("data for", base::paste0(base::names(dateCalcAll)[!dateCalcAll], collapse = ", "), "is missing.")
+if(!base::all(dateCalcExpd)) {
+  msg <- base::paste("expanded file for", base::paste0(base::names(dateCalcExpd)[!dateCalcExpd], collapse = ", "), "is missing.")
   tryCatch({rlog$fatal(msg)}, error=function(cond){print(msg)})
   stop(msg)
 }
 
+# check if there is an input file (basic file) for the center day (this file will be used for writing output)
+# determine if there is an input file corresponding to center day
+
+dateCalcBasc <- sapply(base::sort(base::unique(base::unlist(Para$Flow$DateCalc))), function(x)
+  base::any(base::grepl(pattern = base::paste0(".*", x, ".basic.h5?"), Para$Flow$FileInp))
+)
+
+# issue an error in case basic file center day are missing
+if(!dateCalcBasc[[dateCntr]]) {
+  msg <- base::paste("basic file for ", dateCntr, " is missing.")
+  tryCatch({rlog$fatal(msg)}, error=function(cond){print(msg)})
+  stop(msg)
+}
 # Processing ###################################################################
 # determine full input file path for current center day in data processing window
 # this day is used as reference for reading parametric information
-DirFilePara <- base::file.path(Para$Flow$DirInp, grep(pattern = base::paste0(".*", dateCntr, ".*.h5?"), Para$Flow$FileInp, value = TRUE))
+# Expanded file path
+Para$FileName$EcseExpd <- base::file.path(Para$Flow$DirInp, grep(pattern = paste0("ECSE.*",Para$Flow$DateOut ,".*expanded.h5"), Para$Flow$FileInp, value = TRUE))
+#DirFilePara <- base::file.path(Para$Flow$DirInp, grep(pattern = base::paste0(".*", dateCntr, ".*.h5?"), Para$Flow$FileInp, value = TRUE))
+
+# Basic file path
+Para$FileName$EcseBasc <- base::file.path(Para$Flow$DirInp, grep(pattern = paste0("ECSE.*",Para$Flow$DateOut ,".*basic.h5"), Para$Flow$FileInp, value = TRUE))
 
 # Grab the NEON specific 4-letter code for the site location (Loc) from the dp0p input file
-Para$Flow$Loc <- eddy4R.base::def.para.site(FileInp = DirFilePara)$Loc
+Para$Flow$Loc <- eddy4R.base::def.para.site(FileInp = Para$FileName$EcseExpd)$Loc
 
 #working directory path
 #dir <- paste0("~/eddy/data/iso/",site)
 #input data directory path
 #inpDir <- paste0(dir,"/inp")
 
+#In this case, expanded files will be used in calculation
 #list all file names in inpDir
 nameFile <- list.files(path = Para$Flow$DirInp,
-                       pattern = '.h5',
+                       pattern = "expanded.h5",
                        recursive = TRUE,
                        full.names = TRUE)
 #Output file names (center day)
