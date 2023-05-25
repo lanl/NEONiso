@@ -383,19 +383,27 @@ rhdf5::h5createGroup(outname,base::paste0("/",Para$Flow$Loc, "/dp01/data/isoCo2/
 fid <- rhdf5::H5Fopen(outname)
 calLoc <- rhdf5::H5Gopen(fid, paste0("/", Para$Flow$Loc, "/dp01/data/isoCo2/calData"))
 
-if (method == "Bowling_2003") {
-  rhdf5::h5writeDataset(obj = calDf,
-                        h5loc = co2_cal_outloc,
-                        name = "calGainsOffsets",
+if (packIdx %in% c("expanded.h5")) {
+  #writing calibration parameter for Bowling method
+  rhdf5::h5writeDataset(obj = dataDateCntr$cal_df_Bowl,
+                        h5loc = calLoc,
+                        name = "calDataBowl",
                         DataFrameAsCompound = TRUE)
-} else if (method == "linreg") {
-  rhdf5::h5writeDataset(obj = calDf,
-                        h5loc = co2_cal_outloc,
-                        name = "calRegressions",
+  
+  #writing calibration parameter for LinReg method
+  rhdf5::h5writeDataset(obj = dataDateCntr$cal_df_Linreg,
+                        h5loc = calLoc,
+                        name = "calDataLinReg",
+                        DataFrameAsCompound = TRUE)
+  
+} else if (packIdx %in% c("basic.h5")) {
+  rhdf5::h5writeDataset(obj = dataDateCntr$cal_df_Bowl,
+                        h5loc = calLoc,
+                        name = "calDataBowl",
                         DataFrameAsCompound = TRUE)
 }
 
-rhdf5::H5Gclose(co2_cal_outloc)
+rhdf5::H5Gclose(calLoc)
 
 # close the group and the file
 rhdf5::H5Fclose(fid)
