@@ -63,7 +63,7 @@ if(Para$Flow$Meth == "slct") {
   Para$Flow$DirTmp <- base::paste0("/home/", Sys.getenv("USER"), "/eddy/tmp")
   Para$Flow$DirWrk <- NA
   Para$Flow$FileInp <- base::dir(Para$Flow$DirInp, pattern = "*.h5")
-  Para$Flow$FileOutBase <- c("ECSE_dp04_ONAQ_2017-09-17.expanded", "ECSE_dp04_ONAQ_2017-09-17.basic")
+  Para$Flow$FileOutBase <- c("ECSE_dp04_ONAQ_2017-09-17")
   Para$Flow$NameDataExt <- NA
   Para$Flow$OutMeth <- c("hdf5", "diag")[1]
   Para$Flow$OutSub <- NA
@@ -206,10 +206,8 @@ nameOutFileSplt <- strsplit(nameOutFileTmp, split = "/")
 #get output file names
 nameOutFileOut <- sapply(nameOutFileSplt, '[[', length(nameOutFileSplt[[1]]))
 
-#output data directory path
-outDir <- Para$Flow$DirOut
 #output file names with directory
-nameOutFileOut <- paste0(outDir,"/",nameOutFileOut)
+nameOutFileOut <- paste0(Para$Flow$DirOut,"/",nameOutFileOut)
 
 #correction processing
 #correcting data using Bowling_2003 method
@@ -349,23 +347,61 @@ for(j in names(dataDateCntr$ciso_subset_cal)) {
 #Writing data to HDF5 ############
 #create list to hold data
 data <- list()
-#extract 
-data <- eddy4R.base::def.hdf5.extr(FileInp = DirFilePara)
+#extract data from expanded hdf5 file for the center day
+data$Expd <- eddy4R.base::def.hdf5.extr(FileInp = Para$FileName$EcseExpd)
+#extract data from basic hdf5 file for the center day
+data$Basc <- eddy4R.base::def.hdf5.extr(FileInp = Para$FileName$EcseBasc)
 
 #replace isoCo2 calibrate data
 for(j in names(dataDateCntr$ciso_subset_cal)) {
   for (k in c("dlta13CCo2", "rtioMoleDryCo2")){
     var <- paste0("/",Para$Flow$Loc, "/dp01/data/isoCo2","/",j,"/",k)
-  data$listData[[var]] <- dataDateCntr$ciso_subset_cal[[j]][[k]]
+  data$Expd$listData[[var]] <- dataDateCntr$ciso_subset_cal[[j]][[k]]
+  data$Basc$listData[[var]] <- dataDateCntr$ciso_subset_cal[[j]][[k]]
+  #report only mean, min, max, vari, and numSamp (results from Bowling method in this case) for basic file
+  data$Basc$listData[[var]] <- dataDateCntr$ciso_subset_cal[[j]][[k]][,which(names(dataDateCntr$ciso_subset_cal[[j]][[k]]) %in% c("mean", "min", "max", "vari","numSamp","timeBgn", "timeEnd"))]
 }#end k loop
 }#end j loop
 
 #write out to hdf5
 tmp <- eddy4R.base::def.hdf5.extr(FileInp = NULL,
-                                  rpt = data,
-                                  FileOut = base::paste0(Para$Flow$DirOut,"/",Para$Flow$FileOutBase, ".h5"))
+                                  rpt = data$Expd,
+                                  FileOut = base::paste0(Para$Flow$DirOut,"/",Para$Flow$FileOutBase, "expanded.h5"))
+tmp <- eddy4R.base::def.hdf5.extr(FileInp = NULL,
+                                  rpt = data$Basc,
+                                  FileOut = base::paste0(Para$Flow$DirOut,"/",Para$Flow$FileOutBase, "basic.h5"))
 
 rm(tmp)
+
+#writing calibration parameters
+print("Writing calibration parameters...")
+
+for (packIdx in c("expanded.h5", "basic.h5")){
+outname <- base::paste0(Para$Flow$DirOut,"/",Para$Flow$FileOutBase, packIdx)  
+rhdf5::h5createGroup(outname,base::paste0("/",Para$Flow$Loc, "/dp01/data/isoCo2/calData"))
+
+fid <- rhdf5::H5Fopen(outname)
+calLoc <- rhdf5::H5Gopen(fid, paste0("/", Para$Flow$Loc, "/dp01/data/isoCo2/calData"))
+
+if (method == "Bowling_2003") {
+  rhdf5::h5writeDataset(obj = calDf,
+                        h5loc = co2_cal_outloc,
+                        name = "calGainsOffsets",
+                        DataFrameAsCompound = TRUE)
+} else if (method == "linreg") {
+  rhdf5::h5writeDataset(obj = calDf,
+                        h5loc = co2_cal_outloc,
+                        name = "calRegressions",
+                        DataFrameAsCompound = TRUE)
+}
+
+rhdf5::H5Gclose(co2_cal_outloc)
+
+# close the group and the file
+rhdf5::H5Fclose(fid)
+rhdf5::h5closeAll()
+}#end loop packIdx
+
 # # import data into workspace
 # # create list to hold data
 # data <- base::list()
