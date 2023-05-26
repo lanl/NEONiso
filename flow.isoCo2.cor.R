@@ -242,8 +242,8 @@ for(j in names(outData01$ciso_subset_cal)) {
     
     #adding min_cal and max_cal to rtioMoleDryCo2
     if (k %in% c("rtioMoleDryCo2")) {
-      outData01$ciso_subset_cal[[j]][[k]]$min_cal <- NA
-      outData01$ciso_subset_cal[[j]][[k]]$max_cal <- NA
+      outData01$ciso_subset_cal[[j]][[k]]$min_cal <- NaN
+      outData01$ciso_subset_cal[[j]][[k]]$max_cal <- NaN
     }
     #create temporary table to combine results from both methods in NEON format
     tmpData <- data.frame(
@@ -251,7 +251,7 @@ for(j in names(outData01$ciso_subset_cal)) {
       mean = outData01$ciso_subset_cal[[j]][[k]]$mean_cal,
       min = outData01$ciso_subset_cal[[j]][[k]]$min_cal,
       max = outData01$ciso_subset_cal[[j]][[k]]$max_cal,
-      vari = NA, #vari not calculate after applying calibration (should talk to Rich)
+      vari = NaN, #vari not calculate after applying calibration (should talk to Rich)
       numSamp = outData01$ciso_subset_cal[[j]][[k]]$numSamp,
       #output from Bowling_2003 method
       meanCorBowl = outData01$ciso_subset_cal[[j]][[k]]$mean_cal,
