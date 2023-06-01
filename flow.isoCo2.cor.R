@@ -108,6 +108,8 @@ rm(packReq)
 #install.packages("neonUtilities", dependencies=TRUE, repos='http://cran.rstudio.com/')
 #neonUtilities >= 2.2.1
 #install.packages("NEONiso", dependencies=TRUE, repos='http://cran.rstudio.com/')
+#install NEONiso from GitHub. Development version
+#devtools::install_github("lanl/NEONiso")
 #NEONiso >= 0.6.1
 #install.packages("rlang", dependencies=TRUE, repos='http://cran.rstudio.com/')
 #‘rlang’ >= 1.1.0 is required
@@ -200,14 +202,17 @@ nameFile <- list.files(path = Para$Flow$DirInp,
                        pattern = "expanded.h5",
                        recursive = TRUE,
                        full.names = TRUE)
+
+# This part can be delete ####################################################
 #Output file names (center day)
-nameOutFileTmp <- gsub(".h5",".calibrated.h5",DirFilePara)
-nameOutFileSplt <- strsplit(nameOutFileTmp, split = "/")
+#nameOutFileTmp <- gsub(".h5",".calibrated.h5",DirFilePara)
+#nameOutFileSplt <- strsplit(nameOutFileTmp, split = "/")
 #get output file names
-nameOutFileOut <- sapply(nameOutFileSplt, '[[', length(nameOutFileSplt[[1]]))
+#nameOutFileOut <- sapply(nameOutFileSplt, '[[', length(nameOutFileSplt[[1]]))
 
 #output file names with directory
-nameOutFileOut <- paste0(Para$Flow$DirOut,"/",nameOutFileOut)
+#nameOutFileOut <- paste0(Para$Flow$DirOut,"/",nameOutFileOut)
+# DELETE #####################################################################
 
 #correction processing
 #correcting data using Bowling_2003 method
@@ -274,6 +279,8 @@ for(j in names(outData01$ciso_subset_cal)) {
       timeBgn = outData01$ciso_subset_cal[[j]][[k]]$timeBgn,
       timeEnd = outData01$ciso_subset_cal[[j]][[k]]$timeEnd
     )
+    #replace NA value with NaN
+    tmpData[is.na(tmpData)] <- NaN
     #outData$ciso_subset_cal[[j]][[k]] <-  cbind(outData01$ciso_subset_cal[[j]][[k]], 
      #                                           outData02$ciso_subset_cal[[j]][[k]][,-which(names(outData02$ciso_subset_cal[[j]][[k]]) %in% c("timeBgn", "timeEnd", "mean", "vari", "numSamp"))])
     outData$ciso_subset_cal[[j]][[k]] <- tmpData
@@ -433,8 +440,11 @@ rhdf5::h5closeAll()
 
 ################################################
 ##TEST####
+#need to source extract_carbon_calibration_data() so the results will be match with 0.6.1 version
+#source('~/eddy/docker/NEONiso-NDurden/R/reference_data_extraction.R')
+
 inname <- nameFile
-outname <- nameOutFileOut
+outname <- NULL
 site <- Para$Flow$Loc
 method <- c("Bowling_2003", "linreg")[2]
 calibration_half_width <- 0.5
