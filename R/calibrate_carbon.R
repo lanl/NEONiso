@@ -175,7 +175,7 @@ calibrate_carbon         <- function(inname,
   }
   
   # extract the data we need from ciso list
-  refe <-  NEONiso:::extract_carbon_calibration_data(ciso$refe_stacked)
+  refe <-  extract_carbon_calibration_data(ciso$refe_stacked)
 
   # Okay this function now needs some work. *************
   if (correct_refData == TRUE) {
