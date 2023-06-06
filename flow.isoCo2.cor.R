@@ -367,7 +367,25 @@ for(j in names(dataDateCntr$ciso_subset_cal)) {
   data$Basc$listData[[var]] <- dataDateCntr$ciso_subset_cal[[j]][[k]]
   #report only mean, min, max, vari, and numSamp (results from Bowling method in this case) for basic file
   data$Basc$listData[[var]] <- dataDateCntr$ciso_subset_cal[[j]][[k]][,which(names(dataDateCntr$ciso_subset_cal[[j]][[k]]) %in% c("mean", "min", "max", "vari","numSamp","timeBgn", "timeEnd"))]
-}#end k loop
+  
+  #unit re-assignment (pnly expanded files)
+  if(k %in% c("dlta13CCo2")){
+    #mean,min,max,vari,numSamp,
+    #meanCorBowl,minCorBowl,maxCorBowl,cvCalUcrt,looCalUcrt,
+    #meanCorLinReg,minCorLinReg,maxCorLinReg,cvLoo,cv5Rmse,cv5Mae,
+    #meanRaw,minRaw,maxRaw,variRaw,timeBgn,timeEnd
+    data$Expd$listData[[var]]$unit <-c("permill","permill","permill","permill2","NA",
+                                       "permill","permill","permill", "permill2", "permill2",
+                                       "permill","permill","permill", "permill2", "permill2","permill2",
+                                       "permill","permill","permill","permill2","NA","NA")
+  } else {
+    data$Expd$listData[[var]]$unit <-c("umolCo2 mol-1","umolCo2 mol-1","umolCo2 mol-1","umol2Co2 mol-2","NA",
+                                       "umolCo2 mol-1","umolCo2 mol-1","umolCo2 mol-1", "umol2Co2 mol-2", "umol2Co2 mol-2",
+                                       "umolCo2 mol-1","umolCo2 mol-1","umolCo2 mol-1", "umol2Co2 mol-2", "umol2Co2 mol-2","umol2Co2 mol-2",
+                                       "umolCo2 mol-1","umolCo2 mol-1","umolCo2 mol-1","umol2Co2 mol-2","NA","NA") 
+  }
+
+  }#end k loop
 }#end j loop
 
 #write out to hdf5
