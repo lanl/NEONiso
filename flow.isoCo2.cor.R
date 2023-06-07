@@ -414,18 +414,51 @@ if (packIdx %in% c("expanded.h5")) {
                         h5loc = calLoc,
                         name = "calDataBowl",
                         DataFrameAsCompound = TRUE)
+  #writing units
+  #slp12C, ofst12C, rsq12C, cvLoo12C, cv5Mae12C, cv5Rmse12C,
+  #slp13C, ofst13C, rsq13C, cvLoo13C, cv5Mae13C, cv5Rmse13C,
+  #timeBgn", "timeEnd"
+  unitBowl <= c("NA", "NA", "NA", "NA", "NA", "NA",
+                "NA", "NA", "NA", "NA", "NA", "NA",
+                "NA", "NA")
+
+  #open calDataBowl dataframe
+  calLocBowl <- rhdf5::H5Dopen(calLoc, "calDataBowl")
+  rhdf5::h5writeAttribute(unitBowl, h5obj = calLocBowl, name = "unit")
   
   #writing calibration parameter for LinReg method
   rhdf5::h5writeDataset(obj = dataDateCntr$cal_df_Linreg,
                         h5loc = calLoc,
                         name = "calDataLinReg",
                         DataFrameAsCompound = TRUE)
+  #writing units
+  #slpDlta13CCo2, ofstDlta13CCo2, rsqDlta13CCo2, cvLooDlta13CCo2, cv5MaeDlta13CCo2, cv5RmseDlta13CCo2,
+  #slpRtioMoleDryCo2, ofstRtioMoleDryCo2, rsqRtioMoleDryCo2, cvLooRtioMoleDryCo2, cv5MaeRtioMoleDryCo2, cv5RmseRtioMoleDryCo2,
+  #timeBgn, timeEnd
+  unitLinReg <= c("NA", "NA", "NA", "NA", "NA", "NA",
+                "NA", "NA", "NA", "NA", "NA", "NA",
+                "NA", "NA")
+  
+  #open calDataLinReg dataframe
+  calLocLinReg <- rhdf5::H5Dopen(calLoc, "calDataLinReg")
+  rhdf5::h5writeAttribute(unitLinReg, h5obj = calLocLinReg, name = "unit")
   
 } else if (packIdx %in% c("basic.h5")) {
   rhdf5::h5writeDataset(obj = dataDateCntr$cal_df_Bowl,
                         h5loc = calLoc,
                         name = "calDataBowl",
                         DataFrameAsCompound = TRUE)
+  #writing units
+  #slp12C, ofst12C, rsq12C, cvLoo12C, cv5Mae12C, cv5Rmse12C,
+  #slp13C, ofst13C, rsq13C, cvLoo13C, cv5Mae13C, cv5Rmse13C,
+  #timeBgn", "timeEnd"
+  unitBowl <= c("NA", "NA", "NA", "NA", "NA", "NA",
+                "NA", "NA", "NA", "NA", "NA", "NA",
+                "NA", "NA")
+  
+  #open calDataBowl dataframe
+  calLocBowl <- rhdf5::H5Dopen(calLoc, "calDataBowl")
+  rhdf5::h5writeAttribute(unitBowl, h5obj = calLocBowl, name = "unit")
 }
 
 rhdf5::H5Gclose(calLoc)
