@@ -368,18 +368,18 @@ for(j in names(dataDateCntr$ciso_subset_cal)) {
   #report only mean, min, max, vari, and numSamp (results from Bowling method in this case) for basic file
   data$Basc$listData[[var]] <- dataDateCntr$ciso_subset_cal[[j]][[k]][,which(names(dataDateCntr$ciso_subset_cal[[j]][[k]]) %in% c("mean", "min", "max", "vari","numSamp","timeBgn", "timeEnd"))]
   
-  #unit re-assignment (pnly expanded files)
+  #unit re-assignment (only expanded files)
   if(k %in% c("dlta13CCo2")){
     #mean,min,max,vari,numSamp,
     #meanCorBowl,minCorBowl,maxCorBowl,cvCalUcrt,looCalUcrt,
     #meanCorLinReg,minCorLinReg,maxCorLinReg,cvLoo,cv5Rmse,cv5Mae,
     #meanRaw,minRaw,maxRaw,variRaw,timeBgn,timeEnd
-    data$Expd$listData[[var]]$unit <-c("permill","permill","permill","permill2","NA",
+    data$Expd$listAttr[[var]]$unit <-c("permill","permill","permill","permill2","NA",
                                        "permill","permill","permill", "permill2", "permill2",
                                        "permill","permill","permill", "permill2", "permill2","permill2",
                                        "permill","permill","permill","permill2","NA","NA")
   } else {
-    data$Expd$listData[[var]]$unit <-c("umolCo2 mol-1","umolCo2 mol-1","umolCo2 mol-1","umol2Co2 mol-2","NA",
+    data$Expd$listAttr[[var]]$unit <-c("umolCo2 mol-1","umolCo2 mol-1","umolCo2 mol-1","umol2Co2 mol-2","NA",
                                        "umolCo2 mol-1","umolCo2 mol-1","umolCo2 mol-1", "umol2Co2 mol-2", "umol2Co2 mol-2",
                                        "umolCo2 mol-1","umolCo2 mol-1","umolCo2 mol-1", "umol2Co2 mol-2", "umol2Co2 mol-2","umol2Co2 mol-2",
                                        "umolCo2 mol-1","umolCo2 mol-1","umolCo2 mol-1","umol2Co2 mol-2","NA","NA") 
@@ -418,7 +418,7 @@ if (packIdx %in% c("expanded.h5")) {
   #slp12C, ofst12C, rsq12C, cvLoo12C, cv5Mae12C, cv5Rmse12C,
   #slp13C, ofst13C, rsq13C, cvLoo13C, cv5Mae13C, cv5Rmse13C,
   #timeBgn", "timeEnd"
-  unitBowl <= c("NA", "NA", "NA", "NA", "NA", "NA",
+  unitBowl <- c("NA", "NA", "NA", "NA", "NA", "NA",
                 "NA", "NA", "NA", "NA", "NA", "NA",
                 "NA", "NA")
 
@@ -435,7 +435,7 @@ if (packIdx %in% c("expanded.h5")) {
   #slpDlta13CCo2, ofstDlta13CCo2, rsqDlta13CCo2, cvLooDlta13CCo2, cv5MaeDlta13CCo2, cv5RmseDlta13CCo2,
   #slpRtioMoleDryCo2, ofstRtioMoleDryCo2, rsqRtioMoleDryCo2, cvLooRtioMoleDryCo2, cv5MaeRtioMoleDryCo2, cv5RmseRtioMoleDryCo2,
   #timeBgn, timeEnd
-  unitLinReg <= c("NA", "NA", "NA", "NA", "NA", "NA",
+  unitLinReg <- c("NA", "NA", "NA", "NA", "NA", "NA",
                 "NA", "NA", "NA", "NA", "NA", "NA",
                 "NA", "NA")
   
@@ -452,7 +452,7 @@ if (packIdx %in% c("expanded.h5")) {
   #slp12C, ofst12C, rsq12C, cvLoo12C, cv5Mae12C, cv5Rmse12C,
   #slp13C, ofst13C, rsq13C, cvLoo13C, cv5Mae13C, cv5Rmse13C,
   #timeBgn", "timeEnd"
-  unitBowl <= c("NA", "NA", "NA", "NA", "NA", "NA",
+  unitBowl <- c("NA", "NA", "NA", "NA", "NA", "NA",
                 "NA", "NA", "NA", "NA", "NA", "NA",
                 "NA", "NA")
   
