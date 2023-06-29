@@ -107,7 +107,6 @@ rm(packReq)
 #install packages from Cran 
 #install.packages("neonUtilities", dependencies=TRUE, repos='http://cran.rstudio.com/')
 #neonUtilities >= 2.2.1
-#install.packages("NEONiso", dependencies=TRUE, repos='http://cran.rstudio.com/')
 #install NEONiso from GitHub. Development version
 #devtools::install_github("lanl/NEONiso")
 #NEONiso >= 0.6.1
@@ -191,11 +190,6 @@ Para$FileName$EcseBasc <- base::file.path(Para$Flow$DirInp, grep(pattern = paste
 # Grab the NEON specific 4-letter code for the site location (Loc) from the dp0p input file
 Para$Flow$Loc <- eddy4R.base::def.para.site(FileInp = Para$FileName$EcseExpd)$Loc
 
-#working directory path
-#dir <- paste0("~/eddy/data/iso/",site)
-#input data directory path
-#inpDir <- paste0(dir,"/inp")
-
 #In this case, expanded files will be used in calculation
 #list all file names in inpDir
 nameFile <- list.files(path = Para$Flow$DirInp,
@@ -203,26 +197,21 @@ nameFile <- list.files(path = Para$Flow$DirInp,
                        recursive = TRUE,
                        full.names = TRUE)
 
-# This part can be delete ####################################################
-#Output file names (center day)
-#nameOutFileTmp <- gsub(".h5",".calibrated.h5",DirFilePara)
-#nameOutFileSplt <- strsplit(nameOutFileTmp, split = "/")
-#get output file names
-#nameOutFileOut <- sapply(nameOutFileSplt, '[[', length(nameOutFileSplt[[1]]))
-
-#output file names with directory
-#nameOutFileOut <- paste0(Para$Flow$DirOut,"/",nameOutFileOut)
-# DELETE #####################################################################
-
 #correction processing
 #correcting data using Bowling_2003 method
-#outData01 <- outData
 outData01 <- calibrate_carbon(nameFile,nameOutFileOut,site=Para$Flow$Loc, method = "Bowling_2003", write_to_file = FALSE)
+#if the modified calibrate_carbon() has not imported yet, run calibrate_carbon() line by line by using varibles setting at the end of this work flow
+#Then run;
+#outData01 <- outData
+
 
 #correcting data using Linear regression (linreg) method
 #NOTE: values of min, max output from linreg method are the corrected values not raw values
-#outData02 <- outData
 outData02 <- calibrate_carbon(nameFile,nameOutFileOut,site=Para$Flow$Loc, method = "linreg", write_to_file = FALSE)
+#if the modified calibrate_carbon() has not imported yet, run calibrate_carbon() line by line by using varibles setting at the end of this work flow
+#Then run;
+#outData02 <- outData
+
 #combine data from both method into one list
 outData <- list()
 
@@ -303,10 +292,6 @@ outData$cal_df_Linreg <- cbind(outData02$cal_df[,-which(names(outData02$cal_df) 
                                timeBgn = outData01$cal_df$timeBgn, 
                                timeEnd = outData01$cal_df$timeEnd)#there was an issue of time output from this method
 
-#outData$cal_df <- cbind(outData01$cal_df[,-which(names(outData01$cal_df) %in% c("timeBgn", "timeEnd"))],
-#                        outData02$cal_df[,-which(names(outData02$cal_df) %in% c("timeBgn", "timeEnd"))],
-#                        timeBgn = outData01$cal_df$timeBgn, 
-#                        timeEnd = outData01$cal_df$timeEnd)
 
 #change column names to NEON terms
 colnames(outData$cal_df_Bowl) <- c("slp12C", "ofst12C", "rsq12C", "cvLoo12C", "cv5Mae12C", "cv5Rmse12C",
@@ -351,7 +336,7 @@ for(j in names(dataDateCntr$ciso_subset_cal)) {
 }#end loop j
 
 
-#Writing data to HDF5 ############
+#Writing data to HDF5 ########################################################
 #create list to hold data
 data <- list()
 #extract data from expanded hdf5 file for the center day
@@ -418,6 +403,7 @@ if (packIdx %in% c("expanded.h5")) {
   #slp12C, ofst12C, rsq12C, cvLoo12C, cv5Mae12C, cv5Rmse12C,
   #slp13C, ofst13C, rsq13C, cvLoo13C, cv5Mae13C, cv5Rmse13C,
   #timeBgn", "timeEnd"
+  #using NA for now; need to update
   unitBowl <- c("NA", "NA", "NA", "NA", "NA", "NA",
                 "NA", "NA", "NA", "NA", "NA", "NA",
                 "NA", "NA")
@@ -435,6 +421,7 @@ if (packIdx %in% c("expanded.h5")) {
   #slpDlta13CCo2, ofstDlta13CCo2, rsqDlta13CCo2, cvLooDlta13CCo2, cv5MaeDlta13CCo2, cv5RmseDlta13CCo2,
   #slpRtioMoleDryCo2, ofstRtioMoleDryCo2, rsqRtioMoleDryCo2, cvLooRtioMoleDryCo2, cv5MaeRtioMoleDryCo2, cv5RmseRtioMoleDryCo2,
   #timeBgn, timeEnd
+  #using NA for now; need to update
   unitLinReg <- c("NA", "NA", "NA", "NA", "NA", "NA",
                 "NA", "NA", "NA", "NA", "NA", "NA",
                 "NA", "NA")
@@ -452,6 +439,7 @@ if (packIdx %in% c("expanded.h5")) {
   #slp12C, ofst12C, rsq12C, cvLoo12C, cv5Mae12C, cv5Rmse12C,
   #slp13C, ofst13C, rsq13C, cvLoo13C, cv5Mae13C, cv5Rmse13C,
   #timeBgn", "timeEnd"
+  #using NA for now; need to update
   unitBowl <- c("NA", "NA", "NA", "NA", "NA", "NA",
                 "NA", "NA", "NA", "NA", "NA", "NA",
                 "NA", "NA")
@@ -468,36 +456,19 @@ rhdf5::H5Fclose(fid)
 rhdf5::h5closeAll()
 }#end loop packIdx
 
-# # import data into workspace
-# # create list to hold data
-# data <- base::list()
-# for(idx in base::names(dateCalcAll)) {
-#   # idx <- base::names(dateCalcAll)[1]
-#   
-#   if(length(Para$Flow$FileInp[idx]) == 1){
-#     
-#     rlog$debug(base::paste("begin: reading", Para$Flow$FileInp[[idx]]))
-#     data[[idx]] <- eddy4R.base::def.hdf5.extr(FileInp = base::file.path(Para$Flow$DirInp, grep(pattern = base::paste0(".*", idx, ".*.h5?"), Para$Flow$FileInp, value = TRUE)))
-#     rlog$debug(base::paste("complete: reading", Para$Flow$FileInp[[idx]]))
-#     
-#   } else {stop(base::paste("file missing for", idx), ".")}
-# }
-# 
-# #extract data from input hdf5 files
-# tmp <- eddy4R.base::def.hdf5.extr(FileInp = DirFilePara,
-#                                   FileOut = base::paste0(Para$Flow$DirOut,"/",Para$Flow$FileOutBase,".calibrated.h5"))
 
 
 
-################################################
-##TEST####
+
+#######################################################################################################
+##TEST RUN line by line for calibrate_carbon() 
 #need to source extract_carbon_calibration_data() so the results will be match with 0.6.1 version
 #source('~/eddy/docker/NEONiso-NDurden/R/reference_data_extraction.R')
 
 inname <- nameFile
 outname <- NULL
 site <- Para$Flow$Loc
-method <- c("Bowling_2003", "linreg")[2]
+method <- c("Bowling_2003", "linreg")[1]
 calibration_half_width <- 0.5
 force_cal_to_beginning <- TRUE
 force_cal_to_end <- TRUE
@@ -511,42 +482,6 @@ plot_regression_data <- FALSE
 plot_directory <- NULL
 
 
-
-# if there are more than 1 file in inname, merge all files together after running ingest_data()
-
-if (length(inname) > 1) {
-  ciso <- list()
-
-for (i in 1:length(inname)){
-  #i <- 1
-  tmp <- NEONiso:::ingest_data(inname[i], analyte = 'Co2')
-  if(i == 1){
-    ciso <- tmp
-    #ciso1 <- ciso
-  } else {
-    #append all ingest ambient data 
-    for(j in names(tmp$ambient)) {
-      ciso$ambient[[j]] <- lapply(names(tmp$ambient[[j]]), function(y){
-        rbind(ciso$ambient[[j]][[y]], tmp$ambient[[j]][[y]])
-      })
-      names(ciso$ambient[[j]]) <- names(tmp$ambient[[j]])
-      }#End of for loop around levels
-     
-    #append all ingest reference data 
-    for(k in names(tmp$reference)) {
-      ciso$reference[[k]] <- lapply(names(tmp$reference[[k]]), function(y){
-        rbind(ciso$reference[[k]][[y]], tmp$reference[[k]][[y]])
-      })
-      names(ciso$reference[[k]]) <- names(tmp$reference[[k]])
-    }#End of for loop around levels
-    #append all refe_stacked 
-    ciso$refe_stacked <- rbind(ciso$refe_stacked, tmp$refe_stacked)
-  }
-  
-}}
-
-# extract the data we need from ciso list
-refe <- NEONiso:::extract_carbon_calibration_data(ciso$refe_stacked)
 
 
 
