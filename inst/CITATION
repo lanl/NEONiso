@@ -1,7 +1,7 @@
 citHeader("To cite NEONiso in publications use:")
 
-citEntry(
-  entry    = "Article",
+bibentry(
+  bibtype  = "Article",
   title    = "Calibration Strategies for Detecting Macroscale Patterns in NEON Atmospheric Carbon Isotope Observations",
   author   = c(person(c("Richard", "P."), "Fiorella"),
               person(c("Stephen", "P."), "Good"),
