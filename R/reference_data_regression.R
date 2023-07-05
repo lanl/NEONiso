@@ -77,18 +77,18 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
   #---------------------------------------------------------------
   # Select which validation data to carry through to calibration
   #---------------------------------------------------------------
-  ref_data <- NEONiso:::select_daily_reference_data(ref_data, analyte = "co2")
+  ref_data <- select_daily_reference_data(ref_data, analyte = "co2")
 
   if (method == "Bowling_2003") {
 
     # calculate mole fraction (12CO2 / 13CO2) for ref gases and observed values
-    ref_data$conc12CCO2_ref <- NEONiso:::calculate_12CO2(ref_data$rtioMoleDryCo2Refe.mean,
+    ref_data$conc12CCO2_ref <- calculate_12CO2(ref_data$rtioMoleDryCo2Refe.mean,
                                               ref_data$dlta13CCo2Refe.mean)
-    ref_data$conc13CCO2_ref <- NEONiso:::calculate_13CO2(ref_data$rtioMoleDryCo2Refe.mean,
+    ref_data$conc13CCO2_ref <- calculate_13CO2(ref_data$rtioMoleDryCo2Refe.mean,
                                               ref_data$dlta13CCo2Refe.mean)
-    ref_data$conc12CCO2_obs <- NEONiso:::calculate_12CO2(ref_data$rtioMoleDryCo2.mean,
+    ref_data$conc12CCO2_obs <- calculate_12CO2(ref_data$rtioMoleDryCo2.mean,
                                               ref_data$dlta13CCo2.mean)
-    ref_data$conc13CCO2_obs <- NEONiso:::calculate_13CO2(ref_data$rtioMoleDryCo2.mean,
+    ref_data$conc13CCO2_obs <- calculate_13CO2(ref_data$rtioMoleDryCo2.mean,
                                               ref_data$dlta13CCo2.mean)
 
     if (nrow(ref_data) == 0) {
@@ -157,7 +157,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 
         if (plot_regression_data) {
           print("Plotting regression data...this step will take some time...")
-          NEONiso:::carbon_regression_plots(cal_subset,
+          carbon_regression_plots(cal_subset,
                                   plot_filename = paste0(plot_dir,
                                                          "/", site,
                                                          "_", date_seq[i],
