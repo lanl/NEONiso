@@ -6,6 +6,8 @@
 [![codecov](https://codecov.io/gh/lanl/NEONiso/branch/main/graph/badge.svg?token=ZHDFEU5NZW)](https://app.codecov.io/gh/lanl/NEONiso)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/NEONiso)](https://CRAN.R-project.org/package=NEONiso)
+[![R-CMD-check](https://github.com/lanl/NEONiso/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/lanl/NEONiso/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/lanl/NEONiso/branch/main/graph/badge.svg)](https://app.codecov.io/gh/lanl/NEONiso?branch=main)
 <!-- badges: end -->
 
 Author: Rich Fiorella

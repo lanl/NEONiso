@@ -14,3 +14,4 @@
 ^docs$
 ^pkgdown$
 ^workflows$
+^codecov\.yml$
