@@ -35,7 +35,13 @@ ingest_data <- function(inname, analyte, name_fix = TRUE) {
 
   if (analyte == "Co2") {
 
-    if (packageVersion("neonUtilities") >= "2.1.1") {
+    if (packageVersion("neonUtilities") >= "2.3.0") {
+      data <- neonUtilities::stackEddy(inname,
+                                       avg = 9,
+                                       level = "dp01",
+                                       var = "isoCo2",
+                                       useFasttime = TRUE)[[1]]
+    } else if (packageVersion("neonUtilities") >= "2.1.1" && packageVersion("neonUtilities") < "2.3.0") {
       data <- neonUtilities::stackEddy(inname,
                                        avg = 9,
                                        level = "dp01",

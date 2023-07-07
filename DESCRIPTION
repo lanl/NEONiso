@@ -39,7 +39,8 @@ Imports:
     lifecycle,
     caret,
     ggplot2,
-    gridExtra
+    gridExtra,
+    fasttime
 Suggests: 
     knitr,
     rmarkdown,
