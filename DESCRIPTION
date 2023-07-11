@@ -39,12 +39,12 @@ Imports:
     lifecycle,
     caret,
     ggplot2,
-    gridExtra,
-    fasttime
+    gridExtra
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    fasttime
 VignetteBuilder: knitr
 Language: en-US
 Config/testthat/edition: 3
