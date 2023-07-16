@@ -136,43 +136,7 @@ calibrate_carbon         <- function(inname,
   #-----------------------------------------------------------
   # Extract reference data from input HDF5 file.
   #-----------------------------------------------------------
-  if (length(inname) == 1){
-    # pull all carbon isotope data into a list.
-    #inname <- list.files('~/Desktop/DP4_00200_001/ABBY/',full.names=TRUE)
-    ciso <-  ingest_data(inname, analyte = 'Co2')
-    
-  } else{ 
-    # if there are more than 1 file in inname, merge all files together after running ingest_data()
-    # e.g. processing window is 7 days then 7 days of data will be used
-    ciso <- list()
-    
-    for (i in 1:length(inname)){
-      #i <- 1
-      tmp <- ingest_data(inname[i], analyte = 'Co2')
-      if(i == 1){
-        ciso <- tmp
-      } else {
-        #append all ingest ambient data 
-        for(j in names(tmp$ambient)) {
-          ciso$ambient[[j]] <- lapply(names(tmp$ambient[[j]]), function(y){
-            rbind(ciso$ambient[[j]][[y]], tmp$ambient[[j]][[y]])
-          })
-          names(ciso$ambient[[j]]) <- names(tmp$ambient[[j]])
-        }#End of for loop around levels
-        
-        #append all ingest reference data 
-        for(k in names(tmp$reference)) {
-          ciso$reference[[k]] <- lapply(names(tmp$reference[[k]]), function(y){
-            rbind(ciso$reference[[k]][[y]], tmp$reference[[k]][[y]])
-          })
-          names(ciso$reference[[k]]) <- names(tmp$reference[[k]])
-        }#End of for loop around levels
-        #append all refe_stacked 
-        ciso$refe_stacked <- rbind(ciso$refe_stacked, tmp$refe_stacked)
-      }
-      
-    }
-  }
+  ciso <- ingest_data(inname, analyte = 'Co2')
   
   # extract the data we need from ciso list
   refe <-  extract_carbon_calibration_data(ciso$refe_stacked)
