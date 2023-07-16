@@ -292,11 +292,11 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       # okay, now run calibrations...
       for (i in 1:length(date_seq)) {
 
-        start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00"),
-                                    format = "%Y-%m-%d %H:%M:%S",
+        start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"),
+                                    #format = "%Y-%m-%d %H:%M:%S",
                                     tz = "UTC", origin = "1970-01-01")
-        end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59"),
-                                    format = "%Y-%m-%d %H:%M:%S",
+        end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59.0000"),
+                                    #format = "%Y-%m-%d %H:%M:%S",
                                     tz = "UTC", origin = "1970-01-01")
 
         # define calibration interval

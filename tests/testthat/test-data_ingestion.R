@@ -54,3 +54,25 @@ test_that("output datetimes from restructure_carbon_variables are characters, no
   expect_type(tmp$timeEnd, 'character')
 })
 
+#--------------------------------------------------
+fin1 <- system.file('extdata',
+                    'NEON.D15.ONAQ.DP4.00200.001.nsae.2020-06-01.basic.packed.h5',
+                    package = 'NEONiso', mustWork = TRUE)
+fin2 <- system.file('extdata',
+                    'NEON.D15.ONAQ.DP4.00200.001.nsae.2020-06-02.basic.packed.h5',
+                    package = 'NEONiso', mustWork = TRUE)
+fin3 <- system.file('extdata',
+                    'NEON.D15.ONAQ.DP4.00200.001.nsae.2020-06-03.basic.packed.h5',
+                    package = 'NEONiso', mustWork = TRUE)
+
+# create list of files
+all_files <- c(fin1, fin2, fin3)
+
+test1 <- ingest_data(fin1, analyte = 'Co2')
+test2 <- ingest_data(all_files, analyte = 'Co2')
+
+test_that("stackEddy/ingest data works on multiple daily files", {
+  # would expect number of rows to be larger in test2 than test 1:
+  expect_gt(nrow(test2$ambient$`000_010_09m`$dlta13CCo2), nrow(test1$ambient$`000_010_09m`$dlta13CCo2))
+})
+

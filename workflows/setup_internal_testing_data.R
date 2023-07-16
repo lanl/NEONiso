@@ -347,7 +347,6 @@ h5delete(fid, '/ONAQ/dp01/data/isoCo2/000_040_09m/rtioMoleWet13CCo2')
 # h5delete(fid, '/ONAQ/dp01/data/isoCo2/co2High_09m/rtioMoleWetH2oEnvHut')
 # h5delete(fid, '/ONAQ/dp01/data/isoCo2/co2High_09m/rtioMoleWet12CCo2')
 # h5delete(fid, '/ONAQ/dp01/data/isoCo2/co2High_09m/rtioMoleWet13CCo2')
-
 h5delete(fid, '/ONAQ/dp01/ucrt/isoCo2/000_030_09m/rtioMoleWetH2oEnvHut')
 h5delete(fid, '/ONAQ/dp01/ucrt/isoCo2/000_040_09m/rtioMoleWetH2oEnvHut')
 h5delete(fid, '/ONAQ/dp01/ucrt/isoCo2/000_030_09m/rtioMoleWet12CCo2')
@@ -363,6 +362,8 @@ h5delete(fid, '/ONAQ/dp01/ucrt/isoCo2/co2Med_09m/rtioMoleWet13CCo2')
 h5delete(fid, '/ONAQ/dp01/ucrt/isoCo2/co2High_09m/rtioMoleWetH2oEnvHut')
 h5delete(fid, '/ONAQ/dp01/ucrt/isoCo2/co2High_09m/rtioMoleWet12CCo2')
 h5delete(fid, '/ONAQ/dp01/ucrt/isoCo2/co2High_09m/rtioMoleWet13CCo2')
+# cut out more:
+
 
 H5Fclose(fid)
 

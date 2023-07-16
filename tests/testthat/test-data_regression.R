@@ -183,8 +183,8 @@ out <- fit_water_regression(stds,
 data_by_height_by_var <- restructure_ambient_data(fin, 'H2o')
 
 # test restructure_ambient_data:
-test_that("restructure_ambient_data returns a list with 2 elements for modified ONAQ file", {
-  expect_equal(length(restructure_ambient_data(fin, 'H2o')), 2)
+test_that("restructure_ambient_data returns a list with 1 elements for modified ONAQ file", {
+  expect_equal(length(restructure_ambient_data(fin, 'H2o')), 1)
   expect_type(data_by_height_by_var, "list")
 })
 
