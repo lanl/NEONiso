@@ -206,16 +206,19 @@ trim_external_data <- function(file, type = "daily") {
     # cut out more:)
 
     try(h5delete(fid, '/ONAQ/dp01/data/ch4Conc'))
+    #try(h5delete(fid, '/ONAQ/dp01/data/isoH2o'))
+    try(h5delete(fid, '/ONAQ/dp01/data/isoCo2/000_020_09m'))
+    try(h5delete(fid, '/ONAQ/dp01/data/isoH2o/000_020_09m'))
     
     H5Fclose(fid)
 }
 #----------------------
 
-trim_external_data('../inst/extdata/NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.packed.h5')
+trim_external_data('inst/extdata/NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.packed.h5')
 
-trim_external_data('tmp/NEON.D15.ONAQ.DP4.00200.001.nsae.2019-06-01.basic.h5')
-trim_external_data('tmp/NEON.D15.ONAQ.DP4.00200.001.nsae.2019-06-02.basic.h5')
-trim_external_data('tmp/NEON.D15.ONAQ.DP4.00200.001.nsae.2019-06-03.basic.h5')
+trim_external_data('inst/extdata/NEON.D15.ONAQ.DP4.00200.001.nsae.2020-06-01.basic.packed.h5')
+trim_external_data('inst/extdata/NEON.D15.ONAQ.DP4.00200.001.nsae.2020-06-02.basic.packed.h5')
+trim_external_data('inst/extdata/NEON.D15.ONAQ.DP4.00200.001.nsae.2020-06-03.basic.packed.h5')
 
 
 #===============================================================================
