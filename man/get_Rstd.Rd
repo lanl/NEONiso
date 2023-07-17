@@ -18,6 +18,11 @@ VPDB for carbon.
 \description{
 get_Rstd
 }
+\examples{
+get_Rstd("carbon") # returns 0.0111797
+get_Rstd("oxygen") # returns 2005.20e-6
+
+}
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}
 }

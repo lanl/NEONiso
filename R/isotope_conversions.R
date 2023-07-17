@@ -14,7 +14,9 @@
 #'         VPDB for carbon.
 #'
 #' @export
-#' @examples 
+#' @examples
+#' get_Rstd("carbon") # returns 0.0111797
+#' get_Rstd("oxygen") # returns 2005.20e-6
 #'
 get_Rstd <- function(element) {
   # return the standard isotope ratio

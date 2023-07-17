@@ -191,9 +191,11 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   # calculate uncertainties:
   # save this ucrt propogation for later version.
   amb_delta$CVcalUcrt <- round(abs(amb_delta$mean_cal) *
-                               sqrt((cv5rmse12c/mean12c)^2 + (cv5rmse13c/mean13c)^2), 3)
+                               sqrt((cv5rmse12c/mean12c)^2 +
+                                    (cv5rmse13c/mean13c)^2), 3)
   amb_delta$LOOcalUcrt <- round(abs(amb_delta$mean_cal) *
-                                sqrt((cvloo12c/mean12c)^2 + (cvloo13c/mean13c)^2), 3)
+                                sqrt((cvloo12c/mean12c)^2 +
+                                     (cvloo13c/mean13c)^2), 3)
   amb_co2$CVcalUcrt   <- round(sqrt(cv5rmse12c^2 + cv5rmse13c^2), 3)
   amb_co2$LOOcalUcrt  <- round(sqrt(cvloo12c^2 + cvloo13c^2), 3)
 

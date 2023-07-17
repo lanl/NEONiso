@@ -1,8 +1,8 @@
 ## Test environments
-* local R installation: R 4.2.1
-* GitHub Actions (ubuntu-18.04): devel, release, oldrel
+* local R installation: R 4.3.1
+* GitHub Actions (ubuntu-latest): devel, release, oldrel
 * GitHub Actions (windows-latest): release
-* GitHub Actions (macOS-latest): devel, release
+* GitHub Actions (macOS-latest): release
 * win-builder: devel, release, oldrel
 * R-hub (Windows Server 2022): devel
 * R-hub (ubuntu-20.04.1 LTS): release

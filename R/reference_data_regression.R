@@ -8,7 +8,8 @@
 #'
 loocv <- function(mod) {
   h <- stats::lm.influence(mod)$hat
-  return(base::mean((stats::residuals(mod) / (1 - h)) ^ 2)) # might need to add na.rm
+  # might need to add na.rm
+  return(base::mean((stats::residuals(mod) / (1 - h)) ^ 2))
 }
 
 #' estimate_calibration_error
@@ -62,6 +63,7 @@ estimate_calibration_error <- function(formula, data) {
 #'        for d13C and CO2 values.
 #'
 #' @importFrom stats coef lm
+#' @importFrom magrittr %>%
 
 fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                                   plot_regression_data = FALSE,
@@ -142,7 +144,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       # okay, now run calibrations...
 
       for (i in 1:length(date_seq)) {
-        start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"), # odd workaround to prevent R from converting this to NA.
+        start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"),
                                     tz = "UTC", origin = "1970-01-01")
         end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59.0000"),
                                     tz = "UTC", origin = "1970-01-01")
@@ -225,7 +227,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       }
 
       #subset out data frame.
-      out <- out[1:length(start_time),]
+      out <- out[1:length(start_time), ]
 
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
       out$timeBgn <- as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01")
@@ -293,10 +295,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       for (i in 1:length(date_seq)) {
 
         start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"),
-                                    #format = "%Y-%m-%d %H:%M:%S",
                                     tz = "UTC", origin = "1970-01-01")
         end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59.0000"),
-                                    #format = "%Y-%m-%d %H:%M:%S",
                                     tz = "UTC", origin = "1970-01-01")
 
         # define calibration interval
@@ -422,6 +422,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 #'        for d13C and CO2 values.
 #'
 #' @importFrom stats coef lm
+#' @importFrom magrittr %>%
 #' 
 fit_water_regression <- function(stds,
                                  calibration_half_width,
@@ -468,15 +469,15 @@ fit_water_regression <- function(stds,
 
     # loop through days and get regression statistics.
     # generate sequence of dates:
-    loop_start_date <- start_date #+ lubridate::days(x = calibration_half_width)
-    loop_end_date   <- end_date #- lubridate::days(x = calibration_half_width)
+    loop_start_date <- start_date
+    loop_end_date   <- end_date
 
     # generate date sequence
     date_seq <- base::seq.Date(loop_start_date, loop_end_date, by = "1 day")
 
     for (i in 1:length(date_seq)) {
 
-      start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"), # odd workaround to prevent R from converting this to NA.
+      start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"),
                                   tz = "UTC", origin = "1970-01-01")
       end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59.0000"),
                                   tz = "UTC", origin = "1970-01-01")
@@ -498,7 +499,7 @@ fit_water_regression <- function(stds,
         oxy_cal_ints[i]   <- coef(tmp)[[1]]
         oxy_cal_rsq[i]    <- summary(tmp)$r.squared
 
-        # enforce thresholds. replace regression parameters as NA where they fail.
+        # enforce thresholds. replace regression parameters as NA where fail.
         if (!is.na(oxy_cal_rsq[i])) {
           if ((oxy_cal_slopes[i] > (1 + slope_tolerance)) |
               (oxy_cal_slopes[i] < (1 - slope_tolerance)) |
@@ -560,11 +561,11 @@ fit_water_regression <- function(stds,
       }
     }
 
-    # start time is numeric here at some point - hence, format not necessary 
+    # start time is numeric here at some point - hence, format not necessary
     # to be specified below.
     # output dataframe giving valid time range, slopes, intercepts, rsquared.
-    out <- data.frame(start = lubridate::as_datetime(start_time, tz= 'UTC'),
-                      end = lubridate::as_datetime(end_time, tz= 'UTC'),
+    out <- data.frame(start = lubridate::as_datetime(start_time, tz = "UTC"),
+                      end = lubridate::as_datetime(end_time, tz = "UTC"),
                       o_slope = as.numeric(oxy_cal_slopes),
                       o_intercept = as.numeric(oxy_cal_ints),
                       o_r2 = as.numeric(oxy_cal_rsq),
@@ -572,9 +573,9 @@ fit_water_regression <- function(stds,
                       h_intercept = as.numeric(hyd_cal_ints),
                       h_r2 = as.numeric(hyd_cal_rsq))
 
-  } else { # this branch shouldn't run any more, as it indicates no ref data in *entire* timeseries
-    out <- data.frame(start = lubridate::as_datetime(start_date, tz = 'UTC'),
-                      end = lubridate::as_datetime(end_date, tz = 'UTC'),
+  } else { # this branch should rarely run, if at all
+    out <- data.frame(start = lubridate::as_datetime(start_date, tz = "UTC"),
+                      end = lubridate::as_datetime(end_date, tz = "UTC"),
                       o_slope = as.numeric(NA),
                       o_intercept = as.numeric(NA),
                       o_r2 = as.numeric(NA),
