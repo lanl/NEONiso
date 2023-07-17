@@ -12,7 +12,7 @@ period.}
 
 \item{plot_filename}{What should the output file name for diagnostic plot be?}
 
-\item{method}{Which method are we using? Currently only works for gain/offset.}
+\item{method}{Which method are we using? Currently works for gain/offset.}
 
 \item{mtitle}{Fed from above routine - what should the plot title be?}
 }

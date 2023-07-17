@@ -1,8 +1,8 @@
 #' NEONiso: A package for calibrating NEON atmospheric isotope observations.
-#' 
+#'
 #' This package provides functions for retrieving, calibrating, and generating
 #' diagnostic plots of NEON atmospheric isotope data.
-#' 
+#'
 #' @docType package
 #' @name NEONiso
 NULL

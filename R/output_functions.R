@@ -73,8 +73,8 @@ write_qfqm <- function(inname, outname, site, analyte) {
   print("Copying qfqm...")
   # copy over ucrt and qfqm groups as well.
   rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/iso",analyte))
-  qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/iso",analyte))
+  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/iso", analyte))
+  qfqm <- rhdf5::h5read(inname, paste0("/", site, "/dp01/qfqm/iso", analyte))
 
   lapply(names(qfqm), function(x) {
     copy_qfqm_group(data_list = qfqm[[x]],
@@ -193,7 +193,10 @@ copy_ucrt_group <- function(data_list, outname, site, file, species) {
   if (species == "Co2") {
 
     co2_data_outloc <- rhdf5::H5Gcreate(fid,
-                                paste0("/", site, "/dp01/ucrt/isoCo2/", outname))
+                                paste0("/",
+                                       site,
+                                       "/dp01/ucrt/isoCo2/",
+                                       outname))
 
     # loop through each variable in amb.data.list and write out as a dataframe
     lapply(names(data_list), function(x) {
@@ -205,7 +208,10 @@ copy_ucrt_group <- function(data_list, outname, site, file, species) {
   } else if (species == "H2o") {
 
     h2o_data_outloc <- rhdf5::H5Gcreate(fid,
-                                paste0("/", site, "/dp01/ucrt/isoH2o/", outname))
+                                paste0("/",
+                                       site,
+                                       "/dp01/ucrt/isoH2o/",
+                                       outname))
 
     # loop through each variable in amb.data.list and write out as a dataframe.
     lapply(names(data_list), function(x) {
@@ -230,13 +236,13 @@ copy_ucrt_group <- function(data_list, outname, site, file, species) {
 #'
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
-#' @param calDf Calibration data frame - 
+#' @param calDf Calibration data frame -
 #'              this is the output from fit_carbon_regression
 #' @param method Was the Bowling et al. 2003 or the linear regression
 #'          method used in fit_carbon_regression?
 #'
 #' @return Nothing to the environment, but writes out the
-#'         calibration parameters (e.g., gain and offset or 
+#'         calibration parameters (e.g., gain and offset or
 #'         regression slopes and intercepts) to the output
 #'         hdf5 file.
 #'
@@ -281,7 +287,7 @@ write_carbon_calibration_data <- function(outname, site, calDf, method) {
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
 #' @param amb_data_list Calibrated list of ambient data -
-#'        this is the output from one of the calibrate_ambient_carbon* functions.
+#'   this is the output from one of the calibrate_ambient_carbon* functions.
 #'
 #' @return Nothing to the environment, but writes data in amb_data_list to file.
 #'
@@ -296,12 +302,14 @@ write_carbon_ambient_data <- function(outname, site, amb_data_list) {
       amb_data_subset <- amb_data_list[i]
 
       co2_data_outloc <- rhdf5::H5Gcreate(fid,
-                                          paste0("/", site, "/dp01/data/isoCo2/",
+                                          paste0("/",
+                                                 site,
+                                                 "/dp01/data/isoCo2/",
                                                  names(amb_data_subset)))
 
       amb_data_subset <- amb_data_subset[[1]] # list hack
 
-      # loop through variables in list amb_data_list and write out as a dataframe.
+      # loop through variables in amb_data_list and write as a dataframe.
       lapply(names(amb_data_subset), function(x) {
         rhdf5::h5writeDataset(obj = amb_data_subset[[x]],
                                          h5loc = co2_data_outloc,
@@ -349,10 +357,10 @@ write_carbon_reference_data <- function(inname, outname, site, calDf) {
 #' @param standard Which standard are we working on? Must be "Low",
 #'                 "Med", or "High"
 #' @param site NEON 4-letter site code.
-#' @param calDf Calibration data frame - 
+#' @param calDf Calibration data frame -
 #'              this is the output from fit_carbon_regression
 #'
-#' @return Nothing to the environment.  
+#' @return Nothing to the environment.
 #'
 calibrate_carbon_reference_data <- function(inname, outname,
                                             standard, site, calDf)  {
@@ -393,11 +401,11 @@ calibrate_carbon_reference_data <- function(inname, outname,
 #'
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
-#' @param calDf Calibration data frame - 
+#' @param calDf Calibration data frame -
 #'              this is the output from fit_water_regression
 #'
 #' @return Nothing to the environment, but writes out the
-#'         calibration parameters (e.g., 
+#'         calibration parameters (e.g.,
 #'         regression slopes and intercepts) to the output
 #'         hdf5 file.
 #'
@@ -434,16 +442,16 @@ write_water_calibration_data <- function(outname, site, calDf) {
 #' @param inname Input file name.
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
-#' @param calDf Calibration data frame - 
+#' @param calDf Calibration data frame -
 #'              this is the output from fit_water_regression
 #' @param lowDf Dataframe corresponding to the "low" reference water.
 #' @param medDf Data frame corresponding to the "med" reference water.
 #' @param highDf Data frame corresponding to the "high" reference water.
 #'
-#' @return Nothing to the environment, but writes calibrated 
+#' @return Nothing to the environment, but writes calibrated
 #'         reference data to hdf5 file.
 #'
-write_water_reference_data <- function(inname, outname, site, 
+write_water_reference_data <- function(inname, outname, site,
                                         lowDf, medDf, highDf, calDf) {
 
   print("Writing calibrated reference data...")
@@ -536,48 +544,77 @@ calibrate_water_reference_data <- function(outname,
                                      h5loc = std_outloc,
                                      name = x,
                                      DataFrameAsCompound = TRUE)})
-  
+
   rhdf5::H5Gclose(std_outloc)
-  
+
   # write qfqm
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/isoH2o/h2o",standard,"_03m"))
-  
+  rhdf5::h5createGroup(outname, paste0("/",
+                                       site,
+                                       "/dp01/qfqm/isoH2o/h2o",
+                                       standard,
+                                       "_03m"))
+
   std_outloc <- rhdf5::H5Gopen(fid,
-                               paste0("/", site, "/dp01/qfqm/isoH2o/h2o",standard,"_03m"))
-  
-  data_out_all <- do.call(rbind,list(dlta18OH2o[[2]], dlta2HH2o[[2]],
-                                     pres[[2]], presEnvHut[[2]], rhEnvHut[[2]],
-                                     rtioMoleWetH2o[[2]], rtioMoleWetH2oEnvHut[[2]], temp[[2]], tempEnvHut[[2]]))
-  
+                               paste0("/",
+                                      site,
+                                      "/dp01/qfqm/isoH2o/h2o",
+                                      standard,
+                                      "_03m"))
+
+  data_out_all <- do.call(rbind, list(dlta18OH2o[[2]],
+                                      dlta2HH2o[[2]],
+                                      pres[[2]],
+                                      presEnvHut[[2]],
+                                      rhEnvHut[[2]],
+                                      rtioMoleWetH2o[[2]],
+                                      rtioMoleWetH2oEnvHut[[2]],
+                                      temp[[2]],
+                                      tempEnvHut[[2]]))
+
   std <- base::split(data_out_all, factor(data_out_all$varname))
-  
+
   # and write out as a dataframe.
   lapply(names(std), function(x) {
     rhdf5::h5writeDataset(obj = std[[x]],
                                      h5loc = std_outloc,
                                      name = x,
-                                     DataFrameAsCompound = TRUE)})
-  
+                                     DataFrameAsCompound = TRUE)
+                                 })
+
   rhdf5::H5Gclose(std_outloc)
-  
-  # write ucrt 
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/isoH2o/h2o",standard,"_03m"))
-  
+
+  # write ucrt
+  rhdf5::h5createGroup(outname, paste0("/",
+                                       site,
+                                       "/dp01/ucrt/isoH2o/h2o",
+                                       standard,
+                                       "_03m"))
+
   std_outloc <- rhdf5::H5Gopen(fid,
-                               paste0("/", site, "/dp01/ucrt/isoH2o/h2o",standard,"_03m"))
-  
-  data_out_all <- do.call(rbind,list(dlta18OH2o[[3]], dlta2HH2o[[3]],
-                                     pres[[3]], presEnvHut[[3]], rhEnvHut[[3]],
-                                     rtioMoleWetH2o[[3]], rtioMoleWetH2oEnvHut[[3]], temp[[3]], tempEnvHut[[3]]))
-  
+                               paste0("/",
+                                      site,
+                                      "/dp01/ucrt/isoH2o/h2o",
+                                      standard,
+                                      "_03m"))
+
+  data_out_all <- do.call(rbind, list(dlta18OH2o[[3]],
+                                      dlta2HH2o[[3]],
+                                      pres[[3]],
+                                      presEnvHut[[3]],
+                                      rhEnvHut[[3]],
+                                      rtioMoleWetH2o[[3]],
+                                      rtioMoleWetH2oEnvHut[[3]],
+                                      temp[[3]],
+                                      tempEnvHut[[3]]))
+
   std <- base::split(data_out_all, factor(data_out_all$varname))
-  
+
   # and write out as a dataframe.
   lapply(names(std), function(x) {
     rhdf5::h5writeDataset(obj = std[[x]],
                                      h5loc = std_outloc,
                                      name = x,
                                      DataFrameAsCompound = TRUE)})
-  
+
   rhdf5::H5Gclose(std_outloc)
 }
