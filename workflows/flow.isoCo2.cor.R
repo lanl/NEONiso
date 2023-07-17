@@ -63,7 +63,7 @@ if(Para$Flow$Meth == "slct") {
   Para$Flow$DirTmp <- base::paste0("/home/", Sys.getenv("USER"), "/eddy/tmp")
   Para$Flow$DirWrk <- NA
   Para$Flow$FileInp <- base::dir(Para$Flow$DirInp, pattern = "*.h5")
-  Para$Flow$FileOutBase <- c("ECSE_dp04_ONAQ_2017-09-17")
+  Para$Flow$FileOutBase <- c("ECSE_dp04_")#c("ECSE_dp04_ONAQ_2017-09-17")
   Para$Flow$NameDataExt <- NA
   Para$Flow$OutMeth <- c("hdf5", "diag")[1]
   Para$Flow$OutSub <- NA
@@ -114,7 +114,7 @@ rm(packReq)
 #‘rlang’ >= 1.1.0 is required
 
 # names of packages
-namePack <- c("DataCombine", "eddy4R.base", "eddy4R.turb", "NEONiso", "neonUtilities", "methods", "rhdf5", "deming", "dplyr") 
+namePack <- c("DataCombine", "eddy4R.base", "eddy4R.turb", "NEONiso", "neonUtilities", "methods", "rhdf5", "deming", "dplyr", "tidyr") 
 
 
 # load and attach
@@ -189,6 +189,12 @@ Para$FileName$EcseBasc <- base::file.path(Para$Flow$DirInp, grep(pattern = paste
 
 # Grab the NEON specific 4-letter code for the site location (Loc) from the dp0p input file
 Para$Flow$Loc <- eddy4R.base::def.para.site(FileInp = Para$FileName$EcseExpd)$Loc
+
+#re-name files to be able to run neonUtilities::stackEddy
+for (i in Para$Flow$DateCalc){
+  file.rename(base::paste0(Para$Flow$DirInp,"/",Para$Flow$FileOutBase, Para$Flow$Loc, "_", i, ".", "expanded.h5"),
+              base::paste0(Para$Flow$DirInp,"/","ecse.dp04.", Para$Flow$Loc, ".", i, ".", "expanded.h5"))
+}
 
 #In this case, expanded files will be used in calculation
 #list all file names in inpDir
@@ -376,10 +382,10 @@ for(j in names(dataDateCntr$ciso_subset_cal)) {
 #write out to hdf5
 tmp <- eddy4R.base::def.hdf5.extr(FileInp = NULL,
                                   rpt = data$Expd,
-                                  FileOut = base::paste0(Para$Flow$DirOut,"/",Para$Flow$FileOutBase, "expanded.h5"))
+                                  FileOut = base::paste0(Para$Flow$DirOut,"/",Para$Flow$FileOutBase, Para$Flow$Loc, "_", dateCntr, ".", "expanded.h5"))
 tmp <- eddy4R.base::def.hdf5.extr(FileInp = NULL,
                                   rpt = data$Basc,
-                                  FileOut = base::paste0(Para$Flow$DirOut,"/",Para$Flow$FileOutBase, "basic.h5"))
+                                  FileOut = base::paste0(Para$Flow$DirOut,"/",Para$Flow$FileOutBase, Para$Flow$Loc, "_", dateCntr, ".", "basic.h5"))
 
 rm(tmp)
 
@@ -387,7 +393,7 @@ rm(tmp)
 print("Writing calibration parameters...")
 
 for (packIdx in c("expanded.h5", "basic.h5")){
-outname <- base::paste0(Para$Flow$DirOut,"/",Para$Flow$FileOutBase, packIdx)  
+outname <- base::paste0(Para$Flow$DirOut,"/",Para$Flow$FileOutBase, Para$Flow$Loc, "_", dateCntr, ".", packIdx)  
 rhdf5::h5createGroup(outname,base::paste0("/",Para$Flow$Loc, "/dp01/data/isoCo2/calData"))
 
 fid <- rhdf5::H5Fopen(outname)
