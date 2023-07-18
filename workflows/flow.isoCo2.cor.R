@@ -187,7 +187,7 @@ Para$FileName$EcseExpd <- base::file.path(Para$Flow$DirInp, grep(pattern = paste
 # Basic file path
 Para$FileName$EcseBasc <- base::file.path(Para$Flow$DirInp, grep(pattern = paste0("ECSE.*",Para$Flow$DateOut ,".*basic.h5"), Para$Flow$FileInp, value = TRUE))
 
-# Grab the NEON specific 4-letter code for the site location (Loc) from the dp0p input file
+# Grab the NEON specific 4-letter code for the site location (Loc) from the input file
 Para$Flow$Loc <- eddy4R.base::def.para.site(FileInp = Para$FileName$EcseExpd)$Loc
 
 #re-name files to be able to run neonUtilities::stackEddy
@@ -345,6 +345,13 @@ for(j in names(dataDateCntr$ciso_subset_cal)) {
 #Writing data to HDF5 ########################################################
 #create list to hold data
 data <- list()
+
+#revert expanded file names back to original
+for (i in Para$Flow$DateCalc){
+  file.rename(base::paste0(Para$Flow$DirInp,"/","ecse.dp04.", Para$Flow$Loc, ".", i, ".", "expanded.h5"),
+              base::paste0(Para$Flow$DirInp,"/",Para$Flow$FileOutBase, Para$Flow$Loc, "_", i, ".", "expanded.h5"))
+}
+
 #extract data from expanded hdf5 file for the center day
 data$Expd <- eddy4R.base::def.hdf5.extr(FileInp = Para$FileName$EcseExpd)
 #extract data from basic hdf5 file for the center day
