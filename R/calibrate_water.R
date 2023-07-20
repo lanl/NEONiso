@@ -22,16 +22,17 @@
 #' data to implement these corrections is not yet publicly available.
 #' Caution is suggested when analyzing data at low humidities, below ~5000 ppm,
 #' with likely higher biases at lower humidity values.
-#' 
+#'
 #' Additionally, please note that this function is meant to work on *all* files
-#' for a given site at the same time. A more flexible version that can handle all
-#' files or monthly files will be added to a future release.
+#' for a given site at the same time. A more flexible version that can handle
+#' all files or monthly files will be added to a future release.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param site Four-letter NEON code for site being processed.
 #' @param inpath Directory path to input (monthly) NEON HDF5 files.
-#' @param outpath Directory path to save output data file. (For now, 1 per site).
+#' @param outpath Directory path to save output data file.
+#'                (For now, 1 per site).
 #' @param force_cal_to_beginning Extend first calibration to
 #'                               the beginning of the file?
 #' @param force_cal_to_end Extend last calibration to the end of the file?
@@ -44,9 +45,9 @@
 #'             to use in determining the calibration regression dataset. Creates
 #'             a moving window that is `2*calibration_half_width` days wide.
 #'             Default is set to 14 for a 28 day moving window.
-#' @param slope_tolerance How different from 1 should we allow 'passing' regression
-#'             slopes to be? Experimental parameter, off by default
-#'             (e.g., default slope parameter = 9999)
+#' @param slope_tolerance How different from 1 should we allow
+#'             'passing' regression slopes to be? Experimental parameter,
+#'              off by default (e.g., default slope parameter = 9999)
 #'
 #' @return nothing to the workspace, but creates a new output file of
 #'         calibrated water isotope data.
@@ -69,7 +70,19 @@ calibrate_water       <- function(inpath,
                                   slope_tolerance = 9999) {
 
   # stack data available for a given site into a single timeseries.
-  if (packageVersion("neonUtilities") >= "2.1.1") {
+  if (packageVersion("neonUtilities") >= "2.3.0") {
+    wiso_ref <- neonUtilities::stackEddy(inpath,
+                                         level = "dp01",
+                                         avg = 3,
+                                         var = "isoH2o",
+                                         useFasttime = TRUE)
+    wiso_amb <- neonUtilities::stackEddy(inpath,
+                                         level = "dp01",
+                                         avg = 9,
+                                         var = "isoH2o",
+                                         useFasttime = TRUE)
+  } else if (packageVersion("neonUtilities") >= "2.1.1" &&
+            packageVersion("neonUtilities" < "2.3.0")) {
     wiso_ref <- neonUtilities::stackEddy(inpath,
                                          level = "dp01",
                                          avg = 3,
@@ -120,38 +133,38 @@ calibrate_water       <- function(inpath,
   #--------------------------------------------------------------
   # add group ids using run length encoding based on time differences.
   thres_hours <- as.difftime("04:00:00", # assume any time difference
-                             format = "%H:%M:%S", # > 4 hours is a new 
+                             format = "%H:%M:%S", # > 4 hours is a new
                              units = "mins") # reference measurement
-  
-  high_rs <- high_rs %>%
-    mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
-  high_rs$periods <- rleidv(high_rs, "time_diff") %/% 2
-
-  med_rs <- med_rs %>%
-    mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
-  med_rs$periods <- rleidv(med_rs, "time_diff") %/% 2
-
-  low_rs <- low_rs %>%
-    mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
-  low_rs$periods <- rleidv(low_rs, "time_diff") %/% 2
 
   high_rs <- high_rs %>%
-    group_by(.data$periods) %>%
-    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
-    slice_tail(n = 3) %>%
-    ungroup()
+    dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
+  high_rs$periods <- data.table::rleidv(high_rs, "time_diff") %/% 2
 
   med_rs <- med_rs %>%
-    group_by(.data$periods) %>%
-    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
-    slice_tail(n = 3) %>%
-    ungroup()
+    dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
+  med_rs$periods <- data.table::rleidv(med_rs, "time_diff") %/% 2
 
   low_rs <- low_rs %>%
-    group_by(.data$periods) %>%
+    dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
+  low_rs$periods <- data.table::rleidv(low_rs, "time_diff") %/% 2
+
+  high_rs <- high_rs %>%
+    dplyr::group_by(.data$periods) %>%
     filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
-    slice_tail(n = 3) %>%
-    ungroup()
+    dplyr::slice_tail(n = 3) %>%
+    dplyr::ungroup()
+
+  med_rs <- med_rs %>%
+    dplyr::group_by(.data$periods) %>%
+    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
+    dplyr::slice_tail(n = 3) %>%
+    dplyr::ungroup()
+
+  low_rs <- low_rs %>%
+    dplyr::group_by(.data$periods) %>%
+    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
+    dplyr::slice_tail(n = 3) %>%
+    dplyr::ungroup()
 
   #=======================================================================
   # apply calibration routines
@@ -197,11 +210,11 @@ calibrate_water       <- function(inpath,
 
   tmp <- rhdf5::h5read(inname, "/readMe")
   rhdf5::h5write(tmp, file = outname, "/readMe")
-  # #---------------------------------------------
-  # #---------------------------------------------
-  # # copy high/mid/low standard data from input file.
-  # #---------------------------------------------
-  # #---------------------------------------------
+  #---------------------------------------------
+  #---------------------------------------------
+  # copy high/mid/low standard data from input file.
+  #---------------------------------------------
+  #---------------------------------------------
   write_water_reference_data(inname, outname, site,
                              lowDf = low,
                              medDf = med,
@@ -224,7 +237,10 @@ calibrate_water       <- function(inpath,
   lapply(names(data_by_height_by_var),
          function(x) {
            data_by_height_by_var[[x]] <- lapply(data_by_height_by_var[[x]],
-                                                function(y) {dplyr::select(y,-varname)})
+                                                function(y) {
+                                                  dplyr::select(y,
+                                                                -varname)
+                                                            })
            calibrate_ambient_water_linreg(amb_data_list = data_by_height_by_var[[x]],
                                           caldf = out,
                                           outname = x,
