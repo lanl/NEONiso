@@ -29,7 +29,7 @@ calibrate_standards_water <- function(cal_df,
 
   # Calibrate oxygen isotope ratios.
   if (nrow(ref_df$dlta18OH2o) > 1) {
-    for (i in 1:nrow(ref_df$dlta18OH2o)) { 
+    for (i in 1:nrow(ref_df$dlta18OH2o)) {
 
       # determine which row calibration point is in.
       int <- lubridate::interval(cal_df$start, cal_df$end)
@@ -78,7 +78,7 @@ calibrate_standards_water <- function(cal_df,
 
   # Calibrate hydrogen isotope ratios.
   if (nrow(ref_df$dlta2HH2o) > 1) {
-    for (i in 1:nrow(ref_df$dlta2HH2o)) { 
+    for (i in 1:nrow(ref_df$dlta2HH2o)) {
 
       # determine which row calibration point is in.
       int <- lubridate::interval(cal_df$start, cal_df$end)

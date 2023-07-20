@@ -4,7 +4,7 @@
 #' This function drives a workflow that reads in NEON carbon isotope data
 #' of atmospheric CO2, calibrates it to the VPDB scale, and (optionally)
 #' writes the calibrated data to a new HDF5 file. Two different approaches
-#' are possible: a) a calibration on 12CO2 and 13CO2 isotopologues independently,
+#' are possible: a) a calibration on 12CO2 and 13CO2 isotopologues separately,
 #' after Bowling et al. 2003 (Agr. For. Met.), or b) a direct calibration
 #' of d13C and CO2 values using linear regression. The vast majority of the time
 #' the results generated from either method are extremely similar to each other.
@@ -16,9 +16,9 @@
 #' The 'linreg' method simply takes measured and reference d13C and CO2 values
 #' and generates a transfer function between them using `lm()`. For the
 #' gain-and-offset method, d13C and CO2 values are converted to 12CO2 and 13CO2
-#' mole fractions. Gain and offset parameters are calculated for each isotopologue
-#' independently, and are analogous to regression slope and intercepts, but jointly 
-#' correct for CO2 concentration dependence
+#' mole fractions. Gain and offset parameters are calculated for each
+#' isotopologue independently, and are analogous to regression slope
+#' and intercepts, but jointly correct for CO2 concentration dependence
 #' and place d13C values on the VPDB scale.
 #' The gain and offset parameters are defined by:
 #'
@@ -42,7 +42,8 @@
 #' after visual inspection of data timeseries revealed that often the first
 #' standard measurement following an instrument issue had higher-than-expected
 #' error. This criterion clips clearly poor values. Selection of these criteria
-#' will become a function argument, and therefore customizable, in a future release.
+#' will become a function argument, and therefore customizable,
+#' in a future release.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -50,11 +51,13 @@
 #' @param outname Name of the output file. (character)
 #' @param force_cal_to_beginning Extend first calibration to the beginning
 #'             of the file? (default true)
-#' @param force_cal_to_end Extend last calibration to the end of the file? (default true)
+#' @param force_cal_to_end Extend last calibration to the end of the file?
+#'                         (default true)
 #' @param site Four letter NEON site code for site being processed. (character)
-#' @param gap_fill_parameters Should function attempt to 'gap-fill' across a 
-#'            bad calibration by carrying the last known good calibration forward?
-#'            Implementation is fairly primitive currently, as it only carries 
+#' @param gap_fill_parameters Should function attempt to 'gap-fill' across a
+#'            bad calibration by carrying the last known good calibration
+#'            forward?
+#'            Implementation is fairly primitive currently, as it only carries
 #'            the last known good calibration that's available forward rather
 #'            than interpolating, etc. Default FALSE.
 #' @param filter_ambient Apply the median absolute deviation filter (Brock 86)
@@ -82,15 +85,15 @@
 #' @export
 #'
 #' @importFrom magrittr %>%
-#' @examples 
+#' @examples
 #' \dontrun{fin <- system.file('extdata',
-#'          'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.20201020T211037Z.packed.h5',
+#' 'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.20201020T211037Z.packed.h5',
 #'          package = 'NEONiso', mustWork = TRUE)
 #' calibrate_carbon_bymonth(inname = fin, outname = 'out.h5',
 #'          site = 'ONAQ', write_to_file = FALSE)
 #' calibrate_carbon_bymonth(inname = fin, outname = 'out.h5',
 #'          site = 'ONAQ', method = 'linreg', write_to_file = FALSE)}
-#' 
+#'
 calibrate_carbon_bymonth <- function(inname,
                                      outname,
                                      site,
@@ -104,25 +107,27 @@ calibrate_carbon_bymonth <- function(inname,
                                      correct_refData = TRUE,
                                      write_to_file = TRUE) {
 
-  lifecycle::deprecate_warn("0.6.0","calibrate_carbon_bymonth()","calibrate_carbon()")
-  
+  lifecycle::deprecate_warn("0.6.0",
+                            "calibrate_carbon_bymonth()",
+                            "calibrate_carbon()")
+
   #-----------------------------------------------------------
   # Extract reference data from input HDF5 file.
   #-----------------------------------------------------------
   # pull all carbon isotope data into a list.
-  ciso <- ingest_data(inname, analyte = 'Co2', name_fix = FALSE)
-  
+  ciso <- ingest_data(inname, analyte = "Co2", name_fix = FALSE)
+
   # extract the data we need from ciso list
   refe <- extract_carbon_calibration_data(ciso$refe_stacked)
-  
+
   # Okay this function now needs some work. *************
   if (correct_refData == TRUE) {
-    
+
     # do some work to correct the reference data frame
     refe <- correct_carbon_ref_cval(refe,site)
-    
+
   }
-  
+
   # get calibration parameters data.frame.
   cal_df <- fit_carbon_regression(ref_data = refe, method = method,
                                   calibration_half_width = calibration_half_width)
@@ -131,7 +136,9 @@ calibrate_carbon_bymonth <- function(inname,
 #  calibrate ambient data.
 #  extract ambient measurements from ciso
   ciso <- rhdf5::h5read(inname, paste0("/", site, "/dp01/data/isoCo2"))
-  ciso_logical <- grepl(pattern = "000", x = names(ciso)) & grepl(pattern = "09m", x = names(ciso))
+  ciso_logical <- grepl(pattern = "000",
+                        x = names(ciso)) & grepl(pattern = "09m",
+                                                 x = names(ciso))
   ciso_subset <- ciso[ciso_logical]
 
   if (method == "Bowling_2003") {
@@ -161,22 +168,22 @@ calibrate_carbon_bymonth <- function(inname,
   }
 
   names(ciso_subset_cal) <- names(ciso_subset)
-  
+
   #-----------------------------------------------------------
   # write out these data.frames to a new output file.
   #-----------------------------------------------------------
   if (write_to_file) {
     cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
     cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
-    setup_output_file(inname, outname, site, 'co2')
+    setup_output_file(inname, outname, site, "co2")
     write_carbon_calibration_data(outname, site, cal_df, method = method)
     write_carbon_ambient_data(outname, site, ciso_subset_cal)
     write_carbon_reference_data(inname, outname, site, cal_df)
-    write_qfqm(inname, outname, site, 'co2')
-    write_ucrt(inname, outname, site, 'co2')
-    
-    validate_output_file(inname, outname, site, 'co2')
-    
+    write_qfqm(inname, outname, site, "co2")
+    write_ucrt(inname, outname, site, "co2")
+
+    validate_output_file(inname, outname, site, "co2")
+
     # one last invocation of hdf5 close all, for good luck
     rhdf5::h5closeAll()
   }
