@@ -176,9 +176,19 @@ manage_local_EC_archive <- function(file_dir,
             if (!length(dl_names[k]) == 0) {
               if (!is.na(dl_names[k])) {
                 # check to see if file exists in folder
-                if (file.exists(paste0(file_dir, site_name, "/", dl_names[k])) | # check for zipped or unzipped
-                    file.exists(paste0(file_dir, site_name, "/",
-                                       substr(dl_names[k], 1, nchar(dl_names[k]) - 3)))) {
+                if (file.exists(paste0(file_dir,
+                                       site_name,
+                                       "/",
+                                       dl_names[k])) |
+                    file.exists(paste0(file_dir,
+                                       site_name,
+                                       "/",
+                                       substr(dl_names[k],
+                                              1,
+                                              nchar(dl_names[k]) - 3)
+                                      )
+                                )
+                ) {
                   print(paste(dl_names[k], "exists...skipping..."))
                   next
                 } else { #doesn't exist, so download it.
@@ -271,10 +281,12 @@ manage_local_EC_archive <- function(file_dir,
                  # so need to determine which is the most recent file.
           for (i in 1:length(unique(dup_yrmn))) {
             # get times associated w/ particular duplicate.
-            h5_times <- as.POSIXct(dup_fdiff[dup_yrmn == unique(dup_yrmn)[i]], format = "%Y%m%dT%H%M%SZ")
+            h5_times <- as.POSIXct(dup_fdiff[dup_yrmn == unique(dup_yrmn)[i]],
+                                   format = "%Y%m%dT%H%M%SZ")
             # determine which files are not the most recent.
             # get file names for only this yrmn.
-            dups_yrmn <- dup_candidates[(dup_yrmn == unique(dup_yrmn)[i]) & (h5_times != max(h5_times))]
+            dups_yrmn <- dup_candidates[(dup_yrmn == unique(dup_yrmn)[i]) &
+                                        (h5_times != max(h5_times))]
             # print which files to remove
             print(paste("Removing:", dups_yrmn))
             if (!dry_run) {

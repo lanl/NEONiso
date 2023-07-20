@@ -49,14 +49,14 @@ estimate_calibration_error <- function(formula, data) {
 #'        is 2*calibration_half_width).
 #' @param ref_data Reference data.frame from which to estimate 
 #'        calibration parameters.
-#' @param plot_regression_data True or false - should we plot the data used in 
+#' @param plot_regression_data True or false - should we plot the data used in
 #'        the regression? Useful for debugging.
-#' @param plot_dir If plot_regression_data is true, where should the 
+#' @param plot_dir If plot_regression_data is true, where should the
 #'        plots be saved?
 #' @param site Needed for regression plots.
 #'
 #' @return Returns a data.frame of calibration parameters. If
-#'        `method == "Bowling_2003"`, then data.frame includes 
+#'        `method == "Bowling_2003"`, then data.frame includes
 #'        gain and offset parameters for 12CO2 and 13CO2, and r^2
 #'        values for each regression. If `method == "linreg"`,
 #'        then data.frame includes slope, intercept, and r^2 values

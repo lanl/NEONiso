@@ -14,7 +14,7 @@
 #' @return Smaller data.frame where only the reference data selected
 #' to use in the calibration routines is returned. Assumes that we are
 #' calibrating on a daily basis, and not on a longer time scale. Data
-#' are selected based on two criteria: cannot be missing, and must be 
+#' are selected based on two criteria: cannot be missing, and must be
 #' at least a certain number of high-frequency observations in order to
 #' qualify as a valid measurement. For the water system, this function
 #' also keeps only the last three injections for each reference water
@@ -61,7 +61,8 @@ select_daily_reference_data <- function(standard_df,
 
   } else {
 
-    stop("invalid analyte selected in select_reference_data. please change to 'co2' or 'h2o'")
+    stop("invalid analyte selected in select_reference_data. 
+         please change to 'co2' or 'h2o'")
 
   }
 
