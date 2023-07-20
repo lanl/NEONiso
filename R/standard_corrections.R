@@ -89,7 +89,8 @@ correct_carbon_ref_cval <- function(std_frame,
   carb_red <- carb_red[carb_red$site == site, ]
 
   # check to see if site is in carb$site, otherwise, we can skip.
-  if (nrow(carb_red) > 0 & (site %in% unique(carb$site))) {  # nrow > 0 needed due to omit_already_corrected flag.
+   # nrow > 0 needed due to omit_already_corrected flag.
+  if (nrow(carb_red) > 0 & (site %in% unique(carb$site))) {
 
     for (z in 1:nrow(carb_red)) {
 
@@ -156,12 +157,15 @@ correct_carbon_ref_output <- function(std_list,
 
   # if data have already been corrected in raw files, no need to correct again.
   if (omit_already_corrected) {
-    carb_red <- subset(carb, carb$co2_repairedRaw == FALSE | carb$d13C_repairedRaw == FALSE)
+    carb_red <- subset(carb,
+                       carb$co2_repairedRaw == FALSE | carb$d13C_repairedRaw == FALSE)
   } else {
     carb_red <- carb
   }
 
-  carb_red <- carb_red[carb_red$site == site & carb_red$refGas == substr(refGas, 1, nchar(refGas) - 4),] # strip off time indices
+  # strip off time indices
+  carb_red <- carb_red[carb_red$site == site & 
+                       carb_red$refGas == substr(refGas, 1, nchar(refGas) - 4), ]
 
   # check to see if site is in carb$site, otherwise, we can skip.
   if (nrow(carb_red) > 0 & (site %in% unique(carb$site))) {
@@ -169,8 +173,13 @@ correct_carbon_ref_output <- function(std_list,
     # check name of list to see if any corrections are needed for this standard
     for (z in 1:nrow(carb_red)) {
 
-      print(paste("Correcting data for", site, substr(refGas, 1, nchar(refGas) - 4),
-                  "between", carb_red$startDate[z], "and", carb_red$endDate[z]))
+      print(paste("Correcting data for",
+                  site,
+                  substr(refGas, 1, nchar(refGas) - 4),
+                  "between",
+                  carb_red$startDate[z],
+                  "and",
+                  carb_red$endDate[z]))
 
       co2_min <- carb_red$co2_old[z] - co2_tol
       co2_max <- carb_red$co2_old[z] + co2_tol
