@@ -90,8 +90,8 @@ calibrate_water       <- function(inpath,
                  wiso_ref[[site]]$verticalPosition == "h2oMed")
   low  <- subset(wiso_ref[[site]],
                  wiso_ref[[site]]$verticalPosition == "h2oLow")
-  
-  # restructure standards data.  
+
+  # restructure standards data.
   high_rs <- extract_water_calibration_data(high,
                                             standard = "high",
                                             method = "by_site")

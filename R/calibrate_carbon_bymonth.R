@@ -12,14 +12,14 @@
 #' isotope calibration techniques and found this to be the superior method
 #' under most circumstances. We also found this to be the case for NEON data
 #' (Fiorella et al. 2021; JGR-Biogeosciences).
-#' 
+#'
 #' The 'linreg' method simply takes measured and reference d13C and CO2 values
 #' and generates a transfer function between them using `lm()`. For the
 #' gain-and-offset method, d13C and CO2 values are converted to 12CO2 and 13CO2
 #' mole fractions. Gain and offset parameters are calculated for each isotopologue
 #' independently, and are analogous to regression slope and intercepts, but jointly 
 #' correct for CO2 concentration dependence
-#' and place d13C values on the VPDB scale. 
+#' and place d13C values on the VPDB scale.
 #' The gain and offset parameters are defined by:
 #'
 #' \deqn{G = (X_{2,ref}-X_{1,ref})/(X_{2,meas}-X_{1,meas})}

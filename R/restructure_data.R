@@ -245,7 +245,7 @@ restructure_carbon_variables <- function(dataframe,
 
   } else if (mode == "ambient") {
     output <- dataframe %>%
-      dplyr::select("verticalPosition", "timeBgn", "timeEnd", 
+      dplyr::select("verticalPosition", "timeBgn", "timeEnd",
                     starts_with(paste0("data.isoCo2.", varname, "."))) %>%
       dplyr::filter(!(.data$verticalPosition %in% c("co2Low", "co2Med", "co2High", "co2Arch"))) %>%
       dplyr::rename(mean = paste0("data.isoCo2.", varname, ".mean"),
@@ -501,7 +501,7 @@ restructure_ambient_data <- function(inpath, analyte) {
   data_by_height <- lapply(data_by_height,
                            function(x){dplyr::select(x, -"verticalPosition")})
 
-  data_by_height_by_var <- lapply(data_by_height, 
+  data_by_height_by_var <- lapply(data_by_height,
                                   function(x){base::split(x, factor(x$varname))})
 
   # return list of data by height by var
@@ -530,38 +530,91 @@ restructure_ambient_data2 <- function(inpath, analyte) {
 
   } else if (analyte == "H2o") {
 
-    dlta18O_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "dlta18OH2o", avg = 9)
-    dlta18OH2o <- restructure_water_variables(dlta18O_list, "dlta18OH2o", "ambient")
+    dlta18O_list <- neonUtilities::stackEddy(inpath,
+                                             level = "dp01",
+                                             var = "dlta18OH2o",
+                                             avg = 9)
+    dlta18OH2o <- restructure_water_variables(dlta18O_list,
+                                              "dlta18OH2o",
+                                              "ambient")
 
-    dlta2H_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "dlta2HH2o", avg = 9)
-    dlta2HH2o <- restructure_water_variables(dlta2H_list, "dlta2HH2o", "ambient")
+    dlta2H_list <- neonUtilities::stackEddy(inpath,
+                                            level = "dp01",
+                                            var = "dlta2HH2o",
+                                            avg = 9)
+    dlta2HH2o <- restructure_water_variables(dlta2H_list,
+                                             "dlta2HH2o",
+                                             "ambient")
 
-    pres_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "pres", avg = 9)
-    pres <- restructure_water_variables(pres_list, "pres", "ambient")
+    pres_list <- neonUtilities::stackEddy(inpath,
+                                          level = "dp01",
+                                          var = "pres",
+                                          avg = 9)
+    pres <- restructure_water_variables(pres_list,
+                                        "pres",
+                                        "ambient")
 
-    presEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "presEnvHut", avg = 9)
-    presEnvHut <- restructure_water_variables(presEnvHut_list, "presEnvHut", "ambient")
+    presEnvHut_list <- neonUtilities::stackEddy(inpath,
+                                                level = "dp01",
+                                                var = "presEnvHut",
+                                                avg = 9)
+    presEnvHut <- restructure_water_variables(presEnvHut_list,
+                                              "presEnvHut",
+                                              "ambient")
 
-    rhEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rhEnvHut", avg = 9)
-    rhEnvHut <- restructure_water_variables(rhEnvHut_list, "rhEnvHut", "ambient")
+    rhEnvHut_list <- neonUtilities::stackEddy(inpath,
+                                              level = "dp01",
+                                              var = "rhEnvHut",
+                                              avg = 9)
+    rhEnvHut <- restructure_water_variables(rhEnvHut_list,
+                                            "rhEnvHut",
+                                            "ambient")
 
-    rtioMoleWetH2o_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rtioMoleWetH2o", avg = 9)
-    rtioMoleWetH2o <- restructure_water_variables(rtioMoleWetH2o_list, "rtioMoleWetH2o", "ambient")
+    rtioMoleWetH2o_list <- neonUtilities::stackEddy(inpath,
+                                                    level = "dp01",
+                                                    var = "rtioMoleWetH2o",
+                                                    avg = 9)
+    rtioMoleWetH2o <- restructure_water_variables(rtioMoleWetH2o_list,
+                                                  "rtioMoleWetH2o",
+                                                  "ambient")
 
-    rtioMoleWetH2oEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "rtioMoleWetH2oEnvHut", avg = 9)
-    rtioMoleWetH2oEnvHut <- restructure_water_variables(rtioMoleWetH2oEnvHut_list, "rtioMoleWetH2oEnvHut", "ambient")
+    rtioMoleWetH2oEnvHut_list <- neonUtilities::stackEddy(inpath,
+                                                          level = "dp01",
+                                                          var = "rtioMoleWetH2oEnvHut",
+                                                          avg = 9)
+    rtioMoleWetH2oEnvHut <- restructure_water_variables(rtioMoleWetH2oEnvHut_list,
+                                                        "rtioMoleWetH2oEnvHut",
+                                                        "ambient")
 
-    temp_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "temp", avg = 9)
-    temp <- restructure_water_variables(temp_list, "temp", "ambient")
+    temp_list <- neonUtilities::stackEddy(inpath,
+                                          level = "dp01",
+                                          var = "temp",
+                                          avg = 9)
+    temp <- restructure_water_variables(temp_list,
+                                        "temp",
+                                        "ambient")
 
-    tempEnvHut_list <- neonUtilities::stackEddy(inpath, level = "dp01", var = "tempEnvHut", avg = 9)
-    tempEnvHut <- restructure_water_variables(tempEnvHut_list, "tempEnvHut", "ambient")
+    tempEnvHut_list <- neonUtilities::stackEddy(inpath,
+                                                level = "dp01",
+                                                var = "tempEnvHut",
+                                                avg = 9)
+    tempEnvHut <- restructure_water_variables(tempEnvHut_list,
+                                              "tempEnvHut",
+                                              "ambient")
 
-    data_out_all <- do.call(rbind,list(dlta18OH2o[[1]], dlta2HH2o[[1]], pres[[1]], presEnvHut[[1]], rhEnvHut[[1]],
-                                       rtioMoleWetH2o[[1]], rtioMoleWetH2oEnvHut[[1]], temp[[1]], tempEnvHut[[1]]))
+    data_out_all <- do.call(rbind, list(dlta18OH2o[[1]],
+                                        dlta2HH2o[[1]],
+                                        pres[[1]],
+                                        presEnvHut[[1]],
+                                        rhEnvHut[[1]],
+                                        rtioMoleWetH2o[[1]],
+                                        rtioMoleWetH2oEnvHut[[1]],
+                                        temp[[1]],
+                                        tempEnvHut[[1]]))
 
     # split first by height
-    data_by_height <- base::split(data_out_all, factor(data_out_all$verticalPosition))
+    data_by_height <- base::split(data_out_all,
+                                  factor(data_out_all$verticalPosition))
 
   }
 
@@ -575,8 +628,14 @@ restructure_ambient_data2 <- function(inpath, analyte) {
   names(data_by_height) <- names_vector
 
   # remove verticalPosition column
-  data_by_height <- lapply(data_by_height, function(x) {dplyr::select(x, -"verticalPosition")})
-  data_by_height_by_var <- lapply(data_by_height, function(x) {base::split(x, factor(x$varname))})
+  data_by_height <- lapply(data_by_height,
+                           function(x) {
+                              dplyr::select(x, -"verticalPosition")
+                              })
+  data_by_height_by_var <- lapply(data_by_height,
+                                  function(x) {
+                                    base::split(x, factor(x$varname))
+                                    })
 
   # return list of data by height by var
   return(data_by_height_by_var)
