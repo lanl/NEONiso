@@ -2,6 +2,13 @@
 
 * Exports get_Rstd, a helper function to return the heavy-to-light isotope
 ratio of the relevant international standard.
+* Allows use of the useFasttime argument in dependency neonUtilities::stackEddy, 
+for neonUtilities >= 2.3.0. stackEddy(useFasttime = TRUE) is ~3x faster on large
+datasets than stackEddy(useFasttime = FALSE), which improves performance significantly
+when trying to work on larger timeseries in the NEON archives.
+* Adds new cross-validation error metrics to linear regression calibration method
+for carbon. Note that these metrics are still to be considered experimental and
+may continue to change.
 
 # NEONiso 0.6.1
 
