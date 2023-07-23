@@ -4,22 +4,22 @@
 #' This function drives a workflow that reads in NEON carbon isotope data
 #' of atmospheric CO2, calibrates it to the VPDB scale, and (optionally)
 #' writes the calibrated data to a new HDF5 file. Two different approaches
-#' are possible: a) a calibration on 12CO2 and 13CO2 isotopologues independently,
-#' after Bowling et al. 2003 (Agr. For. Met.), or b) a direct calibration
-#' of d13C and CO2 values using linear regression. The vast majority of the time
-#' the results generated from either method are extremely similar to each other.
+#' are possible: a) a calibration on 12CO2 and 13CO2 isotopologues
+#' independently, after Bowling et al. 2003 (Agr. For. Met.), or b) a direct
+#' calibration of d13C and CO2 values using linear regression. Most of the time
+#' the results generated are extremely similar to each other.
 #' Wen et al. 2013 compared several different carbon
 #' isotope calibration techniques and found this to be the superior method
 #' under most circumstances. We also found this to be the case for NEON data
 #' (Fiorella et al. 2021; JGR-Biogeosciences).
-#' 
+#'
 #' The 'linreg' method simply takes measured and reference d13C and CO2 values
 #' and generates a transfer function between them using `lm()`. For the
 #' gain-and-offset method, d13C and CO2 values are converted to 12CO2 and 13CO2
-#' mole fractions. Gain and offset parameters are calculated for each isotopologue
-#' independently, and are analogous to regression slope and intercepts, but jointly 
-#' correct for CO2 concentration dependence
-#' and place d13C values on the VPDB scale. 
+#' mole fractions. Gain and offset parameters are calculated for each
+#' isotopologue independently, and are analogous to regression slope and
+#' intercepts, but jointly correct for CO2 concentration dependence
+#' and place d13C values on the VPDB scale.
 #' The gain and offset parameters are defined by:
 #'
 #' \deqn{G = (X_{2,ref}-X_{1,ref})/(X_{2,meas}-X_{1,meas})}
@@ -42,27 +42,29 @@
 #' after visual inspection of data timeseries revealed that often the first
 #' standard measurement following an instrument issue had higher-than-expected
 #' error. This criterion clips clearly poor values. Selection of these criteria
-#' will become a function argument, and therefore customizable, in a future release.
+#' will become a function argument, and therefore customizable,
+#' in a future release.
 #'
-#' The behavior of this function will be a bit different depending on what is supplied
-#' as `inname`. If a single file is provided, the output will be monthly. However,
-#' a list of files corresponding to a site can also be provided, and then a single output
-#' file per site will be generated.
+#' The behavior of this function will be a bit different depending on what
+#' is supplied as `inname`. If a single file is provided, the output will be
+#' monthly. However, a list of files corresponding to a site can also be
+#' provided, and then a single output file per site will be generated.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
-#' @param inname Input file(s) that are to be calibrated. If a single file is given,
-#'               output will be a single file per site per month. If a list of files
-#'               corresponding to a timeseries at a given site is provided, will calibrate
-#'               the whole time series.
+#' @param inname Input file(s) that are to be calibrated. If a single file is
+#'               given, output will be a single file per site per month. If a
+#'               list of files corresponding to a timeseries at a given site
+#'               is provided, will calibrate the whole time series.
 #' @param outname Name of the output file. (character)
 #' @param force_cal_to_beginning Extend first calibration to the beginning
 #'             of the file? (default true)
-#' @param force_cal_to_end Extend last calibration to the end of the file? (default true)
+#' @param force_cal_to_end Extend last calibration to the end of the file?
+#'             (default true)
 #' @param site Four letter NEON site code for site being processed. (character)
-#' @param gap_fill_parameters Should function attempt to 'gap-fill' across a 
-#'            bad calibration by carrying the last known good calibration forward?
-#'            Implementation is fairly primitive currently, as it only carries 
+#' @param gap_fill_parameters Should function attempt to 'gap-fill' across a
+#'            bad calibration by carrying the last good calibration forward?
+#'            Implementation is fairly primitive currently, as it only carries
 #'            the last known good calibration that's available forward rather
 #'            than interpolating, etc. Default FALSE.
 #' @param filter_ambient Apply the median absolute deviation filter (Brock 86)
@@ -84,9 +86,10 @@
 #' @param calibration_half_width Determines the period (in days)
 #'        from which reference data are selected (period
 #'        is 2*calibration_half_width).
-#' @param remove_known_bad_months There are a few site months with known spectral
-#'        issues where the isotope ratios are likely unrecoverable. This parameter
-#'        allows removal of these files, but allows them to remain in archive.
+#' @param remove_known_bad_months There are a few site months with known
+#'        spectral issues where the isotope ratios are likely unrecoverable.
+#'        This parameter allows removal of these files, but allows them to
+#'        remain in archive.
 #' @param plot_regression_data Default false; this is useful for diagnostics.
 #' @param plot_directory Only used if plot_regression_data is TRUE, but specify
 #'        where to write out diagnostic plot of regression data.
@@ -98,9 +101,9 @@
 #'
 #' @importFrom magrittr %>%
 #' @importFrom utils str
-#' @examples 
+#' @examples
 #' \dontrun{fin <- system.file('extdata',
-#'          'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.20201020T211037Z.packed.h5',
+#' 'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.20201020T211037Z.packed.h5',
 #'          package = 'NEONiso', mustWork = TRUE)
 #' calibrate_carbon_bymonth(inname = fin, outname = 'out.h5',
 #'          site = 'ONAQ', write_to_file = FALSE)
@@ -122,7 +125,7 @@ calibrate_carbon         <- function(inname,
                                      remove_known_bad_months = TRUE,
                                      plot_regression_data = FALSE,
                                      plot_directory = NULL,
-                                     avg) {
+                                     avg = 9) {
   
   if (remove_known_bad_months) {
     if (site == "UNDE") {
@@ -133,7 +136,7 @@ calibrate_carbon         <- function(inname,
       inname <- inname[!grepl("2019-07",inname)]
     }
   }
-  
+
   #-----------------------------------------------------------
   # Extract reference data from input HDF5 file.
   #-----------------------------------------------------------
@@ -147,16 +150,17 @@ calibrate_carbon         <- function(inname,
 
     # do some work to correct the reference data frame
     refe <- correct_carbon_ref_cval(refe,site)
-    
+
     tmp_names <- names(ciso$reference)
-    
+
     #apply seems to strip names from ciso$reference, so need to save above
     # and reassign below.
     ciso$reference <- lapply(names(ciso$reference),
                              function(x) {
-                               ciso$reference[[x]] <- correct_carbon_ref_output(ciso$reference[[x]], site = site, refGas = x)
+                               ciso$reference[[x]] <- correct_carbon_ref_output(
+                                ciso$reference[[x]], site = site, refGas = x)
                              })
-    
+
     names(ciso$reference) <- tmp_names
   }
 
@@ -170,11 +174,11 @@ calibrate_carbon         <- function(inname,
 #----------------------------------------------------------------------------
 #  calibrate ambient data.
 #  extract ambient measurements from ciso
-  
+
   ciso_subset <- c(ciso$ambient, ciso$reference)
-  
+
   if (method == "Bowling_2003") {
-    
+
     ciso_subset_cal <- lapply(names(ciso_subset),
                               function(x) {
                                 calibrate_ambient_carbon_Bowling2003(
@@ -186,7 +190,7 @@ calibrate_carbon         <- function(inname,
                                   force_to_beginning = force_cal_to_beginning,
                                   r2_thres = r2_thres)
                               })
-    
+
   } else if (method == "linreg") {
 
     ciso_subset_cal <- lapply(names(ciso_subset),
@@ -201,7 +205,7 @@ calibrate_carbon         <- function(inname,
                                   r2_thres = r2_thres)
                               })
   }
-  
+
   names(ciso_subset_cal) <- names(ciso_subset)
   #-----------------------------------------------------------
   # write out these data.frames to a new output file.
@@ -209,26 +213,24 @@ calibrate_carbon         <- function(inname,
   if (write_to_file) {
     cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
     cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
-    setup_output_file(inname, outname, site, 'co2')
+    setup_output_file(inname, outname, site, "co2")
     write_carbon_calibration_data(outname, site, cal_df, method = method)
     write_carbon_ambient_data(outname, site, ciso_subset_cal)
-    #write_qfqm(inname, outname, site, 'co2')
-    #write_ucrt(inname, outname, site, 'co2')
-    
-    validate_output_file(inname, outname, site, 'co2')
-    
+
+    validate_output_file(inname, outname, site, "co2")
+
     # one last invocation of hdf5 close all, for good luck
     rhdf5::h5closeAll()
-  } else{#export output directly
+  } else{ #export output directly
     outData <- list()
     #convert time to NEON HDF5 time
     cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
     cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
     outData$ciso_subset_cal <- ciso_subset_cal
     outData$cal_df <- cal_df
-    
+
     return(outData)
-    
+
   }
 
 }

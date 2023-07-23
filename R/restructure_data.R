@@ -17,7 +17,13 @@
 #' @importFrom stats setNames
 #' @importFrom utils packageVersion
 #' @importFrom magrittr %>%
+<<<<<<< HEAD
 ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
+=======
+NULL
+
+ingest_data <- function(inname, analyte, name_fix = TRUE) {
+>>>>>>> d4f3625 (continue linting project)
 
   # this function needs to:
   # 1. read in and stack variables.
@@ -203,7 +209,9 @@ restructure_carbon_variables <- function(dataframe,
 
       output <- dataframe %>%
         dplyr::select("verticalPosition", "timeBgn", "timeEnd",
-                      starts_with(paste0("data.isoCo2.", varname, "."))) %>%
+                      dplyr::starts_with(paste0("data.isoCo2.",
+                                         varname,
+                                         "."))) %>%
         dplyr::filter(!(.data$verticalPosition %in% c("010", "020", "030", "040", "050", "060", "070", "080"))) %>%
         dplyr::rename(mean = paste0("data.isoCo2.", varname, ".mean"),
                       min  = paste0("data.isoCo2.", varname, ".min"),
@@ -224,7 +232,9 @@ restructure_carbon_variables <- function(dataframe,
 
         output <- dataframe %>%
           dplyr::select("verticalPosition", "timeBgn", "timeEnd",
-                        starts_with(paste0("qfqm.isoCo2.", varname, "."))) %>%
+                        dplyr::starts_with(paste0("qfqm.isoCo2.",
+                                                  varname,
+                                                  "."))) %>%
           dplyr::filter(!(.data$verticalPosition %in% c("010", "020", "030", "040", "050", "060", "070", "080"))) %>%
           dplyr::rename(qfFinl = paste0("qfqm.isoCo2.", varname, ".qfFinl")) %>%
           dplyr::mutate(varname = varname)
@@ -237,7 +247,9 @@ restructure_carbon_variables <- function(dataframe,
 
         output <- dataframe %>%
           dplyr::select("verticalPosition", "timeBgn", "timeEnd",
-                        starts_with(paste0("ucrt.isoCo2.", varname, "."))) %>%
+                        dplyr::starts_with(paste0("ucrt.isoCo2.",
+                                                  varname,
+                                                  "."))) %>%
           dplyr::filter(!(.data$verticalPosition %in% c("010", "020", "030", "040", "050", "060", "070", "080"))) %>%
           dplyr::rename(mean = paste0("ucrt.isoCo2.", varname, ".mean"),
                         vari = paste0("ucrt.isoCo2.", varname, ".vari"),
