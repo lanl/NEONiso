@@ -14,7 +14,7 @@
 # 8) calibrate_water_linreg_bysite works
 
 # where does uncalibrated data live?
-data.dir <- '~/airflow/data/001-DP4_00200_001/'
+data.dir <- '/Volumes/Elements/airflow/data/001-DP4_00200_001/'
 
 # set test_date
 #test_date <- "2022-01-01"
@@ -30,12 +30,12 @@ dir.create(paste0('~/NEONcal/',test_date,"_tests"))
 run_test1 <- FALSE
 run_test2 <- FALSE
 run_test3 <- FALSE
-run_test4 <- FALSE
+run_test4 <- TRUE
 run_test5 <- FALSE
 run_test6 <- TRUE  
 run_test7 <- FALSE
 run_test8 <- FALSE
-rapid_test <- TRUE # if rapid, only run ~5% of possible site months.
+rapid_test <- FALSE # if rapid, only run ~5% of possible site months.
    
 # load required packages: 
 library(rhdf5)
