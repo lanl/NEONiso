@@ -16,7 +16,6 @@
 #' @importFrom stats setNames
 #' @importFrom utils packageVersion
 #' @importFrom magrittr %>%
-NULL
 
 ingest_data <- function(inname, analyte, name_fix = TRUE) {
 
