@@ -23,10 +23,10 @@ calibrate_carbon(
 )
 }
 \arguments{
-\item{inname}{Input file(s) that are to be calibrated. If a single file is given,
-output will be a single file per site per month. If a list of files
-corresponding to a timeseries at a given site is provided, will calibrate
-the whole time series.}
+\item{inname}{Input file(s) that are to be calibrated. If a single file is
+given, output will be a single file per site per month. If a
+list of files corresponding to a timeseries at a given site
+is provided, will calibrate the whole time series.}
 
 \item{outname}{Name of the output file. (character)}
 
@@ -43,10 +43,11 @@ is 2*calibration_half_width).}
 \item{force_cal_to_beginning}{Extend first calibration to the beginning
 of the file? (default true)}
 
-\item{force_cal_to_end}{Extend last calibration to the end of the file? (default true)}
+\item{force_cal_to_end}{Extend last calibration to the end of the file?
+(default true)}
 
 \item{gap_fill_parameters}{Should function attempt to 'gap-fill' across a
-bad calibration by carrying the last known good calibration forward?
+bad calibration by carrying the last good calibration forward?
 Implementation is fairly primitive currently, as it only carries
 the last known good calibration that's available forward rather
 than interpolating, etc. Default FALSE.}
@@ -68,9 +69,10 @@ Users will be warned prior to removal of this argument.}
 \item{write_to_file}{Write calibrated ambient data to file?
 (Mostly used for testing)}
 
-\item{remove_known_bad_months}{There are a few site months with known spectral
-issues where the isotope ratios are likely unrecoverable. This parameter
-allows removal of these files, but allows them to remain in archive.}
+\item{remove_known_bad_months}{There are a few site months with known
+spectral issues where the isotope ratios are likely unrecoverable.
+This parameter allows removal of these files, but allows them to
+remain in archive.}
 
 \item{plot_regression_data}{Default false; this is useful for diagnostics.}
 
@@ -86,10 +88,10 @@ file containing calibrated carbon isotope values.
 This function drives a workflow that reads in NEON carbon isotope data
 of atmospheric CO2, calibrates it to the VPDB scale, and (optionally)
 writes the calibrated data to a new HDF5 file. Two different approaches
-are possible: a) a calibration on 12CO2 and 13CO2 isotopologues independently,
-after Bowling et al. 2003 (Agr. For. Met.), or b) a direct calibration
-of d13C and CO2 values using linear regression. The vast majority of the time
-the results generated from either method are extremely similar to each other.
+are possible: a) a calibration on 12CO2 and 13CO2 isotopologues
+independently, after Bowling et al. 2003 (Agr. For. Met.), or b) a direct
+calibration of d13C and CO2 values using linear regression. Most of the time
+the results generated are extremely similar to each other.
 Wen et al. 2013 compared several different carbon
 isotope calibration techniques and found this to be the superior method
 under most circumstances. We also found this to be the case for NEON data
@@ -99,9 +101,9 @@ under most circumstances. We also found this to be the case for NEON data
 The 'linreg' method simply takes measured and reference d13C and CO2 values
 and generates a transfer function between them using \code{lm()}. For the
 gain-and-offset method, d13C and CO2 values are converted to 12CO2 and 13CO2
-mole fractions. Gain and offset parameters are calculated for each isotopologue
-independently, and are analogous to regression slope and intercepts, but jointly
-correct for CO2 concentration dependence
+mole fractions. Gain and offset parameters are calculated for each
+isotopologue independently, and are analogous to regression slope and
+intercepts, but jointly correct for CO2 concentration dependence
 and place d13C values on the VPDB scale.
 The gain and offset parameters are defined by:
 
@@ -125,16 +127,17 @@ problem with a valve in the manifold, etc.); the third criterion was adopted
 after visual inspection of data timeseries revealed that often the first
 standard measurement following an instrument issue had higher-than-expected
 error. This criterion clips clearly poor values. Selection of these criteria
-will become a function argument, and therefore customizable, in a future release.
+will become a function argument, and therefore customizable,
+in a future release.
 
-The behavior of this function will be a bit different depending on what is supplied
-as \code{inname}. If a single file is provided, the output will be monthly. However,
-a list of files corresponding to a site can also be provided, and then a single output
-file per site will be generated.
+The behavior of this function will be a bit different depending on what
+is supplied as \code{inname}. If a single file is provided, the output will be
+monthly. However, a list of files corresponding to a site can also be
+provided, and then a single output file per site will be generated.
 }
 \examples{
 \dontrun{fin <- system.file('extdata',
-         'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.20201020T211037Z.packed.h5',
+'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.20201020T211037Z.packed.h5',
          package = 'NEONiso', mustWork = TRUE)
 calibrate_carbon_bymonth(inname = fin, outname = 'out.h5',
          site = 'ONAQ', write_to_file = FALSE)

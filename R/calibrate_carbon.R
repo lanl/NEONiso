@@ -129,18 +129,19 @@ calibrate_carbon         <- function(inname,
   
   if (remove_known_bad_months) {
     if (site == "UNDE") {
-      inname <- inname[!grepl("2019-05|2019-06|2019-07|2019-08|2019-09",inname)]
+      inname <- inname[!grepl("2019-05|2019-06|2019-07|2019-08|2019-09",
+                      inname)]
     } else if (site == "TEAK") {
-      inname <- inname[!grepl("2018-08|2018-09",inname)]
+      inname <- inname[!grepl("2018-08|2018-09", inname)]
     } else if (site == "SRER") {
-      inname <- inname[!grepl("2019-07",inname)]
+      inname <- inname[!grepl("2019-07", inname)]
     }
   }
 
   #-----------------------------------------------------------
   # Extract reference data from input HDF5 file.
   #-----------------------------------------------------------
-  ciso <- ingest_data(inname, analyte = 'Co2', avg = avg)
+  ciso <- ingest_data(inname, analyte = "Co2", avg = avg)
   
   # extract the data we need from ciso list
   refe <-  extract_carbon_calibration_data(ciso$refe_stacked)
@@ -221,7 +222,7 @@ calibrate_carbon         <- function(inname,
 
     # one last invocation of hdf5 close all, for good luck
     rhdf5::h5closeAll()
-  } else{ #export output directly
+  } else { #export output directly
     outData <- list()
     #convert time to NEON HDF5 time
     cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)

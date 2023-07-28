@@ -19,7 +19,8 @@ calibrate_water(
 \arguments{
 \item{inpath}{Directory path to input (monthly) NEON HDF5 files.}
 
-\item{outpath}{Directory path to save output data file. (For now, 1 per site).}
+\item{outpath}{Directory path to save output data file.
+(For now, 1 per site).}
 
 \item{site}{Four-letter NEON code for site being processed.}
 
@@ -40,9 +41,9 @@ the beginning of the file?}
 remove calibration periods where a measurement error makes
 relationship nonlinear. Default = 0.95}
 
-\item{slope_tolerance}{How different from 1 should we allow 'passing' regression
-slopes to be? Experimental parameter, off by default
-(e.g., default slope parameter = 9999)}
+\item{slope_tolerance}{How different from 1 should we allow
+'passing' regression slopes to be? Experimental parameter,
+off by default (e.g., default slope parameter = 9999)}
 }
 \value{
 nothing to the workspace, but creates a new output file of
@@ -74,8 +75,8 @@ Caution is suggested when analyzing data at low humidities, below ~5000 ppm,
 with likely higher biases at lower humidity values.
 
 Additionally, please note that this function is meant to work on \emph{all} files
-for a given site at the same time. A more flexible version that can handle all
-files or monthly files will be added to a future release.
+for a given site at the same time. A more flexible version that can handle
+all files or monthly files will be added to a future release.
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}
