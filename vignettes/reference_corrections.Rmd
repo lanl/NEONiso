@@ -37,7 +37,7 @@ the 'carb' data object bundled with NEONiso:
 ```{r, echo = FALSE}
 #manually load data file:
 carb <- readRDS("carb.rds")
-print(carb[,-4], width = Inf, n = 27)
+print(carb[, -4], width = Inf, n = 27)
 ```
 
 This table lists, in order, a) the site affected; b) the reference gas affected;

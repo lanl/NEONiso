@@ -17,8 +17,8 @@ extract_water_calibration_data(
 group in NEON HDF5 file.}
 
 \item{ucrt_list}{List containing uncertainty data, from the /*/dp01/ucrt/
-group in NEON HDF5 file. (only works if paired with ucrt_source = 'ucrt'
-and method = 'by_month')}
+group in NEON HDF5 file. (only works if paired with
+ucrt_source = 'ucrt' and method = 'by_month')}
 
 \item{standard}{String indicating whether to grab data from the high,
 medium, or low standard.}

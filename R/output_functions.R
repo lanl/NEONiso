@@ -6,9 +6,9 @@
 #' setup_output_file
 #'
 #' Creates a skeleton hdf5 file for the calibrated data.
-#' 
+#'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
-#' 
+#'
 #' @param inname Input file name.
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
@@ -465,7 +465,7 @@ write_water_reference_data <- function(inname, outname, site,
 #'
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
-#' @param calDf Calibration data frame - 
+#' @param calDf Calibration data frame -
 #'              this is the output from fit_water_regression
 #' @param standard Which reference material is being 'calibrated'?
 #'                 (Low, med, or high)

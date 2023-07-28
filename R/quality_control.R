@@ -49,15 +49,26 @@ validate_output_file <- function(inname, outname, site, analyte) {
     target_in <- groups_in[groups_in$group == paste0("/",
                                                   site,
                                                   "/dp01/data/isoCo2"), ]$name
+    #only care about the 9m vars!
     target_in <- target_in[grepl("09m", target_in) &
-                          !grepl("Arch", target_in)] #only care about the 9m vars!
-    target_out <- groups_out[groups_out$group == paste0("/", site, "/dp01/data/isoCo2"), ]$name
+                          !grepl("Arch", target_in)]
+    target_out <- groups_out[groups_out$group ==
+                             paste0("/",
+                                    site,
+                                    "/dp01/data/isoCo2"), ]$name
 
   } else {
-    target_in <- groups_in[groups_in$group == paste0("/", site, "/dp01/data/isoH2o"), ]$name
+    target_in <- groups_in[groups_in$group ==
+                           paste0("/",
+                                  site,
+                                  "/dp01/data/isoH2o"), ]$name
+    #only care about the 9m vars!
     target_in <- target_in[grep("09m", target_in) &
-                          !grepl("Arch", target_in)] #only care about the 9m vars!
-    target_out <- groups_out[groups_out$group == paste0("/", site, "/dp01/data/isoH2o"), ]$name
+                          !grepl("Arch", target_in)]
+    target_out <- groups_out[groups_out$group ==
+                              paste0("/",
+                                     site,
+                                     "/dp01/data/isoH2o"), ]$name
   }
 
   # add calData to target_in, since we expect this to be added (and adding to
@@ -98,14 +109,14 @@ carbon_regression_plots <- function(caldata, plot_filename, method, mtitle) {
 
   if (method == "Bowling_2003") {
     p1 <- ggplot2::ggplot(data = caldata,
-                          aes(x = .data$conc12CCO2_obs,
-                              y = .data$conc12CCO2_ref)) +
+                          ggplot2::aes(x = .data$conc12CCO2_obs,
+                                       y = .data$conc12CCO2_ref)) +
       ggplot2::geom_point() +
       ggplot2::geom_smooth(method = "lm")
 
     p2 <- ggplot2::ggplot(data = caldata,
-                          aes(x = .data$conc13CCO2_obs,
-                              y = .data$conc13CCO2_ref)) +
+                          ggplot2::aes(x = .data$conc13CCO2_obs,
+                                       y = .data$conc13CCO2_ref)) +
       ggplot2::geom_point() +
       ggplot2::geom_smooth(method = "lm")
 

@@ -39,7 +39,7 @@ calibration, using the last calibration? (default true)}
 first calibration, using the first calibration? (default true)}
 
 \item{gap_fill_parameters}{Should function attempt to 'gap-fill' across a
-bad calibration by carrying the last known good calibration forward?
+bad calibration by carrying the last good calibration forward?
 Implementation is fairly primitive currently, as it only carries
 the last known good calibration that's available forward rather
 than interpolating, etc. Default FALSE.}

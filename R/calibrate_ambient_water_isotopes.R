@@ -102,9 +102,9 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
 
   # apply median filter to data
   if (filter_data == TRUE) {
-    oxydf$mean_cal     <- filter_median_Brock86(oxydf$mean_cal)
-    oxydf$min_cal      <- filter_median_Brock86(oxydf$min_cal)
-    oxydf$max_cal      <- filter_median_Brock86(oxydf$max_cal)
+    oxydf$mean_cal     <- filter_median_brock86(oxydf$mean_cal)
+    oxydf$min_cal      <- filter_median_brock86(oxydf$min_cal)
+    oxydf$max_cal      <- filter_median_brock86(oxydf$max_cal)
   }
 
   oxydf$timeBgn <- convert_POSIXct_to_NEONhdf5_time(oxydf$timeBgn)
@@ -167,9 +167,9 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
 
   # apply median filter to data
   if (filter_data == TRUE) {
-    hyddf$mean_cal <- filter_median_Brock86(hyddf$mean_cal)
-    hyddf$min_cal  <- filter_median_Brock86(hyddf$min_cal)
-    hyddf$max_cal  <- filter_median_Brock86(hyddf$max_cal)
+    hyddf$mean_cal <- filter_median_brock86(hyddf$mean_cal)
+    hyddf$min_cal  <- filter_median_brock86(hyddf$min_cal)
+    hyddf$max_cal  <- filter_median_brock86(hyddf$max_cal)
   }
 
   hyddf$timeBgn <- convert_POSIXct_to_NEONhdf5_time(hyddf$timeBgn)

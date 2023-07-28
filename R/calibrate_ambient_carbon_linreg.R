@@ -1,4 +1,4 @@
-  #' calibrate_ambient_carbon_linreg
+#' calibrate_ambient_carbon_linreg
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -23,14 +23,14 @@
 #'             first calibration, using the first calibration? (default true)
 #' @param r2_thres Minimum r2 value for calibration to be considered "good" and
 #'             applied to ambient data.
-#' @param gap_fill_parameters Should function attempt to 'gap-fill' across a 
-#'            bad calibration by carrying the last known good calibration forward?
-#'            Implementation is fairly primitive currently, as it only carries 
+#' @param gap_fill_parameters Should function attempt to 'gap-fill' across a
+#'            bad calibration by carrying the last good calibration forward?
+#'            Implementation is fairly primitive currently, as it only carries
 #'            the last known good calibration that's available forward rather
 #'            than interpolating, etc. Default FALSE.
 #'
 #' @return Nothing to environment; returns calibrated ambient observations to
-#'     the function orchestrating calibration (calibrate_carbon). 
+#'     the function orchestrating calibration (calibrate_carbon).
 #'     This function is not designed to be called on its own,
 #'     and is not exported to the namespace.
 #'
@@ -153,7 +153,7 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
 
       co2_ambdf$max[var_inds_in_calperiod[[i]]]  <- caldf$co2_intercept[i] +
         co2_ambdf$max[var_inds_in_calperiod[[i]]] * caldf$co2_slope[i]
-      
+
       co2_ambdf$cvloo[var_inds_in_calperiod[[i]]] <- caldf$co2_cvloo[i]
       co2_ambdf$cv5rmse[var_inds_in_calperiod[[i]]] <- caldf$co2_cv5rmse[i]
     }
@@ -165,13 +165,13 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
     # apply median filter to data
     if (filter_data == TRUE) {
 
-      d13c_ambdf$mean_cal <- filter_median_Brock86(d13c_ambdf$mean_cal)
-      d13c_ambdf$min      <- filter_median_Brock86(d13c_ambdf$min)
-      d13c_ambdf$max      <- filter_median_Brock86(d13c_ambdf$max)
+      d13c_ambdf$mean_cal <- filter_median_brock86(d13c_ambdf$mean_cal)
+      d13c_ambdf$min      <- filter_median_brock86(d13c_ambdf$min)
+      d13c_ambdf$max      <- filter_median_brock86(d13c_ambdf$max)
 
-      co2_ambdf$mean_cal <- filter_median_Brock86(co2_ambdf$mean_cal)
-      co2_ambdf$min      <- filter_median_Brock86(co2_ambdf$min)
-      co2_ambdf$max      <- filter_median_Brock86(co2_ambdf$max)
+      co2_ambdf$mean_cal <- filter_median_brock86(co2_ambdf$mean_cal)
+      co2_ambdf$min      <- filter_median_brock86(co2_ambdf$min)
+      co2_ambdf$max      <- filter_median_brock86(co2_ambdf$max)
 
     }
 

@@ -19,7 +19,7 @@ Vector of isotope ratios (R values).
 delta_to_R
 }
 \examples{
-delta_to_R(delta_values = 0, element = 'oxygen') # returns 2005.2e-6 for VSMOW.
+delta_to_R(delta_values = 0, element = 'oxygen') # 2005.2e-6 for VSMOW.
 
 }
 \author{

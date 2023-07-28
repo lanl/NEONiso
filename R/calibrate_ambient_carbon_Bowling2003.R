@@ -54,7 +54,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   amb_delta <- amb_data_list$dlta13CCo2
   amb_co2   <- amb_data_list$rtioMoleDryCo2
 
-  # in some cases, there's an issue where nrow(amb_delta) and nrow(amb_co2) 
+  # in some cases, there's an issue where nrow(amb_delta) and nrow(amb_co2)
   # are not the same - time arrays need to be merged prior to continuing.
   if (!setequal(amb_delta$timeBgn, amb_co2$timeBgn)) {
 
@@ -183,19 +183,19 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
 
   # apply median filter to data
   if (filter_data == TRUE) {
-    amb_delta$mean_cal <- filter_median_Brock86(amb_delta$mean_cal)
-    amb_delta$min_cal  <- filter_median_Brock86(amb_delta$min_cal)
-    amb_delta$max_cal  <- filter_median_Brock86(amb_delta$max_cal)
+    amb_delta$mean_cal <- filter_median_brock86(amb_delta$mean_cal)
+    amb_delta$min_cal  <- filter_median_brock86(amb_delta$min_cal)
+    amb_delta$max_cal  <- filter_median_brock86(amb_delta$max_cal)
   }
 
   # calculate uncertainties:
   # save this ucrt propogation for later version.
   amb_delta$CVcalUcrt <- round(abs(amb_delta$mean_cal) *
-                               sqrt((cv5rmse12c/mean12c)^2 +
-                                    (cv5rmse13c/mean13c)^2), 3)
+                               sqrt((cv5rmse12c / mean12c)^2 +
+                                    (cv5rmse13c / mean13c)^2), 3)
   amb_delta$LOOcalUcrt <- round(abs(amb_delta$mean_cal) *
-                                sqrt((cvloo12c/mean12c)^2 +
-                                     (cvloo13c/mean13c)^2), 3)
+                                sqrt((cvloo12c / mean12c)^2 +
+                                     (cvloo13c / mean13c)^2), 3)
   amb_co2$CVcalUcrt   <- round(sqrt(cv5rmse12c^2 + cv5rmse13c^2), 3)
   amb_co2$LOOcalUcrt  <- round(sqrt(cvloo12c^2 + cvloo13c^2), 3)
 

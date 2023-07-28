@@ -30,7 +30,10 @@ This document will cover three important steps of working with NEON isotope data
 Atmospheric isotope data products from NEON are included as part of the eddy covariance bundled data product (ID DP4.00200.001). NEONiso includes a function for downloading and managing a local archive of eddy covariance bundles: manage_local_EC_archive. For example, the following command will download all of the data for the ONAQ site:
 
 ```{r, eval = FALSE}
-manage_local_EC_archive(file_dir = "~/Desktop", get = TRUE, unzip_files = TRUE, sites = "ONAQ")
+manage_local_EC_archive(file_dir = "~/Desktop",
+                        get = TRUE,
+                        unzip_files = TRUE,
+                        sites = "ONAQ")
 ```
 
 The sites argument can also be a vector of multiple sites you'd like to request, or "all" to pull data from all of the sites (note this will be >100 GB and growing as of February 2021). The EC bundles are gzipped on the remote server, and this function will also unzip these files after they've been downloaded.
@@ -44,36 +47,39 @@ The simplest way to interact with these functions is to place it inside of a for
 
 ``` {r, eval = FALSE}
 for (i in 1:length(fnames.out)) {
-  calibrate_carbon_bymonth(fnames[i],fnames.out[i],site=site.code[i], method = "Bowling_2003")
+  calibrate_carbon_bymonth(fnames[i],
+                           fnames.out[i],
+                           site=site.code[i],
+                           method = "Bowling_2003")
 }
 ```
 
 Two different methods to calibrate are available: a) a 'gain and offset' regression using 12CO2 and 13CO2 mole fractions (method = 'Bowling_2003', after Bowling et al. 2003) and b) a 'direct' linear regression of CO2 and d13C values to generate calibration transfer functions (method = 'linreg'). The function 'calibrate_carbon_bymonth()' assumes you have vectors of: 1) input file names (fnames), 2) output file names (fnames.out), and 3) 4 letter NEON site codes corresponding to each entry in input file names (fnames). An example of code to generate these three vectors is provided below: 
 
 ```{r, eval = FALSE}
-data.dir <- '/your/path/here/DP4_00200_001/'
+data.dir <- "/your/path/here/DP4_00200_001/"
 
 fnames <- list.files(path = data.dir,
-                     pattern = '.h5',
+                     pattern = ".h5",
                      recursive = TRUE,
                      full.names = TRUE)
 
 # unselect gz files.
-fnames <- fnames[!grepl('.gz',fnames)]
+fnames <- fnames[!grepl(".gz", fnames)]
 
 fname.byfolder <- strsplit(fnames, split=".", fixed = TRUE)
-site.code  <- sapply(fname.byfolder,'[[',3)
+site.code  <- sapply(fname.byfolder, '[[', 3)
 
-# inspect site.code in the environment: is it a vector that with repeated "ONAQ"?
-
-fnames.tmp <- gsub(".h5",".calibrated.h5",fnames)
+# inspect site.code in the environment: is it a vector with repeated "ONAQ"?
+fnames.tmp <- gsub(".h5", ".calibrated.h5", fnames)
 fnames.spt <- strsplit(fnames.tmp, split = "/")
-fnames.out <- sapply(fnames.spt, '[[', 7)
+fnames.out <- sapply(fnames.spt, "[[", 7)
 
 # create new output directory
-outpaths   <- paste0(your_path,'/ONAQ/output/')
-sapply(unique(outpaths),dir.create,showWarnings=FALSE) # apply function used here to generalize in case you wanted to run all sites
+outpaths   <- paste0(your_path, "/ONAQ/output/")
+# apply function used here to generalize in case you wanted to run all sites
+sapply(unique(outpaths), dir.create, showWarnings=FALSE)
 
 # update fnames.out to include desired output paths.
-fnames.out <- paste0(outpaths,"/",fnames.out)
+fnames.out <- paste0(outpaths, "/", fnames.out)
 ```

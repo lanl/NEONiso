@@ -1,5 +1,8 @@
 # NEONiso 0.6.2
 
+* This will be the last release that has the *_by_month functions! They have
+deprecated for about a year, and will be removed before next release. Use
+calibrate_carbon (mature) or calibrate_water (experimental).
 * Exports get_Rstd, a helper function to return the heavy-to-light isotope
 ratio of the relevant international standard.
 * Allows use of the useFasttime argument in dependency neonUtilities::stackEddy, 

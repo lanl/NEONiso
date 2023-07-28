@@ -15,7 +15,7 @@
 #' @return Returns filtered vector.
 #'
 #' @importFrom stats median
-filter_median_Brock86 <- function(data, width = 7, threshold = 5) {
+filter_median_brock86 <- function(data, width = 7, threshold = 5) {
 
   # get rolling median of data.
   filt <- zoo::rollapply(data, width, median, na.rm = TRUE, fill = NA)
