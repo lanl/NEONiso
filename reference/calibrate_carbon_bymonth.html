@@ -3,7 +3,7 @@
 This function drives a workflow that reads in NEON carbon isotope data
 of atmospheric CO2, calibrates it to the VPDB scale, and (optionally)
 writes the calibrated data to a new HDF5 file. Two different approaches
-are possible: a) a calibration on 12CO2 and 13CO2 isotopologues independently,
+are possible: a) a calibration on 12CO2 and 13CO2 isotopologues separately,
 after Bowling et al. 2003 (Agr. For. Met.), or b) a direct calibration
 of d13C and CO2 values using linear regression. The vast majority of the time
 the results generated from either method are extremely similar to each other.
@@ -14,7 +14,7 @@ under most circumstances. We also found this to be the case for NEON data
 This function drives a workflow that reads in NEON carbon isotope data
 of atmospheric CO2, calibrates it to the VPDB scale, and (optionally)
 writes the calibrated data to a new HDF5 file. Two different approaches
-are possible: a) a calibration on 12CO2 and 13CO2 isotopologues independently,
+are possible: a) a calibration on 12CO2 and 13CO2 isotopologues separately,
 after Bowling et al. 2003 (Agr. For. Met.), or b) a direct calibration
 of d13C and CO2 values using linear regression. The vast majority of the time
 the results generated from either method are extremely similar to each other.
@@ -79,7 +79,7 @@ under most circumstances. We also found this to be the case for NEON data
 This function drives a workflow that reads in NEON carbon isotope data
 of atmospheric CO2, calibrates it to the VPDB scale, and (optionally)
 writes the calibrated data to a new HDF5 file. Two different approaches
-are possible: a) a calibration on 12CO2 and 13CO2 isotopologues independently,
+are possible: a) a calibration on 12CO2 and 13CO2 isotopologues separately,
 after Bowling et al. 2003 (Agr. For. Met.), or b) a direct calibration
 of d13C and CO2 values using linear regression. The vast majority of the time
 the results generated from either method are extremely similar to each other.
@@ -139,12 +139,14 @@ of the file? (default true)</p></dd>
 
 
 <dt>force_cal_to_end</dt>
-<dd><p>Extend last calibration to the end of the file? (default true)</p></dd>
+<dd><p>Extend last calibration to the end of the file?
+(default true)</p></dd>
 
 
 <dt>gap_fill_parameters</dt>
 <dd><p>Should function attempt to 'gap-fill' across a
-bad calibration by carrying the last known good calibration forward?
+bad calibration by carrying the last known good calibration
+forward?
 Implementation is fairly primitive currently, as it only carries
 the last known good calibration that's available forward rather
 than interpolating, etc. Default FALSE.</p></dd>
@@ -187,9 +189,9 @@ file containing calibrated carbon isotope values.</p>
     <p>The 'linreg' method simply takes measured and reference d13C and CO2 values
 and generates a transfer function between them using <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>. For the
 gain-and-offset method, d13C and CO2 values are converted to 12CO2 and 13CO2
-mole fractions. Gain and offset parameters are calculated for each isotopologue
-independently, and are analogous to regression slope and intercepts, but jointly
-correct for CO2 concentration dependence
+mole fractions. Gain and offset parameters are calculated for each
+isotopologue independently, and are analogous to regression slope
+and intercepts, but jointly correct for CO2 concentration dependence
 and place d13C values on the VPDB scale.
 The gain and offset parameters are defined by:</p>
 <p>$$G = (X_{2,ref}-X_{1,ref})/(X_{2,meas}-X_{1,meas})$$
@@ -208,7 +210,8 @@ problem with a valve in the manifold, etc.); the third criterion was adopted
 after visual inspection of data timeseries revealed that often the first
 standard measurement following an instrument issue had higher-than-expected
 error. This criterion clips clearly poor values. Selection of these criteria
-will become a function argument, and therefore customizable, in a future release.</p>
+will become a function argument, and therefore customizable,
+in a future release.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
@@ -218,7 +221,7 @@ will become a function argument, and therefore customizable, in a future release
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="va">fin</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata'</span>,</span></span>
-<span class="r-in"><span>         <span class="st">'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.20201020T211037Z.packed.h5'</span>,</span></span>
+<span class="r-in"><span><span class="st">'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.20201020T211037Z.packed.h5'</span>,</span></span>
 <span class="r-in"><span>         package <span class="op">=</span> <span class="st">'NEONiso'</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">calibrate_carbon_bymonth</span><span class="op">(</span>inname <span class="op">=</span> <span class="va">fin</span>, outname <span class="op">=</span> <span class="st">'out.h5'</span>,</span></span>
 <span class="r-in"><span>         site <span class="op">=</span> <span class="st">'ONAQ'</span>, write_to_file <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>

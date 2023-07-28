@@ -107,7 +107,10 @@ includes a function for downloading and managing a local archive of eddy
 covariance bundles: manage_local_EC_archive. For example, the following
 command will download all of the data for the ONAQ site:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/manage_local_EC_archive.html">manage_local_EC_archive</a></span><span class="op">(</span>file_dir <span class="op">=</span> <span class="st">"~/Desktop"</span>, get <span class="op">=</span> <span class="cn">TRUE</span>, unzip_files <span class="op">=</span> <span class="cn">TRUE</span>, sites <span class="op">=</span> <span class="st">"ONAQ"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/manage_local_EC_archive.html">manage_local_EC_archive</a></span><span class="op">(</span>file_dir <span class="op">=</span> <span class="st">"~/Desktop"</span>,</span>
+<span>                        get <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                        unzip_files <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                        sites <span class="op">=</span> <span class="st">"ONAQ"</span><span class="op">)</span></span></code></pre></div>
 <p>The sites argument can also be a vector of multiple sites you’d like
 to request, or “all” to pull data from all of the sites (note this will
 be &gt;100 GB and growing as of February 2021). The EC bundles are
@@ -131,7 +134,10 @@ inside of a for loop (or an apply statement), and call them for each
 file you would like to calibrate:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">fnames.out</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/calibrate_carbon_bymonth.html">calibrate_carbon_bymonth</a></span><span class="op">(</span><span class="va">fnames</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,<span class="va">fnames.out</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,site<span class="op">=</span><span class="va">site.code</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"Bowling_2003"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/calibrate_carbon_bymonth.html">calibrate_carbon_bymonth</a></span><span class="op">(</span><span class="va">fnames</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>                           <span class="va">fnames.out</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>                           site<span class="op">=</span><span class="va">site.code</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>                           method <span class="op">=</span> <span class="st">"Bowling_2003"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>Two different methods to calibrate are available: a) a ‘gain and
 offset’ regression using 12CO2 and 13CO2 mole fractions (method =
@@ -143,31 +149,31 @@ file names (fnames.out), and 3) 4 letter NEON site codes corresponding
 to each entry in input file names (fnames). An example of code to
 generate these three vectors is provided below:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data.dir</span> <span class="op">&lt;-</span> <span class="st">'/your/path/here/DP4_00200_001/'</span></span>
+<code class="sourceCode R"><span><span class="va">data.dir</span> <span class="op">&lt;-</span> <span class="st">"/your/path/here/DP4_00200_001/"</span></span>
 <span></span>
 <span><span class="va">fnames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">data.dir</span>,</span>
-<span>                     pattern <span class="op">=</span> <span class="st">'.h5'</span>,</span>
+<span>                     pattern <span class="op">=</span> <span class="st">".h5"</span>,</span>
 <span>                     recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                     full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># unselect gz files.</span></span>
-<span><span class="va">fnames</span> <span class="op">&lt;-</span> <span class="va">fnames</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'.gz'</span>,<span class="va">fnames</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">fnames</span> <span class="op">&lt;-</span> <span class="va">fnames</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">".gz"</span>, <span class="va">fnames</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span><span class="va">fname.byfolder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">fnames</span>, split<span class="op">=</span><span class="st">"."</span>, fixed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">site.code</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">fname.byfolder</span>,<span class="st">'[['</span>,<span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">site.code</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">fname.byfolder</span>, <span class="st">'[['</span>, <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># inspect site.code in the environment: is it a vector that with repeated "ONAQ"?</span></span>
-<span></span>
-<span><span class="va">fnames.tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">".h5"</span>,<span class="st">".calibrated.h5"</span>,<span class="va">fnames</span><span class="op">)</span></span>
+<span><span class="co"># inspect site.code in the environment: is it a vector with repeated "ONAQ"?</span></span>
+<span><span class="va">fnames.tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">".h5"</span>, <span class="st">".calibrated.h5"</span>, <span class="va">fnames</span><span class="op">)</span></span>
 <span><span class="va">fnames.spt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">fnames.tmp</span>, split <span class="op">=</span> <span class="st">"/"</span><span class="op">)</span></span>
-<span><span class="va">fnames.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">fnames.spt</span>, <span class="st">'[['</span>, <span class="fl">7</span><span class="op">)</span></span>
+<span><span class="va">fnames.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">fnames.spt</span>, <span class="st">"[["</span>, <span class="fl">7</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># create new output directory</span></span>
-<span><span class="va">outpaths</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">your_path</span>,<span class="st">'/ONAQ/output/'</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">outpaths</span><span class="op">)</span>,<span class="va">dir.create</span>,showWarnings<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> <span class="co"># apply function used here to generalize in case you wanted to run all sites</span></span>
+<span><span class="va">outpaths</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">your_path</span>, <span class="st">"/ONAQ/output/"</span><span class="op">)</span></span>
+<span><span class="co"># apply function used here to generalize in case you wanted to run all sites</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">outpaths</span><span class="op">)</span>, <span class="va">dir.create</span>, showWarnings<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># update fnames.out to include desired output paths.</span></span>
-<span><span class="va">fnames.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">outpaths</span>,<span class="st">"/"</span>,<span class="va">fnames.out</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">fnames.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">outpaths</span>, <span class="st">"/"</span>, <span class="va">fnames.out</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
