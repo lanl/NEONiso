@@ -18,9 +18,12 @@
 #' @importFrom utils packageVersion
 #' @importFrom magrittr %>%
 <<<<<<< HEAD
+<<<<<<< HEAD
 ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
 =======
 NULL
+=======
+>>>>>>> 7b0b29b (lintr updates)
 
 ingest_data <- function(inname, analyte, name_fix = TRUE) {
 >>>>>>> d4f3625 (continue linting project)
