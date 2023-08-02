@@ -70,7 +70,8 @@ and month.</p>
 <span>  unzip_files <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  trim <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  dry_run <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  sites <span class="op">=</span> <span class="st">"all"</span></span>
+<span>  sites <span class="op">=</span> <span class="st">"all"</span>,</span>
+<span>  release <span class="op">=</span> <span class="st">"RELEASE-2023"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -103,6 +104,12 @@ delete them? Default true to prevent unintended data loss.</p></dd>
 <dd><p>Which sites to retrieve data from? Default will be all sites
 with available data, but can specify a single site or a vector
 here.</p></dd>
+
+
+<dt>release</dt>
+<dd><p>Download data corresponding to a specific release? Defaults to
+"RELEASE-2023." To download all data, including provisional data,
+set to NULL.</p></dd>
 
 </dl></div>
     <div class="section level2">
