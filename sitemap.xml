@@ -103,9 +103,6 @@
     <loc>https://lanl.github.io/NEONiso/reference/extract_water_calibration_data.html</loc>
   </url>
   <url>
-    <loc>https://lanl.github.io/NEONiso/reference/filter_median_Brock86.html</loc>
-  </url>
-  <url>
     <loc>https://lanl.github.io/NEONiso/reference/fit_carbon_regression.html</loc>
   </url>
   <url>
@@ -116,6 +113,9 @@
   </url>
   <url>
     <loc>https://lanl.github.io/NEONiso/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://lanl.github.io/NEONiso/reference/ingest_data.html</loc>
   </url>
   <url>
     <loc>https://lanl.github.io/NEONiso/reference/loocv.html</loc>
