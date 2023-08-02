@@ -10,7 +10,8 @@ manage_local_EC_archive(
   unzip_files = TRUE,
   trim = FALSE,
   dry_run = TRUE,
-  sites = "all"
+  sites = "all",
+  release = "RELEASE-2023"
 )
 }
 \arguments{
@@ -30,6 +31,10 @@ delete them? Default true to prevent unintended data loss.}
 \item{sites}{Which sites to retrieve data from? Default will be all sites
 with available data, but can specify a single site or a vector
 here.}
+
+\item{release}{Download data corresponding to a specific release? Defaults to
+"RELEASE-2023." To download all data, including provisional data,
+set to NULL.}
 }
 \value{
 Returns nothing to the environment, but will download new NEON HDF5

@@ -71,8 +71,8 @@ ingest_data <- function(inname, analyte, name_fix = TRUE) {
 
     # split data into ambient and reference data frames.
     ambient <- data %>%
-      dplyr::filter(.data$verticalPosition %in%
-                    c("010", "020", "030", "040", "050", "060", "070", "080"))
+      dplyr::filter(.data$verticalPosition %in% c("010", "020", "030", "040",
+                                                  "050", "060", "070", "080"))
 
     # check how many heights are present in ambient.
     if (length(unique(ambient$verticalPosition)) < nheights) {
@@ -201,12 +201,12 @@ restructure_carbon_variables <- function(dataframe,
 
       output <- dataframe %>%
         dplyr::select("verticalPosition", "timeBgn", "timeEnd",
-                      dplyr::starts_with(paste0("data.isoCo2.",
-                                         varname,
-                                         "."))) %>%
-        dplyr::filter(!(.data$verticalPosition %in%
-                      c("010", "020", "030", "040",
-                      "050", "060", "070", "080"))) %>%
+                      tidyselect::starts_with(paste0("data.isoCo2.",
+                                                     varname,
+                                                     "."))) %>%
+        dplyr::filter(!(.data$verticalPosition %in% c("010", "020", "030",
+                                                      "040", "050", "060",
+                                                      "070", "080"))) %>%
         dplyr::rename(mean = paste0("data.isoCo2.", varname, ".mean"),
                       min  = paste0("data.isoCo2.", varname, ".min"),
                       max  = paste0("data.isoCo2.", varname, ".max"),
@@ -226,12 +226,12 @@ restructure_carbon_variables <- function(dataframe,
 
         output <- dataframe %>%
           dplyr::select("verticalPosition", "timeBgn", "timeEnd",
-                        dplyr::starts_with(paste0("qfqm.isoCo2.",
-                                                  varname,
-                                                  "."))) %>%
-          dplyr::filter(!(.data$verticalPosition %in%
-                        c("010", "020", "030", "040",
-                        "050", "060", "070", "080"))) %>%
+                        tidyselect::starts_with(paste0("qfqm.isoCo2.",
+                                                       varname,
+                                                       "."))) %>%
+          dplyr::filter(!(.data$verticalPosition %in% c("010", "020", "030",
+                                                        "040", "050", "060",
+                                                        "070", "080"))) %>%
           dplyr::rename(qfFinl = paste0("qfqm.isoCo2.", varname, ".qfFinl")) %>%
           dplyr::mutate(varname = varname)
 
@@ -243,12 +243,12 @@ restructure_carbon_variables <- function(dataframe,
 
         output <- dataframe %>%
           dplyr::select("verticalPosition", "timeBgn", "timeEnd",
-                        dplyr::starts_with(paste0("ucrt.isoCo2.",
-                                                  varname,
-                                                  "."))) %>%
-          dplyr::filter(!(.data$verticalPosition %in%
-                        c("010", "020", "030", "040",
-                        "050", "060", "070", "080"))) %>%
+                        tidyselect::starts_with(paste0("ucrt.isoCo2.",
+                                                       varname,
+                                                       "."))) %>%
+          dplyr::filter(!(.data$verticalPosition %in% c("010", "020", "030",
+                                                        "040", "050", "060",
+                                                        "070", "080"))) %>%
           dplyr::rename(mean = paste0("ucrt.isoCo2.", varname, ".mean"),
                         vari = paste0("ucrt.isoCo2.", varname, ".vari"),
                         se   = paste0("ucrt.isoCo2.", varname, ".se")) %>%
@@ -260,9 +260,11 @@ restructure_carbon_variables <- function(dataframe,
   } else if (mode == "ambient") {
     output <- dataframe %>%
       dplyr::select("verticalPosition", "timeBgn", "timeEnd",
-                    starts_with(paste0("data.isoCo2.", varname, "."))) %>%
-      dplyr::filter(!(.data$verticalPosition %in%
-                    c("co2Low", "co2Med", "co2High", "co2Arch"))) %>%
+                    tidyselect::starts_with(paste0("data.isoCo2.",
+                                                   varname,
+                                                   "."))) %>%
+      dplyr::filter(!(.data$verticalPosition %in% c("co2Low", "co2Med",
+                                                    "co2High", "co2Arch"))) %>%
       dplyr::rename(mean = paste0("data.isoCo2.", varname, ".mean"),
                     min  = paste0("data.isoCo2.", varname, ".min"),
                     max  = paste0("data.isoCo2.", varname, ".max"),
@@ -298,7 +300,7 @@ restructure_water_variables <- function(dataframe,
   if (!is.character(varname)) {
     stop("varname must be a string")
   } else if ((!is.data.frame(dataframe) & mode == "reference") |
-      (!is.list(dataframe) & mode == "ambient")) {
+             (!is.list(dataframe) & mode == "ambient")) {
     stop("dataframe argument must be a data.frame (reference mode) or list (ambient mode)")
   }
 
@@ -308,7 +310,8 @@ restructure_water_variables <- function(dataframe,
     output1 <- dataframe %>%
       dplyr::select("timeBgn", "timeEnd",
                     tidyselect::starts_with(paste0("data.isoH2o.",
-                                                   varname, "."))) %>%
+                                                   varname,
+                                                   "."))) %>%
       dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
                     min  = paste0("data.isoH2o.", varname, ".min"),
                     max  = paste0("data.isoH2o.", varname, ".max"),
@@ -353,8 +356,8 @@ restructure_water_variables <- function(dataframe,
       dplyr::select("verticalPosition", "timeBgn", "timeEnd",
                     tidyselect::starts_with(paste0("data.isoH2o.",
                                                    varname, "."))) %>%
-      dplyr::filter(!(.data$verticalPosition %in%
-                    c("co2Low", "co2Med", "co2High", "co2Arch"))) %>%
+      dplyr::filter(!(.data$verticalPosition %in% c("co2Low", "co2Med",
+                                                    "co2High", "co2Arch"))) %>%
       dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
                     min  = paste0("data.isoH2o.", varname, ".min"),
                     max  = paste0("data.isoH2o.", varname, ".max"),
@@ -550,7 +553,7 @@ restructure_ambient_data2 <- function(inpath, analyte) {
   if (analyte == "Co2") {
 
     # split first by height
-    #data_by_height <- base::split(data, factor(data$verticalPosition))
+    ## data_by_height <- base::split(data, factor(data$verticalPosition))
 
   } else if (analyte == "H2o") {
 

@@ -92,6 +92,9 @@ water_isotope_sites <- function() {
 #' @param sites Which sites to retrieve data from? Default will be all sites
 #'              with available data, but can specify a single site or a vector
 #'              here.
+#' @param release Download data corresponding to a specific release? Defaults to 
+#'              "RELEASE-2023." To download all data, including provisional data,
+#'              set to NULL.
 #' @export
 #'
 #' @return Returns nothing to the environment, but will download new NEON HDF5
@@ -104,7 +107,8 @@ manage_local_EC_archive <- function(file_dir,
                                     unzip_files = TRUE,
                                     trim = FALSE,
                                     dry_run = TRUE,
-                                    sites = "all") {
+                                    sites = "all",
+                                    release = "RELEASE-2023") {
 
   if (get == TRUE) {
 
@@ -141,11 +145,23 @@ manage_local_EC_archive <- function(file_dir,
       }
 
       # get a vector of site months available for site i
-      site_months <- unlist(available$data$siteCodes[[i]]$availableMonths)
+      if (!is.null(release)) {
+        releaseIndex <- unlist(available$data$siteCodes[[i]]$availableReleases)$release == release
+        site_months <- unlist(available$data$siteCodes[[i]]$availableReleases[[releaseIndex]]$availableMonths)
+      } else {
+        site_months <- unlist(available$data$siteCodes[[i]]$availableMonths)
+      }
 
       # okay, check to see if data folder exists for site, otherwise create.
-      ifelse(!dir.exists(paste(file_dir, site_name, sep = "/")),
-             dir.create(paste(file_dir, site_name, sep = "/")), FALSE)
+      if (!is.null(release)) {
+        ifelse(!dir.exists(paste(file_dir, release, site_name, sep = "/")),
+               dir.create(paste(file_dir, release, site_name, sep = "/"),
+                          recursive = TRUE), 
+               FALSE)
+      } else {
+        ifelse(!dir.exists(paste(file_dir, site_name, sep = "/")),
+               dir.create(paste(file_dir, site_name, sep = "/")), FALSE)
+      }
 
       # okay - now loop through months and get the data files.
       if (!is.null(length(site_months))) {
