@@ -14,9 +14,9 @@
 
 * No errors, warnings, or notes in GitHub Actions.
 
-* No errors, warnings, or notes on win-builder (devel). Win-builder release and oldrel
-provide a warning about a possibly invalid URL, but URLs are correct and are 
-just slow to redirect.
+* No errors, warnings, or notes on win-builder (devel). Win-builder oldrel
+provides a warning about a possibly invalid URL, but URLs are correct and are 
+just slow to redirect. Win-builder release 
 
 * R-hub / Windows Server 2022 / R-devel issues 1 error about a bioconductor
 dependency not being available, presumably due to a mismatch between R-devel

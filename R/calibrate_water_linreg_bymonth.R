@@ -289,7 +289,7 @@ calibrate_water_linreg_bymonth <- function(inname,
                                    paste0("/",
                                           site,
                                           "/dp01/data/isoH2o/calData"))
-
+  
   # write out dataset.
   rhdf5::h5writeDataset(obj = var_for_h5,
                                    h5loc = h2o_cal_outloc,
@@ -314,7 +314,9 @@ calibrate_water_linreg_bymonth <- function(inname,
                                       "/dp01/data/isoH2o/h2oLow_03m"))
 
   low <- rhdf5::h5read(inname,
-                       paste0("/", site, "/dp01/data/isoH2o/h2oLow_03m"))
+                       paste0("/",
+                              site,
+                              "/dp01/data/isoH2o/h2oLow_03m"))
 
   low <- calibrate_standards_water(out, low)
 
@@ -360,9 +362,9 @@ calibrate_water_linreg_bymonth <- function(inname,
 
   high_outloc <- rhdf5::H5Gopen(fid,
                                 paste0("/",
-                                      site,
-                                      "/dp01/data/isoH2o/h2oHigh_03m"))
-
+                                       site,
+                                       "/dp01/data/isoH2o/h2oHigh_03m"))
+  
   high <- rhdf5::h5read(inname,
                         paste0("/", site, "/dp01/data/isoH2o/h2oHigh_03m"))
 
