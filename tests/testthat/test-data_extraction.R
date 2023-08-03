@@ -6,7 +6,7 @@ fin <- system.file("extdata",
                    "NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.packed.h5",
                    package = 'NEONiso', mustWork = TRUE)
 # 1) for CO2:
-co2test <- ingest_data(fin, analyte = "Co2")
+co2test <- ingest_data(fin, analyte = "Co2", avg = 9)
 
 test_that("extract_carbon_calibration_data fails if incorrect list provided to function", {
   expect_error(extract_carbon_calibration_data(co2test$reference))

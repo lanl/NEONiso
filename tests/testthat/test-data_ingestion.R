@@ -14,7 +14,7 @@ test_that("ingest_data errors for H2o (TEMPORARY)", {
 })
 
 # 1) for CO2:
-co2test <- ingest_data(fin, analyte = "Co2")
+co2test <- ingest_data(fin, analyte = "Co2", avg = 9)
 
 # a) that a list is returned
 test_that("ingest_data returns a list for analyte='Co2'", {
@@ -92,8 +92,8 @@ fin3 <- system.file("extdata",
 # create list of files
 all_files <- c(fin1, fin2, fin3)
 
-test1 <- ingest_data(fin1, analyte = "Co2")
-test2 <- ingest_data(all_files, analyte = "Co2")
+test1 <- ingest_data(fin1, analyte = "Co2", avg = 9)
+test2 <- ingest_data(all_files, analyte = "Co2", avg = 9)
 
 test_that("stackEddy/ingest data works on multiple daily files", {
   # would expect number of rows to be larger in test2 than test 1:
