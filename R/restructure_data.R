@@ -11,13 +11,14 @@
 #'                 functions, but breaks old 'by_month()' functions. This
 #'                 parameter provides a necessary work around until these 
 #'                 functions are removed.
+#' @param avg The averaging interval to extract, in minutes.                
 #'
 #' @return List of data frames, taken from files specified in `inname`
 #' @export
 #'
 #' @importFrom stats setNames
 #' @importFrom utils packageVersion
-ingest_data <- function(inname, analyte, name_fix = TRUE) {
+ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
 
   # this function needs to:
   # 1. read in and stack variables.
@@ -37,18 +38,18 @@ ingest_data <- function(inname, analyte, name_fix = TRUE) {
 
     if (packageVersion("neonUtilities") >= "2.3.0") {
       data <- neonUtilities::stackEddy(inname,
-                                       avg = 9,
+                                       avg = avg,
                                        level = "dp01",
                                        var = "isoCo2",
                                        useFasttime = TRUE)[[1]]
     } else if (packageVersion("neonUtilities") >= "2.1.1" && packageVersion("neonUtilities") < "2.3.0") {
       data <- neonUtilities::stackEddy(inname,
-                                       avg = 9,
+                                       avg = avg,
                                        level = "dp01",
                                        var = "isoCo2")[[1]]
     } else {
       data <- neonUtilities::stackEddy(inname,
-                                       avg = 9,
+                                       avg = avg,
                                        level = "dp01")[[1]]
     }
 
@@ -137,20 +138,23 @@ ingest_data <- function(inname, analyte, name_fix = TRUE) {
   # could be used here though to validate in future version.
   # variable name has been removed in restructure_carbon_variables
   # - could move it back here to validate!
+  
+  #changing average period in numeric to characters, e.g. 9 to 09m
+  avgChar <- paste0("0", avg, "m")
 
   # get number of heights
   if (nrow(ambient) > 0) {
     heights <- unique(ambient$verticalPosition) # not that efficient, but needed
     names_vector <- vector()
     for (i in 1:length(heights)) {
-      names_vector[i] <- paste0("000_0", i, "0_09m")
+      names_vector[i] <- paste0("000_0", i, "0_", avgChar)
     }
     names(ambi_out) <- names_vector
   }
 
   if (name_fix) {
     # append _09m to refe_out....MAY CAUSE PROBLEMS FOR OTHER METHODS!!!!!!
-    names(refe_out) <- paste0(names(refe_out), "_09m")
+    names(refe_out) <- paste0(names(refe_out), "_", avgChar)
   }
 
   output <- list(ambi_out, refe_out, reference)
