@@ -17,17 +17,7 @@
 #' @importFrom stats setNames
 #' @importFrom utils packageVersion
 #' @importFrom magrittr %>%
-<<<<<<< HEAD
-<<<<<<< HEAD
 ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
-=======
-NULL
-=======
->>>>>>> 7b0b29b (lintr updates)
-
-ingest_data <- function(inname, analyte, name_fix = TRUE) {
->>>>>>> d4f3625 (continue linting project)
-
   # this function needs to:
   # 1. read in and stack variables.
   # 2. restructure them to have the same setup as output files.
