@@ -52,11 +52,11 @@ if(Para$Flow$Meth == "slct") {
   
   # user-customizeable access to input and output data directories
   Para$Flow$DirUsr <- c(
-    nd = "/eddy/data/iso/ONAQ",
+    nd = "/eddy/data/iso/KONZ",
     dd = "/eddy/data/tmp"
   )["nd"]
   # for a detailed description of all default workflow parameters see ?eddy4R.base::def.para.flow.ecte, section Overview of workflow parameters
-  Para$Flow$DateOut <- base::as.character(base::as.Date(base::as.character(20170917:20170917), format = "%Y%m%d"))[1:1]
+  Para$Flow$DateOut <- base::as.character(base::as.Date(base::as.character(20181128:20181128), format = "%Y%m%d"))[1:1]
   Para$Flow$DirInp <- base::paste0("/home/", base::Sys.getenv("USER"), Para$Flow$DirUsr, "/inp")
   Para$Flow$DirMnt <- base::paste0("/home/", Sys.getenv("USER"), "/eddy")
   Para$Flow$DirOut <- base::paste0("/home/", Sys.getenv("USER"), Para$Flow$DirUsr, "/out")
@@ -69,7 +69,7 @@ if(Para$Flow$Meth == "slct") {
   Para$Flow$OutSub <- NA
   Para$Flow$PrdIncrCalc <- 1
   #Para$Flow$PrdIncrPf <- 1
-  Para$Flow$PrdWndwCalc <- 7
+  Para$Flow$PrdWndwCalc <- 1
   #Para$Flow$PrdWndwPf <- 1
   Para$Flow$Read <- c("hdf5", "ff")[1]
   Para$Flow$VersDp <- NA
@@ -192,7 +192,7 @@ Para$Flow$Loc <- eddy4R.base::def.para.site(FileInp = Para$FileName$EcseExpd)$Lo
 
 #re-name files to be able to run neonUtilities::stackEddy
 for (i in Para$Flow$DateCalc){
-  file.rename(base::paste0(Para$Flow$DirInp,"/",Para$Flow$FileOutBase, Para$Flow$Loc, "_", i, ".", "expanded.h5"),
+  file.rename(base::paste0(Para$Flow$DirInp,"/",Para$Flow$FileOutBase, Para$Flow$Loc, ".", i, ".", "expanded.h5"),
               base::paste0(Para$Flow$DirInp,"/","ecse.dp04.", Para$Flow$Loc, ".", i, ".", "expanded.h5"))
 }
 
@@ -205,7 +205,7 @@ nameFile <- list.files(path = Para$Flow$DirInp,
 
 #correction processing
 #correcting data using Bowling_2003 method
-outData01 <- calibrate_carbon(nameFile,nameOutFileOut,site=Para$Flow$Loc, method = "Bowling_2003", write_to_file = FALSE)
+outData01 <- calibrate_carbon(nameFile,nameOutFileOut,site=Para$Flow$Loc, method = "Bowling_2003", write_to_file = FALSE, avg = 6)
 #if the modified calibrate_carbon() has not imported yet, run calibrate_carbon() line by line by using varibles setting at the end of this work flow
 #Then run;
 #outData01 <- outData
@@ -213,7 +213,7 @@ outData01 <- calibrate_carbon(nameFile,nameOutFileOut,site=Para$Flow$Loc, method
 
 #correcting data using Linear regression (linreg) method
 #NOTE: values of min, max output from linreg method are the corrected values not raw values
-outData02 <- calibrate_carbon(nameFile,nameOutFileOut,site=Para$Flow$Loc, method = "linreg", write_to_file = FALSE)
+outData02 <- calibrate_carbon(nameFile,nameOutFileOut,site=Para$Flow$Loc, method = "linreg", write_to_file = FALSE, avg = 6)
 #if the modified calibrate_carbon() has not imported yet, run calibrate_carbon() line by line by using varibles setting at the end of this work flow
 #Then run;
 #outData02 <- outData
@@ -349,7 +349,7 @@ data <- list()
 #revert expanded file names back to original
 for (i in Para$Flow$DateCalc){
   file.rename(base::paste0(Para$Flow$DirInp,"/","ecse.dp04.", Para$Flow$Loc, ".", i, ".", "expanded.h5"),
-              base::paste0(Para$Flow$DirInp,"/",Para$Flow$FileOutBase, Para$Flow$Loc, "_", i, ".", "expanded.h5"))
+              base::paste0(Para$Flow$DirInp,"/",Para$Flow$FileOutBase, Para$Flow$Loc, ".", i, ".", "expanded.h5"))
 }
 
 #extract data from expanded hdf5 file for the center day
@@ -493,7 +493,7 @@ write_to_file <- FALSE
 remove_known_bad_months <- TRUE
 plot_regression_data <- FALSE
 plot_directory <- NULL
-
+avg <- 6
 
 
 
