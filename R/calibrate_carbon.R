@@ -93,12 +93,8 @@
 #' @param plot_regression_data Default false; this is useful for diagnostics.
 #' @param plot_directory Only used if plot_regression_data is TRUE, but specify
 #'        where to write out diagnostic plot of regression data.
-<<<<<<< HEAD
-#' @param avg The averaging interval to extract, in minutes.       
-=======
 #' @param avg The averaging interval to extract, in minutes. Default 9, but will
 #'        change to 6 eventually.     
->>>>>>> 60716e0 (changing hard coding of averaging interval to parameters)
 #'
 #' @return Returns nothing to the environment, but creates a new output HDF5
 #'         file containing calibrated carbon isotope values.
@@ -147,7 +143,7 @@ calibrate_carbon         <- function(inname,
   # Extract reference data from input HDF5 file.
   #-----------------------------------------------------------
   ciso <- ingest_data(inname, analyte = "Co2", avg = avg)
-  
+ 
   # extract the data we need from ciso list
   refe <-  extract_carbon_calibration_data(ciso$refe_stacked)
 

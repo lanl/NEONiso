@@ -18,6 +18,7 @@
 #' @importFrom utils packageVersion
 #' @importFrom magrittr %>%
 ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
+
   # this function needs to:
   # 1. read in and stack variables.
   # 2. restructure them to have the same setup as output files.
