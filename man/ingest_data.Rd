@@ -4,7 +4,7 @@
 \alias{ingest_data}
 \title{ingest_data}
 \usage{
-ingest_data(inname, analyte, name_fix = TRUE)
+ingest_data(inname, analyte, name_fix = TRUE, avg)
 }
 \arguments{
 \item{inname}{A file (or list of files) to extract data from for calibration.}
@@ -15,6 +15,8 @@ ingest_data(inname, analyte, name_fix = TRUE)
 functions, but breaks old 'by_month()' functions. This
 parameter provides a necessary work around until these
 functions are removed.}
+
+\item{avg}{The averaging interval to extract, in minutes.}
 }
 \value{
 List of data frames, taken from files specified in \code{inname}

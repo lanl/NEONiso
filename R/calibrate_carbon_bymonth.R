@@ -115,7 +115,7 @@ calibrate_carbon_bymonth <- function(inname,
   # Extract reference data from input HDF5 file.
   #-----------------------------------------------------------
   # pull all carbon isotope data into a list.
-  ciso <- ingest_data(inname, analyte = "Co2", name_fix = FALSE)
+  ciso <- ingest_data(inname, analyte = "Co2", name_fix = FALSE, avg = 9)
 
   # extract the data we need from ciso list
   refe <- extract_carbon_calibration_data(ciso$refe_stacked)

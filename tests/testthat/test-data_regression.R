@@ -8,7 +8,7 @@
 fin <- system.file("extdata",
                    "NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.packed.h5",
                    package = "NEONiso", mustWork = TRUE)
-co2test <- ingest_data(fin, analyte = "Co2")
+co2test <- ingest_data(fin, analyte = "Co2", avg = 9)
 co2data <- NEONiso:::extract_carbon_calibration_data(co2test$refe_stacked)
 calDf_B03 <- NEONiso:::fit_carbon_regression(co2data,
                                              method = "Bowling_2003",
