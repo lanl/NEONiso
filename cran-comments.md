@@ -1,5 +1,6 @@
 ## Test environments
-* local R installation (macOS 13.4.1c): R 4.3.1
+* local R installation (x86_64, macOS 13.5): R 4.3.1
+* local R installation (arm64/M1 Max, macOS 13.5): R 4.3.1
 * GitHub Actions (ubuntu-latest): devel, release, oldrel
 * GitHub Actions (windows-latest): release
 * GitHub Actions (macOS-latest): release
@@ -14,12 +15,12 @@
 
 * No errors, warnings, or notes in GitHub Actions.
 
-* No errors, warnings, or notes on win-builder (devel). Win-builder oldrel
+* No errors, warnings, or notes on win-builder (devel, release). Win-builder oldrel
 provides a warning about a possibly invalid URL, but URLs are correct and are 
-just slow to redirect. Win-builder release 
+just slow to redirect.
 
 * R-hub / Windows Server 2022 / R-devel issues 1 error about a bioconductor
-dependency not being available, presumably due to a mismatch between R-devel
+dependency not being available (rhdf5), presumably due to a mismatch between R-devel
 and the bioconductor release schedule. R-hub / ubuntu-20.04.1 LTS / R-release
 throws a note about HTML tidy not being available, which appears to be an issue
 with the testing platform and not the package. R-hub / fedora / R-devel indicates
