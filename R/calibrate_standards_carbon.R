@@ -53,7 +53,7 @@ calibrate_standards_carbon <- function(cal_df,
       for (i in 2:nrow(ref_df$dlta13CCo2)) {
         # note: starts at 2 because periods are defined as
         # extending to the end time of standard measurement i
-        # to the endtime of stanard measurement i + 1.
+        # to the endtime of standard measurement i + 1.
 
         # determine which row calibration point is in.
         int <- lubridate::interval(cal_df$timeBgn, cal_df$timeEnd)
@@ -80,10 +80,11 @@ calibrate_standards_carbon <- function(cal_df,
 
           if (!(length(cal_id) == 0)) {
             # calibrate isotopologues using appropriate cal_id
-            uncal_12C <- ref_df$rtioMoleDryCo2$mean[i] * (1 - f) /
-              (1 + R_vpdb * (1 + ref_df$dlta13CCo2$mean[i] / 1000))
+            uncal_12C <- calculate_12CO2(ref_df$rtioMoleDryCo2$mean[i],
+                                         ref_df$dlta13CCo2$mean[i])
 
-            uncal_13C <- ref_df$rtioMoleDryCo2$mean[i] * (1 - f) - uncal_12C
+            uncal_13C <- calculate_13CO2(ref_df$rtioMoleDryCo2$mean[i],
+                                         ref_df$dlta13CCo2$mean[i])
 
             cal_12C <- cal_df$gain12C[cal_id] * uncal_12C +
               cal_df$offset12C[cal_id]
@@ -94,8 +95,8 @@ calibrate_standards_carbon <- function(cal_df,
                 !is.na(cal_df$r2_13C[cal_id]) &
                 cal_df$r2_12C[cal_id] > r2_thres &
                 cal_df$r2_13C[cal_id] > r2_thres) {
-              ref_df$dlta13CCo2$mean_cal[i] <- round(1000 * (cal_13C /
-                                                     cal_12C / R_vpdb - 1), 3)
+              ref_df$dlta13CCo2$mean_cal[i] <- R_to_delta(cal_13C / cal_12C,
+                                                          "carbon")
               ref_df$rtioMoleDryCo2$mean_cal[i] <- (cal_13C + cal_12C) /
                                                       (1 - f)
 
