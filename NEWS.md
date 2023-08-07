@@ -3,6 +3,9 @@
 * This will be the last release that has the *_by_month functions! They have
 deprecated for about a year, and will be removed before next release. Use
 calibrate_carbon (mature) or calibrate_water (experimental).
+* Adds an argument to manage_local_EC_archive that allows checking out
+specific releases (e.g., RELEASE-2023) instead of release + provisional. To check
+out all data, set to NULL.
 * Exports get_Rstd, a helper function to return the heavy-to-light isotope
 ratio of the relevant international standard.
 * Allows use of the useFasttime argument in dependency neonUtilities::stackEddy, 

@@ -109,7 +109,12 @@ manage_local_EC_archive <- function(file_dir,
                                     dry_run = TRUE,
                                     sites = "all",
                                     release = "RELEASE-2023") {
-
+  if (!is.null(release)) {
+    file_dir2 <- paste(file_dir, release, sep = "/")
+  } else {
+    file_dir2 <- file_dir
+  }
+  
   if (get == TRUE) {
 
     # script to pull down EC data files.
@@ -146,23 +151,22 @@ manage_local_EC_archive <- function(file_dir,
 
       # get a vector of site months available for site i
       if (!is.null(release)) {
-        releaseIndex <- unlist(available$data$siteCodes[[i]]$availableReleases)$release == release
+        releaseIndex <- which(
+                          sapply(available$data$siteCodes[[i]]$availableReleases,
+                                "[[",
+                                1) == release)
         site_months <- unlist(available$data$siteCodes[[i]]$availableReleases[[releaseIndex]]$availableMonths)
       } else {
         site_months <- unlist(available$data$siteCodes[[i]]$availableMonths)
       }
 
       # okay, check to see if data folder exists for site, otherwise create.
-      if (!is.null(release)) {
-        ifelse(!dir.exists(paste(file_dir, release, site_name, sep = "/")),
-               dir.create(paste(file_dir, release, site_name, sep = "/"),
-                          recursive = TRUE), 
-               FALSE)
-      } else {
-        ifelse(!dir.exists(paste(file_dir, site_name, sep = "/")),
-               dir.create(paste(file_dir, site_name, sep = "/")), FALSE)
-      }
-
+      
+      ifelse(!dir.exists(paste(file_dir2, site_name, sep = "/")),
+             dir.create(paste(file_dir2, site_name, sep = "/"),
+                        recursive = TRUE), 
+             FALSE)
+      
       # okay - now loop through months and get the data files.
       if (!is.null(length(site_months))) {
 
@@ -192,11 +196,11 @@ manage_local_EC_archive <- function(file_dir,
             if (!length(dl_names[k]) == 0) {
               if (!is.na(dl_names[k])) {
                 # check to see if file exists in folder
-                if (file.exists(paste0(file_dir,
+                if (file.exists(paste0(file_dir2, "/",
                                        site_name,
                                        "/",
                                        dl_names[k])) |
-                    file.exists(paste0(file_dir,
+                    file.exists(paste0(file_dir2, "/",
                                        site_name,
                                        "/",
                                        substr(dl_names[k],
@@ -210,7 +214,7 @@ manage_local_EC_archive <- function(file_dir,
                 } else { #doesn't exist, so download it.
                   print(paste("Downloading", dl_names[k]))
                   httr::GET(url = dl_urls[k],
-                            httr::write_disk(paste0(file_dir,
+                            httr::write_disk(paste0(file_dir2, "/",
                                                     site_name,
                                                     "/",
                                                     dl_names[k]),
@@ -231,7 +235,7 @@ manage_local_EC_archive <- function(file_dir,
   # unzip files if requested.
   if (get == TRUE & unzip_files == TRUE) {
     # list the files in file_dir
-    files <- list.files(path = paste0(file_dir, "/"),
+    files <- list.files(path = paste0(file_dir2, "/"),
                         pattern = "*.gz",
                         recursive = TRUE,
                         full.names = TRUE)
@@ -245,7 +249,7 @@ manage_local_EC_archive <- function(file_dir,
 
   if (trim == TRUE) {
     # list the files in file_dir
-    files <- list.files(path = file_dir,
+    files <- list.files(path = file_dir2,
                         pattern = "*.h5",
                         recursive = TRUE,
                         full.names = TRUE)
