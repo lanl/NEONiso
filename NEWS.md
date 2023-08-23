@@ -1,3 +1,7 @@
+# NEONiso 0.6.3
+
+* Small patch to address change requested by CRAN. Issue with package documentation introduced in ROxygen 7.0.0: https://github.com/r-lib/roxygen2/issues/1491. 
+
 # NEONiso 0.6.2
 
 * This will be the last release that has the *_by_month functions! They have
