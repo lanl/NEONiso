@@ -78,7 +78,7 @@ if (run_test1 | run_test2 | run_test3 | run_test5) {
 }
 
 if (run_test4 | run_test6) {
-  csites <- c(NEONiso:::terrestrial_core_sites(), NEONiso:::terrestrial_relocatable_sites())
+  csites <- c(NEONiso:::terrestrial_core_sites(), NEONiso:::terrestrial_gradient_sites())
   #csites <- "ONAQ"
 }
 

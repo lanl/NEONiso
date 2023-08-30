@@ -26,27 +26,28 @@ terrestrial_core_sites <- function() {
   return(core_sites)
 }
 
-#' terrestrial_relocatable_sites
+#' terrestrial_gradient_sites
 #'
-#' @return A vector listing NEON core terrestrial sites.
+#' @return A vector listing NEON gradient terrestrial sites.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @export
 #' @examples
-#' terrestrial_relocatable_sites()
+#' terrestrial_gradient_sites()
 
-terrestrial_relocatable_sites <- function() {
+terrestrial_gradient_sites <- function() {
 
   # relocatable sites as of 190523.
+  # renamed to gradient sites. function updated 230830.
 
-  reloc_sites <- c("ABBY", "BARR", "BART", "BLAN", "DCFS", "DEJU",
+  grad_sites <- c("ABBY", "BARR", "BART", "BLAN", "DCFS", "DEJU",
                    "DELA", "DSNY", "GRSM", "HEAL", "JERC", "JORN",
                    "KONA", "LAJA", "LENO", "MLBS", "MOAB", "NOGP",
                    "OAES", "RMNP", "SERC", "SOAP", "STEI", "STER",
                    "TEAK", "TREE", "UKFS")
 
-  return(reloc_sites)
+  return(grad_sites)
 
 }
 
@@ -123,7 +124,7 @@ manage_local_EC_archive <- function(file_dir,
 
     # make copy of site list available to this function
     csites <- terrestrial_core_sites()
-    rsites <- terrestrial_relocatable_sites()
+    gsites <- terrestrial_gradient_sites()
 
     # see what sites have data
     data_request <- httr::GET(paste0(neon_api_address, data_product))
@@ -137,10 +138,10 @@ manage_local_EC_archive <- function(file_dir,
       # get site name
       site_name <- available$data$siteCodes[[i]]$siteCode
 
-      # check to see if site [i] is a core/relocatable site
-      if (!(site_name %in% csites | site_name %in% rsites)) {
+      # check to see if site [i] is a core/gradient site
+      if (!(site_name %in% csites | site_name %in% gsites)) {
         print(paste("Site name", site_name,
-                    "is not a core or relocatable site...skipping..."))
+                    "is not a core or gradient site...skipping..."))
         next
       } else if (sites == "all" | site_name %in% sites) {
         print(paste("Checking site:", site_name))
