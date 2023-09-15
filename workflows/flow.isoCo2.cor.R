@@ -30,6 +30,8 @@
 #     adjusted workflow to be able to run a gold file
 #   Natchaya Pingintha-Durden (2023-08-31)
 #     updated new input and output file name base
+#   Natchaya Pingintha-Durden (2023-09-15)
+#     added minimum observation (min_nobs) parameter
 ##############################################################################################
 # clean workspace
 # rm(list=ls())
@@ -122,18 +124,18 @@ if(Para$Flow$Meth == "slct") {
   
   # user-customizeable access to input and output data directories
   Para$Flow$DirUsr <- c(
-    nd = "/eddy/data/iso/BONA",
+    nd = "/eddy/data/iso/ABBY",
     dd = "/eddy/data/tmp"
   )["nd"]
   # for a detailed description of all default workflow parameters see ?eddy4R.base::def.para.flow.ecte, section Overview of workflow parameters
-  Para$Flow$DateOut <- base::as.character(base::as.Date(base::as.character(20200104:20200104), format = "%Y%m%d"))[1:1]
+  Para$Flow$DateOut <- base::as.character(base::as.Date(base::as.character(20220506:20220506), format = "%Y%m%d"))[1:1]
   Para$Flow$DirInp <- base::paste0("/home/", base::Sys.getenv("USER"), Para$Flow$DirUsr, "/inp")
   Para$Flow$DirMnt <- base::paste0("/home/", Sys.getenv("USER"), "/eddy")
   Para$Flow$DirOut <- base::paste0("/home/", Sys.getenv("USER"), Para$Flow$DirUsr, "/out")
   Para$Flow$DirTmp <- base::paste0("/home/", Sys.getenv("USER"), "/eddy/tmp")
   Para$Flow$DirWrk <- NA
   Para$Flow$FileInp <- base::dir(Para$Flow$DirInp, pattern = "*.h5")
-  Para$Flow$FileOutBase <- c("NEON.D19.BONA.IP4.00200.001.ecse")
+  Para$Flow$FileOutBase <- c("NEON.D16.ABBY.IP4.00200.001.ecse")
   Para$Flow$NameDataExt <- NA
   Para$Flow$OutMeth <- c("hdf5", "diag")[1]
   Para$Flow$OutSub <- NA
@@ -236,7 +238,7 @@ nameFile <- list.files(path = Para$Flow$DirInp,
 
 #correction processing
 #correcting data using Bowling_2003 method
-outData01 <- NEONiso::calibrate_carbon(inname = nameFile, site = Para$Flow$Loc, method = "Bowling_2003", write_to_file = FALSE, avg = 6, min_nobs)
+outData01 <- NEONiso::calibrate_carbon(inname = nameFile, site = Para$Flow$Loc, method = "Bowling_2003", write_to_file = FALSE, avg = 6, min_nobs = 130)
 #if the modified calibrate_carbon() has not imported yet, run calibrate_carbon() line by line by using varibles setting at the end of this work flow
 #Then run;
 #outData01 <- outData
@@ -244,7 +246,7 @@ outData01 <- NEONiso::calibrate_carbon(inname = nameFile, site = Para$Flow$Loc, 
 
 #correcting data using Linear regression (linreg) method
 #NOTE: values of min, max output from linreg method are the corrected values not raw values
-outData02 <- NEONiso::calibrate_carbon(inname = nameFile, site=Para$Flow$Loc, method = "linreg", write_to_file = FALSE, avg = 6)
+outData02 <- NEONiso::calibrate_carbon(inname = nameFile, site=Para$Flow$Loc, method = "linreg", write_to_file = FALSE, avg = 6, min_nobs = 130)
 #if the modified calibrate_carbon() has not imported yet, run calibrate_carbon() line by line by using varibles setting at the end of this work flow
 #Then run;
 #outData02 <- outData

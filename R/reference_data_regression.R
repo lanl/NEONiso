@@ -54,6 +54,7 @@ estimate_calibration_error <- function(formula, data) {
 #' @param plot_dir If plot_regression_data is true, where should the
 #'        plots be saved?
 #' @param site Needed for regression plots.
+#' @param min_nobs Minimum number of high-frequency observations to define a peak. 
 #'
 #' @return Returns a data.frame of calibration parameters. If
 #'        `method == "Bowling_2003"`, then data.frame includes
@@ -68,7 +69,8 @@ estimate_calibration_error <- function(formula, data) {
 fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                                   plot_regression_data = FALSE,
                                   plot_dir = "/dev/null",
-                                  site) {
+                                  site,
+                                  min_nobs = NA) {
 
   # First, identify year/month combination and then select data.
   yrmn <- paste(lubridate::year(ref_data$timeBgn)[1],
@@ -79,7 +81,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
   #---------------------------------------------------------------
   # Select which validation data to carry through to calibration
   #---------------------------------------------------------------
-  ref_data <- select_daily_reference_data(ref_data, analyte = "co2")
+  ref_data <- select_daily_reference_data(ref_data, analyte = "co2", min_nobs = min_nobs)
 
   if (method == "Bowling_2003") {
 
