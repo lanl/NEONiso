@@ -10,7 +10,8 @@ fit_carbon_regression(
   calibration_half_width,
   plot_regression_data = FALSE,
   plot_dir = "/dev/null",
-  site
+  site,
+  min_nobs = NA
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ the regression? Useful for debugging.}
 plots be saved?}
 
 \item{site}{Needed for regression plots.}
+
+\item{min_nobs}{Minimum number of high-frequency observations to define a peak.}
 }
 \value{
 Returns a data.frame of calibration parameters. If
