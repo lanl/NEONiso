@@ -3,14 +3,18 @@
 # need to add some tests to validate output data, as there are clearly some issues
 # remaining with calibration - trying to figure out why
 
-fin <- system.file('extdata',
-                   'NEON.D12.YELL.DP4.00200.001.nsae.2020-11.basic.packed.h5',
-                   package = 'NEONiso', mustWork = TRUE)
+fin <- system.file("extdata",
+                   "NEON.D12.YELL.DP4.00200.001.nsae.2020-11.basic.packed.h5",
+                   package = "NEONiso", mustWork = TRUE)
 
-co2test <- NEONiso:::ingest_data(fin, analyte = 'Co2', avg = 9)
+co2test <- NEONiso:::ingest_data(fin, analyte = "Co2", avg = 9)
 co2data <- NEONiso:::extract_carbon_calibration_data(co2test$refe_stacked)
-calDf_B03 <- NEONiso:::fit_carbon_regression(co2data, method = "Bowling_2003", calibration_half_width = 2)
-calDf_LR <- NEONiso:::fit_carbon_regression(co2data, method = "linreg", calibration_half_width = 2)
+calDf_B03 <- NEONiso:::fit_carbon_regression(co2data,
+                                             method = "Bowling_2003",
+                                             calibration_half_width = 2)
+calDf_LR <- NEONiso:::fit_carbon_regression(co2data,
+                                            method = "linreg",
+                                            calibration_half_width = 2)
 
 ciso_subset <- co2test$ambient
 
@@ -37,8 +41,6 @@ test_that("calibrated ambient co2 mixing ratios in B03 are within a plausible ra
   expect_lt(max(ciso_subset_cal$`000_010_09m`$rtioMoleDryCo2$mean_cal, na.rm = TRUE), 1500)
   expect_gt(min(ciso_subset_cal$`000_010_09m`$rtioMoleDryCo2$mean_cal, na.rm = TRUE), 300)
 })
-
-
 
 ciso_subset_cal <- lapply(names(ciso_subset),
                           function(x) {

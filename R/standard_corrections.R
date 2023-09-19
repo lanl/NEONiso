@@ -40,7 +40,7 @@ swap_standard_isotoperatios <- function(std_frame, dxs_thres = 500) {
 
 #' correct_carbon_ref_cval
 #'
-#' This ugly function is present out of necessity, and will 
+#' This ugly function is present out of necessity, and will
 #' only exist for as long as it is necessary. It is an internal
 #' correction within the NEONiso calibration routines that is
 #' required as there are some mismatches between the 'true'
@@ -164,7 +164,7 @@ correct_carbon_ref_output <- function(std_list,
   }
 
   # strip off time indices
-  carb_red <- carb_red[carb_red$site == site & 
+  carb_red <- carb_red[carb_red$site == site &
                        carb_red$refGas == substr(refGas, 1, nchar(refGas) - 4), ]
 
   # check to see if site is in carb$site, otherwise, we can skip.

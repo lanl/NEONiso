@@ -336,7 +336,7 @@ write_carbon_ambient_data <- function(outname, site, amb_data_list) {
 #' @param calDf Calibration data frame -
 #'              this is the output from fit_carbon_regression
 #'
-#' @return Nothing to the environment, but writes calibrated 
+#' @return Nothing to the environment, but writes calibrated
 #'         reference data to hdf5 file.
 #'
 write_carbon_reference_data <- function(inname, outname, site, calDf) {

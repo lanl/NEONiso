@@ -56,7 +56,7 @@ test_that("calibrate_ambient_carbon_Bowling2003 returns a list",{
 test_that("calibrate_ambient_carbon_Bowling2003 returns correct variables", {
   skip_on_cran()
   vars <- c("dlta13CCo2", "pres", "presEnvHut", "rhEnvHut",
-            "rtioMoleDry12CCo2", "rtioMoleDry13CCo2", "rtioMoleDryCo2", 
+            "rtioMoleDry12CCo2", "rtioMoleDry13CCo2", "rtioMoleDryCo2",
             "rtioMoleDryH2o", "rtioMoleWet12CCo2", "rtioMoleWet13CCo2",
             "rtioMoleWetCo2", "rtioMoleWetH2o",
             "rtioMoleWetH2oEnvHut", "temp", "tempEnvHut")
@@ -73,10 +73,10 @@ test_that("calibrated d13C values have been added to calibrate_ambient_cabron_Bo
 # test carbon - linreg ambient calibration
 temp <- calibrate_ambient_carbon_linreg(co2test$ambient$`000_010_09m`,
                                              calDf_LR,
-                                             site = 'ONAQ')
+                                             site = "ONAQ")
 temp_gf <- calibrate_ambient_carbon_linreg(co2test$ambient$`000_010_09m`,
                                 calDf_LR,
-                                site = 'ONAQ',
+                                site = "ONAQ",
                                 gap_fill_parameters = TRUE)
 
 test_that("calibrate_ambient_carbon_linreg returns a list",{
@@ -111,14 +111,14 @@ test_that("calibrated d13C values have been added to calibrate_ambient_cabron_li
 wiso_ref <- neonUtilities::stackEddy(fin, level = "dp01", avg = 3)
 
 # extract standards data.
-high <- subset(wiso_ref[["ONAQ"]], 
+high <- subset(wiso_ref[["ONAQ"]],
                wiso_ref[["ONAQ"]]$verticalPosition == "h2oHigh")
-med  <- subset(wiso_ref[["ONAQ"]], 
+med  <- subset(wiso_ref[["ONAQ"]],
                wiso_ref[["ONAQ"]]$verticalPosition == "h2oMed")
-low  <- subset(wiso_ref[["ONAQ"]], 
+low  <- subset(wiso_ref[["ONAQ"]],
                wiso_ref[["ONAQ"]]$verticalPosition == "h2oLow")
 
-# restructure standards data.  
+# restructure standards data.
 high_rs <- extract_water_calibration_data(high,
                                           standard = "high",
                                           method = "by_site")
@@ -146,7 +146,7 @@ high_rs$etime <- convert_NEONhdf5_to_POSIXct_time(high_rs$etime)
 # Ensure same number of measurements for each standard
 #--------------------------------------------------------------
 # add group ids using run length encoding based on time differences.
-thres_hours <- as.difftime("04:00:00", # assume any time difference 
+thres_hours <- as.difftime("04:00:00", # assume any time difference
                            format = "%H:%M:%S", # > 4 hours is a new reference measurement
                            units = "mins")
 
@@ -188,7 +188,7 @@ test_that("fit_water_regression returns dataframe with 8 columns", {
                                     calibration_half_width = 14,
                                     slope_tolerance = 9999,
                                     r2_thres = 0.9)), 8)
-  
+
   expect_true(is.data.frame(fit_water_regression(stds,
                                                  calibration_half_width = 14,
                                                  slope_tolerance = 9999,

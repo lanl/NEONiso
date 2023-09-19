@@ -68,7 +68,7 @@ fnames <- list.files(path = data.dir,
 fnames <- fnames[!grepl(".gz", fnames)]
 
 fname.byfolder <- strsplit(fnames, split=".", fixed = TRUE)
-site.code  <- sapply(fname.byfolder, '[[', 3)
+site.code  <- sapply(fname.byfolder, "[[", 3)
 
 # inspect site.code in the environment: is it a vector with repeated "ONAQ"?
 fnames.tmp <- gsub(".h5", ".calibrated.h5", fnames)

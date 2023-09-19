@@ -24,11 +24,11 @@ test_that("extract_carbon_calibration_data output has correct structure", {
 # 2) for H2O:
 wiso_ref <- neonUtilities::stackEddy(fin, level = "dp01", avg = 3)
 
-high <- subset(wiso_ref[["ONAQ"]], 
+high <- subset(wiso_ref[["ONAQ"]],
                wiso_ref[["ONAQ"]]$verticalPosition == "h2oHigh")
-med  <- subset(wiso_ref[["ONAQ"]], 
+med  <- subset(wiso_ref[["ONAQ"]],
                wiso_ref[["ONAQ"]]$verticalPosition == "h2oMed")
-low  <- subset(wiso_ref[["ONAQ"]], 
+low  <- subset(wiso_ref[["ONAQ"]],
                wiso_ref[["ONAQ"]]$verticalPosition == "h2oLow")
 
 test_that("extract_water_calibration_data returns 16 columns for by_site method", {

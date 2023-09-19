@@ -95,8 +95,8 @@
 #'        where to write out diagnostic plot of regression data.
 #' @param avg The averaging interval to extract, in minutes. Default 9, but will
 #'        change to 6 eventually.
-#' @param min_nobs Minimum number of high-frequency observations to define a peak.       
-#'     
+#' @param min_nobs Minimum number of high-frequency observations to define a peak.
+#'
 #'
 #' @return Returns nothing to the environment, but creates a new output HDF5
 #'         file containing calibrated carbon isotope values.
@@ -112,7 +112,7 @@
 #'          site = 'ONAQ', write_to_file = FALSE)
 #' calibrate_carbon_bymonth(inname = fin, outname = 'out.h5',
 #'          site = 'ONAQ', method = 'linreg', write_to_file = FALSE)}
-#' 
+#'
 calibrate_carbon         <- function(inname,
                                      outname,
                                      site,
@@ -130,11 +130,11 @@ calibrate_carbon         <- function(inname,
                                      plot_directory = NULL,
                                      avg = 9,
                                      min_nobs = NA) {
-  
+
   if (remove_known_bad_months) {
     if (site == "UNDE") {
       inname <- inname[!grepl("2019-05|2019-06|2019-07|2019-08|2019-09",
-                      inname)]
+                              inname)]
     } else if (site == "TEAK") {
       inname <- inname[!grepl("2018-08|2018-09", inname)]
     } else if (site == "SRER") {
@@ -146,7 +146,7 @@ calibrate_carbon         <- function(inname,
   # Extract reference data from input HDF5 file.
   #-----------------------------------------------------------
   ciso <- ingest_data(inname, analyte = "Co2", avg = avg)
- 
+
   # extract the data we need from ciso list
   refe <-  extract_carbon_calibration_data(ciso$refe_stacked)
 
@@ -154,7 +154,7 @@ calibrate_carbon         <- function(inname,
   if (correct_refData == TRUE) {
 
     # do some work to correct the reference data frame
-    refe <- correct_carbon_ref_cval(refe,site)
+    refe <- correct_carbon_ref_cval(refe, site)
 
     tmp_names <- names(ciso$reference)
 

@@ -35,13 +35,13 @@ get_Rstd <- function(element) {
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param R_values A vector of isotope ratios (e.g., R values).
-#' @param element Which element to return delta values - 
+#' @param element Which element to return delta values -
 #'        carbon, oxygen, or hydrogen.
 #'
 #' @return Vector of isotope ratios in delta notation.
 #'
 #' @export
-#' @examples 
+#' @examples
 #' R_to_delta(R_values = 2005.20e-6, element = 'oxygen') # returns 0.
 R_to_delta <- function(R_values, element) {
 

@@ -92,7 +92,7 @@ water_isotope_sites <- function() {
 #' @param sites Which sites to retrieve data from? Default will be all sites
 #'              with available data, but can specify a single site or a vector
 #'              here.
-#' @param release Download data corresponding to a specific release? Defaults to 
+#' @param release Download data corresponding to a specific release? Defaults to
 #'              "RELEASE-2023." To download all data, including provisional data,
 #'              set to NULL.
 #' @export
@@ -114,7 +114,7 @@ manage_local_EC_archive <- function(file_dir,
   } else {
     file_dir2 <- file_dir
   }
-  
+
   if (get == TRUE) {
 
     # script to pull down EC data files.
@@ -161,12 +161,12 @@ manage_local_EC_archive <- function(file_dir,
       }
 
       # okay, check to see if data folder exists for site, otherwise create.
-      
+
       ifelse(!dir.exists(paste(file_dir2, site_name, sep = "/")),
              dir.create(paste(file_dir2, site_name, sep = "/"),
-                        recursive = TRUE), 
+                        recursive = TRUE),
              FALSE)
-      
+
       # okay - now loop through months and get the data files.
       if (!is.null(length(site_months))) {
 

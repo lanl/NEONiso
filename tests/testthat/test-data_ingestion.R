@@ -28,7 +28,7 @@ test_that("ingest_data returns list with correct sublist names", {
 
 # test restructure_carbon_variables function
 rest_raw <- neonUtilities::stackEddy(fin, avg = 9, level = "dp01")[[1]] %>%
-  dplyr::select("verticalPosition", "timeBgn", 
+  dplyr::select("verticalPosition", "timeBgn",
                 "timeEnd", tidyselect::contains("isoCo2"))
 
 rest_raw <- rest_raw[rowSums(is.na(rest_raw)) < 145, ] # Needed to remove merge error where times are slightly different between h2o and co2.
@@ -38,7 +38,7 @@ test_that("restructure_carbon_variables errors when invalid mode provided", {
                                             "dlta13CCo2",
                                             mode = "cheese",
                                             group = "data"))
-  expect_silent(restructure_carbon_variables(rest_raw, 
+  expect_silent(restructure_carbon_variables(rest_raw,
                                              "dlta13CCo2",
                                              mode = "reference",
                                              group = "data"))

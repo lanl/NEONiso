@@ -47,14 +47,15 @@ estimate_calibration_error <- function(formula, data) {
 #' @param calibration_half_width Determines the period (in days)
 #'        from which reference data are selected (period
 #'        is 2*calibration_half_width).
-#' @param ref_data Reference data.frame from which to estimate 
+#' @param ref_data Reference data.frame from which to estimate
 #'        calibration parameters.
 #' @param plot_regression_data True or false - should we plot the data used in
 #'        the regression? Useful for debugging.
 #' @param plot_dir If plot_regression_data is true, where should the
 #'        plots be saved?
 #' @param site Needed for regression plots.
-#' @param min_nobs Minimum number of high-frequency observations to define a peak. 
+#' @param min_nobs Minimum number of high-frequency observations
+#'                 to define a peak.
 #'
 #' @return Returns a data.frame of calibration parameters. If
 #'        `method == "Bowling_2003"`, then data.frame includes
@@ -199,7 +200,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
           out$cvloo_12C[i] <- loocv(tmpmod12C)
           out$cvloo_13C[i] <- loocv(tmpmod13C)
 
-          # get cv5 values  
+          # get cv5 values
           tmp <- stats::formula(conc12CCO2_ref ~ conc12CCO2_obs)
           cv12C <- estimate_calibration_error(tmp, cal_subset)
           tmp <- stats::formula(conc13CCO2_ref ~ conc13CCO2_obs)
@@ -237,7 +238,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 
       # re-order columns to ensure that they are consistent across methods
       out <- out[, c("timeBgn", "timeEnd",
-                     "gain12C", "offset12C", "r2_12C", 
+                     "gain12C", "offset12C", "r2_12C",
                      "cvloo_12C", "cv5mae_12C", "cv5rmse_12C",
                      "gain13C", "offset13C", "r2_13C",
                      "cvloo_13C", "cv5mae_13C", "cv5rmse_13C")]
@@ -389,7 +390,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
     }
   }
 
-  # ensure that not all dates are missing...narrowly defined here to 
+  # ensure that not all dates are missing...narrowly defined here to
   # be if out only has 1 row (should be the only case where this happens!)
   if (nrow(out) == 1) {
     if (is.na(out$timeBgn)) {
@@ -418,14 +419,14 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 #'        from 1 by slope_tolerance.
 #' @param r2_thres What is the minimum r2 value permitted in a 'useful'
 #'        calibration relationship.
-#' 
+#'
 #' @return Returns a data.frame of calibration parameters.
 #'        Output data.frame includes slope, intercept, and r^2 values
 #'        for d13C and CO2 values.
 #'
 #' @importFrom stats coef lm
 #' @importFrom magrittr %>%
-#' 
+#'
 fit_water_regression <- function(stds,
                                  calibration_half_width,
                                  slope_tolerance,

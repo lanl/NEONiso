@@ -34,7 +34,8 @@ plots be saved?}
 
 \item{site}{Needed for regression plots.}
 
-\item{min_nobs}{Minimum number of high-frequency observations to define a peak.}
+\item{min_nobs}{Minimum number of high-frequency observations
+to define a peak.}
 }
 \value{
 Returns a data.frame of calibration parameters. If

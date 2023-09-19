@@ -9,7 +9,7 @@
 #'                 functions, but breaks old 'by_month()' functions. This
 #'                 parameter provides a necessary work around until these
 #'                 functions are removed.
-#' @param avg The averaging interval to extract, in minutes.                
+#' @param avg The averaging interval to extract, in minutes.
 #'
 #' @return List of data frames, taken from files specified in `inname`
 #' @export
@@ -54,7 +54,7 @@ ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
     }
 
     # filter data and remove rows that are all NaNs:
-    data <- data %>% 
+    data <- data %>%
       dplyr::select("verticalPosition", "timeBgn", "timeEnd",
                     tidyselect::contains("isoCo2"))
 
@@ -150,7 +150,7 @@ ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
   # could be used here though to validate in future version.
   # variable name has been removed in restructure_carbon_variables
   # - could move it back here to validate!
-  
+
   #changing average period in numeric to characters, e.g. 9 to 09m
   avgChar <- paste0("0", avg, "m")
 
