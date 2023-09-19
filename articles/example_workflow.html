@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NEONiso</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -160,7 +160,7 @@ generate these three vectors is provided below:</p>
 <span><span class="va">fnames</span> <span class="op">&lt;-</span> <span class="va">fnames</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">".gz"</span>, <span class="va">fnames</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span><span class="va">fname.byfolder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">fnames</span>, split<span class="op">=</span><span class="st">"."</span>, fixed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">site.code</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">fname.byfolder</span>, <span class="st">'[['</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">site.code</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">fname.byfolder</span>, <span class="st">"[["</span>, <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># inspect site.code in the environment: is it a vector with repeated "ONAQ"?</span></span>
 <span><span class="va">fnames.tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">".h5"</span>, <span class="st">".calibrated.h5"</span>, <span class="va">fnames</span><span class="op">)</span></span>
