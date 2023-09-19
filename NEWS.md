@@ -1,3 +1,10 @@
+# NEONiso 0.7.0.9000
+
+* calibrate_carbon_bymonth and calibrate_water_bymonth have been removed. Use
+calibrate_carbon and calibrate_water instead.
+* terrestrial_relocatable_sites() has been renamed terrestrial_gradient_sites()
+to comply with a similar change made by NEON.
+
 # NEONiso 0.6.3
 
 * Small patch to address change requested by CRAN. Issue with package documentation introduced in ROxygen 7.0.0: https://github.com/r-lib/roxygen2/issues/1491. 

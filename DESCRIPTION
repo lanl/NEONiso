@@ -36,7 +36,6 @@ Imports:
     tidyselect,
     data.table,
     rlang,
-    lifecycle,
     caret,
     ggplot2,
     gridExtra
@@ -44,6 +43,7 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
+    lifecycle,
     fasttime
 VignetteBuilder: knitr
 Language: en-US
