@@ -1,6 +1,6 @@
 ## Test environments
-* local R installation (x86_64, macOS 13.5): R 4.3.1
-* local R installation (arm64/M1 Max, macOS 13.5): R 4.3.1
+* local R installation (x86_64, macOS 13.5.2): R 4.3.1
+* local R installation (arm64/M1 Max, macOS 13.5.2): R 4.3.1
 * GitHub Actions (ubuntu-latest): devel, release, oldrel
 * GitHub Actions (windows-latest): release
 * GitHub Actions (macOS-latest): release
