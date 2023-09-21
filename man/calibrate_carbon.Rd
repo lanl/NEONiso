@@ -20,7 +20,8 @@ calibrate_carbon(
   remove_known_bad_months = TRUE,
   plot_regression_data = FALSE,
   plot_directory = NULL,
-  avg = 9
+  avg = 9,
+  min_nobs = NA
 )
 }
 \arguments{
@@ -82,6 +83,8 @@ where to write out diagnostic plot of regression data.}
 
 \item{avg}{The averaging interval to extract, in minutes. Default 9, but will
 change to 6 eventually.}
+
+\item{min_nobs}{Minimum number of high-frequency observations to define a peak.}
 }
 \value{
 Returns nothing to the environment, but creates a new output HDF5
