@@ -9,7 +9,7 @@
 #'                 functions, but breaks old 'by_month()' functions. This
 #'                 parameter provides a necessary work around until these
 #'                 functions are removed.
-#' @param avg The averaging interval to extract, in minutes.                
+#' @param avg The averaging interval to extract, in minutes.
 #'
 #' @return List of data frames, taken from files specified in `inname`
 #' @export
@@ -48,13 +48,11 @@ ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
                                        level = "dp01",
                                        var = "isoCo2")[[1]]
     } else {
-      data <- neonUtilities::stackEddy(inname,
-                                       avg = avg,
-                                       level = "dp01")[[1]]
+      stop("NEONiso >= 0.7.0 requires neonUtilities >= 2.1.1")
     }
 
     # filter data and remove rows that are all NaNs:
-    data <- data %>% 
+    data <- data %>%
       dplyr::select("verticalPosition", "timeBgn", "timeEnd",
                     tidyselect::contains("isoCo2"))
 
@@ -99,6 +97,76 @@ ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
                     c("co2Low", "co2Med", "co2High"))
 
   } else if (analyte == "H2o") {
+    
+    # stack data available for a given site into a single timeseries.
+    if (packageVersion("neonUtilities") >= "2.3.0") {
+      data9 <- neonUtilities::stackEddy(inname,
+                                       level = "dp01",
+                                       var = "isoH2o",
+                                       avg = 9,
+                                       useFasttime = TRUE)[[1]]
+      data3 <- neonUtilities::stackEddy(inname,
+                                        level = "dp01",
+                                        var = "isoH2o",
+                                        avg = 3,
+                                        useFasttime = TRUE)[[1]]
+    } else if (packageVersion("neonUtilities") >= "2.1.1" &&
+               packageVersion("neonUtilities") < "2.3.0") {
+      data9 <- neonUtilities::stackEddy(inname,
+                                       level = "dp01",
+                                       var = "isoH2o",
+                                       avg = 9)[[1]]
+      data3 <- neonUtilities::stackEddy(inname,
+                                        level = "dp01",
+                                        var = "isoH2o",
+                                        avg = 3)[[1]]
+    } else {
+      stop("NEONiso >= 0.7.0 requires neonUtilities >= 2.1.1")
+    }
+  
+    # filter data and remove rows that are all NaNs:
+    data9 <- data9 %>%
+      dplyr::select("verticalPosition", "timeBgn", "timeEnd",
+                    tidyselect::contains("isoH2o"))
+    
+    # stack required variables.
+    ambToStack <- c("dlta18OH2o", "dlta2HH2o", "pres", "presEnvHut", "rhEnvHut",
+                    "rtioMoleDryH2o", "rtioMoleWetH2o", "rtioMoleWetH2oEnvHut",
+                    "temp", "tempEnvHut")
+    
+    refToStack <- base::sort(base::append(ambToStack,
+                                          c("dlta18OH2oRefe",
+                                            "dlta2HH2oRefe")))
+
+    # split data into ambient and reference data frames.
+    ambient <- data9 %>%
+      dplyr::filter(.data$verticalPosition %in% c("010", "020", "030", "040",
+                                                  "050", "060", "070", "080"))
+
+    # check how many heights are present in ambient.
+    if (length(unique(ambient$verticalPosition)) < nheights) {
+      print("Height missing, attempting to resolve:")
+      
+      # determine which height is missing:
+      hgts_present <- seq(from = 1, to = nheights, by = 1) %in%
+        (as.numeric(unique(ambient$verticalPosition)) / 10)
+      
+      hgts_absentl <- !hgts_present
+      
+      hgts_absent <- seq(from = 1, to = nheights, by = 1)[hgts_absentl]
+      
+      # add a row to data, and then change verticalPosition to missing heights
+      for (i in hgts_absent) {
+        target_row <- nrow(ambient) + 1
+        ambient[target_row, ] <- NA
+        ambient[target_row, "verticalPosition"] <- paste0("0", i, "0")
+      }
+    }
+    
+    reference <- data3 %>%
+      dplyr::filter(.data$verticalPosition %in%
+                      c("h2oLow", "h2oMed", "h2oHigh"))
+
     stop("ingest_data does not work yet for H2o.")
   }
 
@@ -112,10 +180,11 @@ ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
                 function(y) {
                   lapply(ambToStack,
                         function(x) {
-                          restructure_carbon_variables(y,
-                                                       varname = x,
-                                                       mode = "ambient",
-                                                       group = "data")
+                          restructure_variables(y,
+                                                varname = x,
+                                                mode = "ambient",
+                                                group = "data",
+                                                species = "Co2")
                                     })
                             })
 
@@ -136,10 +205,11 @@ ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
                     function(y) {
                       lapply(refToStack,
                             function(x) {
-                              restructure_carbon_variables(y,
-                                                           varname = x,
-                                                           mode = "reference",
-                                                           group = "data")
+                              restructure_variables(y,
+                                                    varname = x,
+                                                    mode = "reference",
+                                                    group = "data",
+                                                    species = "Co2")
                                         })
                                 }) # replace the of the variables.
 
@@ -150,7 +220,7 @@ ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
   # could be used here though to validate in future version.
   # variable name has been removed in restructure_carbon_variables
   # - could move it back here to validate!
-  
+
   #changing average period in numeric to characters, e.g. 9 to 09m
   avgChar <- paste0("0", avg, "m")
 
@@ -176,6 +246,47 @@ ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
 }
 
 #-----------------------------------------
+# restructure_variables
+#'
+#' Wrapper function around restructure_carbon_variables
+#' and restructure_water_variables.
+#' 
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
+#' 
+#' @param varname Which variable are we applying this function to? There's
+#'                a list of ~10 common ones to write to the hdf5 file.
+#' @param dataframe Input data.frame, from `neonUtilities::stackEddy`
+#' @param mode Are we fixing a reference data frame or an ambient data frame?
+#' @param group Data, ucrt, or qfqm?
+#' @param species Set to 'Co2' for carbon; 'H2o' for water
+#'
+#' @return data.frame formatted for output to hdf5 file.
+#' @export
+#'
+#' @importFrom magrittr %>%
+#' 
+restructure_variables <- function(dataframe,
+                                  varname,
+                                  mode,
+                                  group,
+                                  species) {
+  
+  species <- validate_analyte(species)
+  if (species == 'Co2') {
+    output <- restructure_carbon_variables(dataframe,
+                                           varname,
+                                           mode,
+                                           group)
+  } else {
+    output <- restructure_water_variables(dataframe,
+                                           varname,
+                                           mode)
+  }
+  return(output)
+  
+}
+
+#-----------------------------------------
 #' restructure_carbon_variables
 #'
 #' @param varname Which variable are we applying this function to? There's
@@ -185,7 +296,6 @@ ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
 #' @param group Data, ucrt, or qfqm?
 #'
 #' @return data.frame formatted for output to hdf5 file.
-#' @export
 #'
 #' @importFrom magrittr %>%
 
@@ -293,7 +403,6 @@ restructure_carbon_variables <- function(dataframe,
 #' @param mode Are we fixing a reference data frame or an ambient data frame?
 #'
 #' @return data.frame formatted for output to hdf5 file.
-#' @export
 #'
 restructure_water_variables <- function(dataframe,
                                         varname,

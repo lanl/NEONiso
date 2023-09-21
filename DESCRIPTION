@@ -1,7 +1,7 @@
 Package: NEONiso
 Type: Package
 Title: Tools to Calibrate and Work with NEON Atmospheric Isotope Data
-Version: 0.6.3
+Version: 0.7.0.9000
 Authors@R: c(person("Rich", "Fiorella", email = "rfiorella@lanl.gov",
                 role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0824-4777")))
 Maintainer: Rich Fiorella <rfiorella@lanl.gov>
@@ -29,7 +29,7 @@ Imports:
     zoo,
     httr,
     lubridate,
-    neonUtilities (>= 2.0.1),
+    neonUtilities (>= 2.1.1),
     magrittr,
     rhdf5 (>= 2.33.7),
     R.utils,
