@@ -17,7 +17,10 @@
 #' @importFrom stats setNames
 #' @importFrom utils packageVersion
 #' @importFrom magrittr %>%
-ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
+ingest_data <- function(inname,
+                        analyte,
+                        name_fix = TRUE,
+                        avg = NA) {
 
   # this function needs to:
   # 1. read in and stack variables.
@@ -167,7 +170,6 @@ ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
       dplyr::filter(.data$verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh"))
 
-    stop("ingest_data does not work yet for H2o.")
   }
 
   ambi_by_height <- base::split(ambient, factor(ambient$verticalPosition))
@@ -176,22 +178,38 @@ ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
   #-------------------------
   # RESTRUCTURE AMBIENT
   # feed into restructure carbon variables:
-  ambi_out <- lapply(ambi_by_height,
-                function(y) {
-                  lapply(ambToStack,
-                        function(x) {
-                          restructure_variables(y,
-                                                varname = x,
-                                                mode = "ambient",
-                                                group = "data",
-                                                species = "Co2")
-                                    })
-                            })
+  if (analyte == "Co2") {
+    ambi_out <- lapply(ambi_by_height,
+                       function(y) {
+                         lapply(ambToStack,
+                                function(x) {
+                                  restructure_variables(y,
+                                                        varname = x,
+                                                        mode = "ambient",
+                                                        group = "data",
+                                                        species = "Co2")
+                                })
+                       })
+  } else {
+    ambi_out <- lapply(ambi_by_height,
+                       function(y) {
+                         lapply(ambToStack,
+                                function(x) {
+                                  restructure_variables(y,
+                                                        varname = x,
+                                                        mode = "ambient",
+                                                        group = "data",
+                                                        species = "H2o")
+                                })
+                       })
+  }
+  
 
   # loop through again to rename data frames.
   ambi_out <- lapply(ambi_out, setNames, ambToStack)
 
   # check length, and error out if a height has been dropped.
+  #================== THIS SHOULD BE MOVED TO UNIT TEST
   test_var <- identical(as.integer(nheights), length(ambi_out))
 
   if (!test_var) {
@@ -201,17 +219,32 @@ ingest_data <- function(inname, analyte, name_fix = TRUE, avg) {
   #-------------------------
   # RESTRUCTURE REFERENCE
   # feed into restructure carbon variables:
-  refe_out <- lapply(refe_by_height,
-                    function(y) {
-                      lapply(refToStack,
-                            function(x) {
-                              restructure_variables(y,
-                                                    varname = x,
-                                                    mode = "reference",
-                                                    group = "data",
-                                                    species = "Co2")
-                                        })
-                                }) # replace the of the variables.
+  if (analyte == "Co2") {
+    refe_out <- lapply(refe_by_height,
+                       function(y) {
+                         lapply(refToStack,
+                                function(x) {
+                                  restructure_variables(y,
+                                                        varname = x,
+                                                        mode = "reference",
+                                                        group = "data",
+                                                        species = "Co2")
+                                })
+                       }) # replace the of the variables.  
+  } else {
+    refe_out <- lapply(refe_by_height,
+                       function(y) {
+                         lapply(refToStack,
+                                function(x) {
+                                  restructure_variables(y,
+                                                        varname = x,
+                                                        mode = "reference",
+                                                        group = "data",
+                                                        species = "H2o")
+                                })
+                       }) # replace the of the variables.
+  }
+  
 
   # loop through again to rename data frames.
   refe_out <- lapply(refe_out, setNames, refToStack)
@@ -272,7 +305,7 @@ restructure_variables <- function(dataframe,
                                   species) {
   
   species <- validate_analyte(species)
-  if (species == 'Co2') {
+  if (species == "Co2") {
     output <- restructure_carbon_variables(dataframe,
                                            varname,
                                            mode,

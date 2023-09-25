@@ -13,19 +13,27 @@ test_that("ingest_data errors for H2o (TEMPORARY)", {
   expect_error(ingest_data(fin, analyte = "H2o"))
 })
 
-# 1) for CO2:
+# a) get data
 co2test <- ingest_data(fin, analyte = "Co2", avg = 9)
+h2otest <- ingest_data(fin, analyte = "H2o")
 
-# a) that a list is returned
+# b) that a list is returned
 test_that("ingest_data returns a list for analyte='Co2'", {
   expect_type(co2test, "list")
 })
-
-# b) that list contains appropriate list of lists
-test_that("ingest_data returns list with correct sublist names", {
-  expect_equal(names(co2test), c("ambient", "reference", "refe_stacked"))
+test_that("ingest_data returns a list for analyte='H2o'", {
+  expect_type(h2otest, "list")
 })
 
+# c) that list contains appropriate list of lists
+test_that("ingest_data returns list with correct sublist names - co2", {
+  expect_equal(names(co2test), c("ambient", "reference", "refe_stacked"))
+})
+test_that("ingest_data returns list with correct sublist names - h2o", {
+  expect_equal(names(h2otest), c("ambient", "reference", "refe_stacked"))
+})
+
+#-----------------------------------------------------------------------
 # test restructure_carbon_variables function
 rest_raw <- neonUtilities::stackEddy(fin, avg = 9, level = "dp01")[[1]] %>%
   dplyr::select("verticalPosition", "timeBgn", 
