@@ -30,9 +30,11 @@
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param site Four-letter NEON code for site being processed.
-#' @param inpath Directory path to input (monthly) NEON HDF5 files.
-#' @param outpath Directory path to save output data file.
-#'                (For now, 1 per site).
+#' @param inname Input file(s) that are to be calibrated. If a single file is
+#'               given, output will be a single file per site per month. If a
+#'               list of files corresponding to a timeseries at a given site
+#'               is provided, will calibrate the whole time series.
+#' @param outname Name of the output file. (character)
 #' @param force_cal_to_beginning Extend first calibration to
 #'                               the beginning of the file?
 #' @param force_cal_to_end Extend last calibration to the end of the file?
@@ -48,7 +50,13 @@
 #' @param slope_tolerance How different from 1 should we allow
 #'             'passing' regression slopes to be? Experimental parameter,
 #'              off by default (e.g., default slope parameter = 9999)
-#'
+#' @param correct_refData There are a few instances where the reference d18O 
+#'              and d2H values may have been switched, causing very anomalous
+#'              d-excess values. If TRUE, implement a switch that corrects this
+#'              issue.
+#' @param write_to_file Write calibrated ambient data to file?
+#'              (Mostly used for testing)
+#'              
 #' @return nothing to the workspace, but creates a new output file of
 #'         calibrated water isotope data.
 #'
@@ -59,198 +67,128 @@
 #' @import neonUtilities
 #' @importFrom data.table rleidv
 #' @importFrom utils packageVersion
-calibrate_water       <- function(inpath,
-                                  outpath,
+calibrate_water       <- function(inname,
+                                  outname,
                                   site,
                                   calibration_half_width = 14, # days
                                   filter_data = TRUE,
                                   force_cal_to_beginning = FALSE,
                                   force_cal_to_end = FALSE,
                                   r2_thres = 0.95,
-                                  slope_tolerance = 9999) {
+                                  slope_tolerance = 9999,
+                                  correct_refData = TRUE,
+                                  write_to_file = TRUE) {
 
-  # stack data available for a given site into a single timeseries.
-  if (packageVersion("neonUtilities") >= "2.3.0") {
-    wiso_ref <- neonUtilities::stackEddy(inpath,
-                                         level = "dp01",
-                                         avg = 3,
-                                         var = "isoH2o",
-                                         useFasttime = TRUE)
-    wiso_amb <- neonUtilities::stackEddy(inpath,
-                                         level = "dp01",
-                                         avg = 9,
-                                         var = "isoH2o",
-                                         useFasttime = TRUE)
-  } else if (packageVersion("neonUtilities") >= "2.1.1" &&
-            packageVersion("neonUtilities" < "2.3.0")) {
-    wiso_ref <- neonUtilities::stackEddy(inpath,
-                                         level = "dp01",
-                                         avg = 3,
-                                         var = "isoH2o")
-    wiso_amb <- neonUtilities::stackEddy(inpath,
-                                         level = "dp01",
-                                         avg = 9,
-                                         var = "isoH2o")
-  } else {
-    wiso_ref <- neonUtilities::stackEddy(inpath, level = "dp01", avg = 3)
-    wiso_amb <- neonUtilities::stackEddy(inpath, level = "dp01", avg = 9)
+  
+  wiso <- ingest_data(inname, analyte = "H2o", amb_avg = 9, ref_avg = 3)
+  
+  refe <- extract_water_calibration_data(wiso$refe_stacked)
+  
+  if (correct_refData) {
+    # add fix for NEON standard swap.
+    refe <- swap_standard_isotoperatios(refe)
   }
-
-  # extract standards data.
-  high <- subset(wiso_ref[[site]],
-                 wiso_ref[[site]]$verticalPosition == "h2oHigh")
-  med  <- subset(wiso_ref[[site]],
-                 wiso_ref[[site]]$verticalPosition == "h2oMed")
-  low  <- subset(wiso_ref[[site]],
-                 wiso_ref[[site]]$verticalPosition == "h2oLow")
-
-  # restructure standards data.
-  high_rs <- extract_water_calibration_data(high,
-                                            standard = "high",
-                                            method = "by_site")
-  med_rs  <- extract_water_calibration_data(med,
-                                            standard = "med",
-                                            method = "by_site")
-  low_rs  <- extract_water_calibration_data(low,
-                                            standard = "low",
-                                            method = "by_site")
-
-  # add fix for NEON standard swap.
-  low_rs <- swap_standard_isotoperatios(low_rs)
-  med_rs <- swap_standard_isotoperatios(med_rs)
-  high_rs <- swap_standard_isotoperatios(high_rs)
-
-  # convert times in these data.frames (btime and etime) to posixct
-  low_rs$btime <- convert_NEONhdf5_to_POSIXct_time(low_rs$btime)
-  low_rs$etime <- convert_NEONhdf5_to_POSIXct_time(low_rs$etime)
-  med_rs$btime <- convert_NEONhdf5_to_POSIXct_time(med_rs$btime)
-  med_rs$etime <- convert_NEONhdf5_to_POSIXct_time(med_rs$etime)
-  high_rs$btime <- convert_NEONhdf5_to_POSIXct_time(high_rs$btime)
-  high_rs$etime <- convert_NEONhdf5_to_POSIXct_time(high_rs$etime)
+  
+  cal_df <- fit_water_regression(ref_data = refe,
+                                 calibration_half_width = calibration_half_width,
+                                 slope_tolerance = slope_tolerance,
+                                 r2_thres = r2_thres, 
+                                 site = site)
 
   #--------------------------------------------------------------
   # Ensure same number of measurements for each standard
   #--------------------------------------------------------------
   # add group ids using run length encoding based on time differences.
-  thres_hours <- as.difftime("04:00:00", # assume any time difference
-                             format = "%H:%M:%S", # > 4 hours is a new
-                             units = "mins") # reference measurement
-
-  high_rs <- high_rs %>%
-    dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
-  high_rs$periods <- data.table::rleidv(high_rs, "time_diff") %/% 2
-
-  med_rs <- med_rs %>%
-    dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
-  med_rs$periods <- data.table::rleidv(med_rs, "time_diff") %/% 2
-
-  low_rs <- low_rs %>%
-    dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
-  low_rs$periods <- data.table::rleidv(low_rs, "time_diff") %/% 2
-
-  high_rs <- high_rs %>%
-    dplyr::group_by(.data$periods) %>%
-    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
-    dplyr::slice_tail(n = 3) %>%
-    dplyr::ungroup()
-
-  med_rs <- med_rs %>%
-    dplyr::group_by(.data$periods) %>%
-    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
-    dplyr::slice_tail(n = 3) %>%
-    dplyr::ungroup()
-
-  low_rs <- low_rs %>%
-    dplyr::group_by(.data$periods) %>%
-    filter(.data$d18O_meas_n > 30 | is.na(.data$d18O_meas_n)) %>%
-    dplyr::slice_tail(n = 3) %>%
-    dplyr::ungroup()
+  if (FALSE) {
+    # this may need to be moved to the ingest data chain...
+    thres_hours <- as.difftime("04:00:00", # assume any time difference
+                               format = "%H:%M:%S", # > 4 hours is a new
+                               units = "mins") # reference measurement
+    
+    high_rs <- high_rs %>%
+      dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
+    high_rs$periods <- data.table::rleidv(high_rs, "time_diff") %/% 2
+    
+    med_rs <- med_rs %>%
+      dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
+    med_rs$periods <- data.table::rleidv(med_rs, "time_diff") %/% 2
+    
+    low_rs <- low_rs %>%
+      dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
+    low_rs$periods <- data.table::rleidv(low_rs, "time_diff") %/% 2
+    
+  }
 
   #=======================================================================
   # apply calibration routines
   #=======================================================================
-  # bind together, and cleanup.
-  stds <- do.call(rbind, list(high_rs, med_rs, low_rs))
-
-  out <- fit_water_regression(stds,
-                              calibration_half_width = calibration_half_width,
-                              slope_tolerance = slope_tolerance,
-                              r2_thres = r2_thres)
-
-  var_for_h5 <- out
-
-  var_for_h5$start <- convert_POSIXct_to_NEONhdf5_time(var_for_h5$start)
-  var_for_h5$end <- convert_POSIXct_to_NEONhdf5_time(var_for_h5$end)
-
-  var_for_h5$timeBgn <- var_for_h5$start
-  var_for_h5$timeEnd <- var_for_h5$end
-
-  # remove old vars.
-  var_for_h5$start <- var_for_h5$end <- NULL
-
-  #----------------------------------
-  # write out to h5 file.
-  #----------------------------------
-  # generate file name:
-  inname <- list.files(inpath, pattern = ".h5", full.names = TRUE)[[1]]
-  inname_list <- strsplit(inname, split = ".", fixed = TRUE)
-
-  outname <- paste0(outpath, "/NEON.", inname_list[[1]][2], ".",
-                    site, ".DP4.00200.001.nsae.all.basic.wiso.calibrated.",
-                    2 * calibration_half_width, "dayWindow.h5")
-
-  setup_output_file(inname, outname, site, analyte = "h2o")
-
-  # okay try to write out to h5 file.
-  write_water_calibration_data(outname, site, var_for_h5)
-
-  # copy over objDesk and readme
-  tmp <- rhdf5::h5read(inname, "/objDesc")
-  rhdf5::h5write(tmp, file = outname, "/objDesc")
-
-  tmp <- rhdf5::h5read(inname, "/readMe")
-  rhdf5::h5write(tmp, file = outname, "/readMe")
-  #---------------------------------------------
-  #---------------------------------------------
-  # copy high/mid/low standard data from input file.
-  #---------------------------------------------
-  #---------------------------------------------
-  write_water_reference_data(inname, outname, site,
-                             lowDf = low,
-                             medDf = med,
-                             highDf = high,
-                             calDf = out)
-
-  Sys.sleep(0.5)
-
-  rhdf5::h5closeAll()
-  #
-  #===========================================================
-  # calibrate data for each height.
-  #-------------------------------------
-  # stack data to get ambient observations.
-  print("stacking ambient data...this may take a while...")
-
-  data_by_height_by_var <- restructure_ambient_data(inpath, "H2o")
-
-  # okay, now calibrate the ambient data...
-  lapply(names(data_by_height_by_var),
-         function(x) {
-           data_by_height_by_var[[x]] <- lapply(data_by_height_by_var[[x]],
-                                                function(y) {
-                                                  dplyr::select(y,
-                                                                -varname)
-                                                            })
-           calibrate_ambient_water_linreg(amb_data_list = data_by_height_by_var[[x]],
-                                          caldf = out,
-                                          outname = x,
-                                          file = outname,
-                                          site = site,
-                                          filter_data = filter_data,
-                                          force_to_end = force_cal_to_end,
-                                          force_to_beginning = force_cal_to_beginning,
-                                          r2_thres = r2_thres)})
-
-  rhdf5::h5closeAll()
+  
+  wiso_subset <- c(wiso$ambient, wiso$reference)
+  
+  wiso_subset_cal <- lapply(names(wiso_subset),
+                            function(x) {
+                              calibrate_ambient_water_linreg(
+                                amb_data_list = wiso_subset[[x]],
+                                caldf = cal_df,
+                                site = site,
+                                force_to_end = force_cal_to_end,
+                                force_to_beginning = force_cal_to_beginning,
+                                r2_thres = r2_thres)
+                            })
+  
+  names(wiso_subset_cal) <- names(wiso_subset)
+  
+  #-----------------------------------
+  # (optionally) write out to new file
+  #-----------------------------------
+  if (write_to_file) {
+    cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
+    cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
+    setup_output_file(inname, outname, site, analyte = "h2o")
+    write_water_calibration_data(outname, site, cal_df)
+    write_water_ambient_data(outname, site, wiso_subset_cal)
+    
+    validate_output_file(inname, outname, site, "h2o")
+    
+    rhdf5::h5closeAll()
+    
+  } else {
+    outData <- list()
+    #convert time to NEON HDF5 time
+    cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
+    cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
+    outData$wiso_subset_cal <- wiso_subset_cal
+    outData$cal_df <- cal_df
+    
+    return(outData)
+  }
+  # 
+  # #===========================================================
+  # # calibrate data for each height.
+  # #-------------------------------------
+  # # stack data to get ambient observations.
+  # print("stacking ambient data...this may take a while...")
+  # 
+  # data_by_height_by_var <- restructure_ambient_data(inpath, "H2o")
+  # 
+  # # okay, now calibrate the ambient data...
+  # lapply(names(data_by_height_by_var),
+  #        function(x) {
+  #          data_by_height_by_var[[x]] <- lapply(data_by_height_by_var[[x]],
+  #                                               function(y) {
+  #                                                 dplyr::select(y,
+  #                                                               -varname)
+  #                                                           })
+  #          calibrate_ambient_water_linreg(amb_data_list = data_by_height_by_var[[x]],
+  #                                         caldf = out,
+  #                                         outname = x,
+  #                                         file = outname,
+  #                                         site = site,
+  #                                         filter_data = filter_data,
+  #                                         force_to_end = force_cal_to_end,
+  #                                         force_to_beginning = force_cal_to_beginning,
+  #                                         r2_thres = r2_thres)})
+  # 
+  # rhdf5::h5closeAll()
 
 }

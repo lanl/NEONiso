@@ -618,3 +618,24 @@ calibrate_water_reference_data <- function(outname,
 
   rhdf5::H5Gclose(std_outloc)
 }
+
+
+#' write_water_ambient_data
+#'
+#' Write out ambient observations from the NEON EC
+#' towers where the isotope data
+#' have been calibrated using this package.
+#'
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
+#'
+#' @param outname Output file name.
+#' @param site NEON 4-letter site code.
+#' @param amb_data_list Calibrated list of ambient data -
+#'   this is the output from one of the calibrate_ambient_water* functions.
+#'
+#' @return Nothing to the environment, but writes data in amb_data_list to file.
+#'
+write_water_ambient_data <- function(outname, site, amb_data_list) {
+
+ stop("write_water_ambient_data not written yet.") # curretnly a stub to just get R CMD CHECK working... 
+}
