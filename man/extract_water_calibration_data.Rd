@@ -9,7 +9,8 @@ extract_water_calibration_data(
   ucrt_list = NULL,
   standard,
   ucrt_source = "data",
-  method = "by_site"
+  method = "by_site",
+  test = TRUE
 )
 }
 \arguments{

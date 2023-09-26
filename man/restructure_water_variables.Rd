@@ -4,7 +4,7 @@
 \alias{restructure_water_variables}
 \title{restructure_water_variables}
 \usage{
-restructure_water_variables(dataframe, varname, mode)
+restructure_water_variables(dataframe, varname, mode, group)
 }
 \arguments{
 \item{dataframe}{Input data.frame, from \code{neonUtilities::stackEddy}}
@@ -13,6 +13,8 @@ restructure_water_variables(dataframe, varname, mode)
 a list of ~10 common ones to write to the hdf5 file.}
 
 \item{mode}{Are we fixing a reference data frame or an ambient data frame?}
+
+\item{group}{Data, ucrt, or qfqm?}
 }
 \value{
 data.frame formatted for output to hdf5 file.

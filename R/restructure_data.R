@@ -9,7 +9,8 @@
 #'                 functions, but breaks old 'by_month()' functions. This
 #'                 parameter provides a necessary work around until these
 #'                 functions are removed.
-#' @param avg The averaging interval to extract, in minutes.
+#' @param amb_avg The averaging interval of the ambient data to extract.
+#' @param ref_avg The averaging interval of the reference data to extract.
 #'
 #' @return List of data frames, taken from files specified in `inname`
 #' @export
@@ -20,7 +21,8 @@
 ingest_data <- function(inname,
                         analyte,
                         name_fix = TRUE,
-                        avg = NA) {
+                        amb_avg,
+                        ref_avg) {
 
   # this function needs to:
   # 1. read in and stack variables.
@@ -40,14 +42,14 @@ ingest_data <- function(inname,
 
     if (packageVersion("neonUtilities") >= "2.3.0") {
       data <- neonUtilities::stackEddy(inname,
-                                       avg = avg,
+                                       avg = amb_avg,
                                        level = "dp01",
                                        var = "isoCo2",
                                        useFasttime = TRUE)[[1]]
     } else if (packageVersion("neonUtilities") >= "2.1.1" &&
                packageVersion("neonUtilities") < "2.3.0") {
       data <- neonUtilities::stackEddy(inname,
-                                       avg = avg,
+                                       avg = amb_avg,
                                        level = "dp01",
                                        var = "isoCo2")[[1]]
     } else {
@@ -104,25 +106,25 @@ ingest_data <- function(inname,
     # stack data available for a given site into a single timeseries.
     if (packageVersion("neonUtilities") >= "2.3.0") {
       data9 <- neonUtilities::stackEddy(inname,
-                                       level = "dp01",
-                                       var = "isoH2o",
-                                       avg = 9,
-                                       useFasttime = TRUE)[[1]]
+                                        level = "dp01",
+                                        var = "isoH2o",
+                                        avg = amb_avg,
+                                        useFasttime = TRUE)[[1]]
       data3 <- neonUtilities::stackEddy(inname,
                                         level = "dp01",
                                         var = "isoH2o",
-                                        avg = 3,
+                                        avg = ref_avg,
                                         useFasttime = TRUE)[[1]]
     } else if (packageVersion("neonUtilities") >= "2.1.1" &&
                packageVersion("neonUtilities") < "2.3.0") {
       data9 <- neonUtilities::stackEddy(inname,
                                        level = "dp01",
                                        var = "isoH2o",
-                                       avg = 9)[[1]]
+                                       avg = amb_avg)[[1]]
       data3 <- neonUtilities::stackEddy(inname,
                                         level = "dp01",
                                         var = "isoH2o",
-                                        avg = 3)[[1]]
+                                        avg = ref_avg)[[1]]
     } else {
       stop("NEONiso >= 0.7.0 requires neonUtilities >= 2.1.1")
     }
@@ -255,7 +257,7 @@ ingest_data <- function(inname,
   # - could move it back here to validate!
 
   #changing average period in numeric to characters, e.g. 9 to 09m
-  avgChar <- paste0("0", avg, "m")
+  avgChar <- paste0("0", amb_avg, "m")
 
   # get number of heights
   if (nrow(ambient) > 0) {
@@ -268,6 +270,9 @@ ingest_data <- function(inname,
   }
 
   if (name_fix) {
+    if (analyte == "H2o") {
+      avg_char <- paste0("0", ref_avg, "m")
+    }
     # append _09m to refe_out....MAY CAUSE PROBLEMS FOR OTHER METHODS!!!!!!
     names(refe_out) <- paste0(names(refe_out), "_", avgChar)
   }
@@ -312,8 +317,9 @@ restructure_variables <- function(dataframe,
                                            group)
   } else {
     output <- restructure_water_variables(dataframe,
-                                           varname,
-                                           mode)
+                                          varname,
+                                          mode,
+                                          group)
   }
   return(output)
   
@@ -434,12 +440,14 @@ restructure_carbon_variables <- function(dataframe,
 #'                a list of ~10 common ones to write to the hdf5 file.
 #' @param dataframe Input data.frame, from `neonUtilities::stackEddy`
 #' @param mode Are we fixing a reference data frame or an ambient data frame?
+#' @param group Data, ucrt, or qfqm?
 #'
 #' @return data.frame formatted for output to hdf5 file.
 #'
 restructure_water_variables <- function(dataframe,
                                         varname,
-                                        mode) {
+                                        mode,
+                                        group) {
 
   # ensure that varname is a string but standard is a data.frame
   if (!is.character(varname)) {
@@ -452,57 +460,70 @@ restructure_water_variables <- function(dataframe,
   if (mode != "reference" & mode != "ambient") {
     stop("Invalid selection to mode argument.")
   } else if (mode == "reference") {
-    output1 <- dataframe %>%
-      dplyr::select("timeBgn", "timeEnd",
-                    tidyselect::starts_with(paste0("data.isoH2o.",
-                                                   varname,
-                                                   "."))) %>%
-      dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
-                    min  = paste0("data.isoH2o.", varname, ".min"),
-                    max  = paste0("data.isoH2o.", varname, ".max"),
-                    vari = paste0("data.isoH2o.", varname, ".vari"),
-                    numSamp = paste0("data.isoH2o.", varname, ".numSamp")) %>%
-      dplyr::mutate(varname = varname) %>%
-      dplyr::mutate(dom = lubridate::day(.data$timeBgn),
-                    yr  = lubridate::year(.data$timeBgn),
-                    mn  = lubridate::month(.data$timeBgn)) %>%
-      dplyr::group_by(.data$yr, .data$mn, .data$dom) %>%
-      dplyr::filter(.data$numSamp > 30 | is.na(.data$numSamp)) %>%
-      dplyr::slice(tail(dplyr::row_number(), 3)) %>%
-      dplyr::ungroup() %>%
-      dplyr::select(-"dom", -"yr", -"mn")
-
-    if (!grepl("Refe", varname)) {
-      output2 <- dataframe %>%
+    
+    if (group == "data") {
+      
+      output <- dataframe %>%
         dplyr::select("timeBgn", "timeEnd",
-                      tidyselect::starts_with(paste0("qfqm.isoH2o.",
-                                                     varname, "."))) %>%
-        dplyr::rename(qfFinl = paste0("qfqm.isoH2o.", varname, ".qfFinl")) %>%
-        dplyr::mutate(varname = varname) %>%
-        dplyr::filter(.data$timeBgn %in% output1$timeBgn)
-
-      output3 <- dataframe %>%
-        dplyr::select("timeBgn", "timeEnd",
-                      tidyselect::starts_with(paste0("ucrt.isoH2o.",
+                      tidyselect::starts_with(paste0("data.isoH2o.",
                                                      varname,
                                                      "."))) %>%
-        dplyr::rename(mean = paste0("ucrt.isoH2o.", varname, ".mean"),
-                      vari = paste0("ucrt.isoH2o.", varname, ".vari"),
-                      se   = paste0("ucrt.isoH2o.", varname, ".se")) %>%
+        dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
+                      min  = paste0("data.isoH2o.", varname, ".min"),
+                      max  = paste0("data.isoH2o.", varname, ".max"),
+                      vari = paste0("data.isoH2o.", varname, ".vari"),
+                      numSamp = paste0("data.isoH2o.", varname, ".numSamp")) %>%
         dplyr::mutate(varname = varname) %>%
-        dplyr::filter(.data$timeBgn %in% output1$timeBgn)
-
-    } else {
-      output2 <- output3 <- NULL
+        dplyr::mutate(dom = lubridate::day(.data$timeBgn),
+                      yr  = lubridate::year(.data$timeBgn),
+                      mn  = lubridate::month(.data$timeBgn)) %>%
+        dplyr::group_by(.data$yr, .data$mn, .data$dom) %>%
+        dplyr::filter(.data$numSamp > 30 | is.na(.data$numSamp)) %>%
+        dplyr::slice(tail(dplyr::row_number(), 3)) %>%
+        dplyr::ungroup() %>%
+        dplyr::select(-"dom", -"yr", -"mn")
+      
+    } else if (group == "qfqm") {
+      
+      if (!grepl("Refe", varname)) {
+        
+             output <- dataframe %>%
+               dplyr::select("timeBgn", "timeEnd",
+                             tidyselect::starts_with(paste0("qfqm.isoH2o.",
+                                                            varname, "."))) %>%
+               dplyr::rename(qfFinl = paste0("qfqm.isoH2o.", varname, ".qfFinl")) %>%
+               dplyr::mutate(varname = varname) %>%
+               dplyr::filter(.data$timeBgn %in% output$timeBgn)
+      }
+      
+    } else if (group == "ucrt") { 
+      
+      if (!grepl("Refe", varname)) {
+        
+            output <- dataframe %>%
+              dplyr::select("timeBgn", "timeEnd",
+                            tidyselect::starts_with(paste0("ucrt.isoH2o.",
+                                                           varname,
+                                                           "."))) %>%
+              dplyr::rename(mean = paste0("ucrt.isoH2o.", varname, ".mean"),
+                            vari = paste0("ucrt.isoH2o.", varname, ".vari"),
+                            se   = paste0("ucrt.isoH2o.", varname, ".se")) %>%
+              dplyr::mutate(varname = varname) %>%
+              dplyr::filter(.data$timeBgn %in% output$timeBgn)
+            
+      }
     }
 
   } else if (mode == "ambient") {
-    output1 <- dataframe[[1]] %>%
+
+    output <- dataframe %>%
       dplyr::select("verticalPosition", "timeBgn", "timeEnd",
                     tidyselect::starts_with(paste0("data.isoH2o.",
-                                                   varname, "."))) %>%
-      dplyr::filter(!(.data$verticalPosition %in% c("co2Low", "co2Med",
-                                                    "co2High", "co2Arch"))) %>%
+                                                   varname,
+                                                   "."))) %>%
+      dplyr::filter(!(.data$verticalPosition %in% c("h2oLow",
+                                                    "h2oMed",
+                                                    "h2oHigh"))) %>%
       dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
                     min  = paste0("data.isoH2o.", varname, ".min"),
                     max  = paste0("data.isoH2o.", varname, ".max"),
@@ -510,23 +531,13 @@ restructure_water_variables <- function(dataframe,
                     numSamp = paste0("data.isoH2o.", varname, ".numSamp")) %>%
       dplyr::mutate(varname = varname)
 
-    output2 <- output3 <- NULL
-
   }
 
   # stackEddy will have converted time to posixct - covert back here.
-  output1$timeBgn <- convert_POSIXct_to_NEONhdf5_time(output1$timeBgn)
-  output1$timeEnd <- convert_POSIXct_to_NEONhdf5_time(output1$timeEnd)
+  output$timeBgn <- convert_POSIXct_to_NEONhdf5_time(output$timeBgn)
+  output$timeEnd <- convert_POSIXct_to_NEONhdf5_time(output$timeEnd)
 
-  if (!grepl("Refe", varname)) {
-    output2$timeBgn <- convert_POSIXct_to_NEONhdf5_time(output2$timeBgn)
-    output2$timeEnd <- convert_POSIXct_to_NEONhdf5_time(output2$timeEnd)
-
-    output3$timeBgn <- convert_POSIXct_to_NEONhdf5_time(output3$timeBgn)
-    output3$timeEnd <- convert_POSIXct_to_NEONhdf5_time(output3$timeEnd)
-  }
-
-  return(list(output1, output2, output3))
+  return(output)
 }
 
 
