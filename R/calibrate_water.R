@@ -133,9 +133,10 @@ calibrate_water       <- function(inname,
                                 site = site,
                                 force_to_end = force_cal_to_end,
                                 force_to_beginning = force_cal_to_beginning,
+                                filter_data = filter_data,
                                 r2_thres = r2_thres)
                             })
-  
+
   names(wiso_subset_cal) <- names(wiso_subset)
   
   #-----------------------------------

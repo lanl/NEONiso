@@ -560,8 +560,7 @@ fit_water_regression <- function(ref_data,
         out$cvloo_18O[i] <- loocv(tmpmod18O)
         out$cvloo_2H[i] <- loocv(tmpmod2H)
         
-        # get cv5 values  
-        print(names(cal_subset))
+        # get cv5 values
         tmp <- stats::formula(dlta18OH2oRefe.mean ~ dlta18OH2o.mean)
         cv18O <- estimate_calibration_error(tmp, cal_subset)
         tmp <- stats::formula(dlta2HH2oRefe.mean ~ dlta2HH2o.mean)
