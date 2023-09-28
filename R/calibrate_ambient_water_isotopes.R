@@ -17,8 +17,6 @@
 #' @param outname Output variable name. Inherited from
 #'             `calibrate_ambient_water_linreg`
 #' @param site Four-letter NEON code corresponding to site being processed.
-#' @param file Output file name. Inherited from
-#'             `calibrate_ambient_water_linreg`
 #' @param force_to_end In given month, calibrate ambient data later than last
 #'             calibration, using the last calibration? (default true)
 #' @param force_to_beginning In given month, calibrate ambient data before than
@@ -36,11 +34,10 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
                                            caldf,
                                            outname,
                                            site,
-                                           file,
-                                           filter_data,
-                                           force_to_end,
-                                           force_to_beginning,
-                                           r2_thres) {
+                                           filter_data = TRUE,
+                                           force_to_end = TRUE,
+                                           force_to_beginning = TRUE,
+                                           r2_thres = 0.9) {
 
   # print status.
   print("Processing water ambient data...")
@@ -71,7 +68,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   var_inds_in_calperiod <- list()
 
   for (i in 1:nrow(caldf)) {
-    int <- lubridate::interval(caldf$start[i], caldf$end[i])
+    int <- lubridate::interval(caldf$timeBgn[i], caldf$timeEnd[i])
     var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
   }
 
@@ -133,7 +130,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   var_inds_in_calperiod <- list()
 
   for (i in 1:nrow(caldf)) {
-    int <- lubridate::interval(caldf$start[i], caldf$end[i])
+    int <- lubridate::interval(caldf$timeBgn[i], caldf$timeEnd[i])
     var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
   }
 

@@ -11,8 +11,6 @@
 #'             Will include all variables in 000_0x0_xxm. (character)
 #' @param caldf Calibration data frame containing gain and offset values for
 #'             12C and 13C isotopologues.
-#' @param outname Output variable name. Inherited from
-#'             `calibrate_ambient_carbon_linreg`
 #' @param site Four-letter NEON code corresponding to site being processed.
 #' @param filter_data Apply median absolute deviation filter from Brock 86 to
 #'             remove impulse spikes? Inherited from
@@ -38,7 +36,6 @@
 #'
 calibrate_ambient_carbon_linreg <- function(amb_data_list,
                                             caldf,
-                                            outname,
                                             site,
                                             filter_data = TRUE,
                                             force_to_end = TRUE,

@@ -1,5 +1,17 @@
 # test-data_ingestion
 
+#-----------------------------
+# test validate analyte function
+test_that("validate_analyte corrects case of analytes", {
+  expect_equal(validate_analyte("h2o"), "H2o")
+  expect_equal(validate_analyte("co2"), "Co2")
+})
+
+test_that("validate_analyte errors if invalid species is given", {
+  expect_error(validate_analyte("CH4"))
+})
+
+
 fin <- system.file("extdata",
                    "NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.packed.h5",
                    package = "NEONiso", mustWork = TRUE)

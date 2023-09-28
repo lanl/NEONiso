@@ -133,36 +133,36 @@ test_that("calibration data frames have 14 columns", {
 # work through ambient calibrations
 
 # test carbon - bowling ambient calibration
-#temp <- calibrate_ambient_carbon_Bowling2003(co2test$ambient$`000_010_09m`,
-#                                             calDf_B03,
-#                                             site = "ONAQ")
-#temp_gf <- calibrate_ambient_carbon_Bowling2003(co2test$ambient$`000_010_09m`,
-#                                                calDf_B03,
-#                                                site = "ONAQ",
-#                                                gap_fill_parameters = TRUE)
+temp <- calibrate_ambient_water_linreg(h2otest$ambient$`000_010_09m`,
+                                            calDf,
+                                            site = "ONAQ")
+# no gapfilling in the water functions yet!
+#temp_gf <- calibrate_ambient_water_linreg(h2otest$ambient$`000_010_09m`,
+#                                               calDf,
+#                                               site = "ONAQ",
+#                                               gap_fill_parameters = TRUE)
 
-#test_that("calibrate_ambient_carbon_Bowling2003 returns a list",{
-#  skip_on_cran()
-#  expect_equal(class(temp), "list")
-#  expect_equal(class(temp_gf), "list")
-#})
+test_that("calibrate_ambient_water_linreg returns a list",{
+  skip_on_cran()
+  str(temp)
+  expect_equal(class(temp), "list")
+  #expect_equal(class(temp_gf), "list")
+})
 
-#test_that("calibrate_ambient_carbon_Bowling2003 returns correct variables", {
-#  skip_on_cran()
-#  vars <- c("dlta13CCo2", "pres", "presEnvHut", "rhEnvHut",
-#            "rtioMoleDry12CCo2", "rtioMoleDry13CCo2", "rtioMoleDryCo2", 
-#            "rtioMoleDryH2o", "rtioMoleWet12CCo2", "rtioMoleWet13CCo2",
-#            "rtioMoleWetCo2", "rtioMoleWetH2o",
-#            "rtioMoleWetH2oEnvHut", "temp", "tempEnvHut")
-#  expect_equal(names(temp), vars)
-#  expect_equal(names(temp_gf), vars)
-#})
+test_that("calibrate_ambient_water_linreg returns correct variables", {
+  skip_on_cran()
+  vars <- c("dlta18OH2o", "dlta2HH2o", "pres", "presEnvHut", "rhEnvHut",
+           "rtioMoleDryH2o", "rtioMoleWetH2o",
+           "rtioMoleWetH2oEnvHut", "temp", "tempEnvHut")
+  expect_equal(names(temp), vars)
+ # expect_equal(names(temp_gf), vars)
+})
 
-# test_that("calibrated d13C values have been added to calibrate_ambient_cabron_Bowling2003 output", {
-#   skip_on_cran()
-#   expect_gt(ncol(temp$dlta13CCo2), ncol(co2test$ambient$`000_010_09m`$dlta13CCo2))
-#   expect_gt(ncol(temp_gf$dlta13CCo2), ncol(co2test$ambient$`000_010_09m`$dlta13CCo2))
-# })
+test_that("calibrated water isotope values have been added to calibrate_ambient_water_linreg output", {
+  skip_on_cran()
+  expect_gt(ncol(temp$dlta18OH2o), ncol(h2otest$ambient$`000_010_09m`$dlta18OH2o))
+  expect_gt(ncol(temp$dlta2HH2o), ncol(h2otest$ambient$`000_010_09m`$dlta2HH2o))
+})
 
 # # stack data available for a given site into a single timeseries.
 # wiso_ref <- neonUtilities::stackEddy(fin, level = "dp01", avg = 3)
