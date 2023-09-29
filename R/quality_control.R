@@ -63,7 +63,8 @@ validate_output_file <- function(inname, outname, site, analyte) {
                                   site,
                                   "/dp01/data/isoH2o"), ]$name
     #only care about the 9m vars!
-    target_in <- target_in[grep("09m", target_in) &
+    target_in <- target_in[(grepl("03m", target_in) |
+                           grepl("09m", target_in)) &
                           !grepl("Arch", target_in)]
     target_out <- groups_out[groups_out$group ==
                               paste0("/",

@@ -483,21 +483,21 @@ calibrate_water_reference_data <- function(inname,
 
   
   std <- rhdf5::h5read(inname,
-                       paste0("/", site, "/dp01/data/isoCo2/co2", standard, "_09m"))
+                       paste0("/", site, "/dp01/data/isoH2o/h2o", standard, "_03m"))
   
-  std <- calibrate_standards_carbon(calDf, std, correct_bad_refvals = TRUE,
+  std <- calibrate_standards_water(calDf, std, correct_bad_refvals = TRUE,
                                     site = site, refGas = standard)
   
   
   fid <- rhdf5::H5Fopen(outname)
   rhdf5::H5Gcreate(fid,
-                   paste0("/", site, "/dp01/data/isoCo2/co2", standard, "_09m"))
+                   paste0("/", site, "/dp01/data/isoH2o/h2o", standard, "_03m"))
   std_outloc <- rhdf5::H5Gopen(fid,
                                paste0("/",
                                       site,
-                                      "/dp01/data/isoCo2/co2",
+                                      "/dp01/data/isoH2o/h2o",
                                       standard,
-                                      "_09m"))
+                                      "_03m"))
   # loop through each variable amb.data.list and write out as a dataframe.
   lapply(names(std), function(x) {
     rhdf5::h5writeDataset(obj = std[[x]],
@@ -528,5 +528,35 @@ calibrate_water_reference_data <- function(inname,
 #'
 write_water_ambient_data <- function(outname, site, amb_data_list) {
 
- stop("write_water_ambient_data not written yet.") # curretnly a stub to just get R CMD CHECK working... 
+  print("Writing calibrated ambient data...")
+  
+  fid <- rhdf5::H5Fopen(outname)
+  
+  if (length(amb_data_list) > 0) {
+    for (i in 1:length(amb_data_list)) {
+      amb_data_subset <- amb_data_list[i]
+      
+      h2o_data_outloc <- rhdf5::H5Gcreate(fid,
+                                          paste0("/",
+                                                 site,
+                                                 "/dp01/data/isoH2o/",
+                                                 names(amb_data_subset)))
+      
+      amb_data_subset <- amb_data_subset[[1]] # list hack
+      
+      # loop through variables in amb_data_list and write as a dataframe.
+      lapply(names(amb_data_subset), function(x) {
+        rhdf5::h5writeDataset(obj = amb_data_subset[[x]],
+                              h5loc = h2o_data_outloc,
+                              name = x,
+                              DataFrameAsCompound = TRUE)})
+      rhdf5::H5Gclose(h2o_data_outloc)
+    }
+    
+  }
+  
+  # close all open handles.
+  rhdf5::H5Fclose(fid)
+  rhdf5::h5closeAll()
+  # curretnly a stub to just get R CMD CHECK working... 
 }

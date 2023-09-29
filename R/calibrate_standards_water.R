@@ -8,10 +8,20 @@
 #'          calibrate standards data. Default is 0.95. Calibrated reference
 #'          gas measurements occurring during calibration periods
 #'          with r2 values less than `r2_thres` will be marked NA.
+#' @param correct_bad_refvals Should we correct known/suspected incorrect
+#'          reference values in the NEON HDF5 files? (Default = `FALSE`).
+#' @param site Four letter NEON site code.
+#'             Only used if `correct_bad_refvals = TRUE`.
+#' @param refGas One of "low", "med", or "high."
+#'             Only used if `correct_bad_refvals = TRUE`.
+#'
 #' @export
 calibrate_standards_water <- function(cal_df,
                                       ref_df,
-                                      r2_thres = 0.95) {
+                                      r2_thres = 0.95,
+                                      correct_bad_refvals = FALSE,
+                                      site,
+                                      refGas) {
 
   # want to implement same tolerances used to generate calibration regression!
   # need to assess the CO2 and d13C tolerances wrt reference values.

@@ -4,7 +4,14 @@
 \alias{calibrate_standards_water}
 \title{calibrate_standards_water}
 \usage{
-calibrate_standards_water(cal_df, ref_df, r2_thres = 0.95)
+calibrate_standards_water(
+  cal_df,
+  ref_df,
+  r2_thres = 0.95,
+  correct_bad_refvals = FALSE,
+  site,
+  refGas
+)
 }
 \arguments{
 \item{cal_df}{Data.frame containing calibration parameters}
@@ -15,6 +22,15 @@ calibrate_standards_water(cal_df, ref_df, r2_thres = 0.95)
 calibrate standards data. Default is 0.95. Calibrated reference
 gas measurements occurring during calibration periods
 with r2 values less than \code{r2_thres} will be marked NA.}
+
+\item{correct_bad_refvals}{Should we correct known/suspected incorrect
+reference values in the NEON HDF5 files? (Default = \code{FALSE}).}
+
+\item{site}{Four letter NEON site code.
+Only used if \code{correct_bad_refvals = TRUE}.}
+
+\item{refGas}{One of "low", "med", or "high."
+Only used if \code{correct_bad_refvals = TRUE}.}
 }
 \description{
 calibrate_standards_water

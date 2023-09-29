@@ -54,8 +54,8 @@ test_that("calibrate_water returns no error", {
                                    correct_refData = TRUE,
                                    write_to_file = FALSE))
   
-  #expect_no_error(calibrate_water(fin, fout3, "ONAQ",
-  #                                correct_refData = TRUE,
-  #                                write_to_file = TRUE))
+  expect_no_error(calibrate_water(fin, fout3, "ONAQ",
+                                  correct_refData = TRUE,
+                                  write_to_file = TRUE))
   
 })
