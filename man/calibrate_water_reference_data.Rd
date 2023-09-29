@@ -4,20 +4,20 @@
 \alias{calibrate_water_reference_data}
 \title{calibrate_water_reference_data}
 \usage{
-calibrate_water_reference_data(outname, standard, site, stdDf, calDf)
+calibrate_water_reference_data(inname, outname, standard, site, calDf)
 }
 \arguments{
+\item{inname}{Input file name.}
+
 \item{outname}{Output file name.}
 
-\item{standard}{Which reference material is being 'calibrated'?
-(Low, med, or high)}
+\item{standard}{Which standard are we working on? Must be "Low",
+"Med", or "High"}
 
 \item{site}{NEON 4-letter site code.}
 
-\item{stdDf}{Data frame of reference material measurements.}
-
 \item{calDf}{Calibration data frame -
-this is the output from fit_water_regression}
+this is the output from fit_carbon_regression}
 }
 \value{
 Nothing to the environment.
