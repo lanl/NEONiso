@@ -118,7 +118,7 @@ calibrate_water       <- function(inname,
   #     dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
   #   low_rs$periods <- data.table::rleidv(low_rs, "time_diff") %/% 2
   #   
-  }
+  #}
 
   #=======================================================================
   # apply calibration routines
@@ -164,5 +164,4 @@ calibrate_water       <- function(inname,
     
     return(outData)
   }
-
 }
