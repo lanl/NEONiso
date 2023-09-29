@@ -271,7 +271,7 @@ ingest_data <- function(inname,
 
   if (name_fix) {
     if (analyte == "H2o") {
-      avg_char <- paste0("0", ref_avg, "m")
+      avgChar <- paste0("0", ref_avg, "m")
     }
     # append _09m to refe_out....MAY CAUSE PROBLEMS FOR OTHER METHODS!!!!!!
     names(refe_out) <- paste0(names(refe_out), "_", avgChar)

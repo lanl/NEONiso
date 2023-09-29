@@ -35,6 +35,22 @@ test_that("calibration data frames have 14 columns", {
   expect_equal(ncol(calDf_LR), 14)
 })
 
+test_that("carbon calibration data frames correct even when no input data", {
+  skip_on_cran()
+  # empty ref data frame:
+  empty_df <- data.frame(matrix(nrow = 0, ncol = ncol(co2data)))
+  names(empty_df) <- names(co2data)
+  expect_no_error(fit_carbon_regression(empty_df,
+                                        method = "Bowling_2003"))
+  expect_no_error(fit_carbon_regression(empty_df,
+                                        method = "linreg"))
+  expect_equal(ncol(fit_carbon_regression(empty_df,
+                                          method = "Bowling_2003")), 14)
+  expect_equal(ncol(fit_carbon_regression(empty_df,
+                                          method = "linreg",
+                                          calibration_half_width = 2)), 14)
+})
+
 
 # work through ambient calibrations
 
