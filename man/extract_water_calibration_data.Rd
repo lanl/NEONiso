@@ -4,31 +4,11 @@
 \alias{extract_water_calibration_data}
 \title{extract_water_calibration_data}
 \usage{
-extract_water_calibration_data(
-  data_list,
-  ucrt_list = NULL,
-  standard,
-  ucrt_source = "data",
-  method = "by_site"
-)
+extract_water_calibration_data(data_list)
 }
 \arguments{
 \item{data_list}{List containing data, from the /*/dp01/data/
 group in NEON HDF5 file.}
-
-\item{ucrt_list}{List containing uncertainty data, from the /*/dp01/ucrt/
-group in NEON HDF5 file. (only works if paired with
-ucrt_source = 'ucrt' and method = 'by_month')}
-
-\item{standard}{String indicating whether to grab data from the high,
-medium, or low standard.}
-
-\item{ucrt_source}{Where from HDF5 file should  variance be extracted from?
-(Only "data" works now..."ucrt" will throw an error.)}
-
-\item{method}{Are we calling this function from the calibrate_water_linreg
-function (use "by_month") or the calibrate_water_linreg_bysite
-function (use "by_site)}
 }
 \value{
 Returns data frame of required variables.

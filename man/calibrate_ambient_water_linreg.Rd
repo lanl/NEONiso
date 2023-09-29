@@ -9,11 +9,10 @@ calibrate_ambient_water_linreg(
   caldf,
   outname,
   site,
-  file,
-  filter_data,
-  force_to_end,
-  force_to_beginning,
-  r2_thres
+  filter_data = TRUE,
+  force_to_end = TRUE,
+  force_to_beginning = TRUE,
+  r2_thres = 0.9
 )
 }
 \arguments{
@@ -27,9 +26,6 @@ for d18O and d2H values.}
 \code{calibrate_ambient_water_linreg}}
 
 \item{site}{Four-letter NEON code corresponding to site being processed.}
-
-\item{file}{Output file name. Inherited from
-\code{calibrate_ambient_water_linreg}}
 
 \item{filter_data}{Apply a median filter to output ambient data? inherited.}
 

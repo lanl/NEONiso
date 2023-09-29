@@ -410,7 +410,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 
 #' fit_water_regression
 #'
-#' @param stds Reference data.frame from which to estimate
+#' @param ref_data Reference data.frame from which to estimate
 #'        calibration parameters.
 #' @param calibration_half_width Determines the period (in days)
 #'        from which reference data are selected (period
@@ -419,199 +419,359 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 #'        from 1 by slope_tolerance.
 #' @param r2_thres What is the minimum r2 value permitted in a 'useful'
 #'        calibration relationship.
-#'
+#' @param plot_regression_data True or false - should we plot the data used in
+#'        the regression? Useful for debugging.
+#' @param plot_dir If plot_regression_data is true, where should the
+#'        plots be saved?
+#' @param site Needed for regression plots.
+#' @param min_nobs Minimum number of high-frequency observations to define a peak.
+#' 
+
 #' @return Returns a data.frame of calibration parameters.
 #'        Output data.frame includes slope, intercept, and r^2 values
 #'        for d13C and CO2 values.
 #'
 #' @importFrom stats coef lm
 #' @importFrom magrittr %>%
-#'
-fit_water_regression <- function(stds,
+#' 
+fit_water_regression <- function(ref_data,
                                  calibration_half_width,
                                  slope_tolerance,
-                                 r2_thres) {
-  # do some light validation of these points.
-  stds <- stds %>%
-    dplyr::filter(.data$d18O_meas_var < 5 &
-                    abs(.data$d18O_meas_mean - .data$d18O_ref_mean) < 3 &
-                    .data$d2H_meas_var < 10 &
-                    abs(.data$d18O_meas_mean - .data$d18O_ref_mean) < 24)
+                                 r2_thres,
+                                 plot_regression_data = FALSE,
+                                 plot_dir = "/dev/null",
+                                 site,
+                                 min_nobs = NA) {
 
-  if (nrow(stds) > 0) {
-    # replace NaNs with NA
-    # is.na() also returns NaN as NA, so this does actually do what first
-    # comment indicates.
-    stds[is.na(stds)] <- NA
-
-    #-----------------------------------------------------------
-    # CALIBRATE WATER ISOTOPE VALUES
-
-    # reorder data frame
-    stds <- stds[order(stds$btime), ]
-
-    # loop through days represented in the dataframe,
-    # select rows corresponding to window of interest,
-    # and run regression.
-
+  # First, identify year/month combination and then select data.
+  yrmn <- paste(lubridate::year(ref_data$timeBgn)[1],
+                lubridate::month(ref_data$timeBgn)[1],
+                sep = "-")
+  
+  # validate yrmn - is it actually a date? if no refdata, then no.
+  #---------------------------------------------------------------
+  # Select which validation data to carry through to calibration
+  #---------------------------------------------------------------
+  ref_data <- select_daily_reference_data(ref_data,
+                                          analyte = "h2o",
+                                          min_nobs = min_nobs)
+  
+  #-----------------------------------------------------------
+  # CALIBRATE WATER ISOTOPE VALUES
+  if (nrow(ref_data) == 0) {
+    
+    # output dataframe giving valid time range, slopes, intercepts, rsquared.
+    out <- data.frame(timeBgn = as.POSIXct(yrmn,
+                                           format = "%Y-%m",
+                                           tz = "UTC",
+                                           origin = "1970-01-01"),
+                      timeEnd = as.POSIXct(yrmn,
+                                           format = "%Y-%m",
+                                           tz = "UTC",
+                                           origin = "1970-01-01"),
+                      slope18O = as.numeric(NA),
+                      slope2H  = as.numeric(NA),
+                      intercept18O = as.numeric(NA),
+                      intercept2H = as.numeric(NA),
+                      r2_18O = as.numeric(NA),
+                      r2_2H = as.numeric(NA),
+                      cvloo_18O = as.numeric(NA),
+                      cvloo_2H = as.numeric(NA),
+                      cv5mae_18O = as.numeric(NA),
+                      cv5mae_2H = as.numeric(NA),
+                      cv5rmse_18O = as.numeric(NA),
+                      cv5rmse_2H = as.numeric(NA))
+  } else {
+    
+    out <- data.frame(slope18O = numeric(length = 2e5),
+                      slope2H  = numeric(length = 2e5),
+                      intercept18O = numeric(length = 2e5),
+                      intercept2H = numeric(length = 2e5),
+                      r2_18O = numeric(length = 2e5),
+                      r2_2H = numeric(length = 2e5),
+                      cvloo_18O = numeric(length = 2e5),
+                      cvloo_2H = numeric(length = 2e5),
+                      cv5mae_18O = numeric(length = 2e5),
+                      cv5mae_2H = numeric(length = 2e5),
+                      cv5rmse_18O = numeric(length = 2e5),
+                      cv5rmse_2H = numeric(length = 2e5))
+    
     # get start and end days.
-    start_date <- as.Date(min(stds$btime))
-    end_date   <- as.Date(max(stds$etime))
-
-    # set up output vectors
-    oxy_cal_slopes <- vector()
-    oxy_cal_ints   <- vector()
-    oxy_cal_rsq    <- vector()
-
-    hyd_cal_slopes <- vector()
-    hyd_cal_ints   <- vector()
-    hyd_cal_rsq    <- vector()
-
-    start_time     <- vector()
-    end_time       <- vector()
-
-    # loop through days and get regression statistics.
-    # generate sequence of dates:
-    loop_start_date <- start_date
-    loop_end_date   <- end_date
-
+    start_date <- as.Date(min(ref_data$timeBgn))
+    end_date   <- as.Date(max(ref_data$timeEnd))
+    
     # generate date sequence
-    date_seq <- base::seq.Date(loop_start_date, loop_end_date, by = "1 day")
-
+    date_seq <- base::seq.Date(start_date, end_date, by = "1 day")
+    
+    # initialize vectors to hold times.
+    start_time <- end_time <- vector()
+    
+    # okay, now run calibrations...
+    
     for (i in 1:length(date_seq)) {
-
       start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"),
                                   tz = "UTC", origin = "1970-01-01")
       end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59.0000"),
                                   tz = "UTC", origin = "1970-01-01")
-
+      
       # define calibration interval
-      cal_period <- lubridate::interval(date_seq[i] - lubridate::days(calibration_half_width),
-                                        date_seq[i] + lubridate::days(calibration_half_width))
-
+      cal_period <- lubridate::interval(date_seq[i] - lubridate::ddays(calibration_half_width),
+                                        date_seq[i] + lubridate::ddays(calibration_half_width))
+      
       # select data subset using the interval
-      std_subset <- stds %>%
-        dplyr::filter(.data$btime %within% cal_period)
-
-      # check to see if sum of is.na() on oxygen data = nrow of oxygen data
-      if (sum(is.na(std_subset$d18O_meas_mean)) < nrow(std_subset) &
-          sum(is.na(std_subset$d18O_ref_mean)) < nrow(std_subset)) {
-        tmp <- lm(d18O_ref_mean ~ d18O_meas_mean, data = std_subset)
-
-        oxy_cal_slopes[i] <- coef(tmp)[[2]]
-        oxy_cal_ints[i]   <- coef(tmp)[[1]]
-        oxy_cal_rsq[i]    <- summary(tmp)$r.squared
-
-        # enforce thresholds. replace regression parameters as NA where fail.
-        if (!is.na(oxy_cal_rsq[i])) {
-          if ((oxy_cal_slopes[i] > (1 + slope_tolerance)) |
-              (oxy_cal_slopes[i] < (1 - slope_tolerance)) |
-              (oxy_cal_rsq[i] < r2_thres)) {
-
-            # set as NA
-            oxy_cal_slopes[i] <- NA
-            oxy_cal_ints[i]   <- NA
-            oxy_cal_rsq[i]    <- NA
-          }
-        } else {
-          # set as NA
-          oxy_cal_slopes[i] <- NA
-          oxy_cal_ints[i]   <- NA
-          oxy_cal_rsq[i]    <- NA
-        }
-
-      } else { # all are missing
-        oxy_cal_slopes[i] <- NA
-        oxy_cal_ints[i]   <- NA
-        oxy_cal_rsq[i]    <- NA
+      cal_subset <- ref_data %>%
+        dplyr::filter(.data$timeBgn %within% cal_period)
+      
+      if (plot_regression_data) {
+        stop("No regression data plots for water yet.")
+        #carbon_regression_plots(cal_subset,
+        #                        plot_filename = paste0(plot_dir,
+        #                                               "/", site,
+        #                                               "_", date_seq[i],
+        #                                               ".pdf"),
+        #                        method = method,
+        #                        mtitle = paste0(site, date_seq[i]))
       }
-
-      # HYDROGEN
-
-      # check to see if sum of is.na() on oxygen data = nrow of oxygen data
-      if (sum(is.na(std_subset$d2H_meas_mean)) < nrow(std_subset) &
-          sum(is.na(std_subset$d2H_ref_mean)) < nrow(std_subset)) {
-
-        tmp <- lm(d2H_ref_mean ~ d2H_meas_mean, data = std_subset)
-
-        hyd_cal_slopes[i] <- coef(tmp)[[2]]
-        hyd_cal_ints[i]   <- coef(tmp)[[1]]
-        hyd_cal_rsq[i]    <- summary(tmp)$r.squared
-
-        # enforce thresholds. replace regression parameters where they fail.
-        if (!is.na(hyd_cal_rsq[i])) {
-          if ((hyd_cal_slopes[i] > (1 + slope_tolerance)) |
-              (hyd_cal_slopes[i] < (1 - slope_tolerance)) |
-              (hyd_cal_rsq[i] < r2_thres)) {
-
-            # set as NA
-            hyd_cal_slopes[i] <- NA
-            hyd_cal_ints[i]   <- NA
-            hyd_cal_rsq[i]    <- NA
-          }
-        } else {
-          # set as NA
-          hyd_cal_slopes[i] <- NA
-          hyd_cal_ints[i]   <- NA
-          hyd_cal_rsq[i]    <- NA
-        }
-
-      } else { # all are missing
-
-        hyd_cal_slopes[i] <- NA
-        hyd_cal_ints[i]   <- NA
-        hyd_cal_rsq[i]    <- NA
+      #---------------------------------------------
+      # do some light validation of these points.
+      #  cal_subset <- cal_subset %>%
+      #    dplyr::filter(.data$dlta13CCo2.vari < 5 &
+      #                    abs(.data$rtioMoleDryCo2.mean - .data$rtioMoleDryCo2Refe.mean) < 10 &
+      #                    abs(.data$dlta13CCo2.mean - .data$dlta13CCo2Refe.mean) < 5)
+      
+      if (length(unique(cal_subset$verticalPosition)) >= 2 & # >= 2 standards
+          !all(is.na(cal_subset$dlta18OH2o.mean)) & # not all obs missing
+          !all(is.na(cal_subset$dlta18OH2oRefe.mean))) { # not all ref missing
+        
+        tmpmod18O <- stats::lm(dlta18OH2oRefe.mean ~ dlta18OH2o.mean,
+                               data = cal_subset)
+        tmpmod2H <- stats::lm(dlta2HH2oRefe.mean ~ dlta2HH2o.mean,
+                              data = cal_subset)
+        
+        # calculate gain and offset values.
+        out$slope18O[i]     <- stats::coef(tmpmod18O)[[2]]
+        out$slope2H[i]      <- stats::coef(tmpmod2H)[[2]]
+        out$intercept18O[i] <- stats::coef(tmpmod18O)[[1]]
+        out$intercept2H[i]  <- stats::coef(tmpmod2H)[[1]]
+        
+        # extract r2
+        out$r2_18O[i] <- summary(tmpmod18O)$r.squared
+        out$r2_2H[i] <- summary(tmpmod2H)$r.squared
+        
+        # extract leave-one-out CV value
+        out$cvloo_18O[i] <- loocv(tmpmod18O)
+        out$cvloo_2H[i] <- loocv(tmpmod2H)
+        
+        # get cv5 values
+        tmp <- stats::formula(dlta18OH2oRefe.mean ~ dlta18OH2o.mean)
+        cv18O <- estimate_calibration_error(tmp, cal_subset)
+        tmp <- stats::formula(dlta2HH2oRefe.mean ~ dlta2HH2o.mean)
+        cv2H <- estimate_calibration_error(tmp, cal_subset)
+        
+        # assign cv values:
+        out$cv5mae_18O[i] <- cv18O$MAE
+        out$cv5mae_2H[i] <- cv2H$MAE
+        out$cv5rmse_18O[i] <- cv18O$RMSE
+        out$cv5rmse_2H[i] <- cv2H$RMSE
+        
+      } else {
+        
+        out$slope18O[i]      <- NA
+        out$slope2H[i]       <- NA
+        out$intercept18O[i]  <- NA
+        out$intercept2H[i]   <- NA
+        out$r2_18O[i]        <- NA
+        out$r2_2H[i]         <- NA
+        out$cvloo_18O[i]     <- NA
+        out$cvloo_2H[i]      <- NA
+        out$cv5mae_18O[i]    <- NA
+        out$cv5mae_2H[i]     <- NA
+        out$cv5rmse_18O[i]   <- NA
+        out$cv5rmse_2H[i]    <- NA
       }
     }
-
-    # start time is numeric here at some point - hence, format not necessary
-    # to be specified below.
+    
+    #subset out data frame.
+    out <- out[1:length(start_time), ]
+    
     # output dataframe giving valid time range, slopes, intercepts, rsquared.
-    out <- data.frame(start = lubridate::as_datetime(start_time, tz = "UTC"),
-                      end = lubridate::as_datetime(end_time, tz = "UTC"),
-                      o_slope = as.numeric(oxy_cal_slopes),
-                      o_intercept = as.numeric(oxy_cal_ints),
-                      o_r2 = as.numeric(oxy_cal_rsq),
-                      h_slope = as.numeric(hyd_cal_slopes),
-                      h_intercept = as.numeric(hyd_cal_ints),
-                      h_r2 = as.numeric(hyd_cal_rsq))
-
-  } else { # this branch should rarely run, if at all
-    out <- data.frame(start = lubridate::as_datetime(start_date, tz = "UTC"),
-                      end = lubridate::as_datetime(end_date, tz = "UTC"),
-                      o_slope = as.numeric(NA),
-                      o_intercept = as.numeric(NA),
-                      o_r2 = as.numeric(NA),
-                      h_slope = as.numeric(NA),
-                      h_intercept = as.numeric(NA),
-                      h_r2 = as.numeric(NA))
+    out$timeBgn <- as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01")
+    out$timeEnd <- as.POSIXct(end_time, tz = "UTC", origin = "1970-01-01")
+    
+    # re-order columns to ensure that they are consistent across methods
+    out <- out[, c("timeBgn", "timeEnd",
+                   "slope18O", "intercept18O", "r2_18O", 
+                   "cvloo_18O", "cv5mae_18O", "cv5rmse_18O",
+                   "slope2H", "intercept2H", "r2_2H",
+                   "cvloo_2H", "cv5mae_2H", "cv5rmse_2H")]
   }
-
-  # check to ensure there are 6 columns.
-  # add slope, intercept, r2 columns if missing.
-  if (!("o_slope" %in% names(out))) {
-    out$o_slope <- as.numeric(rep(NA, length(out$start)))
-  }
-  if (!("o_intercept" %in% names(out))) {
-    out$o_intercept <- as.numeric(rep(NA, length(out$start)))
-  }
-  if (!("o_r2" %in% names(out))) {
-    out$o_r2 <- as.numeric(rep(NA, length(out$start)))
-  }
-  if (!("h_slope" %in% names(out))) {
-    out$h_slope <- as.numeric(rep(NA, length(out$start)))
-  }
-  if (!("h_intercept" %in% names(out))) {
-    out$h_intercept <- as.numeric(rep(NA, length(out$start)))
-  }
-  if (!("h_r2" %in% names(out))) {
-    out$h_r2 <- as.numeric(rep(NA, length(out$start)))
-  }
-
-  # ensure there are 8 columns in out!
-  if (ncol(out) != 8) {
-    stop("Wrong number of columns in out.")
-  }
-
   return(out)
+    
+  #   # reorder data frame
+  #   stds <- stds[order(stds$btime), ]
+  # 
+  #   # loop through days represented in the dataframe,
+  #   # select rows corresponding to window of interest,
+  #   # and run regression.
+  # 
+  #   # get start and end days.
+  #   start_date <- as.Date(min(stds$btime))
+  #   end_date   <- as.Date(max(stds$etime))
+  # 
+  #   # set up output vectors
+  #   oxy_cal_slopes <- vector()
+  #   oxy_cal_ints   <- vector()
+  #   oxy_cal_rsq    <- vector()
+  # 
+  #   hyd_cal_slopes <- vector()
+  #   hyd_cal_ints   <- vector()
+  #   hyd_cal_rsq    <- vector()
+  # 
+  #   start_time     <- vector()
+  #   end_time       <- vector()
+  # 
+  #   # loop through days and get regression statistics.
+  #   # generate sequence of dates:
+  #   loop_start_date <- start_date
+  #   loop_end_date   <- end_date
+  # 
+  #   # generate date sequence
+  #   date_seq <- base::seq.Date(loop_start_date, loop_end_date, by = "1 day")
+  # 
+  #   for (i in 1:length(date_seq)) {
+  # 
+  #     start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"),
+  #                                 tz = "UTC", origin = "1970-01-01")
+  #     end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59.0000"),
+  #                                 tz = "UTC", origin = "1970-01-01")
+  # 
+  #     # define calibration interval
+  #     cal_period <- lubridate::interval(date_seq[i] - lubridate::days(calibration_half_width),
+  #                                       date_seq[i] + lubridate::days(calibration_half_width))
+  # 
+  #     # select data subset using the interval
+  #     std_subset <- stds %>%
+  #       dplyr::filter(.data$btime %within% cal_period)
+  # 
+  #     # check to see if sum of is.na() on oxygen data = nrow of oxygen data
+  #     if (sum(is.na(std_subset$d18O_meas_mean)) < nrow(std_subset) &
+  #         sum(is.na(std_subset$d18O_ref_mean)) < nrow(std_subset)) {
+  #       tmp <- lm(d18O_ref_mean ~ d18O_meas_mean, data = std_subset)
+  # 
+  #       oxy_cal_slopes[i] <- coef(tmp)[[2]]
+  #       oxy_cal_ints[i]   <- coef(tmp)[[1]]
+  #       oxy_cal_rsq[i]    <- summary(tmp)$r.squared
+  # 
+  #       # enforce thresholds. replace regression parameters as NA where fail.
+  #       if (!is.na(oxy_cal_rsq[i])) {
+  #         if ((oxy_cal_slopes[i] > (1 + slope_tolerance)) |
+  #             (oxy_cal_slopes[i] < (1 - slope_tolerance)) |
+  #             (oxy_cal_rsq[i] < r2_thres)) {
+  # 
+  #           # set as NA
+  #           oxy_cal_slopes[i] <- NA
+  #           oxy_cal_ints[i]   <- NA
+  #           oxy_cal_rsq[i]    <- NA
+  #         }
+  #       } else {
+  #         # set as NA
+  #         oxy_cal_slopes[i] <- NA
+  #         oxy_cal_ints[i]   <- NA
+  #         oxy_cal_rsq[i]    <- NA
+  #       }
+  # 
+  #     } else { # all are missing
+  #       oxy_cal_slopes[i] <- NA
+  #       oxy_cal_ints[i]   <- NA
+  #       oxy_cal_rsq[i]    <- NA
+  #     }
+  # 
+  #     # HYDROGEN
+  # 
+  #     # check to see if sum of is.na() on oxygen data = nrow of oxygen data
+  #     if (sum(is.na(std_subset$d2H_meas_mean)) < nrow(std_subset) &
+  #         sum(is.na(std_subset$d2H_ref_mean)) < nrow(std_subset)) {
+  # 
+  #       tmp <- lm(d2H_ref_mean ~ d2H_meas_mean, data = std_subset)
+  # 
+  #       hyd_cal_slopes[i] <- coef(tmp)[[2]]
+  #       hyd_cal_ints[i]   <- coef(tmp)[[1]]
+  #       hyd_cal_rsq[i]    <- summary(tmp)$r.squared
+  # 
+  #       # enforce thresholds. replace regression parameters where they fail.
+  #       if (!is.na(hyd_cal_rsq[i])) {
+  #         if ((hyd_cal_slopes[i] > (1 + slope_tolerance)) |
+  #             (hyd_cal_slopes[i] < (1 - slope_tolerance)) |
+  #             (hyd_cal_rsq[i] < r2_thres)) {
+  # 
+  #           # set as NA
+  #           hyd_cal_slopes[i] <- NA
+  #           hyd_cal_ints[i]   <- NA
+  #           hyd_cal_rsq[i]    <- NA
+  #         }
+  #       } else {
+  #         # set as NA
+  #         hyd_cal_slopes[i] <- NA
+  #         hyd_cal_ints[i]   <- NA
+  #         hyd_cal_rsq[i]    <- NA
+  #       }
+  # 
+  #     } else { # all are missing
+  # 
+  #       hyd_cal_slopes[i] <- NA
+  #       hyd_cal_ints[i]   <- NA
+  #       hyd_cal_rsq[i]    <- NA
+  #     }
+  #   }
+  # 
+  #   # start time is numeric here at some point - hence, format not necessary
+  #   # to be specified below.
+  #   # output dataframe giving valid time range, slopes, intercepts, rsquared.
+  #   out <- data.frame(start = lubridate::as_datetime(start_time, tz = "UTC"),
+  #                     end = lubridate::as_datetime(end_time, tz = "UTC"),
+  #                     o_slope = as.numeric(oxy_cal_slopes),
+  #                     o_intercept = as.numeric(oxy_cal_ints),
+  #                     o_r2 = as.numeric(oxy_cal_rsq),
+  #                     h_slope = as.numeric(hyd_cal_slopes),
+  #                     h_intercept = as.numeric(hyd_cal_ints),
+  #                     h_r2 = as.numeric(hyd_cal_rsq))
+  # 
+  # } else { # this branch should rarely run, if at all
+  #   out <- data.frame(start = lubridate::as_datetime(start_date, tz = "UTC"),
+  #                     end = lubridate::as_datetime(end_date, tz = "UTC"),
+  #                     o_slope = as.numeric(NA),
+  #                     o_intercept = as.numeric(NA),
+  #                     o_r2 = as.numeric(NA),
+  #                     h_slope = as.numeric(NA),
+  #                     h_intercept = as.numeric(NA),
+  #                     h_r2 = as.numeric(NA))
+  # }
+  # 
+  # # check to ensure there are 6 columns.
+  # # add slope, intercept, r2 columns if missing.
+  # if (!("o_slope" %in% names(out))) {
+  #   out$o_slope <- as.numeric(rep(NA, length(out$start)))
+  # }
+  # if (!("o_intercept" %in% names(out))) {
+  #   out$o_intercept <- as.numeric(rep(NA, length(out$start)))
+  # }
+  # if (!("o_r2" %in% names(out))) {
+  #   out$o_r2 <- as.numeric(rep(NA, length(out$start)))
+  # }
+  # if (!("h_slope" %in% names(out))) {
+  #   out$h_slope <- as.numeric(rep(NA, length(out$start)))
+  # }
+  # if (!("h_intercept" %in% names(out))) {
+  #   out$h_intercept <- as.numeric(rep(NA, length(out$start)))
+  # }
+  # if (!("h_r2" %in% names(out))) {
+  #   out$h_r2 <- as.numeric(rep(NA, length(out$start)))
+  # }
+  # 
+  # # ensure there are 8 columns in out!
+  # if (ncol(out) != 8) {
+  #   stop("Wrong number of columns in out.")
+  # }
+
+  #return(out)
 }

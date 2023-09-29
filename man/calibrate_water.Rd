@@ -5,22 +5,26 @@
 \title{calibrate_water}
 \usage{
 calibrate_water(
-  inpath,
-  outpath,
+  inname,
+  outname,
   site,
   calibration_half_width = 14,
   filter_data = TRUE,
   force_cal_to_beginning = FALSE,
   force_cal_to_end = FALSE,
   r2_thres = 0.95,
-  slope_tolerance = 9999
+  slope_tolerance = 9999,
+  correct_refData = TRUE,
+  write_to_file = TRUE
 )
 }
 \arguments{
-\item{inpath}{Directory path to input (monthly) NEON HDF5 files.}
+\item{inname}{Input file(s) that are to be calibrated. If a single file is
+given, output will be a single file per site per month. If a
+list of files corresponding to a timeseries at a given site
+is provided, will calibrate the whole time series.}
 
-\item{outpath}{Directory path to save output data file.
-(For now, 1 per site).}
+\item{outname}{Name of the output file. (character)}
 
 \item{site}{Four-letter NEON code for site being processed.}
 
@@ -44,6 +48,14 @@ relationship nonlinear. Default = 0.95}
 \item{slope_tolerance}{How different from 1 should we allow
 'passing' regression slopes to be? Experimental parameter,
 off by default (e.g., default slope parameter = 9999)}
+
+\item{correct_refData}{There are a few instances where the reference d18O
+and d2H values may have been switched, causing very anomalous
+d-excess values. If TRUE, implement a switch that corrects this
+issue.}
+
+\item{write_to_file}{Write calibrated ambient data to file?
+(Mostly used for testing)}
 }
 \value{
 nothing to the workspace, but creates a new output file of

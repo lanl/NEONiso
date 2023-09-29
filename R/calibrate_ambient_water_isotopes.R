@@ -17,8 +17,6 @@
 #' @param outname Output variable name. Inherited from
 #'             `calibrate_ambient_water_linreg`
 #' @param site Four-letter NEON code corresponding to site being processed.
-#' @param file Output file name. Inherited from
-#'             `calibrate_ambient_water_linreg`
 #' @param force_to_end In given month, calibrate ambient data later than last
 #'             calibration, using the last calibration? (default true)
 #' @param force_to_beginning In given month, calibrate ambient data before than
@@ -36,11 +34,10 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
                                            caldf,
                                            outname,
                                            site,
-                                           file,
-                                           filter_data,
-                                           force_to_end,
-                                           force_to_beginning,
-                                           r2_thres) {
+                                           filter_data = TRUE,
+                                           force_to_end = TRUE,
+                                           force_to_beginning = TRUE,
+                                           r2_thres = 0.9) {
 
   # print status.
   print("Processing water ambient data...")
@@ -71,7 +68,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   var_inds_in_calperiod <- list()
 
   for (i in 1:nrow(caldf)) {
-    int <- lubridate::interval(caldf$start[i], caldf$end[i])
+    int <- lubridate::interval(caldf$timeBgn[i], caldf$timeEnd[i])
     var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
   }
 
@@ -79,16 +76,16 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   oxydf$mean_cal <- oxydf$mean
   oxydf$max_cal  <- oxydf$max
   oxydf$min_cal  <- oxydf$min
-
+  
   for (i in 1:length(var_inds_in_calperiod)) {
-    if (!is.na(caldf$o_r2[i]) & caldf$o_r2[i] > r2_thres) {
+    if (!is.na(caldf$r2_18O[i]) & caldf$r2_18O[i] > r2_thres) {
 
-      oxydf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$o_intercept[i] +
-        oxydf$mean[var_inds_in_calperiod[[i]]] * caldf$o_slope[i]
-      oxydf$min_cal[var_inds_in_calperiod[[i]]] <- caldf$o_intercept[i] +
-        oxydf$min[var_inds_in_calperiod[[i]]] * caldf$o_slope[i]
-      oxydf$max_cal[var_inds_in_calperiod[[i]]] <- caldf$o_intercept[i] +
-        oxydf$max[var_inds_in_calperiod[[i]]] * caldf$o_slope[i]
+      oxydf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$intercept18O[i] +
+        oxydf$mean[var_inds_in_calperiod[[i]]] * caldf$slope18O[i]
+      oxydf$min_cal[var_inds_in_calperiod[[i]]] <- caldf$intercept18O[i] +
+        oxydf$min[var_inds_in_calperiod[[i]]] * caldf$slope18O[i]
+      oxydf$max_cal[var_inds_in_calperiod[[i]]] <- caldf$intercept18O[i] +
+        oxydf$max[var_inds_in_calperiod[[i]]] * caldf$slope18O[i]
 
     } else {
 
@@ -106,9 +103,6 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
     oxydf$min_cal      <- filter_median_brock86(oxydf$min_cal)
     oxydf$max_cal      <- filter_median_brock86(oxydf$max_cal)
   }
-
-  oxydf$timeBgn <- convert_POSIXct_to_NEONhdf5_time(oxydf$timeBgn)
-  oxydf$timeEnd <- convert_POSIXct_to_NEONhdf5_time(oxydf$timeEnd)
 
   # replace ambdf in amb_data_list
   amb_data_list$dlta18OH2o <- oxydf
@@ -136,7 +130,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   var_inds_in_calperiod <- list()
 
   for (i in 1:nrow(caldf)) {
-    int <- lubridate::interval(caldf$start[i], caldf$end[i])
+    int <- lubridate::interval(caldf$timeBgn[i], caldf$timeEnd[i])
     var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
   }
 
@@ -146,14 +140,14 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
 
   for (i in 1:length(var_inds_in_calperiod)) {
 
-    if (!is.na(caldf$h_r2[i]) & caldf$h_r2[i] > r2_thres) {
+    if (!is.na(caldf$r2_2H[i]) & caldf$r2_2H[i] > r2_thres) {
 
-      hyddf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$h_intercept[i] +
-        hyddf$mean[var_inds_in_calperiod[[i]]] * caldf$h_slope[i]
-      hyddf$min_cal[var_inds_in_calperiod[[i]]] <- caldf$h_intercept[i] +
-        hyddf$min[var_inds_in_calperiod[[i]]] * caldf$h_slope[i]
-      hyddf$max_cal[var_inds_in_calperiod[[i]]] <- caldf$h_intercept[i] +
-        hyddf$max[var_inds_in_calperiod[[i]]] * caldf$h_slope[i]
+      hyddf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$intercept2H[i] +
+        hyddf$mean[var_inds_in_calperiod[[i]]] * caldf$slope2H[i]
+      hyddf$min_cal[var_inds_in_calperiod[[i]]] <- caldf$intercept2H[i] +
+        hyddf$min[var_inds_in_calperiod[[i]]] * caldf$slope2H[i]
+      hyddf$max_cal[var_inds_in_calperiod[[i]]] <- caldf$intercept2H[i] +
+        hyddf$max[var_inds_in_calperiod[[i]]] * caldf$slope2H[i]
 
     } else {
 
@@ -172,26 +166,9 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
     hyddf$max_cal  <- filter_median_brock86(hyddf$max_cal)
   }
 
-  hyddf$timeBgn <- convert_POSIXct_to_NEONhdf5_time(hyddf$timeBgn)
-  hyddf$timeEnd <- convert_POSIXct_to_NEONhdf5_time(hyddf$timeEnd)
-
   # replace ambdf in amb_data_list
   amb_data_list$dlta2HH2o <- hyddf
 
-  #-----------------------------------------------------------
-  # write out dataset to HDF5 file.
-  fid <- rhdf5::H5Fopen(file)
-
-  h2o_data_outloc <- rhdf5::H5Gcreate(fid,
-                        paste0("/", site, "/dp01/data/isoH2o/", outname))
-
-  # loop through variables in list amb_data_list and write out as a dataframe.
-  lapply(names(amb_data_list), function(x) {
-    rhdf5::h5writeDataset(obj = amb_data_list[[x]],
-                                     h5loc = h2o_data_outloc,
-                                     name = x,
-                                     DataFrameAsCompound = TRUE)})
-
-  # close all open handles.
-  rhdf5::h5closeAll()
+  # return list
+  return(amb_data_list)
 }

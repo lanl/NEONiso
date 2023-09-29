@@ -4,10 +4,19 @@
 \alias{fit_water_regression}
 \title{fit_water_regression}
 \usage{
-fit_water_regression(stds, calibration_half_width, slope_tolerance, r2_thres)
+fit_water_regression(
+  ref_data,
+  calibration_half_width,
+  slope_tolerance,
+  r2_thres,
+  plot_regression_data = FALSE,
+  plot_dir = "/dev/null",
+  site,
+  min_nobs = NA
+)
 }
 \arguments{
-\item{stds}{Reference data.frame from which to estimate
+\item{ref_data}{Reference data.frame from which to estimate
 calibration parameters.}
 
 \item{calibration_half_width}{Determines the period (in days)
@@ -19,6 +28,16 @@ from 1 by slope_tolerance.}
 
 \item{r2_thres}{What is the minimum r2 value permitted in a 'useful'
 calibration relationship.}
+
+\item{plot_regression_data}{True or false - should we plot the data used in
+the regression? Useful for debugging.}
+
+\item{plot_dir}{If plot_regression_data is true, where should the
+plots be saved?}
+
+\item{site}{Needed for regression plots.}
+
+\item{min_nobs}{Minimum number of high-frequency observations to define a peak.}
 }
 \value{
 Returns a data.frame of calibration parameters.

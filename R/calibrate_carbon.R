@@ -145,8 +145,9 @@ calibrate_carbon         <- function(inname,
   #-----------------------------------------------------------
   # Extract reference data from input HDF5 file.
   #-----------------------------------------------------------
-  ciso <- ingest_data(inname, analyte = "Co2", avg = avg)
 
+  ciso <- ingest_data(inname, analyte = "Co2", amb_avg = avg, ref_avg = avg)
+ 
   # extract the data we need from ciso list
   refe <-  extract_carbon_calibration_data(ciso$refe_stacked)
 
