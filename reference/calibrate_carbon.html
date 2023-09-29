@@ -32,7 +32,7 @@ under most circumstances. We also found this to be the case for NEON data
     
     <a class="navbar-brand me-2" href="../index.html">NEONiso</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -259,14 +259,12 @@ provided, and then a single output file per site will be generated.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="va">fin</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata'</span>,</span></span>
 <span class="r-in"><span><span class="st">'NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.20201020T211037Z.packed.h5'</span>,</span></span>
 <span class="r-in"><span>         package <span class="op">=</span> <span class="st">'NEONiso'</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="calibrate_carbon_bymonth.html">calibrate_carbon_bymonth</a></span><span class="op">(</span>inname <span class="op">=</span> <span class="va">fin</span>, outname <span class="op">=</span> <span class="st">'out.h5'</span>,</span></span>
+<span class="r-in"><span><span class="fu">calibrate_carbon_bymonth</span><span class="op">(</span>inname <span class="op">=</span> <span class="va">fin</span>, outname <span class="op">=</span> <span class="st">'out.h5'</span>,</span></span>
 <span class="r-in"><span>         site <span class="op">=</span> <span class="st">'ONAQ'</span>, write_to_file <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`calibrate_carbon_bymonth()` was deprecated in NEONiso 0.6.0.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use `calibrate_carbon()` instead.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'fin' not found</span>
-<span class="r-in"><span><span class="fu"><a href="calibrate_carbon_bymonth.html">calibrate_carbon_bymonth</a></span><span class="op">(</span>inname <span class="op">=</span> <span class="va">fin</span>, outname <span class="op">=</span> <span class="st">'out.h5'</span>,</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in calibrate_carbon_bymonth(inname = fin, outname = "out.h5", site = "ONAQ",     write_to_file = FALSE):</span> could not find function "calibrate_carbon_bymonth"</span>
+<span class="r-in"><span><span class="fu">calibrate_carbon_bymonth</span><span class="op">(</span>inname <span class="op">=</span> <span class="va">fin</span>, outname <span class="op">=</span> <span class="st">'out.h5'</span>,</span></span>
 <span class="r-in"><span>         site <span class="op">=</span> <span class="st">'ONAQ'</span>, method <span class="op">=</span> <span class="st">'linreg'</span>, write_to_file <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'fin' not found</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in calibrate_carbon_bymonth(inname = fin, outname = "out.h5", site = "ONAQ",     method = "linreg", write_to_file = FALSE):</span> could not find function "calibrate_carbon_bymonth"</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

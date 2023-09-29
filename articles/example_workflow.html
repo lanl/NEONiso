@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NEONiso</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -134,7 +134,7 @@ inside of a for loop (or an apply statement), and call them for each
 file you would like to calibrate:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">fnames.out</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/calibrate_carbon_bymonth.html">calibrate_carbon_bymonth</a></span><span class="op">(</span><span class="va">fnames</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>  <span class="fu">calibrate_carbon_bymonth</span><span class="op">(</span><span class="va">fnames</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
 <span>                           <span class="va">fnames.out</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
 <span>                           site<span class="op">=</span><span class="va">site.code</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
 <span>                           method <span class="op">=</span> <span class="st">"Bowling_2003"</span><span class="op">)</span></span>

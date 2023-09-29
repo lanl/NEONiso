@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NEONiso</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,13 +58,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">extract_water_calibration_data</span><span class="op">(</span></span>
-<span>  <span class="va">data_list</span>,</span>
-<span>  ucrt_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">standard</span>,</span>
-<span>  ucrt_source <span class="op">=</span> <span class="st">"data"</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"by_site"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">extract_water_calibration_data</span><span class="op">(</span><span class="va">data_list</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -72,28 +66,6 @@
     <dl><dt>data_list</dt>
 <dd><p>List containing data, from the /*/dp01/data/
 group in NEON HDF5 file.</p></dd>
-
-
-<dt>ucrt_list</dt>
-<dd><p>List containing uncertainty data, from the /*/dp01/ucrt/
-group in NEON HDF5 file. (only works if paired with
-ucrt_source = 'ucrt' and method = 'by_month')</p></dd>
-
-
-<dt>standard</dt>
-<dd><p>String indicating whether to grab data from the high,
-medium, or low standard.</p></dd>
-
-
-<dt>ucrt_source</dt>
-<dd><p>Where from HDF5 file should  variance be extracted from?
-(Only "data" works now..."ucrt" will throw an error.)</p></dd>
-
-
-<dt>method</dt>
-<dd><p>Are we calling this function from the calibrate_water_linreg
-function (use "by_month") or the calibrate_water_linreg_bysite
-function (use "by_site)</p></dd>
 
 </dl></div>
     <div class="section level2">

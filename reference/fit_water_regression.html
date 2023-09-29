@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NEONiso</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,12 +58,21 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fit_water_regression</span><span class="op">(</span><span class="va">stds</span>, <span class="va">calibration_half_width</span>, <span class="va">slope_tolerance</span>, <span class="va">r2_thres</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fit_water_regression</span><span class="op">(</span></span>
+<span>  <span class="va">ref_data</span>,</span>
+<span>  <span class="va">calibration_half_width</span>,</span>
+<span>  <span class="va">slope_tolerance</span>,</span>
+<span>  <span class="va">r2_thres</span>,</span>
+<span>  plot_regression_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  plot_dir <span class="op">=</span> <span class="st">"/dev/null"</span>,</span>
+<span>  <span class="va">site</span>,</span>
+<span>  min_nobs <span class="op">=</span> <span class="cn">NA</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>stds</dt>
+    <dl><dt>ref_data</dt>
 <dd><p>Reference data.frame from which to estimate
 calibration parameters.</p></dd>
 
@@ -82,6 +91,24 @@ from 1 by slope_tolerance.</p></dd>
 <dt>r2_thres</dt>
 <dd><p>What is the minimum r2 value permitted in a 'useful'
 calibration relationship.</p></dd>
+
+
+<dt>plot_regression_data</dt>
+<dd><p>True or false - should we plot the data used in
+the regression? Useful for debugging.</p></dd>
+
+
+<dt>plot_dir</dt>
+<dd><p>If plot_regression_data is true, where should the
+plots be saved?</p></dd>
+
+
+<dt>site</dt>
+<dd><p>Needed for regression plots.</p></dd>
+
+
+<dt>min_nobs</dt>
+<dd><p>Minimum number of high-frequency observations to define a peak.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NEONiso</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,7 +58,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ingest_data</span><span class="op">(</span><span class="va">inname</span>, <span class="va">analyte</span>, name_fix <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">avg</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ingest_data</span><span class="op">(</span><span class="va">inname</span>, <span class="va">analyte</span>, name_fix <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">amb_avg</span>, <span class="va">ref_avg</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -78,8 +78,12 @@ parameter provides a necessary work around until these
 functions are removed.</p></dd>
 
 
-<dt>avg</dt>
-<dd><p>The averaging interval to extract, in minutes.</p></dd>
+<dt>amb_avg</dt>
+<dd><p>The averaging interval of the ambient data to extract.</p></dd>
+
+
+<dt>ref_avg</dt>
+<dd><p>The averaging interval of the reference data to extract.</p></dd>
 
 </dl></div>
     <div class="section level2">

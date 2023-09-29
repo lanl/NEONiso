@@ -49,9 +49,6 @@
     <loc>https://lanl.github.io/NEONiso/reference/calibrate_carbon.html</loc>
   </url>
   <url>
-    <loc>https://lanl.github.io/NEONiso/reference/calibrate_carbon_bymonth.html</loc>
-  </url>
-  <url>
     <loc>https://lanl.github.io/NEONiso/reference/calibrate_carbon_reference_data.html</loc>
   </url>
   <url>
@@ -62,9 +59,6 @@
   </url>
   <url>
     <loc>https://lanl.github.io/NEONiso/reference/calibrate_water.html</loc>
-  </url>
-  <url>
-    <loc>https://lanl.github.io/NEONiso/reference/calibrate_water_linreg_bymonth.html</loc>
   </url>
   <url>
     <loc>https://lanl.github.io/NEONiso/reference/calibrate_water_reference_data.html</loc>
@@ -136,6 +130,9 @@
     <loc>https://lanl.github.io/NEONiso/reference/restructure_carbon_variables.html</loc>
   </url>
   <url>
+    <loc>https://lanl.github.io/NEONiso/reference/restructure_variables.html</loc>
+  </url>
+  <url>
     <loc>https://lanl.github.io/NEONiso/reference/restructure_water_variables.html</loc>
   </url>
   <url>
@@ -151,7 +148,7 @@
     <loc>https://lanl.github.io/NEONiso/reference/terrestrial_core_sites.html</loc>
   </url>
   <url>
-    <loc>https://lanl.github.io/NEONiso/reference/terrestrial_relocatable_sites.html</loc>
+    <loc>https://lanl.github.io/NEONiso/reference/terrestrial_gradient_sites.html</loc>
   </url>
   <url>
     <loc>https://lanl.github.io/NEONiso/reference/validate_analyte.html</loc>
@@ -176,6 +173,9 @@
   </url>
   <url>
     <loc>https://lanl.github.io/NEONiso/reference/write_ucrt.html</loc>
+  </url>
+  <url>
+    <loc>https://lanl.github.io/NEONiso/reference/write_water_ambient_data.html</loc>
   </url>
   <url>
     <loc>https://lanl.github.io/NEONiso/reference/write_water_calibration_data.html</loc>

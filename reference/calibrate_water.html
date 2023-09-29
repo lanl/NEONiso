@@ -40,7 +40,7 @@ This function also copies over data in the qfqm and ucrt hdf5 data groups."><!--
     
     <a class="navbar-brand me-2" href="../index.html">NEONiso</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -104,27 +104,31 @@ This function also copies over data in the qfqm and ucrt hdf5 data groups.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calibrate_water</span><span class="op">(</span></span>
-<span>  <span class="va">inpath</span>,</span>
-<span>  <span class="va">outpath</span>,</span>
+<span>  <span class="va">inname</span>,</span>
+<span>  <span class="va">outname</span>,</span>
 <span>  <span class="va">site</span>,</span>
 <span>  calibration_half_width <span class="op">=</span> <span class="fl">14</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  force_cal_to_beginning <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  force_cal_to_end <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  r2_thres <span class="op">=</span> <span class="fl">0.95</span>,</span>
-<span>  slope_tolerance <span class="op">=</span> <span class="fl">9999</span></span>
+<span>  slope_tolerance <span class="op">=</span> <span class="fl">9999</span>,</span>
+<span>  correct_refData <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  write_to_file <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>inpath</dt>
-<dd><p>Directory path to input (monthly) NEON HDF5 files.</p></dd>
+    <dl><dt>inname</dt>
+<dd><p>Input file(s) that are to be calibrated. If a single file is
+given, output will be a single file per site per month. If a
+list of files corresponding to a timeseries at a given site
+is provided, will calibrate the whole time series.</p></dd>
 
 
-<dt>outpath</dt>
-<dd><p>Directory path to save output data file.
-(For now, 1 per site).</p></dd>
+<dt>outname</dt>
+<dd><p>Name of the output file. (character)</p></dd>
 
 
 <dt>site</dt>
@@ -162,6 +166,18 @@ relationship nonlinear. Default = 0.95</p></dd>
 <dd><p>How different from 1 should we allow
 'passing' regression slopes to be? Experimental parameter,
 off by default (e.g., default slope parameter = 9999)</p></dd>
+
+
+<dt>correct_refData</dt>
+<dd><p>There are a few instances where the reference d18O
+and d2H values may have been switched, causing very anomalous
+d-excess values. If TRUE, implement a switch that corrects this
+issue.</p></dd>
+
+
+<dt>write_to_file</dt>
+<dd><p>Write calibrated ambient data to file?
+(Mostly used for testing)</p></dd>
 
 </dl></div>
     <div class="section level2">
