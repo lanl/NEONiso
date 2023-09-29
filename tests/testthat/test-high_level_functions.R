@@ -13,13 +13,14 @@ fin <- system.file("extdata",
                    "NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.packed.h5",
                    package = 'NEONiso', mustWork = TRUE)
 
-fout <- "/dev/null"
+fout1 <- tempfile()
+fout2 <- tempfile()
 
 test_that("calibrate_carbon returns no error", {
 
   skip_on_cran()
   # these tests could probably be made more useful!!
-  expect_no_error(calibrate_carbon(fin, fout, "ONAQ",
+  expect_no_error(calibrate_carbon(fin, fout1, "ONAQ",
                    method = "Bowling_2003",
                    calibration_half_width = 0.5,
                    force_cal_to_beginning = TRUE,
@@ -28,9 +29,9 @@ test_that("calibrate_carbon returns no error", {
                    filter_ambient = TRUE,
                    r2_thres = 0.95,
                    correct_refData = TRUE,
-                   write_to_file = FALSE))
+                   write_to_file = TRUE))
 
-  expect_no_error(calibrate_carbon(fin, fout, "ONAQ",
+  expect_no_error(calibrate_carbon(fin, fout2, "ONAQ",
                    method = "linreg",
                    calibration_half_width = 0.5,
                    force_cal_to_beginning = TRUE,
@@ -39,7 +40,7 @@ test_that("calibrate_carbon returns no error", {
                    filter_ambient = TRUE,
                    r2_thres = 0.95,
                    correct_refData = TRUE,
-                   write_to_file = FALSE))
+                   write_to_file = TRUE))
   
 })
 

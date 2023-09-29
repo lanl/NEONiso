@@ -363,9 +363,15 @@ h5delete(fid, '/ONAQ/dp01/ucrt/isoCo2/co2High_09m/rtioMoleWetH2oEnvHut')
 h5delete(fid, '/ONAQ/dp01/ucrt/isoCo2/co2High_09m/rtioMoleWet12CCo2')
 h5delete(fid, '/ONAQ/dp01/ucrt/isoCo2/co2High_09m/rtioMoleWet13CCo2')
 # cut out more:
-
-
 H5Fclose(fid)
+
+# Also need to change attribute in file:
+# in python, code used was:
+# import h5py
+# import numpy
+# file = h5py.File('file','r+')
+# file['ONAQ'].attrs['LvlMeasTow'] = numpy.array([1.])
+# file.close()
 
 #===============================================================================
 #===============================================================================
