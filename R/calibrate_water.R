@@ -99,24 +99,25 @@ calibrate_water       <- function(inname,
   # Ensure same number of measurements for each standard
   #--------------------------------------------------------------
   # add group ids using run length encoding based on time differences.
-  if (FALSE) {
-    # this may need to be moved to the ingest data chain...
-    thres_hours <- as.difftime("04:00:00", # assume any time difference
-                               format = "%H:%M:%S", # > 4 hours is a new
-                               units = "mins") # reference measurement
-    
-    high_rs <- high_rs %>%
-      dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
-    high_rs$periods <- data.table::rleidv(high_rs, "time_diff") %/% 2
-    
-    med_rs <- med_rs %>%
-      dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
-    med_rs$periods <- data.table::rleidv(med_rs, "time_diff") %/% 2
-    
-    low_rs <- low_rs %>%
-      dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
-    low_rs$periods <- data.table::rleidv(low_rs, "time_diff") %/% 2
-    
+  # does this need to be moved to resructure or regression functions?
+  # if (FALSE) {
+  #   # this may need to be moved to the ingest data chain...
+  #   thres_hours <- as.difftime("04:00:00", # assume any time difference
+  #                              format = "%H:%M:%S", # > 4 hours is a new
+  #                              units = "mins") # reference measurement
+  #   
+  #   high_rs <- high_rs %>%
+  #     dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
+  #   high_rs$periods <- data.table::rleidv(high_rs, "time_diff") %/% 2
+  #   
+  #   med_rs <- med_rs %>%
+  #     dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
+  #   med_rs$periods <- data.table::rleidv(med_rs, "time_diff") %/% 2
+  #   
+  #   low_rs <- low_rs %>%
+  #     dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
+  #   low_rs$periods <- data.table::rleidv(low_rs, "time_diff") %/% 2
+  #   
   }
 
   #=======================================================================
@@ -163,33 +164,5 @@ calibrate_water       <- function(inname,
     
     return(outData)
   }
-  # 
-  # #===========================================================
-  # # calibrate data for each height.
-  # #-------------------------------------
-  # # stack data to get ambient observations.
-  # print("stacking ambient data...this may take a while...")
-  # 
-  # data_by_height_by_var <- restructure_ambient_data(inpath, "H2o")
-  # 
-  # # okay, now calibrate the ambient data...
-  # lapply(names(data_by_height_by_var),
-  #        function(x) {
-  #          data_by_height_by_var[[x]] <- lapply(data_by_height_by_var[[x]],
-  #                                               function(y) {
-  #                                                 dplyr::select(y,
-  #                                                               -varname)
-  #                                                           })
-  #          calibrate_ambient_water_linreg(amb_data_list = data_by_height_by_var[[x]],
-  #                                         caldf = out,
-  #                                         outname = x,
-  #                                         file = outname,
-  #                                         site = site,
-  #                                         filter_data = filter_data,
-  #                                         force_to_end = force_cal_to_end,
-  #                                         force_to_beginning = force_cal_to_beginning,
-  #                                         r2_thres = r2_thres)})
-  # 
-  # rhdf5::h5closeAll()
 
 }
