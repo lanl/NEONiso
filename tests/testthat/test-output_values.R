@@ -66,3 +66,19 @@ test_that("calibrated ambient co2 mixing ratios linreg are within a plausible ra
   expect_gt(min(ciso_subset_cal$`000_010_09m`$rtioMoleDryCo2$mean_cal, na.rm = TRUE), 300)
 })
 
+
+#---------------------------------------
+# test some of the output data functions
+
+fout <- tempfile()
+
+test_that("setup_output_file returns no errors", {
+  expect_no_error(setup_output_file(fin,
+                                    fout,
+                                    site = "YELL",
+                                    analyte = "H2o"))
+  expect_no_error(setup_output_file(fin,
+                                    fout,
+                                    site = "YELL",
+                                    analyte = "Co2"))
+})
