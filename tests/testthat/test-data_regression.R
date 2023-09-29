@@ -56,7 +56,7 @@ test_that("calibrate_ambient_carbon_Bowling2003 returns a list",{
 test_that("calibrate_ambient_carbon_Bowling2003 returns correct variables", {
   skip_on_cran()
   vars <- c("dlta13CCo2", "pres", "presEnvHut", "rhEnvHut",
-            "rtioMoleDry12CCo2", "rtioMoleDry13CCo2", "rtioMoleDryCo2", 
+            "rtioMoleDry12CCo2", "rtioMoleDry13CCo2", "rtioMoleDryCo2",
             "rtioMoleDryH2o", "rtioMoleWet12CCo2", "rtioMoleWet13CCo2",
             "rtioMoleWetCo2", "rtioMoleWetH2o",
             "rtioMoleWetH2oEnvHut", "temp", "tempEnvHut")
@@ -73,10 +73,10 @@ test_that("calibrated d13C values have been added to calibrate_ambient_cabron_Bo
 # test carbon - linreg ambient calibration
 temp <- calibrate_ambient_carbon_linreg(co2test$ambient$`000_010_09m`,
                                              calDf_LR,
-                                             site = 'ONAQ')
+                                             site = "ONAQ")
 temp_gf <- calibrate_ambient_carbon_linreg(co2test$ambient$`000_010_09m`,
                                 calDf_LR,
-                                site = 'ONAQ',
+                                site = "ONAQ",
                                 gap_fill_parameters = TRUE)
 
 test_that("calibrate_ambient_carbon_linreg returns a list",{

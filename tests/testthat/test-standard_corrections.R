@@ -24,10 +24,10 @@ test_RH    <- delta_to_R(test_vals[3], "hydrogen")
 
 test_that("R_to_delta and delta_to_R are invertible", {
   expect_equal(R_to_delta(delta_to_R(mlo$d13c, "carbon"),
-                          "carbon"), 
+                          "carbon"),
                mlo$d13c)
   expect_equal(R_to_delta(delta_to_R(test_vals, "oxygen"),
-                          "oxygen"), 
+                          "oxygen"),
                test_vals)
   expect_equal(R_to_delta(delta_to_R(test_vals, "hydrogen"),
                           "hydrogen"),
