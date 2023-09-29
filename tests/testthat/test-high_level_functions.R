@@ -41,6 +41,18 @@ test_that("calibrate_carbon returns no error", {
                    r2_thres = 0.95,
                    correct_refData = TRUE,
                    write_to_file = TRUE))
+  
+  # these tests could probably be made more useful!!
+  expect_no_error(calibrate_carbon(fin, '/dev/null', "ONAQ",
+                                   method = "Bowling_2003",
+                                   calibration_half_width = 0.5,
+                                   force_cal_to_beginning = TRUE,
+                                   force_cal_to_end = TRUE,
+                                   gap_fill_parameters = FALSE,
+                                   filter_ambient = TRUE,
+                                   r2_thres = 0.95,
+                                   correct_refData = TRUE,
+                                   write_to_file = FALSE))
 })
 
 
