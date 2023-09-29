@@ -7,7 +7,6 @@
 calibrate_ambient_carbon_linreg(
   amb_data_list,
   caldf,
-  outname,
   site,
   filter_data = TRUE,
   force_to_end = TRUE,
@@ -22,9 +21,6 @@ Will include all variables in 000_0x0_xxm. (character)}
 
 \item{caldf}{Calibration data frame containing gain and offset values for
 12C and 13C isotopologues.}
-
-\item{outname}{Output variable name. Inherited from
-\code{calibrate_ambient_carbon_linreg}}
 
 \item{site}{Four-letter NEON code corresponding to site being processed.}
 
