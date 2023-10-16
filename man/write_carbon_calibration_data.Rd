@@ -4,7 +4,7 @@
 \alias{write_carbon_calibration_data}
 \title{write_carbon_calibration_data}
 \usage{
-write_carbon_calibration_data(outname, site, calDf, method)
+write_carbon_calibration_data(outname, site, calDf, method, to_file = TRUE)
 }
 \arguments{
 \item{outname}{Output file name.}
@@ -16,6 +16,8 @@ this is the output from fit_carbon_regression}
 
 \item{method}{Was the Bowling et al. 2003 or the linear regression
 method used in fit_carbon_regression?}
+
+\item{to_file}{Write to file (TRUE) or to environment (FALSE).}
 }
 \value{
 Nothing to the environment, but writes out the

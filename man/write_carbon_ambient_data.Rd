@@ -4,7 +4,7 @@
 \alias{write_carbon_ambient_data}
 \title{write_carbon_ambient_data}
 \usage{
-write_carbon_ambient_data(outname, site, amb_data_list)
+write_carbon_ambient_data(outname, site, amb_data_list, to_file = TRUE)
 }
 \arguments{
 \item{outname}{Output file name.}
@@ -13,6 +13,8 @@ write_carbon_ambient_data(outname, site, amb_data_list)
 
 \item{amb_data_list}{Calibrated list of ambient data -
 this is the output from one of the calibrate_ambient_carbon* functions.}
+
+\item{to_file}{Write to file (TRUE) or to environment (FALSE).}
 }
 \value{
 Nothing to the environment, but writes data in amb_data_list to file.
