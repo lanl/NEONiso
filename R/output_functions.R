@@ -240,13 +240,18 @@ copy_ucrt_group <- function(data_list, outname, site, file, species) {
 #'              this is the output from fit_carbon_regression
 #' @param method Was the Bowling et al. 2003 or the linear regression
 #'          method used in fit_carbon_regression?
+#' @param to_file Write to file (TRUE) or to environment (FALSE).
 #'
 #' @return Nothing to the environment, but writes out the
 #'         calibration parameters (e.g., gain and offset or
 #'         regression slopes and intercepts) to the output
 #'         hdf5 file.
 #'
-write_carbon_calibration_data <- function(outname, site, calDf, method) {
+write_carbon_calibration_data <- function(outname,
+                                          site,
+                                          calDf,
+                                          method,
+                                          to_file = TRUE) {
 
   print("Writing calibration parameters...")
   rhdf5::h5createGroup(outname,
@@ -288,10 +293,15 @@ write_carbon_calibration_data <- function(outname, site, calDf, method) {
 #' @param site NEON 4-letter site code.
 #' @param amb_data_list Calibrated list of ambient data -
 #'   this is the output from one of the calibrate_ambient_carbon* functions.
+#'   
+#' @param to_file Write to file (TRUE) or to environment (FALSE).
 #'
 #' @return Nothing to the environment, but writes data in amb_data_list to file.
 #'
-write_carbon_ambient_data <- function(outname, site, amb_data_list) {
+write_carbon_ambient_data <- function(outname,
+                                      site,
+                                      amb_data_list,
+                                      to_file = TRUE) {
 
   print("Writing calibrated ambient data...")
 
