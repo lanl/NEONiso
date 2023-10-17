@@ -64,7 +64,7 @@ have been calibrated using this package.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">write_carbon_ambient_data</span><span class="op">(</span><span class="va">outname</span>, <span class="va">site</span>, <span class="va">amb_data_list</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">write_carbon_ambient_data</span><span class="op">(</span><span class="va">outname</span>, <span class="va">site</span>, <span class="va">amb_data_list</span>, to_file <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -80,6 +80,10 @@ have been calibrated using this package.</p>
 <dt>amb_data_list</dt>
 <dd><p>Calibrated list of ambient data -
 this is the output from one of the calibrate_ambient_carbon* functions.</p></dd>
+
+
+<dt>to_file</dt>
+<dd><p>Write to file (TRUE) or to environment (FALSE).</p></dd>
 
 </dl></div>
     <div class="section level2">

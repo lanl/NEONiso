@@ -108,7 +108,8 @@ under most circumstances. We also found this to be the case for NEON data
 <span>  plot_regression_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  plot_directory <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  avg <span class="op">=</span> <span class="fl">9</span>,</span>
-<span>  min_nobs <span class="op">=</span> <span class="cn">NA</span></span>
+<span>  min_nobs <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  standards <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"co2Low"</span>, <span class="st">"co2Med"</span>, <span class="st">"co2High"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -207,6 +208,12 @@ change to 6 eventually.</p></dd>
 
 <dt>min_nobs</dt>
 <dd><p>Minimum number of high-frequency observations to define a peak.</p></dd>
+
+
+<dt>standards</dt>
+<dd><p>Which reference gases (standards) to use? Default is all,
+but can pass a subset of "co2Low", "co2Med", and "co2High" as a vector
+to this argument as well.</p></dd>
 
 </dl></div>
     <div class="section level2">
