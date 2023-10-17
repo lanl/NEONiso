@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   example_workflow: example_workflow.html
   reference_corrections: reference_corrections.html
-last_built: 2023-10-17T22:58Z
+last_built: 2023-10-17T23:25Z
 urls:
   reference: https://lanl.github.io/NEONiso/reference
   article: https://lanl.github.io/NEONiso/articles
