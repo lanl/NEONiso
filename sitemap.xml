@@ -49,13 +49,7 @@
     <loc>https://lanl.github.io/NEONiso/reference/calibrate_carbon.html</loc>
   </url>
   <url>
-    <loc>https://lanl.github.io/NEONiso/reference/calibrate_carbon_reference_data.html</loc>
-  </url>
-  <url>
     <loc>https://lanl.github.io/NEONiso/reference/calibrate_water.html</loc>
-  </url>
-  <url>
-    <loc>https://lanl.github.io/NEONiso/reference/calibrate_water_reference_data.html</loc>
   </url>
   <url>
     <loc>https://lanl.github.io/NEONiso/reference/carbon_regression_plots.html</loc>
@@ -154,9 +148,6 @@
     <loc>https://lanl.github.io/NEONiso/reference/write_carbon_calibration_data.html</loc>
   </url>
   <url>
-    <loc>https://lanl.github.io/NEONiso/reference/write_carbon_reference_data.html</loc>
-  </url>
-  <url>
     <loc>https://lanl.github.io/NEONiso/reference/write_qfqm.html</loc>
   </url>
   <url>
@@ -167,8 +158,5 @@
   </url>
   <url>
     <loc>https://lanl.github.io/NEONiso/reference/write_water_calibration_data.html</loc>
-  </url>
-  <url>
-    <loc>https://lanl.github.io/NEONiso/reference/write_water_reference_data.html</loc>
   </url>
 </urlset>
