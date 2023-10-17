@@ -4,11 +4,18 @@
 \alias{extract_carbon_calibration_data}
 \title{extract_carbon_calibration_data.R}
 \usage{
-extract_carbon_calibration_data(data_list)
+extract_carbon_calibration_data(
+  data_list,
+  standards = c("co2Low", "co2Med", "co2High")
+)
 }
 \arguments{
 \item{data_list}{List containing data, from the /*/dp01/data/
 group in NEON HDF5 file.}
+
+\item{standards}{Which reference gases (standards) to use? Default is all,
+but can pass a subset of "co2Low", "co2Med", and "co2High" as a vector
+to this argument as well.}
 }
 \value{
 Returns data frame of required variables.

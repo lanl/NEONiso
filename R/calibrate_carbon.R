@@ -96,6 +96,9 @@
 #' @param avg The averaging interval to extract, in minutes. Default 9, but will
 #'        change to 6 eventually.
 #' @param min_nobs Minimum number of high-frequency observations to define a peak.
+#' @param standards Which reference gases (standards) to use? Default is all, 
+#'        but can pass a subset of "co2Low", "co2Med", and "co2High" as a vector
+#'        to this argument as well.
 #'
 #'
 #' @return Returns nothing to the environment, but creates a new output HDF5
@@ -129,7 +132,8 @@ calibrate_carbon         <- function(inname,
                                      plot_regression_data = FALSE,
                                      plot_directory = NULL,
                                      avg = 9,
-                                     min_nobs = NA) {
+                                     min_nobs = NA,
+                                     standards = c("co2Low", "co2Med", "co2High")) {
 
   if (remove_known_bad_months) {
     if (site == "UNDE") {
@@ -146,10 +150,14 @@ calibrate_carbon         <- function(inname,
   # Extract reference data from input HDF5 file.
   #-----------------------------------------------------------
 
-  ciso <- ingest_data(inname, analyte = "Co2", amb_avg = avg, ref_avg = avg)
+  ciso <- ingest_data(inname,
+                      analyte = "Co2",
+                      amb_avg = avg,
+                      ref_avg = avg)
  
   # extract the data we need from ciso list
-  refe <-  extract_carbon_calibration_data(ciso$refe_stacked)
+  refe <-  extract_carbon_calibration_data(ciso$refe_stacked,
+                                           standards = standards)
 
   # Okay this function now needs some work. *************
   if (correct_refData == TRUE) {

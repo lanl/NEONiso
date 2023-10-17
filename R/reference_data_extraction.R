@@ -4,12 +4,16 @@
 #'
 #' @param data_list List containing data, from the /*/dp01/data/
 #'                  group in NEON HDF5 file.
+#' @param standards Which reference gases (standards) to use? Default is all, 
+#'        but can pass a subset of "co2Low", "co2Med", and "co2High" as a vector
+#'        to this argument as well.
 #'
 #' @return Returns data frame of required variables.
 #'
 #' @import tidyselect
 #' @import rlang
-extract_carbon_calibration_data <- function(data_list) {
+extract_carbon_calibration_data <- function(data_list, 
+                                            standards = c("co2Low", "co2Med", "co2High")) {
 
   # input should be the list from stackEddy
   if (!is.list(data_list)) {
@@ -21,9 +25,7 @@ extract_carbon_calibration_data <- function(data_list) {
     dplyr::select("verticalPosition", "timeBgn", "timeEnd",
            tidyselect::starts_with("data.isoCo2.dlta13CCo2"),
            tidyselect::starts_with("data.isoCo2.rtioMoleDryCo2")) %>%
-    dplyr::filter(.data$verticalPosition %in% c("co2High", "co2Med", "co2Low"))
-    # uncertainty testing:
-    #dplyr::filter(.data$verticalPosition %in% c("co2Low", "co2Med"))
+    dplyr::filter(.data$verticalPosition %in% standards)
 
   # simplify names
   names(data) <- sub("data.isoCo2.", "", names(data))

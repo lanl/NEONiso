@@ -41,7 +41,7 @@ test_that("calibrate_carbon returns no error", {
                    r2_thres = 0.95,
                    correct_refData = TRUE,
                    write_to_file = TRUE))
-  
+
   # these tests could probably be made more useful!!
   expect_no_error(calibrate_carbon(fin, '/dev/null', "ONAQ",
                                    method = "Bowling_2003",
@@ -59,15 +59,15 @@ test_that("calibrate_carbon returns no error", {
 fout3 <- tempfile()
 
 test_that("calibrate_water returns no error", {
-  
+
   skip_on_cran()
   # these tests could probably be made more useful!!
   expect_no_error(calibrate_water(fin, '/dev/null', "ONAQ",
                                    correct_refData = TRUE,
                                    write_to_file = FALSE))
-  
+
   expect_no_error(calibrate_water(fin, fout3, "ONAQ",
                                   correct_refData = TRUE,
                                   write_to_file = TRUE))
-  
+
 })

@@ -21,7 +21,8 @@ calibrate_carbon(
   plot_regression_data = FALSE,
   plot_directory = NULL,
   avg = 9,
-  min_nobs = NA
+  min_nobs = NA,
+  standards = c("co2Low", "co2Med", "co2High")
 )
 }
 \arguments{
@@ -85,6 +86,10 @@ where to write out diagnostic plot of regression data.}
 change to 6 eventually.}
 
 \item{min_nobs}{Minimum number of high-frequency observations to define a peak.}
+
+\item{standards}{Which reference gases (standards) to use? Default is all,
+but can pass a subset of "co2Low", "co2Med", and "co2High" as a vector
+to this argument as well.}
 }
 \value{
 Returns nothing to the environment, but creates a new output HDF5
