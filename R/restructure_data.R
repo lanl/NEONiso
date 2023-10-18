@@ -46,7 +46,7 @@ ingest_data <- function(inname,
                                        level = "dp01",
                                        var = "isoCo2",
                                        useFasttime = TRUE)[[1]]
-    } else if (packageVersion("neonUtilities") >= "2.1.1" &&
+    } else if (packageVersion("neonUtilities") >= "2.1.1" && # nocov start
                packageVersion("neonUtilities") < "2.3.0") {
       data <- neonUtilities::stackEddy(inname,
                                        avg = amb_avg,
@@ -54,7 +54,7 @@ ingest_data <- function(inname,
                                        var = "isoCo2")[[1]]
     } else {
       stop("NEONiso >= 0.7.0 requires neonUtilities >= 2.1.1")
-    }
+    } # nocov end
 
     # filter data and remove rows that are all NaNs:
     data <- data %>%
@@ -115,7 +115,7 @@ ingest_data <- function(inname,
                                         var = "isoH2o",
                                         avg = ref_avg,
                                         useFasttime = TRUE)[[1]]
-    } else if (packageVersion("neonUtilities") >= "2.1.1" &&
+    } else if (packageVersion("neonUtilities") >= "2.1.1" && # nocov start
                packageVersion("neonUtilities") < "2.3.0") {
       data9 <- neonUtilities::stackEddy(inname,
                                        level = "dp01",
@@ -127,7 +127,7 @@ ingest_data <- function(inname,
                                         avg = ref_avg)[[1]]
     } else {
       stop("NEONiso >= 0.7.0 requires neonUtilities >= 2.1.1")
-    }
+    } # nocov end
   
     # filter data and remove rows that are all NaNs:
     data9 <- data9 %>%
