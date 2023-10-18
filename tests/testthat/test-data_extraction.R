@@ -21,6 +21,22 @@ test_that("extract_carbon_calibration_data output has correct structure", {
   expect_s3_class(tmp$timeEnd, "POSIXct")
 })
 
+test_that("extract_carbon_calibration_data removes standards correctly", {
+  
+  expect_less_than(nrow(extract_carbon_calibration_data(co2test$refe_stacked,
+                                                   standards = c("co2Low", "co2Med"))),
+                   nrow(extract_carbon_calibration_data(co2test$refe_stacked)))
+  
+  expect_less_than(nrow(extract_carbon_calibration_data(co2test$refe_stacked,
+                                                        standards = c("co2Low", "co2High"))),
+                   nrow(extract_carbon_calibration_data(co2test$refe_stacked)))
+  
+  expect_less_than(nrow(extract_carbon_calibration_data(co2test$refe_stacked,
+                                                        standards = "co2Low")),
+                   nrow(extract_carbon_calibration_data(co2test$refe_stacked,
+                                                        standards = c("co2High", "co2Med"))))
+})
+
 # 2) for H2O:
 h2otest <- ingest_data(fin, analyte = "H2o", amb_avg = 9, ref_avg = 3)
 
