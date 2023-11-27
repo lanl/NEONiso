@@ -199,30 +199,29 @@ calibrate_carbon         <- function(inname,
 
     ciso_subset_cal <-
       lapply(names(ciso_subset),
-                              function(x) {
-                                calibrate_ambient_carbon_Bowling2003(
-                                  amb_data_list = ciso_subset[[x]],
-                                  caldf = cal_df,
-                                  site = site,
-                                  filter_data = filter_ambient,
-                                  force_to_end = force_cal_to_end,
-                                  force_to_beginning = force_cal_to_beginning,
-                                  r2_thres = r2_thres)
-                              })
+             function(x) {
+               calibrate_ambient_carbon_Bowling2003(amb_data_list = ciso_subset[[x]],
+                                                    caldf = cal_df,
+                                                    site = site,
+                                                    filter_data = filter_ambient,
+                                                    force_to_end = force_cal_to_end,
+                                                    force_to_beginning = force_cal_to_beginning,
+                                                    r2_thres = r2_thres)
+             })
 
   } else if (method == "linreg") {
 
-    ciso_subset_cal <- lapply(names(ciso_subset),
-                              function(x) {
-                                calibrate_ambient_carbon_linreg(
-                                  amb_data_list = ciso_subset[[x]],
-                                  caldf = cal_df,
-                                  site = site,
-                                  filter_data = filter_ambient,
-                                  force_to_end = force_cal_to_end,
-                                  force_to_beginning = force_cal_to_beginning,
-                                  r2_thres = r2_thres)
-                              })
+    ciso_subset_cal <-
+      lapply(names(ciso_subset),
+             function(x) {
+               calibrate_ambient_carbon_linreg(amb_data_list = ciso_subset[[x]],
+                                               caldf = cal_df,
+                                               site = site,
+                                               filter_data = filter_ambient,
+                                               force_to_end = force_cal_to_end,
+                                               force_to_beginning = force_cal_to_beginning,
+                                               r2_thres = r2_thres)
+             })
   }
 
   names(ciso_subset_cal) <- names(ciso_subset)

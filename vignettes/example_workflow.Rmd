@@ -46,20 +46,20 @@ The simplest way to interact with these functions is to place it inside of a for
 
 
 ``` {r, eval = FALSE}
-for (i in 1:length(fnames.out)) {
+for (i in seq_along(fnames_out)) {
   calibrate_carbon_bymonth(fnames[i],
-                           fnames.out[i],
-                           site=site.code[i],
+                           fnames_out[i],
+                           site = site_code[i],
                            method = "Bowling_2003")
 }
 ```
 
-Two different methods to calibrate are available: a) a 'gain and offset' regression using 12CO2 and 13CO2 mole fractions (method = 'Bowling_2003', after Bowling et al. 2003) and b) a 'direct' linear regression of CO2 and d13C values to generate calibration transfer functions (method = 'linreg'). The function 'calibrate_carbon_bymonth()' assumes you have vectors of: 1) input file names (fnames), 2) output file names (fnames.out), and 3) 4 letter NEON site codes corresponding to each entry in input file names (fnames). An example of code to generate these three vectors is provided below: 
+Two different methods to calibrate are available: a) a 'gain and offset' regression using 12CO2 and 13CO2 mole fractions (method = 'Bowling_2003', after Bowling et al. 2003) and b) a 'direct' linear regression of CO2 and d13C values to generate calibration transfer functions (method = 'linreg'). The function 'calibrate_carbon_bymonth()' assumes you have vectors of: 1) input file names (fnames), 2) output file names (fnames.out), and 3) 4 letter NEON site codes corresponding to each entry in input file names (fnames). An example of code to generate these three vectors is provided below:
 
 ```{r, eval = FALSE}
-data.dir <- "/your/path/here/DP4_00200_001/"
+data_dir <- "/your/path/here/DP4_00200_001/"
 
-fnames <- list.files(path = data.dir,
+fnames <- list.files(path = data_dir,
                      pattern = ".h5",
                      recursive = TRUE,
                      full.names = TRUE)
@@ -67,19 +67,19 @@ fnames <- list.files(path = data.dir,
 # unselect gz files.
 fnames <- fnames[!grepl(".gz", fnames)]
 
-fname.byfolder <- strsplit(fnames, split=".", fixed = TRUE)
-site.code  <- sapply(fname.byfolder, "[[", 3)
+fname_byfolder <- strsplit(fnames, split = ".", fixed = TRUE)
+site_code  <- sapply(fname_byfolder, "[[", 3)
 
 # inspect site.code in the environment: is it a vector with repeated "ONAQ"?
-fnames.tmp <- gsub(".h5", ".calibrated.h5", fnames)
-fnames.spt <- strsplit(fnames.tmp, split = "/")
-fnames.out <- sapply(fnames.spt, "[[", 7)
+fnames_tmp <- gsub(".h5", ".calibrated.h5", fnames)
+fnames_spt <- strsplit(fnames_tmp, split = "/")
+fnames_out <- sapply(fnames_spt, "[[", 7)
 
 # create new output directory
 outpaths   <- paste0(your_path, "/ONAQ/output/")
 # apply function used here to generalize in case you wanted to run all sites
-sapply(unique(outpaths), dir.create, showWarnings=FALSE)
+sapply(unique(outpaths), dir.create, showWarnings = FALSE)
 
 # update fnames.out to include desired output paths.
-fnames.out <- paste0(outpaths, "/", fnames.out)
+fnames_out <- paste0(outpaths, "/", fnames_out)
 ```

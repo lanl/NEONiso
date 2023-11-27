@@ -67,7 +67,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   # determine which cal period each ambient data belongs to.
   var_inds_in_calperiod <- list()
 
-  for (i in 1:nrow(caldf)) {
+  for (i in seq_len(nrow(caldf))) {
     int <- lubridate::interval(caldf$timeBgn[i], caldf$timeEnd[i])
     var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
   }
@@ -76,7 +76,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   oxydf$mean_cal <- oxydf$mean
   oxydf$max_cal  <- oxydf$max
   oxydf$min_cal  <- oxydf$min
-  
+
   for (i in 1:length(var_inds_in_calperiod)) {
     if (!is.na(caldf$r2_18O[i]) & caldf$r2_18O[i] > r2_thres) {
 
