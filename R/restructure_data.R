@@ -47,7 +47,7 @@ ingest_data <- function(inname,
                                        var = "isoCo2",
                                        useFasttime = TRUE)[[1]]
     } else if (packageVersion("neonUtilities") >= "2.1.1" && # nocov start
-               packageVersion("neonUtilities") < "2.3.0") {
+                 packageVersion("neonUtilities") < "2.3.0") {
       data <- neonUtilities::stackEddy(inname,
                                        avg = amb_avg,
                                        level = "dp01",
@@ -62,15 +62,15 @@ ingest_data <- function(inname,
                     tidyselect::contains("isoCo2"))
 
     # stack required variables.
-    ambToStack <- c("dlta13CCo2", "pres", "presEnvHut", "rhEnvHut",
-                    "rtioMoleDry12CCo2", "rtioMoleDry13CCo2", "rtioMoleDryCo2",
-                    "rtioMoleDryH2o", "rtioMoleWet12CCo2", "rtioMoleWet13CCo2",
-                    "rtioMoleWetCo2", "rtioMoleWetH2o", "rtioMoleWetH2oEnvHut",
-                    "temp", "tempEnvHut")
+    amb_stack <- c("dlta13CCo2", "pres", "presEnvHut", "rhEnvHut",
+                   "rtioMoleDry12CCo2", "rtioMoleDry13CCo2", "rtioMoleDryCo2",
+                   "rtioMoleDryH2o", "rtioMoleWet12CCo2", "rtioMoleWet13CCo2",
+                   "rtioMoleWetCo2", "rtioMoleWetH2o", "rtioMoleWetH2oEnvHut",
+                   "temp", "tempEnvHut")
 
-    refToStack <- base::sort(base::append(ambToStack,
-                                          c("dlta13CCo2Refe",
-                                            "rtioMoleDryCo2Refe")))
+    ref_stack <- base::sort(base::append(amb_stack,
+                                         c("dlta13CCo2Refe",
+                                           "rtioMoleDryCo2Refe")))
 
     # split data into ambient and reference data frames.
     ambient <- data %>%
@@ -83,7 +83,7 @@ ingest_data <- function(inname,
 
       # determine which height is missing:
       hgts_present <- seq(from = 1, to = nheights, by = 1) %in%
-                      (as.numeric(unique(ambient$verticalPosition)) / 10)
+        (as.numeric(unique(ambient$verticalPosition)) / 10)
 
       hgts_absentl <- !hgts_present
 
@@ -99,10 +99,10 @@ ingest_data <- function(inname,
 
     reference <- data %>%
       dplyr::filter(.data$verticalPosition %in%
-                    c("co2Low", "co2Med", "co2High"))
+                      c("co2Low", "co2Med", "co2High"))
 
   } else if (analyte == "H2o") {
-    
+
     # stack data available for a given site into a single timeseries.
     if (packageVersion("neonUtilities") >= "2.3.0") {
       data9 <- neonUtilities::stackEddy(inname,
@@ -116,11 +116,11 @@ ingest_data <- function(inname,
                                         avg = ref_avg,
                                         useFasttime = TRUE)[[1]]
     } else if (packageVersion("neonUtilities") >= "2.1.1" && # nocov start
-               packageVersion("neonUtilities") < "2.3.0") {
+                 packageVersion("neonUtilities") < "2.3.0") {
       data9 <- neonUtilities::stackEddy(inname,
-                                       level = "dp01",
-                                       var = "isoH2o",
-                                       avg = amb_avg)[[1]]
+                                        level = "dp01",
+                                        var = "isoH2o",
+                                        avg = amb_avg)[[1]]
       data3 <- neonUtilities::stackEddy(inname,
                                         level = "dp01",
                                         var = "isoH2o",
@@ -128,20 +128,20 @@ ingest_data <- function(inname,
     } else {
       stop("NEONiso >= 0.7.0 requires neonUtilities >= 2.1.1")
     } # nocov end
-  
+
     # filter data and remove rows that are all NaNs:
     data9 <- data9 %>%
       dplyr::select("verticalPosition", "timeBgn", "timeEnd",
                     tidyselect::contains("isoH2o"))
-    
+
     # stack required variables.
-    ambToStack <- c("dlta18OH2o", "dlta2HH2o", "pres", "presEnvHut", "rhEnvHut",
-                    "rtioMoleDryH2o", "rtioMoleWetH2o", "rtioMoleWetH2oEnvHut",
-                    "temp", "tempEnvHut")
-    
-    refToStack <- base::sort(base::append(ambToStack,
-                                          c("dlta18OH2oRefe",
-                                            "dlta2HH2oRefe")))
+    amb_stack <- c("dlta18OH2o", "dlta2HH2o", "pres", "presEnvHut", "rhEnvHut",
+                   "rtioMoleDryH2o", "rtioMoleWetH2o", "rtioMoleWetH2oEnvHut",
+                   "temp", "tempEnvHut")
+
+    ref_stack <- base::sort(base::append(amb_stack,
+                                         c("dlta18OH2oRefe",
+                                           "dlta2HH2oRefe")))
 
     # split data into ambient and reference data frames.
     ambient <- data9 %>%
@@ -151,15 +151,15 @@ ingest_data <- function(inname,
     # check how many heights are present in ambient.
     if (length(unique(ambient$verticalPosition)) < nheights) {
       print("Height missing, attempting to resolve:")
-      
+
       # determine which height is missing:
       hgts_present <- seq(from = 1, to = nheights, by = 1) %in%
         (as.numeric(unique(ambient$verticalPosition)) / 10)
-      
+
       hgts_absentl <- !hgts_present
-      
+
       hgts_absent <- seq(from = 1, to = nheights, by = 1)[hgts_absentl]
-      
+
       # add a row to data, and then change verticalPosition to missing heights
       for (i in hgts_absent) {
         target_row <- nrow(ambient) + 1
@@ -167,7 +167,7 @@ ingest_data <- function(inname,
         ambient[target_row, "verticalPosition"] <- paste0("0", i, "0")
       }
     }
-    
+
     reference <- data3 %>%
       dplyr::filter(.data$verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh"))
@@ -183,7 +183,7 @@ ingest_data <- function(inname,
   if (analyte == "Co2") {
     ambi_out <- lapply(ambi_by_height,
                        function(y) {
-                         lapply(ambToStack,
+                         lapply(amb_stack,
                                 function(x) {
                                   restructure_variables(y,
                                                         varname = x,
@@ -195,7 +195,7 @@ ingest_data <- function(inname,
   } else {
     ambi_out <- lapply(ambi_by_height,
                        function(y) {
-                         lapply(ambToStack,
+                         lapply(amb_stack,
                                 function(x) {
                                   restructure_variables(y,
                                                         varname = x,
@@ -205,10 +205,10 @@ ingest_data <- function(inname,
                                 })
                        })
   }
-  
+
 
   # loop through again to rename data frames.
-  ambi_out <- lapply(ambi_out, setNames, ambToStack)
+  ambi_out <- lapply(ambi_out, setNames, amb_stack)
 
   # check length, and error out if a height has been dropped.
   #================== THIS SHOULD BE MOVED TO UNIT TEST
@@ -224,7 +224,7 @@ ingest_data <- function(inname,
   if (analyte == "Co2") {
     refe_out <- lapply(refe_by_height,
                        function(y) {
-                         lapply(refToStack,
+                         lapply(ref_stack,
                                 function(x) {
                                   restructure_variables(y,
                                                         varname = x,
@@ -232,11 +232,11 @@ ingest_data <- function(inname,
                                                         group = "data",
                                                         species = "Co2")
                                 })
-                       }) # replace the of the variables.  
+                       }) # replace the of the variables.
   } else {
     refe_out <- lapply(refe_by_height,
                        function(y) {
-                         lapply(refToStack,
+                         lapply(ref_stack,
                                 function(x) {
                                   restructure_variables(y,
                                                         varname = x,
@@ -246,10 +246,10 @@ ingest_data <- function(inname,
                                 })
                        }) # replace the of the variables.
   }
-  
+
 
   # loop through again to rename data frames.
-  refe_out <- lapply(refe_out, setNames, refToStack)
+  refe_out <- lapply(refe_out, setNames, ref_stack)
 
   # remove variable name from ambi_out data frames -
   # could be used here though to validate in future version.
@@ -257,24 +257,24 @@ ingest_data <- function(inname,
   # - could move it back here to validate!
 
   #changing average period in numeric to characters, e.g. 9 to 09m
-  avgChar <- paste0("0", amb_avg, "m")
+  avg_char <- paste0("0", amb_avg, "m")
 
   # get number of heights
   if (nrow(ambient) > 0) {
     heights <- unique(ambient$verticalPosition) # not that efficient, but needed
     names_vector <- vector()
     for (i in 1:length(heights)) {
-      names_vector[i] <- paste0("000_0", i, "0_", avgChar)
+      names_vector[i] <- paste0("000_0", i, "0_", avg_char)
     }
     names(ambi_out) <- names_vector
   }
 
   if (name_fix) {
     if (analyte == "H2o") {
-      avgChar <- paste0("0", ref_avg, "m")
+      avg_char <- paste0("0", ref_avg, "m")
     }
     # append _09m to refe_out....MAY CAUSE PROBLEMS FOR OTHER METHODS!!!!!!
-    names(refe_out) <- paste0(names(refe_out), "_", avgChar)
+    names(refe_out) <- paste0(names(refe_out), "_", avg_char)
   }
 
   output <- list(ambi_out, refe_out, reference)
@@ -288,9 +288,9 @@ ingest_data <- function(inname,
 #'
 #' Wrapper function around restructure_carbon_variables
 #' and restructure_water_variables.
-#' 
+#'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
-#' 
+#'
 #' @param varname Which variable are we applying this function to? There's
 #'                a list of ~10 common ones to write to the hdf5 file.
 #' @param dataframe Input data.frame, from `neonUtilities::stackEddy`
@@ -302,13 +302,13 @@ ingest_data <- function(inname,
 #' @export
 #'
 #' @importFrom magrittr %>%
-#' 
+#'
 restructure_variables <- function(dataframe,
                                   varname,
                                   mode,
                                   group,
                                   species) {
-  
+
   species <- validate_analyte(species)
   if (species == "Co2") {
     output <- restructure_carbon_variables(dataframe,
@@ -322,7 +322,7 @@ restructure_variables <- function(dataframe,
                                           group)
   }
   return(output)
-  
+
 }
 
 #-----------------------------------------
@@ -339,9 +339,9 @@ restructure_variables <- function(dataframe,
 #' @importFrom magrittr %>%
 
 restructure_carbon_variables <- function(dataframe,
-                                        varname,
-                                        mode,
-                                        group) {
+                                         varname,
+                                         mode,
+                                         group) {
 
   if (mode != "reference" & mode != "ambient") {
 
@@ -453,16 +453,16 @@ restructure_water_variables <- function(dataframe,
   if (!is.character(varname)) {
     stop("varname must be a string")
   } else if ((!is.data.frame(dataframe) & mode == "reference") |
-             (!is.list(dataframe) & mode == "ambient")) {
-    stop("dataframe argument must be a data.frame (reference mode) or list (ambient mode)")
+               (!is.list(dataframe) & mode == "ambient")) {
+    stop("dataframe must be data.frame (reference mode) or list (ambient mode)")
   }
 
   if (mode != "reference" & mode != "ambient") {
     stop("Invalid selection to mode argument.")
   } else if (mode == "reference") {
-    
+
     if (group == "data") {
-      
+
       output <- dataframe %>%
         dplyr::select("timeBgn", "timeEnd",
                       tidyselect::starts_with(paste0("data.isoH2o.",
@@ -482,35 +482,35 @@ restructure_water_variables <- function(dataframe,
         dplyr::slice(tail(dplyr::row_number(), 3)) %>%
         dplyr::ungroup() %>%
         dplyr::select(-"dom", -"yr", -"mn")
-      
+
     } else if (group == "qfqm") {
-      
+
       if (!grepl("Refe", varname)) {
-        
-             output <- dataframe %>%
-               dplyr::select("timeBgn", "timeEnd",
-                             tidyselect::starts_with(paste0("qfqm.isoH2o.",
-                                                            varname, "."))) %>%
-               dplyr::rename(qfFinl = paste0("qfqm.isoH2o.", varname, ".qfFinl")) %>%
-               dplyr::mutate(varname = varname) %>%
-               dplyr::filter(.data$timeBgn %in% output$timeBgn)
+
+        output <- dataframe %>%
+          dplyr::select("timeBgn", "timeEnd",
+                        tidyselect::starts_with(paste0("qfqm.isoH2o.",
+                                                       varname, "."))) %>%
+          dplyr::rename(qfFinl = paste0("qfqm.isoH2o.", varname, ".qfFinl")) %>%
+          dplyr::mutate(varname = varname) %>%
+          dplyr::filter(.data$timeBgn %in% output$timeBgn)
       }
-      
-    } else if (group == "ucrt") { 
-      
+
+    } else if (group == "ucrt") {
+
       if (!grepl("Refe", varname)) {
-        
-            output <- dataframe %>%
-              dplyr::select("timeBgn", "timeEnd",
-                            tidyselect::starts_with(paste0("ucrt.isoH2o.",
-                                                           varname,
-                                                           "."))) %>%
-              dplyr::rename(mean = paste0("ucrt.isoH2o.", varname, ".mean"),
-                            vari = paste0("ucrt.isoH2o.", varname, ".vari"),
-                            se   = paste0("ucrt.isoH2o.", varname, ".se")) %>%
-              dplyr::mutate(varname = varname) %>%
-              dplyr::filter(.data$timeBgn %in% output$timeBgn)
-            
+
+        output <- dataframe %>%
+          dplyr::select("timeBgn", "timeEnd",
+                        tidyselect::starts_with(paste0("ucrt.isoH2o.",
+                                                       varname,
+                                                       "."))) %>%
+          dplyr::rename(mean = paste0("ucrt.isoH2o.", varname, ".mean"),
+                        vari = paste0("ucrt.isoH2o.", varname, ".vari"),
+                        se   = paste0("ucrt.isoH2o.", varname, ".se")) %>%
+          dplyr::mutate(varname = varname) %>%
+          dplyr::filter(.data$timeBgn %in% output$timeBgn)
+
       }
     }
 

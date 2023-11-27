@@ -8,7 +8,7 @@ fin <- system.file("extdata",
                    package = "NEONiso", mustWork = TRUE)
 
 co2test <- NEONiso:::ingest_data(fin, analyte = 'Co2', ref_avg = 9, amb_avg = 9)
-co2data <- NEONiso:::extract_carbon_calibration_data(co2test$refe_stacked,
+co2data <- NEONiso:::extract_carbon_cal_data(co2test$refe_stacked,
                                                      standards = c("co2Low", "co2Med", "co2High"))
 calDf_B03 <- NEONiso:::fit_carbon_regression(co2data,
                                              method = "Bowling_2003",

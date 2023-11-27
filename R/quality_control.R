@@ -46,30 +46,31 @@ validate_output_file <- function(inname, outname, site, analyte) {
   groups_out <- rhdf5::h5ls(outname, recursive = 5)
 
   if (analyte == "Co2") {
-    target_in <- groups_in[groups_in$group == paste0("/",
-                                                  site,
-                                                  "/dp01/data/isoCo2"), ]$name
-    #only care about the 9m vars!
-    target_in <- target_in[grepl("09m", target_in) &
-                          !grepl("Arch", target_in)]
-    target_out <- groups_out[groups_out$group ==
+    target_in <- groups_in[groups_in$group ==
                              paste0("/",
                                     site,
                                     "/dp01/data/isoCo2"), ]$name
+    #only care about the 9m vars!
+    target_in <- target_in[grepl("09m", target_in) &
+                             !grepl("Arch", target_in)]
+    target_out <- groups_out[groups_out$group ==
+                               paste0("/",
+                                      site,
+                                      "/dp01/data/isoCo2"), ]$name
 
   } else {
     target_in <- groups_in[groups_in$group ==
-                           paste0("/",
-                                  site,
-                                  "/dp01/data/isoH2o"), ]$name
+                             paste0("/",
+                                    site,
+                                    "/dp01/data/isoH2o"), ]$name
     #only care about the 9m vars!
     target_in <- target_in[(grepl("03m", target_in) |
-                           grepl("09m", target_in)) &
-                          !grepl("Arch", target_in)]
+                              grepl("09m", target_in)) &
+                             !grepl("Arch", target_in)]
     target_out <- groups_out[groups_out$group ==
-                              paste0("/",
-                                     site,
-                                     "/dp01/data/isoH2o"), ]$name
+                               paste0("/",
+                                      site,
+                                      "/dp01/data/isoH2o"), ]$name
   }
 
   # add calData to target_in, since we expect this to be added (and adding to

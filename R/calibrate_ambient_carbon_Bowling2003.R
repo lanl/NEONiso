@@ -156,8 +156,8 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
       amb_12co2$min[var_inds_in_calperiod[[i]]] + caldf$offset12C[i]
     max12c[var_inds_in_calperiod[[i]]] <- caldf$gain12C[i] *
       amb_12co2$max[var_inds_in_calperiod[[i]]] + caldf$offset12C[i]
-   cv5rmse12c[var_inds_in_calperiod[[i]]] <- caldf$cv5rmse_12C[i]
-   cvloo12c[var_inds_in_calperiod[[i]]] <- caldf$cvloo_12C[i]
+    cv5rmse12c[var_inds_in_calperiod[[i]]] <- caldf$cv5rmse_12C[i]
+    cvloo12c[var_inds_in_calperiod[[i]]] <- caldf$cvloo_12C[i]
 
     # calculate calibrated 13CO2 concentrations
     mean13c[var_inds_in_calperiod[[i]]] <- caldf$gain13C[i] *
@@ -175,8 +175,8 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   amb_delta$mean_cal <- round(R_to_delta(mean13c / mean12c, "carbon"), 2)
   amb_delta$min_cal  <- round(R_to_delta(min13c / min12c, "carbon"), 2)
   amb_delta$max_cal  <- round(R_to_delta(max13c / max12c, "carbon"), 2)
-  #amb_delta$vari     <- round(amb_delta$vari, 2) # <- not sure why,
-         # but this crashes code some times as ab_delta$vari is not numeric??
+  ### amb_delta$vari  could be <- round(amb_delta$vari, 2) # <- not sure why,
+  # but this crashes code some times as ab_delta$vari is not numeric??
 
   # calibrate co2 mole fractions and uncertainty
   amb_co2$mean_cal <- (mean13c + mean12c) / (1 - 0.00474)
@@ -191,11 +191,11 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
   # calculate uncertainties:
   # save this ucrt propogation for later version.
   amb_delta$CVcalUcrt <- round(abs(amb_delta$mean_cal) *
-                               sqrt((cv5rmse12c / mean12c)^2 +
-                                    (cv5rmse13c / mean13c)^2), 3)
+                                 sqrt((cv5rmse12c / mean12c)^2 +
+                                        (cv5rmse13c / mean13c)^2), 3)
   amb_delta$LOOcalUcrt <- round(abs(amb_delta$mean_cal) *
-                                sqrt((cvloo12c / mean12c)^2 +
-                                     (cvloo13c / mean13c)^2), 3)
+                                  sqrt((cvloo12c / mean12c)^2 +
+                                         (cvloo13c / mean13c)^2), 3)
   amb_co2$CVcalUcrt   <- round(sqrt(cv5rmse12c^2 + cv5rmse13c^2), 3)
   amb_co2$LOOcalUcrt  <- round(sqrt(cvloo12c^2 + cvloo13c^2), 3)
 

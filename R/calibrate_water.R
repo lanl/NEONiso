@@ -50,13 +50,13 @@
 #' @param slope_tolerance How different from 1 should we allow
 #'             'passing' regression slopes to be? Experimental parameter,
 #'              off by default (e.g., default slope parameter = 9999)
-#' @param correct_refData There are a few instances where the reference d18O 
+#' @param correct_ref_data There are a few instances where the reference d18O
 #'              and d2H values may have been switched, causing very anomalous
 #'              d-excess values. If TRUE, implement a switch that corrects this
 #'              issue.
 #' @param write_to_file Write calibrated ambient data to file?
 #'              (Mostly used for testing)
-#'              
+#'
 #' @return nothing to the workspace, but creates a new output file of
 #'         calibrated water isotope data.
 #'
@@ -76,56 +76,31 @@ calibrate_water       <- function(inname,
                                   force_cal_to_end = FALSE,
                                   r2_thres = 0.95,
                                   slope_tolerance = 9999,
-                                  correct_refData = TRUE,
+                                  correct_ref_data = TRUE,
                                   write_to_file = TRUE) {
 
-  
+
   wiso <- ingest_data(inname, analyte = "H2o", amb_avg = 9, ref_avg = 3)
-  
+
   refe <- extract_water_calibration_data(wiso$refe_stacked)
-  
-  if (correct_refData) {
+
+  if (correct_ref_data) {
     # add fix for NEON standard swap.
     refe <- swap_standard_isotoperatios(refe)
   }
-  
+
   cal_df <- fit_water_regression(ref_data = refe,
                                  calibration_half_width = calibration_half_width,
                                  slope_tolerance = slope_tolerance,
-                                 r2_thres = r2_thres, 
+                                 r2_thres = r2_thres,
                                  site = site)
-
-  #--------------------------------------------------------------
-  # Ensure same number of measurements for each standard
-  #--------------------------------------------------------------
-  # add group ids using run length encoding based on time differences.
-  # does this need to be moved to resructure or regression functions?
-  # if (FALSE) {
-  #   # this may need to be moved to the ingest data chain...
-  #   thres_hours <- as.difftime("04:00:00", # assume any time difference
-  #                              format = "%H:%M:%S", # > 4 hours is a new
-  #                              units = "mins") # reference measurement
-  #   
-  #   high_rs <- high_rs %>%
-  #     dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
-  #   high_rs$periods <- data.table::rleidv(high_rs, "time_diff") %/% 2
-  #   
-  #   med_rs <- med_rs %>%
-  #     dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
-  #   med_rs$periods <- data.table::rleidv(med_rs, "time_diff") %/% 2
-  #   
-  #   low_rs <- low_rs %>%
-  #     dplyr::mutate(time_diff = ifelse(.data$btime - lag(.data$btime) > thres_hours, 1, 0))
-  #   low_rs$periods <- data.table::rleidv(low_rs, "time_diff") %/% 2
-  #   
-  #}
 
   #=======================================================================
   # apply calibration routines
   #=======================================================================
-  
+
   wiso_subset <- c(wiso$ambient, wiso$reference)
-  
+
   wiso_subset_cal <- lapply(names(wiso_subset),
                             function(x) {
                               calibrate_ambient_water_linreg(
@@ -139,7 +114,7 @@ calibrate_water       <- function(inname,
                             })
 
   names(wiso_subset_cal) <- names(wiso_subset)
-  
+
   #-----------------------------------
   # (optionally) write out to new file
   #-----------------------------------
@@ -149,19 +124,19 @@ calibrate_water       <- function(inname,
     setup_output_file(inname, outname, site, analyte = "h2o")
     write_water_calibration_data(outname, site, cal_df)
     write_water_ambient_data(outname, site, wiso_subset_cal)
-    
+
     validate_output_file(inname, outname, site, "h2o")
-    
+
     rhdf5::h5closeAll()
-    
+
   } else {
-    outData <- list()
+    out_data <- list()
     #convert time to NEON HDF5 time
     cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
     cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
-    outData$wiso_subset_cal <- wiso_subset_cal
-    outData$cal_df <- cal_df
-    
-    return(outData)
+    out_data$wiso_subset_cal <- wiso_subset_cal
+    out_data$cal_df <- cal_df
+
+    return(out_data)
   }
 }

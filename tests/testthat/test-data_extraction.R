@@ -9,13 +9,13 @@ fin <- system.file("extdata",
 co2test <- ingest_data(fin, analyte = "Co2", amb_avg = 9, ref_avg = 9)
 
 test_that("extract_carbon_calibration_data fails if incorrect list provided to function", {
-  expect_error(extract_carbon_calibration_data(co2test$reference))
-  expect_error(extract_carbon_calibration_data(fin))
-  expect_silent(extract_carbon_calibration_data(co2test$refe_stacked))
+  expect_error(extract_carbon_cal_data(co2test$reference))
+  expect_error(extract_carbon_cal_data(fin))
+  expect_silent(extract_carbon_cal_data(co2test$refe_stacked))
 })
 
 test_that("extract_carbon_calibration_data output has correct structure", {
-  tmp <- extract_carbon_calibration_data(co2test$refe_stacked)
+  tmp <- extract_carbon_cal_data(co2test$refe_stacked)
   expect_equal(ncol(tmp), 23)
   expect_s3_class(tmp$timeBgn, "POSIXct")
   expect_s3_class(tmp$timeEnd, "POSIXct")
@@ -23,17 +23,17 @@ test_that("extract_carbon_calibration_data output has correct structure", {
 
 test_that("extract_carbon_calibration_data removes standards correctly", {
   
-  expect_less_than(nrow(extract_carbon_calibration_data(co2test$refe_stacked,
+  expect_lt(nrow(extract_carbon_cal_data(co2test$refe_stacked,
                                                    standards = c("co2Low", "co2Med"))),
-                   nrow(extract_carbon_calibration_data(co2test$refe_stacked)))
+                   nrow(extract_carbon_cal_data(co2test$refe_stacked)))
   
-  expect_less_than(nrow(extract_carbon_calibration_data(co2test$refe_stacked,
+  expect_lt(nrow(extract_carbon_cal_data(co2test$refe_stacked,
                                                         standards = c("co2Low", "co2High"))),
-                   nrow(extract_carbon_calibration_data(co2test$refe_stacked)))
+                   nrow(extract_carbon_cal_data(co2test$refe_stacked)))
   
-  expect_less_than(nrow(extract_carbon_calibration_data(co2test$refe_stacked,
+  expect_lt(nrow(extract_carbon_cal_data(co2test$refe_stacked,
                                                         standards = "co2Low")),
-                   nrow(extract_carbon_calibration_data(co2test$refe_stacked,
+                   nrow(extract_carbon_cal_data(co2test$refe_stacked,
                                                         standards = c("co2High", "co2Med"))))
 })
 

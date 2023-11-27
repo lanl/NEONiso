@@ -10,7 +10,7 @@ correct_carbon_ref_output(
   omit_already_corrected = TRUE,
   co2_tol = 5,
   d13c_tol = 0.25,
-  refGas
+  ref_gas
 )
 }
 \arguments{
@@ -31,7 +31,7 @@ identified as having incorrect reference values.}
 correct measured d13C values within +/- d13c_tol within time
 period identified as having incorrect reference values.}
 
-\item{refGas}{Which reference gas is being corrected? Expects "co2High",
+\item{ref_gas}{Which reference gas is being corrected? Expects "co2High",
 "co2Med", or "co2Low"}
 }
 \value{

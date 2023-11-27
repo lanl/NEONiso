@@ -42,10 +42,10 @@ terrestrial_gradient_sites <- function() {
   # renamed to gradient sites. function updated 230830.
 
   grad_sites <- c("ABBY", "BARR", "BART", "BLAN", "DCFS", "DEJU",
-                   "DELA", "DSNY", "GRSM", "HEAL", "JERC", "JORN",
-                   "KONA", "LAJA", "LENO", "MLBS", "MOAB", "NOGP",
-                   "OAES", "RMNP", "SERC", "SOAP", "STEI", "STER",
-                   "TEAK", "TREE", "UKFS")
+                  "DELA", "DSNY", "GRSM", "HEAL", "JERC", "JORN",
+                  "KONA", "LAJA", "LENO", "MLBS", "MOAB", "NOGP",
+                  "OAES", "RMNP", "SERC", "SOAP", "STEI", "STER",
+                  "TEAK", "TREE", "UKFS")
 
   return(grad_sites)
 
@@ -93,9 +93,9 @@ water_isotope_sites <- function() {
 #' @param sites Which sites to retrieve data from? Default will be all sites
 #'              with available data, but can specify a single site or a vector
 #'              here.
-#' @param release Download data corresponding to a specific release? Defaults to
-#'              "RELEASE-2023." To download all data, including provisional data,
-#'              set to NULL.
+#' @param release Download data corresponding to a specific release? Defaults
+#'              to "RELEASE-2023." To download all data, including provisional
+#'              data, set to NULL.
 #' @export
 #'
 #' @return Returns nothing to the environment, but will download new NEON HDF5
@@ -152,11 +152,11 @@ manage_local_EC_archive <- function(file_dir,
 
       # get a vector of site months available for site i
       if (!is.null(release)) {
-        releaseIndex <- which(
-                          sapply(available$data$siteCodes[[i]]$availableReleases,
-                                "[[",
-                                1) == release)
-        site_months <- unlist(available$data$siteCodes[[i]]$availableReleases[[releaseIndex]]$availableMonths)
+        release_index <- which(sapply(
+                                      available$data$siteCodes[[i]]$availableReleases,
+                                      "[[",
+                                      1) == release)
+        site_months <- unlist(available$data$siteCodes[[i]]$availableReleases[[release_index]]$availableMonths)
       } else {
         site_months <- unlist(available$data$siteCodes[[i]]$availableMonths)
       }
@@ -201,14 +201,15 @@ manage_local_EC_archive <- function(file_dir,
                                        site_name,
                                        "/",
                                        dl_names[k])) |
-                    file.exists(paste0(file_dir2, "/",
+                    file.exists(paste0(file_dir2,
+                                       "/",
                                        site_name,
                                        "/",
                                        substr(dl_names[k],
                                               1,
                                               nchar(dl_names[k]) - 3)
-                                      )
-                                )
+                               )
+                    )
                 ) {
                   print(paste(dl_names[k], "exists...skipping..."))
                   next
@@ -298,8 +299,7 @@ manage_local_EC_archive <- function(file_dir,
           if (!dry_run) {
             file.remove(dup_candidates[h5files]) # remove files.
           }
-        } else { # none are simply h5,
-                 # so need to determine which is the most recent file.
+        } else { # none are simply h5, so need to determine most recent file.
           for (i in 1:length(unique(dup_yrmn))) {
             # get times associated w/ particular duplicate.
             h5_times <- as.POSIXct(dup_fdiff[dup_yrmn == unique(dup_yrmn)[i]],
@@ -307,7 +307,7 @@ manage_local_EC_archive <- function(file_dir,
             # determine which files are not the most recent.
             # get file names for only this yrmn.
             dups_yrmn <- dup_candidates[(dup_yrmn == unique(dup_yrmn)[i]) &
-                                        (h5_times != max(h5_times))]
+                                          (h5_times != max(h5_times))]
             # print which files to remove
             print(paste("Removing:", dups_yrmn))
             if (!dry_run) {

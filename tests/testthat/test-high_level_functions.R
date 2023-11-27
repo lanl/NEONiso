@@ -28,7 +28,7 @@ test_that("calibrate_carbon returns no error", {
                    gap_fill_parameters = FALSE,
                    filter_ambient = TRUE,
                    r2_thres = 0.95,
-                   correct_refData = TRUE,
+                   correct_ref_data = TRUE,
                    write_to_file = TRUE))
 
   expect_no_error(calibrate_carbon(fin, fout2, "ONAQ",
@@ -39,7 +39,7 @@ test_that("calibrate_carbon returns no error", {
                    gap_fill_parameters = FALSE,
                    filter_ambient = TRUE,
                    r2_thres = 0.95,
-                   correct_refData = TRUE,
+                   correct_ref_data = TRUE,
                    write_to_file = TRUE))
 
   # these tests could probably be made more useful!!
@@ -51,7 +51,7 @@ test_that("calibrate_carbon returns no error", {
                                    gap_fill_parameters = FALSE,
                                    filter_ambient = TRUE,
                                    r2_thres = 0.95,
-                                   correct_refData = TRUE,
+                                   correct_ref_data = TRUE,
                                    write_to_file = FALSE))
 })
 
@@ -63,11 +63,11 @@ test_that("calibrate_water returns no error", {
   skip_on_cran()
   # these tests could probably be made more useful!!
   expect_no_error(calibrate_water(fin, '/dev/null', "ONAQ",
-                                   correct_refData = TRUE,
+                                   correct_ref_data = TRUE,
                                    write_to_file = FALSE))
 
   expect_no_error(calibrate_water(fin, fout3, "ONAQ",
-                                  correct_refData = TRUE,
+                                  correct_ref_data = TRUE,
                                   write_to_file = TRUE))
 
 })

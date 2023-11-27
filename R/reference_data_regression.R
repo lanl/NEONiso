@@ -26,10 +26,11 @@ estimate_calibration_error <- function(formula, data) {
 
   ctrl <- caret::trainControl(method = "cv", number = 5)
 
-  model <- suppressWarnings(caret::train(form = formula, data = data2,
-                        method = "lm",
-                        trControl = ctrl,
-                        na.action = stats::na.omit))
+  model <- suppressWarnings(caret::train(form = formula,
+                                         data = data2,
+                                         method = "lm",
+                                         trControl = ctrl,
+                                         na.action = stats::na.omit))
 
   output <- model$results[c("RMSE", "Rsquared", "MAE")]
 
@@ -82,31 +83,33 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
   #---------------------------------------------------------------
   # Select which validation data to carry through to calibration
   #---------------------------------------------------------------
-  ref_data <- select_daily_reference_data(ref_data, analyte = "co2", min_nobs = min_nobs)
+  ref_data <- select_daily_reference_data(ref_data,
+                                          analyte = "co2",
+                                          min_nobs = min_nobs)
 
   if (method == "Bowling_2003") {
 
     # calculate mole fraction (12CO2 / 13CO2) for ref gases and observed values
     ref_data$conc12CCO2_ref <- calculate_12CO2(ref_data$rtioMoleDryCo2Refe.mean,
-                                              ref_data$dlta13CCo2Refe.mean)
+                                               ref_data$dlta13CCo2Refe.mean)
     ref_data$conc13CCO2_ref <- calculate_13CO2(ref_data$rtioMoleDryCo2Refe.mean,
-                                              ref_data$dlta13CCo2Refe.mean)
+                                               ref_data$dlta13CCo2Refe.mean)
     ref_data$conc12CCO2_obs <- calculate_12CO2(ref_data$rtioMoleDryCo2.mean,
-                                              ref_data$dlta13CCo2.mean)
+                                               ref_data$dlta13CCo2.mean)
     ref_data$conc13CCO2_obs <- calculate_13CO2(ref_data$rtioMoleDryCo2.mean,
-                                              ref_data$dlta13CCo2.mean)
+                                               ref_data$dlta13CCo2.mean)
 
     if (nrow(ref_data) == 0) {
 
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
       out <- data.frame(timeBgn = as.POSIXct(yrmn,
-                                           format = "%Y-%m",
-                                           tz = "UTC",
-                                           origin = "1970-01-01"),
+                                             format = "%Y-%m",
+                                             tz = "UTC",
+                                             origin = "1970-01-01"),
                         timeEnd = as.POSIXct(yrmn,
-                                         format = "%Y-%m",
-                                         tz = "UTC",
-                                         origin = "1970-01-01"),
+                                             format = "%Y-%m",
+                                             tz = "UTC",
+                                             origin = "1970-01-01"),
                         gain12C = as.numeric(NA),
                         gain13C = as.numeric(NA),
                         offset12C = as.numeric(NA),
@@ -147,14 +150,17 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       # okay, now run calibrations...
 
       for (i in 1:length(date_seq)) {
-        start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"),
-                                    tz = "UTC", origin = "1970-01-01")
-        end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59.0000"),
-                                    tz = "UTC", origin = "1970-01-01")
+        start_time[i] <- as.POSIXct(paste(date_seq[i], "00:00:00.0001"),
+                                    tz = "UTC",
+                                    origin = "1970-01-01")
+        end_time[i]   <- as.POSIXct(paste(date_seq[i], "23:59:59.0000"),
+                                    tz = "UTC",
+                                    origin = "1970-01-01")
 
         # define calibration interval
-        cal_period <- lubridate::interval(date_seq[i] - lubridate::ddays(calibration_half_width),
-                                          date_seq[i] + lubridate::ddays(calibration_half_width))
+        delta <- lubridate::ddays(calibration_half_width)
+        cal_period <- lubridate::interval(date_seq[i] - delta,
+                                          date_seq[i] + delta)
 
         # select data subset using the interval
         cal_subset <- ref_data %>%
@@ -174,43 +180,45 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
         # do some light validation of these points.
         cal_subset <- cal_subset %>%
           dplyr::filter(.data$dlta13CCo2.vari < 5 &
-                          abs(.data$rtioMoleDryCo2.mean - .data$rtioMoleDryCo2Refe.mean) < 10 &
-                          abs(.data$dlta13CCo2.mean - .data$dlta13CCo2Refe.mean) < 5)
+                          abs(.data$rtioMoleDryCo2.mean -
+                                .data$rtioMoleDryCo2Refe.mean) < 10 &
+                          abs(.data$dlta13CCo2.mean -
+                                .data$dlta13CCo2Refe.mean) < 5)
 
-        if (length(unique(cal_subset$verticalPosition)) >= 2 & # >= 2 standards
-            !all(is.na(cal_subset$dlta13CCo2.mean)) & # not all obs missing
-            !all(is.na(cal_subset$dlta13CCo2Refe.mean))) { # not all ref missing
+        if (length(unique(cal_subset$verticalPosition)) >= 2 &
+              !all(is.na(cal_subset$dlta13CCo2.mean)) &
+              !all(is.na(cal_subset$dlta13CCo2Refe.mean))) {
 
-          tmpmod12C <- stats::lm(conc12CCO2_ref ~ conc12CCO2_obs,
+          tmpmod12c <- stats::lm(conc12CCO2_ref ~ conc12CCO2_obs,
                                  data = cal_subset)
-          tmpmod13C <- stats::lm(conc13CCO2_ref ~ conc13CCO2_obs,
+          tmpmod13c <- stats::lm(conc13CCO2_ref ~ conc13CCO2_obs,
                                  data = cal_subset)
 
           # calculate gain and offset values.
-          out$gain12C[i]   <- stats::coef(tmpmod12C)[[2]]
-          out$gain13C[i]   <- stats::coef(tmpmod13C)[[2]]
-          out$offset12C[i] <- stats::coef(tmpmod12C)[[1]]
-          out$offset13C[i] <- stats::coef(tmpmod13C)[[1]]
+          out$gain12C[i]   <- stats::coef(tmpmod12c)[[2]]
+          out$gain13C[i]   <- stats::coef(tmpmod13c)[[2]]
+          out$offset12C[i] <- stats::coef(tmpmod12c)[[1]]
+          out$offset13C[i] <- stats::coef(tmpmod13c)[[1]]
 
           # extract r2
-          out$r2_12C[i] <- summary(tmpmod12C)$r.squared
-          out$r2_13C[i] <- summary(tmpmod13C)$r.squared
+          out$r2_12C[i] <- summary(tmpmod12c)$r.squared
+          out$r2_13C[i] <- summary(tmpmod13c)$r.squared
 
           # extract leave-one-out CV value
-          out$cvloo_12C[i] <- loocv(tmpmod12C)
-          out$cvloo_13C[i] <- loocv(tmpmod13C)
+          out$cvloo_12C[i] <- loocv(tmpmod12c)
+          out$cvloo_13C[i] <- loocv(tmpmod13c)
 
           # get cv5 values
           tmp <- stats::formula(conc12CCO2_ref ~ conc12CCO2_obs)
-          cv12C <- estimate_calibration_error(tmp, cal_subset)
+          cv12c <- estimate_calibration_error(tmp, cal_subset)
           tmp <- stats::formula(conc13CCO2_ref ~ conc13CCO2_obs)
-          cv13C <- estimate_calibration_error(tmp, cal_subset)
+          cv13c <- estimate_calibration_error(tmp, cal_subset)
 
           # assign cv values:
-          out$cv5mae_12C[i] <- cv12C$MAE
-          out$cv5mae_13C[i] <- cv13C$MAE
-          out$cv5rmse_12C[i] <- cv12C$RMSE
-          out$cv5rmse_13C[i] <- cv13C$RMSE
+          out$cv5mae_12C[i] <- cv12c$MAE
+          out$cv5mae_13C[i] <- cv13c$MAE
+          out$cv5rmse_12C[i] <- cv12c$RMSE
+          out$cv5rmse_13C[i] <- cv13c$RMSE
 
         } else {
 
@@ -249,13 +257,13 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
     if (nrow(ref_data) == 0) {
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
       out <- data.frame(timeBgn = as.POSIXct(yrmn,
-                                           format = "%Y-%m",
-                                           tz = "UTC",
-                                           origin = "1970-01-01"),
+                                             format = "%Y-%m",
+                                             tz = "UTC",
+                                             origin = "1970-01-01"),
                         timeEnd = as.POSIXct(yrmn,
-                                         format = "%Y-%m",
-                                         tz = "UTC",
-                                         origin = "1970-01-01"),
+                                             format = "%Y-%m",
+                                             tz = "UTC",
+                                             origin = "1970-01-01"),
                         d13C_slope     = as.numeric(NA),
                         d13C_intercept = as.numeric(NA),
                         d13C_r2        = as.numeric(NA),
@@ -297,14 +305,15 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       # okay, now run calibrations...
       for (i in 1:length(date_seq)) {
 
-        start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"),
+        start_time[i] <- as.POSIXct(paste(date_seq[i], "00:00:00.0001"),
                                     tz = "UTC", origin = "1970-01-01")
-        end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59.0000"),
+        end_time[i]   <- as.POSIXct(paste(date_seq[i], "23:59:59.0000"),
                                     tz = "UTC", origin = "1970-01-01")
 
         # define calibration interval
-        cal_period <- lubridate::interval(date_seq[i] - lubridate::ddays(calibration_half_width),
-                                          date_seq[i] + lubridate::ddays(calibration_half_width))
+        delta <- lubridate::ddays(calibration_half_width)
+        cal_period <- lubridate::interval(date_seq[i] - delta,
+                                          date_seq[i] + delta)
 
         # select data subset using the interval
         cal_subset <- ref_data %>%
@@ -314,22 +323,24 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
         # do some light validation of these points.
         cal_subset <- cal_subset %>%
           dplyr::filter(.data$dlta13CCo2.vari < 5 &
-                          abs(.data$rtioMoleDryCo2.mean - .data$rtioMoleDryCo2Refe.mean) < 10 &
-                          abs(.data$dlta13CCo2.mean - .data$dlta13CCo2Refe.mean) < 5)
+                          abs(.data$rtioMoleDryCo2.mean -
+                                .data$rtioMoleDryCo2Refe.mean) < 10 &
+                          abs(.data$dlta13CCo2.mean -
+                                .data$dlta13CCo2Refe.mean) < 5)
 
-        if (length(unique(cal_subset$verticalPosition)) >= 2 & # >= 2 standards
-            !all(is.na(cal_subset$dlta13CCo2.mean)) & # not all obs missing
-            !all(is.na(cal_subset$dlta13CCo2Refe.mean))) { # not all ref missing
+        if (length(unique(cal_subset$verticalPosition)) >= 2 &
+              !all(is.na(cal_subset$dlta13CCo2.mean)) &
+              !all(is.na(cal_subset$dlta13CCo2Refe.mean))) {
 
           # model to calibrate delta 13C values.
-          tmpmod_d13 <- stats::lm(dlta13CCo2Refe.mean ~ dlta13CCo2.mean,
-                                  data = cal_subset)
+          tmpmod_d13c <- stats::lm(dlta13CCo2Refe.mean ~ dlta13CCo2.mean,
+                                   data = cal_subset)
           tmpmod_co2 <- stats::lm(rtioMoleDryCo2Refe.mean ~ rtioMoleDryCo2.mean,
                                   data = cal_subset)
 
-          out$d13C_slope[i]     <- coef(tmpmod_d13)[[2]]
-          out$d13C_intercept[i] <- coef(tmpmod_d13)[[1]]
-          out$d13C_r2[i]        <- summary(tmpmod_d13)$r.squared
+          out$d13C_slope[i]     <- coef(tmpmod_d13c)[[2]]
+          out$d13C_intercept[i] <- coef(tmpmod_d13c)[[1]]
+          out$d13C_r2[i]        <- summary(tmpmod_d13c)$r.squared
 
           out$co2_slope[i]      <- coef(tmpmod_co2)[[2]]
           out$co2_intercept[i]  <- coef(tmpmod_co2)[[1]]
@@ -337,19 +348,19 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 
           # extract uncertainties:
           # extract leave-one-out CV value
-          out$d13C_cvloo[i] <- loocv(tmpmod_d13)
+          out$d13C_cvloo[i] <- loocv(tmpmod_d13c)
           out$co2_cvloo[i]  <- loocv(tmpmod_co2)
 
           # get cv5 values
           tmp <- stats::formula(dlta13CCo2Refe.mean ~ dlta13CCo2.mean)
-          cv_d13C <- estimate_calibration_error(tmp, cal_subset)
+          cv_d13c <- estimate_calibration_error(tmp, cal_subset)
           tmp <- stats::formula(rtioMoleDryCo2Refe.mean ~ rtioMoleDryCo2.mean)
           cv_co2 <- estimate_calibration_error(tmp, cal_subset)
 
           # assign cv values:
-          out$d13C_cv5mae[i]  <- cv_d13C$MAE
+          out$d13C_cv5mae[i]  <- cv_d13c$MAE
           out$co2_cv5mae[i]   <- cv_co2$MAE
-          out$d13C_cv5rmse[i] <- cv_d13C$RMSE
+          out$d13C_cv5rmse[i] <- cv_d13c$RMSE
           out$co2_cv5rmse[i]  <- cv_co2$RMSE
 
         } else {
@@ -424,8 +435,9 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 #' @param plot_dir If plot_regression_data is true, where should the
 #'        plots be saved?
 #' @param site Needed for regression plots.
-#' @param min_nobs Minimum number of high-frequency observations to define a peak.
-#' 
+#' @param min_nobs Minimum number of high-frequency observations to
+#'                 define a peak.
+#'
 
 #' @return Returns a data.frame of calibration parameters.
 #'        Output data.frame includes slope, intercept, and r^2 values
@@ -433,7 +445,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 #'
 #' @importFrom stats coef lm
 #' @importFrom magrittr %>%
-#' 
+#'
 fit_water_regression <- function(ref_data,
                                  calibration_half_width,
                                  slope_tolerance,
@@ -447,7 +459,7 @@ fit_water_regression <- function(ref_data,
   yrmn <- paste(lubridate::year(ref_data$timeBgn)[1],
                 lubridate::month(ref_data$timeBgn)[1],
                 sep = "-")
-  
+
   # validate yrmn - is it actually a date? if no refdata, then no.
   #---------------------------------------------------------------
   # Select which validation data to carry through to calibration
@@ -455,11 +467,11 @@ fit_water_regression <- function(ref_data,
   ref_data <- select_daily_reference_data(ref_data,
                                           analyte = "h2o",
                                           min_nobs = min_nobs)
-  
+
   #-----------------------------------------------------------
   # CALIBRATE WATER ISOTOPE VALUES
   if (nrow(ref_data) == 0) {
-    
+
     # output dataframe giving valid time range, slopes, intercepts, rsquared.
     out <- data.frame(timeBgn = as.POSIXct(yrmn,
                                            format = "%Y-%m",
@@ -482,7 +494,7 @@ fit_water_regression <- function(ref_data,
                       cv5rmse_18O = as.numeric(NA),
                       cv5rmse_2H = as.numeric(NA))
   } else {
-    
+
     out <- data.frame(slope18O = numeric(length = 2e5),
                       slope2H  = numeric(length = 2e5),
                       intercept18O = numeric(length = 2e5),
@@ -495,87 +507,75 @@ fit_water_regression <- function(ref_data,
                       cv5mae_2H = numeric(length = 2e5),
                       cv5rmse_18O = numeric(length = 2e5),
                       cv5rmse_2H = numeric(length = 2e5))
-    
+
     # get start and end days.
     start_date <- as.Date(min(ref_data$timeBgn))
     end_date   <- as.Date(max(ref_data$timeEnd))
-    
+
     # generate date sequence
     date_seq <- base::seq.Date(start_date, end_date, by = "1 day")
-    
+
     # initialize vectors to hold times.
     start_time <- end_time <- vector()
-    
+
     # okay, now run calibrations...
-    
+
     for (i in 1:length(date_seq)) {
-      start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"),
+      start_time[i] <- as.POSIXct(paste(date_seq[i], "00:00:00.0001"),
                                   tz = "UTC", origin = "1970-01-01")
-      end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59.0000"),
+      end_time[i]   <- as.POSIXct(paste(date_seq[i], "23:59:59.0000"),
                                   tz = "UTC", origin = "1970-01-01")
-      
+
       # define calibration interval
-      cal_period <- lubridate::interval(date_seq[i] - lubridate::ddays(calibration_half_width),
-                                        date_seq[i] + lubridate::ddays(calibration_half_width))
-      
+      delta <- lubridate::ddays(calibration_half_width)
+      cal_period <- lubridate::interval(date_seq[i] - delta,
+                                        date_seq[i] + delta)
+
       # select data subset using the interval
       cal_subset <- ref_data %>%
         dplyr::filter(.data$timeBgn %within% cal_period)
-      
+
       if (plot_regression_data) {
         stop("No regression data plots for water yet.")
-        #carbon_regression_plots(cal_subset,
-        #                        plot_filename = paste0(plot_dir,
-        #                                               "/", site,
-        #                                               "_", date_seq[i],
-        #                                               ".pdf"),
-        #                        method = method,
-        #                        mtitle = paste0(site, date_seq[i]))
       }
-      #---------------------------------------------
-      # do some light validation of these points.
-      #  cal_subset <- cal_subset %>%
-      #    dplyr::filter(.data$dlta13CCo2.vari < 5 &
-      #                    abs(.data$rtioMoleDryCo2.mean - .data$rtioMoleDryCo2Refe.mean) < 10 &
-      #                    abs(.data$dlta13CCo2.mean - .data$dlta13CCo2Refe.mean) < 5)
-      
+
       if (length(unique(cal_subset$verticalPosition)) >= 2 & # >= 2 standards
-          !all(is.na(cal_subset$dlta18OH2o.mean)) & # not all obs missing
-          !all(is.na(cal_subset$dlta18OH2oRefe.mean))) { # not all ref missing
-        
-        tmpmod18O <- stats::lm(dlta18OH2oRefe.mean ~ dlta18OH2o.mean,
+            !all(is.na(cal_subset$dlta18OH2o.mean)) & # not all obs missing
+            !all(is.na(cal_subset$dlta18OH2oRefe.mean))) { # not all ref missing
+
+        tmpmod18o <- stats::lm(dlta18OH2oRefe.mean ~ dlta18OH2o.mean,
                                data = cal_subset)
-        tmpmod2H <- stats::lm(dlta2HH2oRefe.mean ~ dlta2HH2o.mean,
+        tmpmod2h <- stats::lm(dlta2HH2oRefe.mean ~ dlta2HH2o.mean,
                               data = cal_subset)
-        
+
         # calculate gain and offset values.
-        out$slope18O[i]     <- stats::coef(tmpmod18O)[[2]]
-        out$slope2H[i]      <- stats::coef(tmpmod2H)[[2]]
-        out$intercept18O[i] <- stats::coef(tmpmod18O)[[1]]
-        out$intercept2H[i]  <- stats::coef(tmpmod2H)[[1]]
-        
+        out$slope18O[i]     <- stats::coef(tmpmod18o)[[2]]
+        out$slope2H[i]      <- stats::coef(tmpmod2h)[[2]]
+        out$intercept18O[i] <- stats::coef(tmpmod18o)[[1]]
+        out$intercept2H[i]  <- stats::coef(tmpmod2h)[[1]]
+
         # extract r2
-        out$r2_18O[i] <- summary(tmpmod18O)$r.squared
-        out$r2_2H[i] <- summary(tmpmod2H)$r.squared
-        
+        out$r2_18O[i] <- summary(tmpmod18o)$r.squared
+        out$r2_2H[i] <- summary(tmpmod2h)$r.squared
+
         # extract leave-one-out CV value
-        out$cvloo_18O[i] <- loocv(tmpmod18O)
-        out$cvloo_2H[i] <- loocv(tmpmod2H)
-        
+        out$cvloo_18O[i] <- loocv(tmpmod18o)
+        out$cvloo_2H[i] <- loocv(tmpmod2h)
+
         # get cv5 values
         tmp <- stats::formula(dlta18OH2oRefe.mean ~ dlta18OH2o.mean)
-        cv18O <- estimate_calibration_error(tmp, cal_subset)
+        cv18o <- estimate_calibration_error(tmp, cal_subset)
         tmp <- stats::formula(dlta2HH2oRefe.mean ~ dlta2HH2o.mean)
-        cv2H <- estimate_calibration_error(tmp, cal_subset)
-        
+        cv2h <- estimate_calibration_error(tmp, cal_subset)
+
         # assign cv values:
-        out$cv5mae_18O[i] <- cv18O$MAE
-        out$cv5mae_2H[i] <- cv2H$MAE
-        out$cv5rmse_18O[i] <- cv18O$RMSE
-        out$cv5rmse_2H[i] <- cv2H$RMSE
-        
+        out$cv5mae_18O[i] <- cv18o$MAE
+        out$cv5mae_2H[i] <- cv2h$MAE
+        out$cv5rmse_18O[i] <- cv18o$RMSE
+        out$cv5rmse_2H[i] <- cv2h$RMSE
+
       } else {
-        
+
         out$slope18O[i]      <- NA
         out$slope2H[i]       <- NA
         out$intercept18O[i]  <- NA
@@ -590,188 +590,21 @@ fit_water_regression <- function(ref_data,
         out$cv5rmse_2H[i]    <- NA
       }
     }
-    
+
     #subset out data frame.
     out <- out[1:length(start_time), ]
-    
+
     # output dataframe giving valid time range, slopes, intercepts, rsquared.
     out$timeBgn <- as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01")
     out$timeEnd <- as.POSIXct(end_time, tz = "UTC", origin = "1970-01-01")
-    
+
     # re-order columns to ensure that they are consistent across methods
     out <- out[, c("timeBgn", "timeEnd",
-                   "slope18O", "intercept18O", "r2_18O", 
+                   "slope18O", "intercept18O", "r2_18O",
                    "cvloo_18O", "cv5mae_18O", "cv5rmse_18O",
                    "slope2H", "intercept2H", "r2_2H",
                    "cvloo_2H", "cv5mae_2H", "cv5rmse_2H")]
   }
   return(out)
-    
-  #   # reorder data frame
-  #   stds <- stds[order(stds$btime), ]
-  # 
-  #   # loop through days represented in the dataframe,
-  #   # select rows corresponding to window of interest,
-  #   # and run regression.
-  # 
-  #   # get start and end days.
-  #   start_date <- as.Date(min(stds$btime))
-  #   end_date   <- as.Date(max(stds$etime))
-  # 
-  #   # set up output vectors
-  #   oxy_cal_slopes <- vector()
-  #   oxy_cal_ints   <- vector()
-  #   oxy_cal_rsq    <- vector()
-  # 
-  #   hyd_cal_slopes <- vector()
-  #   hyd_cal_ints   <- vector()
-  #   hyd_cal_rsq    <- vector()
-  # 
-  #   start_time     <- vector()
-  #   end_time       <- vector()
-  # 
-  #   # loop through days and get regression statistics.
-  #   # generate sequence of dates:
-  #   loop_start_date <- start_date
-  #   loop_end_date   <- end_date
-  # 
-  #   # generate date sequence
-  #   date_seq <- base::seq.Date(loop_start_date, loop_end_date, by = "1 day")
-  # 
-  #   for (i in 1:length(date_seq)) {
-  # 
-  #     start_time[i] <- as.POSIXct(paste(date_seq[i],"00:00:00.0001"),
-  #                                 tz = "UTC", origin = "1970-01-01")
-  #     end_time[i]   <- as.POSIXct(paste(date_seq[i],"23:59:59.0000"),
-  #                                 tz = "UTC", origin = "1970-01-01")
-  # 
-  #     # define calibration interval
-  #     cal_period <- lubridate::interval(date_seq[i] - lubridate::days(calibration_half_width),
-  #                                       date_seq[i] + lubridate::days(calibration_half_width))
-  # 
-  #     # select data subset using the interval
-  #     std_subset <- stds %>%
-  #       dplyr::filter(.data$btime %within% cal_period)
-  # 
-  #     # check to see if sum of is.na() on oxygen data = nrow of oxygen data
-  #     if (sum(is.na(std_subset$d18O_meas_mean)) < nrow(std_subset) &
-  #         sum(is.na(std_subset$d18O_ref_mean)) < nrow(std_subset)) {
-  #       tmp <- lm(d18O_ref_mean ~ d18O_meas_mean, data = std_subset)
-  # 
-  #       oxy_cal_slopes[i] <- coef(tmp)[[2]]
-  #       oxy_cal_ints[i]   <- coef(tmp)[[1]]
-  #       oxy_cal_rsq[i]    <- summary(tmp)$r.squared
-  # 
-  #       # enforce thresholds. replace regression parameters as NA where fail.
-  #       if (!is.na(oxy_cal_rsq[i])) {
-  #         if ((oxy_cal_slopes[i] > (1 + slope_tolerance)) |
-  #             (oxy_cal_slopes[i] < (1 - slope_tolerance)) |
-  #             (oxy_cal_rsq[i] < r2_thres)) {
-  # 
-  #           # set as NA
-  #           oxy_cal_slopes[i] <- NA
-  #           oxy_cal_ints[i]   <- NA
-  #           oxy_cal_rsq[i]    <- NA
-  #         }
-  #       } else {
-  #         # set as NA
-  #         oxy_cal_slopes[i] <- NA
-  #         oxy_cal_ints[i]   <- NA
-  #         oxy_cal_rsq[i]    <- NA
-  #       }
-  # 
-  #     } else { # all are missing
-  #       oxy_cal_slopes[i] <- NA
-  #       oxy_cal_ints[i]   <- NA
-  #       oxy_cal_rsq[i]    <- NA
-  #     }
-  # 
-  #     # HYDROGEN
-  # 
-  #     # check to see if sum of is.na() on oxygen data = nrow of oxygen data
-  #     if (sum(is.na(std_subset$d2H_meas_mean)) < nrow(std_subset) &
-  #         sum(is.na(std_subset$d2H_ref_mean)) < nrow(std_subset)) {
-  # 
-  #       tmp <- lm(d2H_ref_mean ~ d2H_meas_mean, data = std_subset)
-  # 
-  #       hyd_cal_slopes[i] <- coef(tmp)[[2]]
-  #       hyd_cal_ints[i]   <- coef(tmp)[[1]]
-  #       hyd_cal_rsq[i]    <- summary(tmp)$r.squared
-  # 
-  #       # enforce thresholds. replace regression parameters where they fail.
-  #       if (!is.na(hyd_cal_rsq[i])) {
-  #         if ((hyd_cal_slopes[i] > (1 + slope_tolerance)) |
-  #             (hyd_cal_slopes[i] < (1 - slope_tolerance)) |
-  #             (hyd_cal_rsq[i] < r2_thres)) {
-  # 
-  #           # set as NA
-  #           hyd_cal_slopes[i] <- NA
-  #           hyd_cal_ints[i]   <- NA
-  #           hyd_cal_rsq[i]    <- NA
-  #         }
-  #       } else {
-  #         # set as NA
-  #         hyd_cal_slopes[i] <- NA
-  #         hyd_cal_ints[i]   <- NA
-  #         hyd_cal_rsq[i]    <- NA
-  #       }
-  # 
-  #     } else { # all are missing
-  # 
-  #       hyd_cal_slopes[i] <- NA
-  #       hyd_cal_ints[i]   <- NA
-  #       hyd_cal_rsq[i]    <- NA
-  #     }
-  #   }
-  # 
-  #   # start time is numeric here at some point - hence, format not necessary
-  #   # to be specified below.
-  #   # output dataframe giving valid time range, slopes, intercepts, rsquared.
-  #   out <- data.frame(start = lubridate::as_datetime(start_time, tz = "UTC"),
-  #                     end = lubridate::as_datetime(end_time, tz = "UTC"),
-  #                     o_slope = as.numeric(oxy_cal_slopes),
-  #                     o_intercept = as.numeric(oxy_cal_ints),
-  #                     o_r2 = as.numeric(oxy_cal_rsq),
-  #                     h_slope = as.numeric(hyd_cal_slopes),
-  #                     h_intercept = as.numeric(hyd_cal_ints),
-  #                     h_r2 = as.numeric(hyd_cal_rsq))
-  # 
-  # } else { # this branch should rarely run, if at all
-  #   out <- data.frame(start = lubridate::as_datetime(start_date, tz = "UTC"),
-  #                     end = lubridate::as_datetime(end_date, tz = "UTC"),
-  #                     o_slope = as.numeric(NA),
-  #                     o_intercept = as.numeric(NA),
-  #                     o_r2 = as.numeric(NA),
-  #                     h_slope = as.numeric(NA),
-  #                     h_intercept = as.numeric(NA),
-  #                     h_r2 = as.numeric(NA))
-  # }
-  # 
-  # # check to ensure there are 6 columns.
-  # # add slope, intercept, r2 columns if missing.
-  # if (!("o_slope" %in% names(out))) {
-  #   out$o_slope <- as.numeric(rep(NA, length(out$start)))
-  # }
-  # if (!("o_intercept" %in% names(out))) {
-  #   out$o_intercept <- as.numeric(rep(NA, length(out$start)))
-  # }
-  # if (!("o_r2" %in% names(out))) {
-  #   out$o_r2 <- as.numeric(rep(NA, length(out$start)))
-  # }
-  # if (!("h_slope" %in% names(out))) {
-  #   out$h_slope <- as.numeric(rep(NA, length(out$start)))
-  # }
-  # if (!("h_intercept" %in% names(out))) {
-  #   out$h_intercept <- as.numeric(rep(NA, length(out$start)))
-  # }
-  # if (!("h_r2" %in% names(out))) {
-  #   out$h_r2 <- as.numeric(rep(NA, length(out$start)))
-  # }
-  # 
-  # # ensure there are 8 columns in out!
-  # if (ncol(out) != 8) {
-  #   stop("Wrong number of columns in out.")
-  # }
 
-  #return(out)
 }

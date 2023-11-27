@@ -7,4 +7,4 @@ library(readxl)
 carb <- read_xlsx("refCorrections.xlsx")
 
 # save as data file to R/
-usethis::use_data(carb, internal = TRUE)
+usethis::use_data(carb, internal = TRUE, overwrite = TRUE)

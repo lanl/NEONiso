@@ -14,7 +14,7 @@ calibrate_water(
   force_cal_to_end = FALSE,
   r2_thres = 0.95,
   slope_tolerance = 9999,
-  correct_refData = TRUE,
+  correct_ref_data = TRUE,
   write_to_file = TRUE
 )
 }
@@ -49,7 +49,7 @@ relationship nonlinear. Default = 0.95}
 'passing' regression slopes to be? Experimental parameter,
 off by default (e.g., default slope parameter = 9999)}
 
-\item{correct_refData}{There are a few instances where the reference d18O
+\item{correct_ref_data}{There are a few instances where the reference d18O
 and d2H values may have been switched, causing very anomalous
 d-excess values. If TRUE, implement a switch that corrects this
 issue.}

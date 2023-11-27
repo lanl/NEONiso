@@ -4,14 +4,14 @@
 \alias{write_water_calibration_data}
 \title{write_water_calibration_data}
 \usage{
-write_water_calibration_data(outname, site, calDf)
+write_water_calibration_data(outname, site, cal_df)
 }
 \arguments{
 \item{outname}{Output file name.}
 
 \item{site}{NEON 4-letter site code.}
 
-\item{calDf}{Calibration data frame -
+\item{cal_df}{Calibration data frame -
 this is the output from fit_water_regression}
 }
 \value{

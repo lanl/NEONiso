@@ -81,7 +81,8 @@ correct_carbon_ref_cval <- function(std_frame,
   # if data have already been corrected in raw files, no need to correct again.
   if (omit_already_corrected) {
     carb_red <- subset(carb,
-                  carb$co2_repairedRaw == FALSE | carb$d13C_repairedRaw == FALSE)
+                       carb$co2_repairedRaw == FALSE |
+                         carb$d13C_repairedRaw == FALSE)
   } else {
     carb_red <- carb
   }
@@ -89,7 +90,7 @@ correct_carbon_ref_cval <- function(std_frame,
   carb_red <- carb_red[carb_red$site == site, ]
 
   # check to see if site is in carb$site, otherwise, we can skip.
-   # nrow > 0 needed due to omit_already_corrected flag.
+  # nrow > 0 needed due to omit_already_corrected flag.
   if (nrow(carb_red) > 0 & (site %in% unique(carb$site))) {
 
     for (z in 1:nrow(carb_red)) {
@@ -103,19 +104,26 @@ correct_carbon_ref_cval <- function(std_frame,
       d13c_max <- carb_red$d13C_old[z] + d13c_tol
 
       if (carb_red$co2_repairedRaw[z] == FALSE) {
-        std_frame$rtioMoleDryCo2Refe.mean[std_frame$timeBgn > carb_red$startDate[z] &
-              std_frame$timeBgn <= carb_red$endDate[z] &
-              std_frame$verticalPosition == carb_red$refGas[z] &
-              std_frame$rtioMoleDryCo2Refe.mean <= co2_max &
-              std_frame$rtioMoleDryCo2Refe.mean >= co2_min] <- carb_red$co2_corr[z]
+        std_frame$rtioMoleDryCo2Refe.mean[std_frame$timeBgn >
+                                            carb_red$startDate[z] &
+                                            std_frame$timeBgn <=
+                                              carb_red$endDate[z] &
+                                            std_frame$verticalPosition ==
+                                              carb_red$refGas[z] &
+                                            std_frame$rtioMoleDryCo2Refe.mean <=
+                                              co2_max &
+                                            std_frame$rtioMoleDryCo2Refe.mean >=
+                                              co2_min] <- carb_red$co2_corr[z]
       }
 
       if (carb_red$d13C_repairedRaw[z] == FALSE) {
-        std_frame$dlta13CCo2Refe.mean[std_frame$timeBgn > carb_red$startDate[z] &
-              std_frame$timeBgn <= carb_red$endDate[z] &
-              std_frame$verticalPosition == carb_red$refGas[z] &
-              std_frame$dlta13CCo2Refe.mean <= d13c_max &
-              std_frame$dlta13CCo2Refe.mean >= d13c_min] <- carb_red$d13C_corr[z]
+        conds <- std_frame$timeBgn > carb_red$startDate[z] &
+          std_frame$timeBgn <= carb_red$endDate[z] &
+          std_frame$verticalPosition == carb_red$refGas[z] &
+          std_frame$dlta13CCo2Refe.mean <= d13c_max &
+          std_frame$dlta13CCo2Refe.mean >= d13c_min
+
+        std_frame$dlta13CCo2Refe.mean[conds] <- carb_red$d13C_corr[z]
       }
     }
   }
@@ -138,7 +146,7 @@ correct_carbon_ref_cval <- function(std_frame,
 #' @param d13c_tol Tolerance used to identify a mismatch in d13C values. Will
 #'             correct measured d13C values within +/- d13c_tol within time
 #'             period identified as having incorrect reference values.
-#' @param refGas Which reference gas is being corrected? Expects "co2High",
+#' @param ref_gas Which reference gas is being corrected? Expects "co2High",
 #'             "co2Med", or "co2Low"
 #'
 #' @return A version of std_list with corrected reference values.
@@ -148,7 +156,7 @@ correct_carbon_ref_output <- function(std_list,
                                       site,
                                       omit_already_corrected = TRUE,
                                       co2_tol = 5, d13c_tol = 0.25,
-                                      refGas) {
+                                      ref_gas) {
 
   # note: this one operates on lists! function above operates on data frames
   # uses internal dataset, carb, which has columns:
@@ -158,14 +166,17 @@ correct_carbon_ref_output <- function(std_list,
   # if data have already been corrected in raw files, no need to correct again.
   if (omit_already_corrected) {
     carb_red <- subset(carb,
-                       carb$co2_repairedRaw == FALSE | carb$d13C_repairedRaw == FALSE)
+                       carb$co2_repairedRaw == FALSE |
+                         carb$d13C_repairedRaw == FALSE)
   } else {
     carb_red <- carb
   }
 
   # strip off time indices
   carb_red <- carb_red[carb_red$site == site &
-                       carb_red$refGas == substr(refGas, 1, nchar(refGas) - 4), ]
+                         carb_red$ref_gas == substr(ref_gas,
+                                                    1,
+                                                    nchar(ref_gas) - 4), ]
 
   # check to see if site is in carb$site, otherwise, we can skip.
   if (nrow(carb_red) > 0 & (site %in% unique(carb$site))) {
@@ -175,7 +186,7 @@ correct_carbon_ref_output <- function(std_list,
 
       print(paste("Correcting data for",
                   site,
-                  substr(refGas, 1, nchar(refGas) - 4),
+                  substr(ref_gas, 1, nchar(ref_gas) - 4),
                   "between",
                   carb_red$startDate[z],
                   "and",
@@ -187,17 +198,21 @@ correct_carbon_ref_output <- function(std_list,
       d13c_max <- carb_red$d13C_old[z] + d13c_tol
 
       if (carb_red$co2_repairedRaw[z] == FALSE) {
-        std_list$rtioMoleDryCo2Refe$mean[std_list$rtioMoleDryCo2Refe$timeBgn > carb_red$startDate[z] &
-                                            std_list$rtioMoleDryCo2Refe$timeBgn <= carb_red$endDate[z] &
-                                            std_list$rtioMoleDryCo2Refe$mean <= co2_max &
-                                            std_list$rtioMoleDryCo2Refe$mean >= co2_min] <- carb_red$co2_corr[z]
+        conds <- std_list$rtioMoleDryCo2Refe$timeBgn > carb_red$startDate[z] &
+          std_list$rtioMoleDryCo2Refe$timeBgn <= carb_red$endDate[z] &
+          std_list$rtioMoleDryCo2Refe$mean <= co2_max &
+          std_list$rtioMoleDryCo2Refe$mean >= co2_min
+
+        std_list$rtioMoleDryCo2Refe$mean[conds] <- carb_red$co2_corr[z]
       }
 
       if (carb_red$d13C_repairedRaw[z] == FALSE) {
-        std_list$dlta13CCo2Refe$mean[std_list$dlta13CCo2Refe$timeBgn > carb_red$startDate[z] &
-                                        std_list$dlta13CCo2Refe$timeBgn <= carb_red$endDate[z] &
-                                        std_list$dlta13CCo2Refe$mean <= d13c_max &
-                                        std_list$dlta13CCo2Refe$mean >= d13c_min] <- carb_red$d13C_corr[z]
+        conds <- std_list$dlta13CCo2Refe$timeBgn > carb_red$startDate[z] &
+          std_list$dlta13CCo2Refe$timeBgn <= carb_red$endDate[z] &
+          std_list$dlta13CCo2Refe$mean <= d13c_max &
+          std_list$dlta13CCo2Refe$mean >= d13c_min
+
+        std_list$dlta13CCo2Refe$mean[conds] <- carb_red$d13C_corr[z]
       }
     }
   }

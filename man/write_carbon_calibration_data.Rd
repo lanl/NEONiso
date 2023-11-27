@@ -4,14 +4,14 @@
 \alias{write_carbon_calibration_data}
 \title{write_carbon_calibration_data}
 \usage{
-write_carbon_calibration_data(outname, site, calDf, method, to_file = TRUE)
+write_carbon_calibration_data(outname, site, cal_df, method, to_file = TRUE)
 }
 \arguments{
 \item{outname}{Output file name.}
 
 \item{site}{NEON 4-letter site code.}
 
-\item{calDf}{Calibration data frame -
+\item{cal_df}{Calibration data frame -
 this is the output from fit_carbon_regression}
 
 \item{method}{Was the Bowling et al. 2003 or the linear regression

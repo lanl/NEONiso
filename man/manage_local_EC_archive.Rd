@@ -32,9 +32,9 @@ delete them? Default true to prevent unintended data loss.}
 with available data, but can specify a single site or a vector
 here.}
 
-\item{release}{Download data corresponding to a specific release? Defaults to
-"RELEASE-2023." To download all data, including provisional data,
-set to NULL.}
+\item{release}{Download data corresponding to a specific release? Defaults
+to "RELEASE-2023." To download all data, including provisional
+data, set to NULL.}
 }
 \value{
 Returns nothing to the environment, but will download new NEON HDF5

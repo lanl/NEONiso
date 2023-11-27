@@ -85,7 +85,7 @@ delta_to_R <- function(delta_values, element) {
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param total_co2 Vector of CO2 mole fractions.
-#' @param delta13C Vector of d13C values.
+#' @param delta13c Vector of d13C values.
 #' @param f Fraction of CO2 that is not 12CO2 or 13CO2. Assumed fixed
 #'          at 0.00474
 #'
@@ -93,15 +93,15 @@ delta_to_R <- function(delta_values, element) {
 #'
 #' @export
 #' @examples
-#' calculate_12CO2(total_co2 = 410, delta13C = -8.5)
+#' calculate_12CO2(total_co2 = 410, delta13c = -8.5)
 #'
-calculate_12CO2 <- function(total_co2, delta13C, f = 0.00474) {
+calculate_12CO2 <- function(total_co2, delta13c, f = 0.00474) {
 
   # note: f technically varies, but this has little impact
   # on calibration per Griffis et al. 2004.
 
   # convert delta13C to R13
-  r <- delta_to_R(delta13C, "carbon")
+  r <- delta_to_R(delta13c, "carbon")
 
   # calculate 12CO2 from total CO2 and R
   light_co2 <- total_co2 * (1 - f) / (1 + r)
@@ -115,7 +115,7 @@ calculate_12CO2 <- function(total_co2, delta13C, f = 0.00474) {
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param total_co2 Vector of CO2 mole fractions.
-#' @param delta13C Vector of d13C values.
+#' @param delta13c Vector of d13C values.
 #' @param f Fraction of CO2 that is not 12CO2 or 13CO2. Assumed fixed
 #'          at 0.00474
 #'
@@ -123,15 +123,15 @@ calculate_12CO2 <- function(total_co2, delta13C, f = 0.00474) {
 #'
 #' @export
 #' @examples
-#' calculate_13CO2(total_co2 = 410, delta13C = -8.5)
+#' calculate_13CO2(total_co2 = 410, delta13c = -8.5)
 #'
-calculate_13CO2 <- function(total_co2, delta13C, f = 0.00474) {
+calculate_13CO2 <- function(total_co2, delta13c, f = 0.00474) {
 
   # note: f technically varies, but this has little impact
   # on calibration per Griffis et al. 2004.
 
   # calculate 13CO2 from total CO2 and R
-  light_co2 <- calculate_12CO2(total_co2, delta13C)
+  light_co2 <- calculate_12CO2(total_co2, delta13c)
 
   heavy_co2 <- total_co2 * (1 - f) - light_co2
 

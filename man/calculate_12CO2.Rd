@@ -4,12 +4,12 @@
 \alias{calculate_12CO2}
 \title{calculate_12CO2}
 \usage{
-calculate_12CO2(total_co2, delta13C, f = 0.00474)
+calculate_12CO2(total_co2, delta13c, f = 0.00474)
 }
 \arguments{
 \item{total_co2}{Vector of CO2 mole fractions.}
 
-\item{delta13C}{Vector of d13C values.}
+\item{delta13c}{Vector of d13C values.}
 
 \item{f}{Fraction of CO2 that is not 12CO2 or 13CO2. Assumed fixed
 at 0.00474}
@@ -21,7 +21,7 @@ Vector of 12CO2 mole fractions.
 calculate_12CO2
 }
 \examples{
-calculate_12CO2(total_co2 = 410, delta13C = -8.5)
+calculate_12CO2(total_co2 = 410, delta13c = -8.5)
 
 }
 \author{

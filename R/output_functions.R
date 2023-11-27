@@ -62,7 +62,7 @@ setup_output_file <- function(inname, outname, site, analyte) {
 #'
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
-#' @param calDf Calibration data frame -
+#' @param cal_df Calibration data frame -
 #'              this is the output from fit_carbon_regression
 #' @param method Was the Bowling et al. 2003 or the linear regression
 #'          method used in fit_carbon_regression?
@@ -75,7 +75,7 @@ setup_output_file <- function(inname, outname, site, analyte) {
 #'
 write_carbon_calibration_data <- function(outname,
                                           site,
-                                          calDf,
+                                          cal_df,
                                           method,
                                           to_file = TRUE) {
 
@@ -85,18 +85,20 @@ write_carbon_calibration_data <- function(outname,
 
   fid <- rhdf5::H5Fopen(outname)
   co2_cal_outloc <- rhdf5::H5Gopen(fid,
-                          paste0("/", site, "/dp01/data/isoCo2/calData"))
+                                   paste0("/",
+                                          site,
+                                          "/dp01/data/isoCo2/calData"))
 
   if (method == "Bowling_2003") {
-    rhdf5::h5writeDataset(obj = calDf,
-                                     h5loc = co2_cal_outloc,
-                                     name = "calGainsOffsets",
-                                     DataFrameAsCompound = TRUE)
+    rhdf5::h5writeDataset(obj = cal_df,
+                          h5loc = co2_cal_outloc,
+                          name = "calGainsOffsets",
+                          DataFrameAsCompound = TRUE)
   } else if (method == "linreg") {
-    rhdf5::h5writeDataset(obj = calDf,
-                                     h5loc = co2_cal_outloc,
-                                     name = "calRegressions",
-                                     DataFrameAsCompound = TRUE)
+    rhdf5::h5writeDataset(obj = cal_df,
+                          h5loc = co2_cal_outloc,
+                          name = "calRegressions",
+                          DataFrameAsCompound = TRUE)
   }
 
   rhdf5::H5Gclose(co2_cal_outloc)
@@ -119,7 +121,7 @@ write_carbon_calibration_data <- function(outname,
 #' @param site NEON 4-letter site code.
 #' @param amb_data_list Calibrated list of ambient data -
 #'   this is the output from one of the calibrate_ambient_carbon* functions.
-#'   
+#'
 #' @param to_file Write to file (TRUE) or to environment (FALSE).
 #'
 #' @return Nothing to the environment, but writes data in amb_data_list to file.
@@ -146,11 +148,13 @@ write_carbon_ambient_data <- function(outname,
       amb_data_subset <- amb_data_subset[[1]] # list hack
 
       # loop through variables in amb_data_list and write as a dataframe.
-      lapply(names(amb_data_subset), function(x) {
-        rhdf5::h5writeDataset(obj = amb_data_subset[[x]],
-                                         h5loc = co2_data_outloc,
-                                         name = x,
-                                         DataFrameAsCompound = TRUE)})
+      lapply(names(amb_data_subset),
+             function(x) {
+               rhdf5::h5writeDataset(obj = amb_data_subset[[x]],
+                                     h5loc = co2_data_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)
+             })
       rhdf5::H5Gclose(co2_data_outloc)
     }
 
@@ -171,7 +175,7 @@ write_carbon_ambient_data <- function(outname,
 #'
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
-#' @param calDf Calibration data frame -
+#' @param cal_df Calibration data frame -
 #'              this is the output from fit_water_regression
 #'
 #' @return Nothing to the environment, but writes out the
@@ -179,7 +183,7 @@ write_carbon_ambient_data <- function(outname,
 #'         regression slopes and intercepts) to the output
 #'         hdf5 file.
 #'
-write_water_calibration_data <- function(outname, site, calDf) {
+write_water_calibration_data <- function(outname, site, cal_df) {
 
   print("Writing calibration parameters...")
 
@@ -188,13 +192,15 @@ write_water_calibration_data <- function(outname, site, calDf) {
   fid <- rhdf5::H5Fopen(outname)
 
   h2o_cal_outloc <- rhdf5::H5Gopen(fid,
-                              paste0("/", site, "/dp01/data/isoH2o/calData"))
+                                   paste0("/",
+                                          site,
+                                          "/dp01/data/isoH2o/calData"))
 
   # write out dataset.
-  rhdf5::h5writeDataset(obj = calDf,
-                                   h5loc = h2o_cal_outloc,
-                                   name = "calRegressions",
-                                   DataFrameAsCompound = TRUE)
+  rhdf5::h5writeDataset(obj = cal_df,
+                        h5loc = h2o_cal_outloc,
+                        name = "calRegressions",
+                        DataFrameAsCompound = TRUE)
 
   # close the group and the file
   rhdf5::H5Gclose(h2o_cal_outloc)
@@ -223,32 +229,34 @@ write_water_calibration_data <- function(outname, site, calDf) {
 write_water_ambient_data <- function(outname, site, amb_data_list) {
 
   print("Writing calibrated ambient data...")
-  
+
   fid <- rhdf5::H5Fopen(outname)
-  
+
   if (length(amb_data_list) > 0) {
     for (i in 1:length(amb_data_list)) {
       amb_data_subset <- amb_data_list[i]
-      
+
       h2o_data_outloc <- rhdf5::H5Gcreate(fid,
                                           paste0("/",
                                                  site,
                                                  "/dp01/data/isoH2o/",
                                                  names(amb_data_subset)))
-      
+
       amb_data_subset <- amb_data_subset[[1]] # list hack
-      
+
       # loop through variables in amb_data_list and write as a dataframe.
-      lapply(names(amb_data_subset), function(x) {
-        rhdf5::h5writeDataset(obj = amb_data_subset[[x]],
-                              h5loc = h2o_data_outloc,
-                              name = x,
-                              DataFrameAsCompound = TRUE)})
+      lapply(names(amb_data_subset),
+             function(x) {
+               rhdf5::h5writeDataset(obj = amb_data_subset[[x]],
+                                     h5loc = h2o_data_outloc,
+                                     name = x,
+                                     DataFrameAsCompound = TRUE)
+             })
       rhdf5::H5Gclose(h2o_data_outloc)
     }
-    
+
   }
-  
+
   # close all open handles.
   rhdf5::H5Fclose(fid)
   rhdf5::h5closeAll()
