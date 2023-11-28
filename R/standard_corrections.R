@@ -109,7 +109,7 @@ correct_carbon_ref_cval <- function(std_frame,
                                             std_frame$timeBgn <=
                                               carb_red$endDate[z] &
                                             std_frame$verticalPosition ==
-                                              carb_red$refGas[z] &
+                                              carb_red$ref_gas[z] &
                                             std_frame$rtioMoleDryCo2Refe.mean <=
                                               co2_max &
                                             std_frame$rtioMoleDryCo2Refe.mean >=
@@ -119,7 +119,7 @@ correct_carbon_ref_cval <- function(std_frame,
       if (carb_red$d13C_repairedRaw[z] == FALSE) {
         conds <- std_frame$timeBgn > carb_red$startDate[z] &
           std_frame$timeBgn <= carb_red$endDate[z] &
-          std_frame$verticalPosition == carb_red$refGas[z] &
+          std_frame$verticalPosition == carb_red$ref_gas[z] &
           std_frame$dlta13CCo2Refe.mean <= d13c_max &
           std_frame$dlta13CCo2Refe.mean >= d13c_min
 
