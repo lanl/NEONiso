@@ -41,17 +41,30 @@ ingest_data <- function(inname,
   if (analyte == "Co2") {
 
     if (packageVersion("neonUtilities") >= "2.3.0") {
-      data <- neonUtilities::stackEddy(inname,
+      data <- try(neonUtilities::stackEddy(inname,
                                        avg = amb_avg,
                                        level = "dp01",
                                        var = "isoCo2",
-                                       useFasttime = TRUE)[[1]]
+                                       useFasttime = TRUE)[[1]], silent = TRUE)
+      if ("try-error" %in% class(data)) {
+        data <- neonUtilities::stackEddy(inname,
+                                             avg = 9,
+                                             level = "dp01",
+                                             var = "isoCo2",
+                                             useFasttime = TRUE)[[1]]
+      }
     } else if (packageVersion("neonUtilities") >= "2.1.1" && # nocov start
                  packageVersion("neonUtilities") < "2.3.0") {
-      data <- neonUtilities::stackEddy(inname,
+      data <- try(neonUtilities::stackEddy(inname,
                                        avg = amb_avg,
                                        level = "dp01",
-                                       var = "isoCo2")[[1]]
+                                       var = "isoCo2")[[1]], silent = TRUE)
+      if ("try-error" %in% class(data)) {
+        data <- neonUtilities::stackEddy(inname,
+                                         avg = 9,
+                                         level = "dp01",
+                                         var = "isoCo2")[[1]]
+      }
     } else {
       stop("NEONiso >= 0.7.0 requires neonUtilities >= 2.1.1")
     } # nocov end

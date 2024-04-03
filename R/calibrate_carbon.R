@@ -93,8 +93,7 @@
 #' @param plot_regression_data Default false; this is useful for diagnostics.
 #' @param plot_directory Only used if plot_regression_data is TRUE, but specify
 #'        where to write out diagnostic plot of regression data.
-#' @param avg The averaging interval to extract, in minutes. Default 9, but will
-#'        change to 6 eventually.
+#' @param avg The averaging interval to extract, in minutes. Default 6.
 #' @param min_nobs Minimum number of high-frequency observations to define
 #'                 a peak.
 #' @param standards Which reference gases (standards) to use? Default is all,
@@ -132,7 +131,7 @@ calibrate_carbon         <- function(inname,
                                      remove_known_bad_months = TRUE,
                                      plot_regression_data = FALSE,
                                      plot_directory = NULL,
-                                     avg = 9,
+                                     avg = 6,
                                      min_nobs = NA,
                                      standards = c("co2Low",
                                                    "co2Med",
