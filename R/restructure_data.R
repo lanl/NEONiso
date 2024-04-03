@@ -31,7 +31,8 @@ ingest_data <- function(inname,
   # b) ambient qfqm, c) ambient ucrt, d-f) same, but for ref vars.
 
   analyte <- validate_analyte(analyte)
-
+  backupMethod <- FALSE
+  
   # read attributes from (first file in) inname
   site <- rhdf5::h5ls(inname[1], recursive = 1)[1, 2]
   attrs <- rhdf5::h5readAttributes(inname[1], name = paste0("/", site))
@@ -52,6 +53,8 @@ ingest_data <- function(inname,
                                              level = "dp01",
                                              var = "isoCo2",
                                              useFasttime = TRUE)[[1]]
+        backupMethod <- TRUE
+        
       }
     } else if (packageVersion("neonUtilities") >= "2.1.1" && # nocov start
                  packageVersion("neonUtilities") < "2.3.0") {
@@ -64,6 +67,7 @@ ingest_data <- function(inname,
                                          avg = 9,
                                          level = "dp01",
                                          var = "isoCo2")[[1]]
+        backupMethod <- TRUE
       }
     } else {
       stop("NEONiso >= 0.7.0 requires neonUtilities >= 2.1.1")
@@ -270,7 +274,11 @@ ingest_data <- function(inname,
   # - could move it back here to validate!
 
   #changing average period in numeric to characters, e.g. 9 to 09m
-  avg_char <- paste0("0", amb_avg, "m")
+  if (backupMethod) {
+    avg_char <- "09m"
+  } else {
+    avg_char <- paste0("0", amb_avg, "m")
+  }
 
   # get number of heights
   if (nrow(ambient) > 0) {
