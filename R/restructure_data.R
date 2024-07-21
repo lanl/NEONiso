@@ -32,6 +32,8 @@ ingest_data <- function(inname,
 
   analyte <- validate_analyte(analyte)
   backupMethod <- FALSE
+  print(paste("Amb avg is:", amb_avg, "minutes"))
+  print(paste("Ref avg is:", ref_avg, "minutes"))
   
   # read attributes from (first file in) inname
   site <- rhdf5::h5ls(inname[1], recursive = 1)[1, 2]
@@ -42,11 +44,12 @@ ingest_data <- function(inname,
   if (analyte == "Co2") {
 
     if (packageVersion("neonUtilities") >= "2.3.0") {
+      print(amb_avg)
       data <- try(neonUtilities::stackEddy(inname,
                                        avg = amb_avg,
                                        level = "dp01",
                                        var = "isoCo2",
-                                       useFasttime = TRUE)[[1]], silent = TRUE)
+                                       useFasttime = TRUE)[[1]], silent = FALSE)
       if ("try-error" %in% class(data)) {
         data <- neonUtilities::stackEddy(inname,
                                              avg = 9,
