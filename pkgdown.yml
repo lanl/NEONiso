@@ -1,11 +1,10 @@
 pandoc: 3.1.11
-pkgdown: 2.0.7
+pkgdown: 2.1.0
 pkgdown_sha: ~
 articles:
   example_workflow: example_workflow.html
   reference_corrections: reference_corrections.html
-last_built: 2024-04-05T04:16Z
+last_built: 2024-07-21T15:31Z
 urls:
   reference: https://lanl.github.io/NEONiso/reference
   article: https://lanl.github.io/NEONiso/articles
-
