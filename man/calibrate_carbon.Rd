@@ -2,7 +2,7 @@
 % Please edit documentation in R/calibrate_carbon.R
 \name{calibrate_carbon}
 \alias{calibrate_carbon}
-\title{calibrate_carbon}
+\title{Calibrate NEON carbon isotope data using validation data sets.}
 \usage{
 calibrate_carbon(
   inname,

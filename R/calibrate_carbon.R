@@ -1,4 +1,4 @@
-#' calibrate_carbon
+#' Calibrate NEON carbon isotope data using validation data sets.
 #'
 #' `r lifecycle::badge("experimental")`
 #' This function drives a workflow that reads in NEON carbon isotope data

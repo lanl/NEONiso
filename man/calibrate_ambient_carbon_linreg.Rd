@@ -2,7 +2,7 @@
 % Please edit documentation in R/calibrate_ambient_carbon_linreg.R
 \name{calibrate_ambient_carbon_linreg}
 \alias{calibrate_ambient_carbon_linreg}
-\title{calibrate_ambient_carbon_linreg}
+\title{Calibrate ambient carbon isotope data using linear regression}
 \usage{
 calibrate_ambient_carbon_linreg(
   amb_data_list,
@@ -50,7 +50,7 @@ This function is not designed to be called on its own,
 and is not exported to the namespace.
 }
 \description{
-calibrate_ambient_carbon_linreg
+Calibrate ambient carbon isotope data using linear regression
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

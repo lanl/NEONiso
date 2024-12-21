@@ -1,14 +1,16 @@
 # quality control - functions to validate the output data file structure
 
-#' validate_analyte
-#'
+#' Standardize analyte names
+#' 
+#' Enforces standard capitalization and formatting of H2o and Co2 
+#' analyte names across calibration functions.
+#' 
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #' @param analyte Co2 or H2o?
 #'
 #' @return Standardized string for the water ('H2o') or
 #'         carbon ('Co2') systems to make sure strings
 #'         are standardized across package functions.
-#'
 #'
 #'
 validate_analyte <- function(analyte) {
@@ -25,7 +27,11 @@ validate_analyte <- function(analyte) {
 }
 
 
-#' validate_output_file
+#' Validate output file.
+#' 
+#' Function ensures that the output file has the correct
+#' groups in it, as a check to ensure proper file structure at the
+#' end of the calibration routines.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'

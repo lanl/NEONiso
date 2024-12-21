@@ -1,4 +1,4 @@
-#' calibrate_ambient_carbon_Bowling2003
+#' Calibrate ambient carbon isotope data using gain-and-offset method
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'

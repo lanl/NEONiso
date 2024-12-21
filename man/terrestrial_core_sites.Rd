@@ -2,7 +2,7 @@
 % Please edit documentation in R/utility_functions.R
 \name{terrestrial_core_sites}
 \alias{terrestrial_core_sites}
-\title{terrestrial_core_sites}
+\title{List terrestrial core sites}
 \usage{
 terrestrial_core_sites()
 }
@@ -10,7 +10,8 @@ terrestrial_core_sites()
 A vector listing NEON core terrestrial sites.
 }
 \description{
-terrestrial_core_sites
+Returns a vector of four-letter NEON site codes for the
+core terrestrial sites that have TIS instrumentation.
 }
 \examples{
 terrestrial_core_sites()

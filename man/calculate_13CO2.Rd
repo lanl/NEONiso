@@ -2,7 +2,7 @@
 % Please edit documentation in R/isotope_conversions.R
 \name{calculate_13CO2}
 \alias{calculate_13CO2}
-\title{calculate_13CO2}
+\title{Calculate 13C-CO2 Mole Fractions}
 \usage{
 calculate_13CO2(total_co2, delta13c, f = 0.00474)
 }
@@ -18,7 +18,10 @@ at 0.00474}
 Vector of 13CO2 mole fractions.
 }
 \description{
-calculate_13CO2
+This function calculates mole fractions of 13CO2 based on the total CO2 mole
+fraction, the delta13C value of the mixture, and the assumed fraction of CO2
+that does not correspond to 12CO2 or 13CO2 (assumed fixed at 0.00474, e.g.,
+Griffis et al. 2004 Agricultural and Frest Meteorology)
 }
 \examples{
 calculate_13CO2(total_co2 = 410, delta13c = -8.5)

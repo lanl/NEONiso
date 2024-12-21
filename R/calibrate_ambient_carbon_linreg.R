@@ -1,4 +1,4 @@
-#' calibrate_ambient_carbon_linreg
+#' Calibrate ambient carbon isotope data using linear regression
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'

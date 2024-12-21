@@ -2,7 +2,7 @@
 % Please edit documentation in R/isotope_conversions.R
 \name{R_to_delta}
 \alias{R_to_delta}
-\title{R_to_delta}
+\title{Convert heavy-to-light isotope ratio to delta values.}
 \usage{
 R_to_delta(R_values, element)
 }
@@ -16,7 +16,8 @@ carbon, oxygen, or hydrogen.}
 Vector of isotope ratios in delta notation.
 }
 \description{
-R_to_delta
+Converts a heavy-to-light stable isotope ratio to
+a corresponding delta value, in per mil values.
 }
 \examples{
 R_to_delta(R_values = 2005.20e-6, element = 'oxygen') # returns 0.

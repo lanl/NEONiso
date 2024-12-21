@@ -2,7 +2,7 @@
 % Please edit documentation in R/isotope_conversions.R
 \name{get_Rstd}
 \alias{get_Rstd}
-\title{get_Rstd}
+\title{Return heavy-to-light isotope ratio of primary standard.}
 \usage{
 get_Rstd(element)
 }
@@ -16,7 +16,10 @@ stable isotope standard. VSMOW for water,
 VPDB for carbon.
 }
 \description{
-get_Rstd
+Returns the heavy-to-light isotope ratio of the dominant
+standard for that element. Vienna Standard Mean Ocean Water
+(VSMOW) for oxygen and hydrogen isotopes, Vienna Pee Dee
+Belemnite (VPDB) for carbon stable isotopes.
 }
 \examples{
 get_Rstd("carbon") # returns 0.0111797

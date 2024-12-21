@@ -2,7 +2,7 @@
 % Please edit documentation in R/calibrate_ambient_carbon_Bowling2003.R
 \name{calibrate_ambient_carbon_Bowling2003}
 \alias{calibrate_ambient_carbon_Bowling2003}
-\title{calibrate_ambient_carbon_Bowling2003}
+\title{Calibrate ambient carbon isotope data using gain-and-offset method}
 \usage{
 calibrate_ambient_carbon_Bowling2003(
   amb_data_list,
@@ -51,7 +51,7 @@ If false, returns modified version of amb_data_list that include
 calibrated ambient data.
 }
 \description{
-calibrate_ambient_carbon_Bowling2003
+Calibrate ambient carbon isotope data using gain-and-offset method
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

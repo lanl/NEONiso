@@ -1,9 +1,10 @@
 # filtering_functions.R
-# a file with a few optinos for filtering output data.
+# a file with a few option for filtering output data.
 #---------------------------------
-#' filter_median_Brock86
+#' Apply a median absolute deviation filter
 #'
-#' Median absolute deviation filter of Brock 1986.
+#' Median absolute deviation filter of Brock 1986, with user specified
+#' width and magnitude thresholds.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
