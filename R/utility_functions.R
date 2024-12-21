@@ -1,11 +1,14 @@
 # general utility functions in this file.
-# this file is intended to keep short utilitie functions
+# this file is intended to keep short utility functions
 # that do *not* need to be exported,  to help keep down on
 # number of files present in the repo/package. -rpf 200214.
 # 200219 - added a water isotope function.
 #-----------------------------------------------
 
-#' terrestrial_core_sites
+#' List terrestrial core sites
+#' 
+#' Returns a vector of four-letter NEON site codes for the
+#' core terrestrial sites that have TIS instrumentation.
 #'
 #' @return A vector listing NEON core terrestrial sites.
 #'
@@ -26,7 +29,10 @@ terrestrial_core_sites <- function() {
   return(core_sites)
 }
 
-#' terrestrial_gradient_sites
+#' List terrestrial gradient sites
+#' 
+#' Returns a vector of four-letter NEON site codes for the
+#' gradient terrestrial sites that have TIS instrumentation.
 #'
 #' @return A vector listing NEON gradient terrestrial sites.
 #'
@@ -51,7 +57,10 @@ terrestrial_gradient_sites <- function() {
 
 }
 
-#' water_isotope_sites
+#' List sites with water vapor isotope ratios.
+#' 
+#' Returns a vector of four-letter NEON site codes for the
+#' terrestrial sites that have water vapor isotope ratio instrumentation.
 #'
 #' @return A vector listing NEON sites measuring water vapor isotope ratios.
 #'
@@ -74,11 +83,11 @@ water_isotope_sites <- function() {
 
 }
 
-#' manage_local_EC_archive
+#' Manage a local eddy covariance (EC) data archive.
 #'
 #' Utility function to help retrieve new EC data and/or prune duplicates,
 #' as NEON provisions new data or re-provisions data for an existing site
-#' and month.
+#' and month. 
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -94,7 +103,7 @@ water_isotope_sites <- function() {
 #'              with available data, but can specify a single site or a vector
 #'              here.
 #' @param release Download data corresponding to a specific release? Defaults
-#'              to "RELEASE-2023." To download all data, including provisional
+#'              to "RELEASE-2024." To download all data, including provisional
 #'              data, set to NULL.
 #' @export
 #'
@@ -109,7 +118,7 @@ manage_local_EC_archive <- function(file_dir,
                                     trim = FALSE,
                                     dry_run = TRUE,
                                     sites = "all",
-                                    release = "RELEASE-2023") {
+                                    release = "RELEASE-2024") {
   if (!is.null(release)) {
     file_dir2 <- paste(file_dir, release, sep = "/")
   } else {
