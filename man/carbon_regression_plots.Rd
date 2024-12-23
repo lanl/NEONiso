@@ -2,7 +2,7 @@
 % Please edit documentation in R/quality_control.R
 \name{carbon_regression_plots}
 \alias{carbon_regression_plots}
-\title{carbon_regression_plots}
+\title{Make plots of carbon calibration data for debugging}
 \usage{
 carbon_regression_plots(caldata, plot_filename, method, mtitle)
 }
@@ -20,7 +20,8 @@ period.}
 Nothing to the environment, but a pdf plot to a file.
 }
 \description{
-carbon_regression_plots
+Makes plots of carbon calibration data regressions, primarily for
+debugging and validation purposes.
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

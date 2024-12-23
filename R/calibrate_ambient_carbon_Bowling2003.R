@@ -19,7 +19,7 @@
 #' @param force_to_end In given month, calibrate ambient data later than last
 #'             calibration, using the last calibration? (default true)
 #' @param force_to_beginning In given month, calibrate ambient data before than
-#'              first calibration, using the first calibration? (default true)
+#'              first calibration, using the firs t calibration? (default true)
 #' @param r2_thres Minimum r2 value for calibration to be considered "good" and
 #'             applied to ambient data.
 #' @param gap_fill_parameters Should function attempt to 'gap-fill' across a

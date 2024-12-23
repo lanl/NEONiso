@@ -2,7 +2,7 @@
 % Please edit documentation in R/restructure_data.R
 \name{ingest_data}
 \alias{ingest_data}
-\title{ingest_data}
+\title{Ingest and stack variables needed in calibration.}
 \usage{
 ingest_data(inname, analyte, name_fix = TRUE, amb_avg, ref_avg)
 }
@@ -24,7 +24,7 @@ functions are removed.}
 List of data frames, taken from files specified in \code{inname}
 }
 \description{
-ingest_data
+Ingest and stack variables needed in calibration.
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

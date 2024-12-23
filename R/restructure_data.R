@@ -1,5 +1,6 @@
-# restructure_data
-#' ingest_data
+# restructure_data script:
+#==============================
+#' Ingest and stack variables needed in calibration.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -305,9 +306,10 @@ ingest_data <- function(inname,
 }
 
 #-----------------------------------------
-# restructure_variables
+# Restructure stacked data.frames to essential variables.
 #'
-#' Wrapper function around restructure_carbon_variables
+#' Restructures data.frames imported by ingest_data to shorten variable names
+#' and  Wrapper function around restructure_carbon_variables
 #' and restructure_water_variables.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
@@ -347,7 +349,7 @@ restructure_variables <- function(dataframe,
 }
 
 #-----------------------------------------
-#' restructure_carbon_variables
+#' Restructure ingested variables for the carbon isotope system.
 #'
 #' @param varname Which variable are we applying this function to? There's
 #'                a list of ~10 common ones to write to the hdf5 file.
@@ -455,7 +457,7 @@ restructure_carbon_variables <- function(dataframe,
 }
 
 #-----------------------------------------
-#' restructure_water_variables
+#' Restructure ingested variables for the water isotope system.
 #'
 #' @param varname Which variable are we applying this function to? There's
 #'                a list of ~10 common ones to write to the hdf5 file.

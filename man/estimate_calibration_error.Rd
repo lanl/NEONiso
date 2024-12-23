@@ -2,7 +2,7 @@
 % Please edit documentation in R/reference_data_regression.R
 \name{estimate_calibration_error}
 \alias{estimate_calibration_error}
-\title{estimate_calibration_error}
+\title{Produce estimates of the calibration error.}
 \usage{
 estimate_calibration_error(formula, data)
 }
@@ -12,7 +12,7 @@ estimate_calibration_error(formula, data)
 \item{data}{Data frame to perform cross-validation on.}
 }
 \description{
-estimate_calibration_error
+Produce estimates of the calibration error.
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/output_functions.R
 \name{write_water_ambient_data}
 \alias{write_water_ambient_data}
-\title{write_water_ambient_data}
+\title{Write calibrated ambient water isotope ratio observations to file.}
 \usage{
 write_water_ambient_data(outname, site, amb_data_list)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/output_functions.R
 \name{write_carbon_ambient_data}
 \alias{write_carbon_ambient_data}
-\title{write_carbon_ambient_data}
+\title{Write calibrated carbon ambient data to file}
 \usage{
 write_carbon_ambient_data(outname, site, amb_data_list, to_file = TRUE)
 }

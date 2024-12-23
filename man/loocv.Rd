@@ -2,7 +2,7 @@
 % Please edit documentation in R/reference_data_regression.R
 \name{loocv}
 \alias{loocv}
-\title{loocv}
+\title{Leave-one-out cross validation}
 \usage{
 loocv(mod)
 }
@@ -10,7 +10,7 @@ loocv(mod)
 \item{mod}{Fitted model to estimate leave-one-out CV on.}
 }
 \description{
-loocv
+Leave-one-out cross validation
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/reference_data_regression.R
 \name{fit_carbon_regression}
 \alias{fit_carbon_regression}
-\title{fit_carbon_regression}
+\title{Estimate slope/intercept of carbon isotope calibration regression}
 \usage{
 fit_carbon_regression(
   ref_data,
@@ -46,7 +46,7 @@ then data.frame includes slope, intercept, and r^2 values
 for d13C and CO2 values.
 }
 \description{
-fit_carbon_regression
+Estimate slope/intercept of carbon isotope calibration regression
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

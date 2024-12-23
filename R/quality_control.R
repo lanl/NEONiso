@@ -100,7 +100,10 @@ validate_output_file <- function(inname, outname, site, analyte) {
 #--------------------------------------------------------------------
 # Diagnostic plots:::
 
-#' carbon_regression_plots
+#' Make plots of carbon calibration data for debugging
+#' 
+#' Makes plots of carbon calibration data regressions, primarily for
+#' debugging and validation purposes.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'

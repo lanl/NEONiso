@@ -2,7 +2,7 @@
 % Please edit documentation in R/output_functions.R
 \name{write_carbon_calibration_data}
 \alias{write_carbon_calibration_data}
-\title{write_carbon_calibration_data}
+\title{Write carbon calibrations to file.}
 \usage{
 write_carbon_calibration_data(outname, site, cal_df, method, to_file = TRUE)
 }
@@ -26,7 +26,7 @@ regression slopes and intercepts) to the output
 hdf5 file.
 }
 \description{
-write_carbon_calibration_data
+Write carbon calibrations to file.
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

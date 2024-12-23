@@ -3,9 +3,11 @@
 #################################################
 ### FUNCTIONS THAT WORK FOR BOTH H2O AND CO2 ####
 #################################################
-#' setup_output_file
+#' Structure a new HDF5 file
 #'
-#' Creates a skeleton hdf5 file for the calibrated data.
+#' Creates a skeleton HDF5 file for the calibrated data,
+#' essentially setting up the HDF5 groups at the /site/dp01/\{data,ucrt,qfqm\}
+#' level.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -56,7 +58,7 @@ setup_output_file <- function(inname, outname, site, analyte) {
 #######################################
 ### FUNCTIONS THAT WORK ON ONLY CO2 ###
 #######################################
-#' write_carbon_calibration_data
+#' Write carbon calibrations to file. 
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -109,7 +111,7 @@ write_carbon_calibration_data <- function(outname,
 
 }
 
-#' write_carbon_ambient_data
+#' Write calibrated carbon ambient data to file
 #'
 #' Write out ambient observations from the NEON EC
 #' towers where the isotope data (either H2O or CO2)
@@ -169,7 +171,7 @@ write_carbon_ambient_data <- function(outname,
 #######################################
 ### FUNCTIONS THAT WORK ON ONLY H2O ###
 #######################################
-#' write_water_calibration_data
+#' Write carbon calibration parameters to file. 
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -211,7 +213,7 @@ write_water_calibration_data <- function(outname, site, cal_df) {
 
 }
 
-#' write_water_ambient_data
+#' Write calibrated ambient water isotope ratio observations to file.
 #'
 #' Write out ambient observations from the NEON EC
 #' towers where the isotope data

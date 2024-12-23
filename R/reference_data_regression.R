@@ -1,4 +1,4 @@
-#' loocv
+#' Leave-one-out cross validation
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -12,7 +12,7 @@ loocv <- function(mod) {
   return(base::mean((stats::residuals(mod) / (1 - h)) ^ 2))
 }
 
-#' estimate_calibration_error
+#' Produce estimates of the calibration error.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -38,7 +38,7 @@ estimate_calibration_error <- function(formula, data) {
 
 }
 
-#' fit_carbon_regression
+#' Estimate slope/intercept of carbon isotope calibration regression
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -419,7 +419,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 
 }
 
-#' fit_water_regression
+#' Estimate slope/intercept of water isotope calibration regression
 #'
 #' @param ref_data Reference data.frame from which to estimate
 #'        calibration parameters.

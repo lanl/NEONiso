@@ -32,7 +32,7 @@ remove impulse spikes? Inherited from
 calibration, using the last calibration? (default true)}
 
 \item{force_to_beginning}{In given month, calibrate ambient data before than
-first calibration, using the first calibration? (default true)}
+first calibration, using the firs t calibration? (default true)}
 
 \item{gap_fill_parameters}{Should function attempt to 'gap-fill' across a
 bad calibration by carrying the last known good calibration

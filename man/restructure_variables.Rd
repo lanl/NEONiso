@@ -2,7 +2,8 @@
 % Please edit documentation in R/restructure_data.R
 \name{restructure_variables}
 \alias{restructure_variables}
-\title{Wrapper function around restructure_carbon_variables
+\title{Restructures data.frames imported by ingest_data to shorten variable names
+and  Wrapper function around restructure_carbon_variables
 and restructure_water_variables.}
 \usage{
 restructure_variables(dataframe, varname, mode, group, species)
@@ -23,7 +24,8 @@ a list of ~10 common ones to write to the hdf5 file.}
 data.frame formatted for output to hdf5 file.
 }
 \description{
-Wrapper function around restructure_carbon_variables
+Restructures data.frames imported by ingest_data to shorten variable names
+and  Wrapper function around restructure_carbon_variables
 and restructure_water_variables.
 }
 \author{

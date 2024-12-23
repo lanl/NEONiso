@@ -1,7 +1,7 @@
 # process_calibration_data
 # functions to help select and filter validation data.
 
-#' select_daily_reference_data
+#' Select validation data corresponding to a particular day
 #'
 #' @param standard_df Input reference data.frame.
 #' @param analyte Are we calibrating CO2 and H2O?
