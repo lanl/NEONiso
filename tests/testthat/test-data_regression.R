@@ -59,13 +59,13 @@ test_that("carbon calibration data frames correct even when no input data", {
 # work through ambient calibrations
 
 # test carbon - bowling ambient calibration
-temp <- calibrate_ambient_carbon_Bowling2003(co2test$ambient$`000_010_09m`,
-                                             caldf_b03,
-                                             site = "ONAQ")
-temp_gf <- calibrate_ambient_carbon_Bowling2003(co2test$ambient$`000_010_09m`,
-                                                caldf_b03,
-                                                site = "ONAQ",
-                                                gap_fill_parameters = TRUE)
+temp <- calibrate_ambient_carbon_gainoffset(co2test$ambient$`000_010_09m`,
+                                           caldf_b03,
+                                           site = "ONAQ")
+temp_gf <- calibrate_ambient_carbon_gainoffset(co2test$ambient$`000_010_09m`,
+                                               caldf_b03,
+                                               site = "ONAQ",
+                                               gap_fill_parameters = TRUE)
 
 test_that("calibrate_ambient_carbon_Bowling2003 returns a list",{
   skip_on_cran()

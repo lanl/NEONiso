@@ -1,4 +1,13 @@
-# NEONiso 0.7.0.9000
+# NEONiso 0.7.1
+
+* Substantial upgrades to package documentation.
+* The name "Bowling_2003" in methods and functions has been deprecated in
+favor of "gainoffset." This change was made primarily to improve clarity of
+what the methods actually do. Code that uses the old "Bowling_2003" nomenclature
+will continue to work until at least version 0.8.0, but will issue a deprecation
+warning.
+
+# NEONiso 0.7.0
 
 * calibrate_carbon_bymonth and calibrate_water_bymonth have been removed. Use
 calibrate_carbon and calibrate_water instead.

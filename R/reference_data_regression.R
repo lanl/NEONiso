@@ -59,7 +59,7 @@ estimate_calibration_error <- function(formula, data) {
 #'                 to define a peak.
 #'
 #' @return Returns a data.frame of calibration parameters. If
-#'        `method == "Bowling_2003"`, then data.frame includes
+#'        `method == "gainoffset"`, then data.frame includes
 #'        gain and offset parameters for 12CO2 and 13CO2, and r^2
 #'        values for each regression. If `method == "linreg"`,
 #'        then data.frame includes slope, intercept, and r^2 values
@@ -87,7 +87,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                                           analyte = "co2",
                                           min_nobs = min_nobs)
 
-  if (method == "Bowling_2003") {
+  if (method == "gainoffset" | method == "Bowling_2003") {
 
     # calculate mole fraction (12CO2 / 13CO2) for ref gases and observed values
     ref_data$conc12CCO2_ref <- calculate_12CO2(ref_data$rtioMoleDryCo2Refe.mean,

@@ -1,3 +1,9 @@
+calibrate_ambient_carbon_Bowling2003 <- function(...) {
+  lifecycle::deprecate_soft("0.7.1","calibrate_ambient_carbon_Bowling2003()",
+                            "calibrate_ambient_carbon_gainoffset()")
+  calibrate_ambient_carbon_gainoffset(...)
+}
+
 #' Calibrate ambient carbon isotope data using gain-and-offset method
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
@@ -14,8 +20,7 @@
 #'              12C and 13C isotopologues.
 #' @param site Four-letter NEON code corresponding to site being processed.
 #' @param filter_data Apply median absolute deviation filter from Brock 86 to
-#'             remove impulse spikes? Inherited from
-#'             `calibrate_ambient_carbon_Bowling2003()`
+#'             remove impulse spikes?
 #' @param force_to_end In given month, calibrate ambient data later than last
 #'             calibration, using the last calibration? (default true)
 #' @param force_to_beginning In given month, calibrate ambient data before than
@@ -38,7 +43,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom lubridate %within%
 #'
-calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
+calibrate_ambient_carbon_gainoffset <- function(amb_data_list,
                                                  caldf,
                                                  site,
                                                  filter_data = TRUE,

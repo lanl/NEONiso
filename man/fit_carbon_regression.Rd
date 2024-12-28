@@ -39,7 +39,7 @@ to define a peak.}
 }
 \value{
 Returns a data.frame of calibration parameters. If
-\code{method == "Bowling_2003"}, then data.frame includes
+\code{method == "gainoffset"}, then data.frame includes
 gain and offset parameters for 12CO2 and 13CO2, and r^2
 values for each regression. If \code{method == "linreg"},
 then data.frame includes slope, intercept, and r^2 values

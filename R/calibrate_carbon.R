@@ -147,6 +147,11 @@ calibrate_carbon         <- function(inname,
       inname <- inname[!grepl("2019-07", inname)]
     }
   }
+  
+  if (method == "Bowling_2003") {
+    lifecycle::deprecate_warn("0.7.1","calibrate_carbon(method = 'Bowling_2003')",
+                              "calibrate_carbon(method = 'gainoffset')")
+  }
 
   #-----------------------------------------------------------
   # Extract reference data from input HDF5 file.
@@ -194,18 +199,18 @@ calibrate_carbon         <- function(inname,
 
   ciso_subset <- c(ciso$ambient, ciso$reference)
 
-  if (method == "Bowling_2003") {
+  if (method == "gainoffset" | method == "Bowling_2003") {
 
     ciso_subset_cal <-
       lapply(names(ciso_subset),
              function(x) {
-               calibrate_ambient_carbon_Bowling2003(amb_data_list = ciso_subset[[x]],
-                                                    caldf = cal_df,
-                                                    site = site,
-                                                    filter_data = filter_ambient,
-                                                    force_to_end = force_cal_to_end,
-                                                    force_to_beginning = force_cal_to_beginning,
-                                                    r2_thres = r2_thres)
+               calibrate_ambient_carbon_gainoffset(amb_data_list = ciso_subset[[x]],
+                                                   caldf = cal_df,
+                                                   site = site,
+                                                   filter_data = filter_ambient,
+                                                   force_to_end = force_cal_to_end,
+                                                   force_to_beginning = force_cal_to_beginning,
+                                                   r2_thres = r2_thres)
              })
 
   } else if (method == "linreg") {
