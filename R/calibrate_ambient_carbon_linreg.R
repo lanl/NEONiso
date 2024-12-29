@@ -1,11 +1,11 @@
 #' Calibrate ambient carbon isotope data using linear regression
 #'
-#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
-#'
 #' Function called by `calibrate_ambient_carbon_linreg` to apply
 #' gain and offset parameters to the ambient datasets (000_0x0_09m and
 #' 000_0x0_30m). This function should generally not be used independently,
 #' but should be used with `calibrate_ambient_carbon_linreg`.
+#'
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param amb_data_list List containing an ambient d13C dataset.
 #'             Will include all variables in 000_0x0_xxm. (character)

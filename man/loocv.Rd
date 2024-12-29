@@ -10,10 +10,8 @@ loocv(mod)
 \item{mod}{Fitted model to estimate leave-one-out CV on.}
 }
 \description{
-Leave-one-out cross validation
+Calculate analytic leave-one-out cross variance error estimate
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}
-
-helper function for the leave-one-out cross variance
 }

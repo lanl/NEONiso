@@ -26,7 +26,9 @@ regression slopes and intercepts) to the output
 hdf5 file.
 }
 \description{
-Write carbon calibrations to file
+Write a \code{data.frame} with slope, intercepts, and error estimates of
+calibrations for carbon isotope system. If \code{gainoffset} method was used
+the slopes/intercepts are called gain/offsets for each isotopologue.
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

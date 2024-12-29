@@ -20,5 +20,6 @@ a list of ~10 common ones to write to the hdf5 file.}
 data.frame formatted for output to hdf5 file.
 }
 \description{
-Restructure ingested variables for the carbon isotope system.
+Restructures carbon isotope measurement system variables and shortens names
+to simplify referencing variables elsewhere in calibration code.
 }

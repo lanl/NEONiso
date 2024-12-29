@@ -2,6 +2,11 @@
 #==============================
 #' Ingest and stack variables needed in calibration.
 #'
+#' Opens and stacks isotope ratio and water/carbon dioxide mole fraction
+#' variables from monthly HDF5 files. If a new enough version of `neonUtilities`
+#' is available, this function will try to use `fasttime` in order to accelerate
+#' data stacking.
+#'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param inname A file (or list of files) to extract data from for calibration.
@@ -351,6 +356,9 @@ restructure_variables <- function(dataframe,
 #-----------------------------------------
 #' Restructure ingested variables for the carbon isotope system.
 #'
+#' Restructures carbon isotope measurement system variables and shortens names 
+#' to simplify referencing variables elsewhere in calibration code.
+#'
 #' @param varname Which variable are we applying this function to? There's
 #'                a list of ~10 common ones to write to the hdf5 file.
 #' @param dataframe Input data.frame, from `neonUtilities::stackEddy`
@@ -459,6 +467,9 @@ restructure_carbon_variables <- function(dataframe,
 #-----------------------------------------
 #' Restructure ingested variables for the water isotope system.
 #'
+#' Restructures water isotope measurement system variables and shortens names 
+#' to simplify referencing variables elsewhere in calibration code.
+#' 
 #' @param varname Which variable are we applying this function to? There's
 #'                a list of ~10 common ones to write to the hdf5 file.
 #' @param dataframe Input data.frame, from `neonUtilities::stackEddy`

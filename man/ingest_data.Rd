@@ -24,7 +24,10 @@ functions are removed.}
 List of data frames, taken from files specified in \code{inname}
 }
 \description{
-Ingest and stack variables needed in calibration.
+Opens and stacks isotope ratio and water/carbon dioxide mole fraction
+variables from monthly HDF5 files. If a new enough version of \code{neonUtilities}
+is available, this function will try to use \code{fasttime} in order to accelerate
+data stacking.
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

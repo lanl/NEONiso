@@ -60,6 +60,10 @@ setup_output_file <- function(inname, outname, site, analyte) {
 #######################################
 #' Write carbon calibrations to file
 #'
+#' Write a `data.frame` with slope, intercepts, and error estimates of 
+#' calibrations for carbon isotope system. If `gainoffset` method was used
+#' the slopes/intercepts are called gain/offsets for each isotopologue.
+#'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param outname Output file name.
@@ -171,8 +175,11 @@ write_carbon_ambient_data <- function(outname,
 #######################################
 ### FUNCTIONS THAT WORK ON ONLY H2O ###
 #######################################
-#' Write carbon calibration parameters to file
+#' Write water calibration parameters to file
 #'
+#' Write a `data.frame` with slope, intercepts, and error estimates of 
+#' calibrations for water isotope system.
+#' 
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param outname Output file name.

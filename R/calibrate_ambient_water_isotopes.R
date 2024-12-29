@@ -1,7 +1,5 @@
 #' calibrate_ambient_water_isotopes
 #'
-#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
-#'
 #' Function called by `calibrate_ambient_water_linreg` to apply
 #' slope and intercept parameters to the ambient datasets (000_0x0_09m and
 #' 000_0x0_30m) to correct to the VSMOW scale.
@@ -9,6 +7,8 @@
 #' but should be used with `calibrate_ambient_water_linreg`.
 #' Note that in this version *NO CORRECTION FOR HUMIDITY* is performed.
 #' Use with caution.
+#' 
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param amb_data_list List containing ambient d18O/d2H datasets.
 #'             Will include all variables in 000_0x0_xxm. (character)

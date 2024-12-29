@@ -1,8 +1,8 @@
 #' Leave-one-out cross validation
 #'
-#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
+#' Calculate analytic leave-one-out cross variance error estimate
 #'
-#' helper function for the leave-one-out cross variance
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param mod Fitted model to estimate leave-one-out CV on.
 #'
@@ -13,6 +13,14 @@ loocv <- function(mod) {
 }
 
 #' Produce estimates of the calibration error.
+#'
+#' Estimate calibration error using a 5-fold cross-validation. A 5-fold
+#' cross-validation was chosen as each calibration window should have
+#' at least 6 data points (e.g., if only daily validation data are used for the
+#' calibration) and therefore this ensures that the cross-validation should
+#' always run. Model is fit using \code{lm} and the \code{caret} package, with
+#' root-mean-square error (RMSE), the R-squared value, and mean-absolute
+#' error (MAE) extracted from the cross-validation.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -40,10 +48,17 @@ estimate_calibration_error <- function(formula, data) {
 
 #' Estimate slope/intercept of carbon isotope calibration regression
 #'
+#' Performs regression between measured and known carbon isotope and mole
+#' fractions to generate a transfer function and associated uncertainty
+#' estimates using both 5-fold and leave-one-out cross-validation methods.
+#' Regression occurs either on 12CO2/13CO2 mole fractions (gainoffset method)
+#' or on the CO2 and d13C values (linreg). 
+#'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
-#' @param method Are we using the Bowling et al. 2003 method
-#'              ("Bowling_2003") or direct linear regression of
+#' @param method Are we using the gain-and-offset method
+#'              ("gainoffset"), formerly called the Bowling et al. 2003 method
+#'              in this package, or direct linear regression of
 #'              d13C and CO2 mole fractions ("linreg")?
 #' @param calibration_half_width Determines the period (in days)
 #'        from which reference data are selected (period
@@ -421,6 +436,11 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 
 #' Estimate slope/intercept of water isotope calibration regression
 #'
+#' Performs regression between measured and known carbon isotope and mole
+#' fractions to generate a transfer function and associated uncertainty
+#' estimates using both 5-fold and leave-one-out cross-validation methods.
+#' Regression occurs on d18O and d2H values. 
+#' 
 #' @param ref_data Reference data.frame from which to estimate
 #'        calibration parameters.
 #' @param calibration_half_width Determines the period (in days)
@@ -438,7 +458,6 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 #' @param min_nobs Minimum number of high-frequency observations to
 #'                 define a peak.
 #'
-
 #' @return Returns a data.frame of calibration parameters.
 #'        Output data.frame includes slope, intercept, and r^2 values
 #'        for d13C and CO2 values.

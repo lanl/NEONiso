@@ -46,5 +46,8 @@ Output data.frame includes slope, intercept, and r^2 values
 for d13C and CO2 values.
 }
 \description{
-Estimate slope/intercept of water isotope calibration regression
+Performs regression between measured and known carbon isotope and mole
+fractions to generate a transfer function and associated uncertainty
+estimates using both 5-fold and leave-one-out cross-validation methods.
+Regression occurs on d18O and d2H values.
 }
