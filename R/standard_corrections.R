@@ -176,7 +176,7 @@ correct_carbon_ref_output <- function(std_list,
   }
 
   # strip off time indices
-  carb_red <- carb_red[carb_red$site == site &&
+  carb_red <- carb_red[carb_red$site == site &
                          carb_red$ref_gas == substr(ref_gas,
                                                     1,
                                                     nchar(ref_gas) - 4), ]
