@@ -33,7 +33,7 @@ ingest_data <- function(inname,
 
   analyte <- validate_analyte(analyte)
   backupMethod <- FALSE
-  
+
   # read attributes from (first file in) inname
   site <- rhdf5::h5ls(inname[1], recursive = 1)[1, 2]
   attrs <- rhdf5::h5readAttributes(inname[1], name = paste0("/", site))
@@ -55,7 +55,7 @@ ingest_data <- function(inname,
                                              var = "isoCo2",
                                              useFasttime = TRUE)[[1]]
         backupMethod <- TRUE
-        
+
       }
     } else if (packageVersion("neonUtilities") >= "2.1.1" && # nocov start
                  packageVersion("neonUtilities") < "2.3.0") {
@@ -285,7 +285,7 @@ ingest_data <- function(inname,
   if (nrow(ambient) > 0) {
     heights <- unique(ambient$verticalPosition) # not that efficient, but needed
     names_vector <- vector()
-    for (i in 1:length(heights)) {
+    for (i in seq_along(heights)) {
       names_vector[i] <- paste0("000_0", i, "0_", avg_char)
     }
     names(ambi_out) <- names_vector

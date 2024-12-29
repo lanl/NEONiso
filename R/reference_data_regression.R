@@ -87,7 +87,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                                           analyte = "co2",
                                           min_nobs = min_nobs)
 
-  if (method == "gainoffset" | method == "Bowling_2003") {
+  if (method == "gainoffset" || method == "Bowling_2003") {
 
     # calculate mole fraction (12CO2 / 13CO2) for ref gases and observed values
     ref_data$conc12CCO2_ref <- calculate_12CO2(ref_data$rtioMoleDryCo2Refe.mean,
@@ -149,7 +149,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 
       # okay, now run calibrations...
 
-      for (i in 1:length(date_seq)) {
+      for (i in seq_along(date_seq)) {
         start_time[i] <- as.POSIXct(paste(date_seq[i], "00:00:00.0001"),
                                     tz = "UTC",
                                     origin = "1970-01-01")
@@ -185,8 +185,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                           abs(.data$dlta13CCo2.mean -
                                 .data$dlta13CCo2Refe.mean) < 5)
 
-        if (length(unique(cal_subset$verticalPosition)) >= 2 &
-              !all(is.na(cal_subset$dlta13CCo2.mean)) &
+        if (length(unique(cal_subset$verticalPosition)) >= 2 &&
+              !all(is.na(cal_subset$dlta13CCo2.mean)) &&
               !all(is.na(cal_subset$dlta13CCo2Refe.mean))) {
 
           tmpmod12c <- stats::lm(conc12CCO2_ref ~ conc12CCO2_obs,
@@ -238,7 +238,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       }
 
       #subset out data frame.
-      out <- out[1:length(start_time), ]
+      out <- out[seq_along(start_time), ]
 
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
       out$timeBgn <- as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01")
@@ -303,7 +303,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       start_time <- end_time <- vector()
 
       # okay, now run calibrations...
-      for (i in 1:length(date_seq)) {
+      for (i in seq_along(date_seq)) {
 
         start_time[i] <- as.POSIXct(paste(date_seq[i], "00:00:00.0001"),
                                     tz = "UTC", origin = "1970-01-01")
@@ -328,8 +328,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                           abs(.data$dlta13CCo2.mean -
                                 .data$dlta13CCo2Refe.mean) < 5)
 
-        if (length(unique(cal_subset$verticalPosition)) >= 2 &
-              !all(is.na(cal_subset$dlta13CCo2.mean)) &
+        if (length(unique(cal_subset$verticalPosition)) >= 2 &&
+              !all(is.na(cal_subset$dlta13CCo2.mean)) &&
               !all(is.na(cal_subset$dlta13CCo2Refe.mean))) {
 
           # model to calibrate delta 13C values.
@@ -385,7 +385,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       }
 
       #subset out data frame.
-      out <- out[1:length(start_time), ]
+      out <- out[seq_along(start_time), ]
 
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
       out$timeBgn <- as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01")
@@ -411,7 +411,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
   }
 
   # check to see if any out$timeBgn or end are NA
-  if (sum(is.na(out$timeBgn)) > 0 | sum(is.na(out$timeEnd)) > 0) {
+  if (sum(is.na(out$timeBgn)) > 0 || sum(is.na(out$timeEnd)) > 0) {
     stop("NA in calibration data frame time - how did I get here?")
   }
 
@@ -520,7 +520,7 @@ fit_water_regression <- function(ref_data,
 
     # okay, now run calibrations...
 
-    for (i in 1:length(date_seq)) {
+    for (i in seq_along(date_seq)) {
       start_time[i] <- as.POSIXct(paste(date_seq[i], "00:00:00.0001"),
                                   tz = "UTC", origin = "1970-01-01")
       end_time[i]   <- as.POSIXct(paste(date_seq[i], "23:59:59.0000"),
@@ -539,8 +539,8 @@ fit_water_regression <- function(ref_data,
         stop("No regression data plots for water yet.")
       }
 
-      if (length(unique(cal_subset$verticalPosition)) >= 2 & # >= 2 standards
-            !all(is.na(cal_subset$dlta18OH2o.mean)) & # not all obs missing
+      if (length(unique(cal_subset$verticalPosition)) >= 2 && # >= 2 standards
+            !all(is.na(cal_subset$dlta18OH2o.mean)) && # not all obs missing
             !all(is.na(cal_subset$dlta18OH2oRefe.mean))) { # not all ref missing
 
         tmpmod18o <- stats::lm(dlta18OH2oRefe.mean ~ dlta18OH2o.mean,
@@ -592,7 +592,7 @@ fit_water_regression <- function(ref_data,
     }
 
     #subset out data frame.
-    out <- out[1:length(start_time), ]
+    out <- out[seq_along(start_time), ]
 
     # output dataframe giving valid time range, slopes, intercepts, rsquared.
     out$timeBgn <- as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01")

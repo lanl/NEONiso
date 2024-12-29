@@ -1,7 +1,7 @@
 #' Extract only the data corresponding to validation/calibration time periods.
-#' 
+#'
 #' Extracts data matching a value of "co2Low," "co2Med," or "co2High" which
-#' correspond to the validation gases of known CO2, d13C that are fed to the 
+#' correspond to the validation gases of known CO2, d13C that are fed to the
 #' analyzer daily.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
@@ -45,9 +45,9 @@ extract_carbon_cal_data <- function(data_list,
 }
 
 #' Extract only the data corresponding to validation/calibration time periods.
-#' 
+#'
 #' Extracts data matching a value of "h2oLow," "h2oMed," or "h2oHigh" which
-#' correspond to the validation gases of known d18O, d2H that are fed to the 
+#' correspond to the validation gases of known d18O, d2H that are fed to the
 #' analyzer daily.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}

@@ -1,5 +1,5 @@
 calibrate_ambient_carbon_Bowling2003 <- function(...) {
-  lifecycle::deprecate_soft("0.7.1","calibrate_ambient_carbon_Bowling2003()",
+  lifecycle::deprecate_soft("0.7.1", "calibrate_ambient_carbon_Bowling2003()",
                             "calibrate_ambient_carbon_gainoffset()")
   calibrate_ambient_carbon_gainoffset(...)
 }
@@ -44,13 +44,13 @@ calibrate_ambient_carbon_Bowling2003 <- function(...) {
 #' @importFrom lubridate %within%
 #'
 calibrate_ambient_carbon_gainoffset <- function(amb_data_list,
-                                                 caldf,
-                                                 site,
-                                                 filter_data = TRUE,
-                                                 force_to_end = TRUE,
-                                                 force_to_beginning = TRUE,
-                                                 gap_fill_parameters = FALSE,
-                                                 r2_thres = 0.9) {
+                                                caldf,
+                                                site,
+                                                filter_data = TRUE,
+                                                force_to_end = TRUE,
+                                                force_to_beginning = TRUE,
+                                                gap_fill_parameters = FALSE,
+                                                r2_thres = 0.9) {
 
   #-----------------------------------------------------------
   # should be able to get a calGainsOffsets object from the H5 file.
@@ -108,7 +108,7 @@ calibrate_ambient_carbon_gainoffset <- function(amb_data_list,
       # print notice that we're gap filling
       print("Gap filling calibrations...")
       # 12CO2 calibration parameters.
-      if (!is.na(caldf$r2_12C[i]) & caldf$r2_12C[i] < r2_thres) {
+      if (!is.na(caldf$r2_12C[i]) && caldf$r2_12C[i] < r2_thres) {
         # if we're in calibration period 2 or later, carry previous
         # calibration period forward. else if the first calibration period
         # is bad, find the first good calibration period at index n,
@@ -126,7 +126,7 @@ calibrate_ambient_carbon_gainoffset <- function(amb_data_list,
       }
 
       # 13CO2 calibration parameters - equivalent logic to 12Co2.
-      if (!is.na(caldf$r2_13C[i]) & caldf$r2_13C[i] < r2_thres) {
+      if (!is.na(caldf$r2_13C[i]) && caldf$r2_13C[i] < r2_thres) {
         if (i > 1) {
           caldf$gain13C[i] <- caldf$gain13C[i - 1]
           caldf$offset13C[i] <- caldf$offset13C[i - 1]

@@ -1,10 +1,10 @@
 # quality control - functions to validate the output data file structure
 
 #' Standardize analyte names
-#' 
-#' Enforces standard capitalization and formatting of H2o and Co2 
+#'
+#' Enforces standard capitalization and formatting of H2o and Co2
 #' analyte names across calibration functions.
-#' 
+#'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #' @param analyte Co2 or H2o?
 #'
@@ -17,9 +17,9 @@ validate_analyte <- function(analyte) {
   # helper function to make sure the various output functions are consistent.
   # check to make sure first letter of analyte is capitalized,
   # or capitalize if it's not (also make sure it's co2 or h2o)
-  if (analyte == "co2" | analyte == "h2o") {
+  if (analyte == "co2" || analyte == "h2o") {
     analyte <- paste0(toupper(substring(analyte, 1, 1)), substring(analyte, 2))
-  } else if (analyte != "Co2" & analyte != "H2o") {
+  } else if (analyte != "Co2" && analyte != "H2o") {
     stop("Invalid analyte selected in setup output file.")
   }
 
@@ -28,7 +28,7 @@ validate_analyte <- function(analyte) {
 
 
 #' Validate output file.
-#' 
+#'
 #' Function ensures that the output file has the correct
 #' groups in it, as a check to ensure proper file structure at the
 #' end of the calibration routines.
@@ -101,7 +101,7 @@ validate_output_file <- function(inname, outname, site, analyte) {
 # Diagnostic plots:::
 
 #' Make plots of carbon calibration data for debugging
-#' 
+#'
 #' Makes plots of carbon calibration data regressions, primarily for
 #' debugging and validation purposes.
 #'

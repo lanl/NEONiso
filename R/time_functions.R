@@ -46,9 +46,9 @@ convert_POSIXct_to_NEONhdf5_time <- function(intime) {
 }
 
 #' Convert NEON HDF5 file time to POSIXct
-#' 
+#'
 #' Converts the date time string in NEON HDF5 files to a POSIXct object
-#' for use in R. 
+#' for use in R.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'

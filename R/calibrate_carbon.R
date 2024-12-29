@@ -147,9 +147,10 @@ calibrate_carbon         <- function(inname,
       inname <- inname[!grepl("2019-07", inname)]
     }
   }
-  
+
   if (method == "Bowling_2003") {
-    lifecycle::deprecate_warn("0.7.1","calibrate_carbon(method = 'Bowling_2003')",
+    lifecycle::deprecate_warn("0.7.1",
+                              "calibrate_carbon(method = 'Bowling_2003')",
                               "calibrate_carbon(method = 'gainoffset')")
   }
 

@@ -6,7 +6,7 @@
 #-----------------------------------------------
 
 #' List terrestrial core sites
-#' 
+#'
 #' Returns a vector of four-letter NEON site codes for the
 #' core terrestrial sites that have TIS instrumentation.
 #'
@@ -30,7 +30,7 @@ terrestrial_core_sites <- function() {
 }
 
 #' List terrestrial gradient sites
-#' 
+#'
 #' Returns a vector of four-letter NEON site codes for the
 #' gradient terrestrial sites that have TIS instrumentation.
 #'
@@ -58,7 +58,7 @@ terrestrial_gradient_sites <- function() {
 }
 
 #' List sites with water vapor isotope ratios.
-#' 
+#'
 #' Returns a vector of four-letter NEON site codes for the
 #' terrestrial sites that have water vapor isotope ratio instrumentation.
 #'
@@ -87,7 +87,7 @@ water_isotope_sites <- function() {
 #'
 #' Utility function to help retrieve new EC data and/or prune duplicates,
 #' as NEON provisions new data or re-provisions data for an existing site
-#' and month. 
+#' and month.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -180,7 +180,7 @@ manage_local_EC_archive <- function(file_dir,
       # okay - now loop through months and get the data files.
       if (!is.null(length(site_months))) {
 
-        for (j in 1:length(site_months)) {
+        for (j in seq_along(site_months)) {
 
           # re-query api w/ given site code and month.
           sitemonth_urls_json <- httr::GET(
@@ -202,7 +202,7 @@ manage_local_EC_archive <- function(file_dir,
           dl_names <- fnames[fnames_basic]
           dl_urls  <- furls[fnames_basic]
 
-          for (k in 1:length(dl_names)) {
+          for (k in seq_along(dl_names)) {
             if (!length(dl_names[k]) == 0) {
               if (!is.na(dl_names[k])) {
                 # check to see if file exists in folder
@@ -309,7 +309,7 @@ manage_local_EC_archive <- function(file_dir,
             file.remove(dup_candidates[h5files]) # remove files.
           }
         } else { # none are simply h5, so need to determine most recent file.
-          for (i in 1:length(unique(dup_yrmn))) {
+          for (i in seq_along(unique(dup_yrmn))) {
             # get times associated w/ particular duplicate.
             h5_times <- as.POSIXct(dup_fdiff[dup_yrmn == unique(dup_yrmn)[i]],
                                    format = "%Y%m%dT%H%M%SZ")
