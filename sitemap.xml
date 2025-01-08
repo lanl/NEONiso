@@ -11,7 +11,7 @@
 <url><loc>https://lanl.github.io/NEONiso/reference/R_to_delta.html</loc></url>
 <url><loc>https://lanl.github.io/NEONiso/reference/calculate_12CO2.html</loc></url>
 <url><loc>https://lanl.github.io/NEONiso/reference/calculate_13CO2.html</loc></url>
-<url><loc>https://lanl.github.io/NEONiso/reference/calibrate_ambient_carbon_Bowling2003.html</loc></url>
+<url><loc>https://lanl.github.io/NEONiso/reference/calibrate_ambient_carbon_gainoffset.html</loc></url>
 <url><loc>https://lanl.github.io/NEONiso/reference/calibrate_ambient_carbon_linreg.html</loc></url>
 <url><loc>https://lanl.github.io/NEONiso/reference/calibrate_ambient_water_linreg.html</loc></url>
 <url><loc>https://lanl.github.io/NEONiso/reference/calibrate_carbon.html</loc></url>
@@ -19,8 +19,6 @@
 <url><loc>https://lanl.github.io/NEONiso/reference/carbon_regression_plots.html</loc></url>
 <url><loc>https://lanl.github.io/NEONiso/reference/convert_NEONhdf5_to_POSIXct_time.html</loc></url>
 <url><loc>https://lanl.github.io/NEONiso/reference/convert_POSIXct_to_NEONhdf5_time.html</loc></url>
-<url><loc>https://lanl.github.io/NEONiso/reference/copy_qfqm_group.html</loc></url>
-<url><loc>https://lanl.github.io/NEONiso/reference/copy_ucrt_group.html</loc></url>
 <url><loc>https://lanl.github.io/NEONiso/reference/correct_carbon_ref_cval.html</loc></url>
 <url><loc>https://lanl.github.io/NEONiso/reference/correct_carbon_ref_output.html</loc></url>
 <url><loc>https://lanl.github.io/NEONiso/reference/delta_to_R.html</loc></url>
@@ -48,8 +46,6 @@
 <url><loc>https://lanl.github.io/NEONiso/reference/water_isotope_sites.html</loc></url>
 <url><loc>https://lanl.github.io/NEONiso/reference/write_carbon_ambient_data.html</loc></url>
 <url><loc>https://lanl.github.io/NEONiso/reference/write_carbon_calibration_data.html</loc></url>
-<url><loc>https://lanl.github.io/NEONiso/reference/write_qfqm.html</loc></url>
-<url><loc>https://lanl.github.io/NEONiso/reference/write_ucrt.html</loc></url>
 <url><loc>https://lanl.github.io/NEONiso/reference/write_water_ambient_data.html</loc></url>
 <url><loc>https://lanl.github.io/NEONiso/reference/write_water_calibration_data.html</loc></url>
 </urlset>
