@@ -193,10 +193,11 @@ manage_local_EC_archive <- function(file_dir,
           # extract just file names and URLs
           fnames <- sapply(sitemonth_urls_parsed$data$files, "[[", "name")
           furls  <- sapply(sitemonth_urls_parsed$data$files, "[[", "url")
-
+          
           # get basic zipfile for now, but should kick out to a
           # function argument later on.
-          fnames_basic <- (grepl("basic", fnames) & grepl("h5.gz", fnames))
+          fnames_basic <- (grepl("basic", fnames) & (grepl("h5.gz", fnames) |
+                                                       grepl("h5", fnames)))
 
           # check to see if files already exist, and download if missing.
           dl_names <- fnames[fnames_basic]

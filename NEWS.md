@@ -1,4 +1,7 @@
-# NEONiso (development version)
+# NEONiso 0.7.2
+
+* Fixes a bug that causes the manage_local_ec_archive function
+to miss a large set of files that are on the remote server.
 
 # NEONiso 0.7.1
 
