@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">NEONiso</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,18 +34,20 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/lanl/NEONiso/blob/v0.7.1/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/lanl/NEONiso/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.7.1" id="neoniso-071">NEONiso 0.7.1<a class="anchor" aria-label="anchor" href="#neoniso-071"></a></h2><p class="text-muted">CRAN release: 2025-01-08</p>
-<ul><li>Substantial upgrades to package documentation.</li>
-<li>The name “Bowling_2003” in methods and functions has been deprecated in favor of “gainoffset.” This change was made primarily to improve clarity of what the methods actually do. Code that uses the old “Bowling_2003” nomenclature will continue to work until at least version 0.8.0, but will issue a deprecation warning.</li>
+<h2 class="pkg-version" data-toc-text="0.7.2" id="neoniso-072">NEONiso 0.7.2<a class="anchor" aria-label="anchor" href="#neoniso-072"></a></h2><p class="text-muted">CRAN release: 2025-02-13</p>
+<ul><li>Fixes a bug that causes the manage_local_ec_archive function to miss a large set of files that are on the remote server.</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.7.0" id="neoniso-070">NEONiso 0.7.0<a class="anchor" aria-label="anchor" href="#neoniso-070"></a></h2><p class="text-muted">CRAN release: 2024-04-05</p>
-<ul><li>calibrate_carbon_bymonth and calibrate_water_bymonth have been removed. Use calibrate_carbon and calibrate_water instead.</li>
-<li>terrestrial_relocatable_sites() has been renamed terrestrial_gradient_sites() to comply with a similar change made by NEON.</li>
+<h2 class="pkg-version" data-toc-text="0.7.1" id="neoniso-071">NEONiso 0.7.1<a class="anchor" aria-label="anchor" href="#neoniso-071"></a></h2><p class="text-muted">CRAN release: 2025-01-08</p>
+<ul><li><p>Substantial upgrades to package documentation.</p></li>
+<li><p>The name “Bowling_2003” in methods and functions has been deprecated in favor of “gainoffset.” This change was made primarily to improve clarity of what the methods actually do. Code that uses the old “Bowling_2003” nomenclature will continue to work until at least version 0.8.0, but will issue a deprecation warning. # NEONiso 0.7.0</p></li>
+<li><p>calibrate_carbon_bymonth and calibrate_water_bymonth have been removed. Use calibrate_carbon and calibrate_water instead.</p></li>
+<li><p>terrestrial_relocatable_sites() has been renamed terrestrial_gradient_sites() to comply with a similar change made by NEON.</p></li>
+<li><p>Patch to hard-coded 9 minute interval to comply with switch to 6 minute averaging interval for isoCo2 product, following ATM ISO TWG recommendations.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.4" id="neoniso-064">NEONiso 0.6.4<a class="anchor" aria-label="anchor" href="#neoniso-064"></a></h2><p class="text-muted">CRAN release: 2023-09-20</p>
