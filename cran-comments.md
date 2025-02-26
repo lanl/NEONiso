@@ -1,5 +1,6 @@
 ## Test environments
 * local R installation (arm64/M2, macOS 15.2): R 4.4.2
+
 * GitHub Actions (ubuntu-latest): devel, release, oldrel
 * GitHub Actions (windows-latest): release
 * GitHub Actions (macOS-latest): release

@@ -11,13 +11,14 @@ favor of "gainoffset." This change was made primarily to improve clarity of
 what the methods actually do. Code that uses the old "Bowling_2003" nomenclature
 will continue to work until at least version 0.8.0, but will issue a deprecation
 warning.
-
 # NEONiso 0.7.0
 
 * calibrate_carbon_bymonth and calibrate_water_bymonth have been removed. Use
 calibrate_carbon and calibrate_water instead.
 * terrestrial_relocatable_sites() has been renamed terrestrial_gradient_sites()
 to comply with a similar change made by NEON.
+* Patch to hard-coded 9 minute interval to comply with switch to 6 minute averaging
+interval for isoCo2 product, following ATM ISO TWG recommendations.
 
 # NEONiso 0.6.4
 

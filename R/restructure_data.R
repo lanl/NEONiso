@@ -48,11 +48,12 @@ ingest_data <- function(inname,
   if (analyte == "Co2") {
 
     if (packageVersion("neonUtilities") >= "2.3.0") {
+      print(amb_avg)
       data <- try(neonUtilities::stackEddy(inname,
                                        avg = amb_avg,
                                        level = "dp01",
                                        var = "isoCo2",
-                                       useFasttime = TRUE)[[1]], silent = TRUE)
+                                       useFasttime = TRUE)[[1]], silent = FALSE)
       if ("try-error" %in% class(data)) {
         data <- neonUtilities::stackEddy(inname,
                                              avg = 9,
