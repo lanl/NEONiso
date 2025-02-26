@@ -2,7 +2,7 @@
 % Please edit documentation in R/reference_data_selection.R
 \name{select_daily_reference_data}
 \alias{select_daily_reference_data}
-\title{select_daily_reference_data}
+\title{Select validation data corresponding to a particular day}
 \usage{
 select_daily_reference_data(standard_df, analyte, min_nobs = NA)
 }
@@ -28,5 +28,5 @@ also keeps only the last three injections for each reference water
 per day.
 }
 \description{
-select_daily_reference_data
+Select validation data corresponding to a particular day
 }

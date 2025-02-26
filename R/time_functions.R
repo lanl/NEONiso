@@ -1,8 +1,8 @@
 #--------------------------------------------------------------
-#' convert_POSIXct_to_NEONhdf5_time
+#' Convert a POSIXct object to the format used in NEON HDF5 files
 #'
 #' Converts a POSIXct object back to the character format used by NEON in their
-#' HDF eddy covariance files. Output format,  using strptime syntax,  is
+#' HDF eddy covariance files. Output format, using strptime syntax, is
 #' %Y-%m-%dT%H:%M:%OSZ.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
@@ -45,7 +45,10 @@ convert_POSIXct_to_NEONhdf5_time <- function(intime) {
   return(outtime)
 }
 
-#' convert_NEONhdf5_to_POSIXct_time
+#' Convert NEON HDF5 file time to POSIXct
+#'
+#' Converts the date time string in NEON HDF5 files to a POSIXct object
+#' for use in R.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'

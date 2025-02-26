@@ -2,7 +2,12 @@
 # break out functions that are various transformations
 # of isotope ratios and delta values.
 #------------------------------------------------------
-#' get_Rstd
+#' Return heavy-to-light isotope ratio of primary standard.
+#'
+#' Returns the heavy-to-light isotope ratio of the dominant
+#' standard for that element. Vienna Standard Mean Ocean Water
+#' (VSMOW) for oxygen and hydrogen isotopes, Vienna Pee Dee
+#' Belemnite (VPDB) for carbon stable isotopes.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -30,7 +35,10 @@ get_Rstd <- function(element) {
   return(r)
 }
 
-#' R_to_delta
+#' Convert heavy-to-light isotope ratio to delta values.
+#'
+#' Converts a heavy-to-light stable isotope ratio to
+#' a corresponding delta value, in per mil values.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -55,7 +63,10 @@ R_to_delta <- function(R_values, element) {
   return(delta)
 }
 
-#' delta_to_R
+#' Converts delta value to heavy-to-light isotope ratio
+#'
+#' Converts a delta value (in per mil) to the heavy-to-light
+#' isotope ratio.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -80,7 +91,12 @@ delta_to_R <- function(delta_values, element) {
 
 }
 
-#' calculate_12CO2
+#' Calculate 12C-CO2 Mole Fractions
+#'
+#' This function calculates mole fractions of 12CO2 based on the total CO2 mole
+#' fraction, the delta13C value of the mixture, and the assumed fraction of CO2
+#' that does not correspond to 12CO2 or 13CO2 (assumed fixed at 0.00474, e.g.,
+#' Griffis et al. 2004 Agricultural and Forest Meteorology)
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -110,7 +126,12 @@ calculate_12CO2 <- function(total_co2, delta13c, f = 0.00474) {
   return(light_co2)
 }
 
-#' calculate_13CO2
+#' Calculate 13C-CO2 Mole Fractions
+#'
+#' This function calculates mole fractions of 13CO2 based on the total CO2 mole
+#' fraction, the delta13C value of the mixture, and the assumed fraction of CO2
+#' that does not correspond to 12CO2 or 13CO2 (assumed fixed at 0.00474, e.g.,
+#' Griffis et al. 2004 Agricultural and Frest Meteorology)
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'

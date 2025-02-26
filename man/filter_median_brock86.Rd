@@ -2,7 +2,7 @@
 % Please edit documentation in R/filtering_functions.R
 \name{filter_median_brock86}
 \alias{filter_median_brock86}
-\title{filter_median_Brock86}
+\title{Apply a median absolute deviation filter}
 \usage{
 filter_median_brock86(data, width = 7, threshold = 5)
 }
@@ -18,7 +18,8 @@ away from median}
 Returns filtered vector.
 }
 \description{
-Median absolute deviation filter of Brock 1986.
+Median absolute deviation filter of Brock 1986, with user specified
+width and magnitude thresholds.
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

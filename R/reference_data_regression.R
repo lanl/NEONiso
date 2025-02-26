@@ -1,8 +1,8 @@
-#' loocv
+#' Leave-one-out cross validation
+#'
+#' Calculate analytic leave-one-out cross variance error estimate
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
-#'
-#' helper function for the leave-one-out cross variance
 #'
 #' @param mod Fitted model to estimate leave-one-out CV on.
 #'
@@ -12,7 +12,15 @@ loocv <- function(mod) {
   return(base::mean((stats::residuals(mod) / (1 - h)) ^ 2))
 }
 
-#' estimate_calibration_error
+#' Produce estimates of the calibration error.
+#'
+#' Estimate calibration error using a 5-fold cross-validation. A 5-fold
+#' cross-validation was chosen as each calibration window should have
+#' at least 6 data points (e.g., if only daily validation data are used for the
+#' calibration) and therefore this ensures that the cross-validation should
+#' always run. Model is fit using \code{lm} and the \code{caret} package, with
+#' root-mean-square error (RMSE), the R-squared value, and mean-absolute
+#' error (MAE) extracted from the cross-validation.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -38,12 +46,19 @@ estimate_calibration_error <- function(formula, data) {
 
 }
 
-#' fit_carbon_regression
+#' Estimate slope/intercept of carbon isotope calibration regression
+#'
+#' Performs regression between measured and known carbon isotope and mole
+#' fractions to generate a transfer function and associated uncertainty
+#' estimates using both 5-fold and leave-one-out cross-validation methods.
+#' Regression occurs either on 12CO2/13CO2 mole fractions (gainoffset method)
+#' or on the CO2 and d13C values (linreg). 
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
-#' @param method Are we using the Bowling et al. 2003 method
-#'              ("Bowling_2003") or direct linear regression of
+#' @param method Are we using the gain-and-offset method
+#'              ("gainoffset"), formerly called the Bowling et al. 2003 method
+#'              in this package, or direct linear regression of
 #'              d13C and CO2 mole fractions ("linreg")?
 #' @param calibration_half_width Determines the period (in days)
 #'        from which reference data are selected (period
@@ -59,7 +74,7 @@ estimate_calibration_error <- function(formula, data) {
 #'                 to define a peak.
 #'
 #' @return Returns a data.frame of calibration parameters. If
-#'        `method == "Bowling_2003"`, then data.frame includes
+#'        `method == "gainoffset"`, then data.frame includes
 #'        gain and offset parameters for 12CO2 and 13CO2, and r^2
 #'        values for each regression. If `method == "linreg"`,
 #'        then data.frame includes slope, intercept, and r^2 values
@@ -87,7 +102,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                                           analyte = "co2",
                                           min_nobs = min_nobs)
 
-  if (method == "Bowling_2003") {
+  if (method == "gainoffset" || method == "Bowling_2003") {
 
     # calculate mole fraction (12CO2 / 13CO2) for ref gases and observed values
     ref_data$conc12CCO2_ref <- calculate_12CO2(ref_data$rtioMoleDryCo2Refe.mean,
@@ -149,7 +164,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 
       # okay, now run calibrations...
 
-      for (i in 1:length(date_seq)) {
+      for (i in seq_along(date_seq)) {
         start_time[i] <- as.POSIXct(paste(date_seq[i], "00:00:00.0001"),
                                     tz = "UTC",
                                     origin = "1970-01-01")
@@ -185,8 +200,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                           abs(.data$dlta13CCo2.mean -
                                 .data$dlta13CCo2Refe.mean) < 5)
 
-        if (length(unique(cal_subset$verticalPosition)) >= 2 &
-              !all(is.na(cal_subset$dlta13CCo2.mean)) &
+        if (length(unique(cal_subset$verticalPosition)) >= 2 &&
+              !all(is.na(cal_subset$dlta13CCo2.mean)) &&
               !all(is.na(cal_subset$dlta13CCo2Refe.mean))) {
 
           tmpmod12c <- stats::lm(conc12CCO2_ref ~ conc12CCO2_obs,
@@ -238,7 +253,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       }
 
       #subset out data frame.
-      out <- out[1:length(start_time), ]
+      out <- out[seq_along(start_time), ]
 
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
       out$timeBgn <- as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01")
@@ -303,7 +318,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       start_time <- end_time <- vector()
 
       # okay, now run calibrations...
-      for (i in 1:length(date_seq)) {
+      for (i in seq_along(date_seq)) {
 
         start_time[i] <- as.POSIXct(paste(date_seq[i], "00:00:00.0001"),
                                     tz = "UTC", origin = "1970-01-01")
@@ -328,8 +343,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                           abs(.data$dlta13CCo2.mean -
                                 .data$dlta13CCo2Refe.mean) < 5)
 
-        if (length(unique(cal_subset$verticalPosition)) >= 2 &
-              !all(is.na(cal_subset$dlta13CCo2.mean)) &
+        if (length(unique(cal_subset$verticalPosition)) >= 2 &&
+              !all(is.na(cal_subset$dlta13CCo2.mean)) &&
               !all(is.na(cal_subset$dlta13CCo2Refe.mean))) {
 
           # model to calibrate delta 13C values.
@@ -385,7 +400,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       }
 
       #subset out data frame.
-      out <- out[1:length(start_time), ]
+      out <- out[seq_along(start_time), ]
 
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
       out$timeBgn <- as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01")
@@ -411,7 +426,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
   }
 
   # check to see if any out$timeBgn or end are NA
-  if (sum(is.na(out$timeBgn)) > 0 | sum(is.na(out$timeEnd)) > 0) {
+  if (sum(is.na(out$timeBgn)) > 0 || sum(is.na(out$timeEnd)) > 0) {
     stop("NA in calibration data frame time - how did I get here?")
   }
 
@@ -419,8 +434,13 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 
 }
 
-#' fit_water_regression
+#' Estimate slope/intercept of water isotope calibration regression
 #'
+#' Performs regression between measured and known carbon isotope and mole
+#' fractions to generate a transfer function and associated uncertainty
+#' estimates using both 5-fold and leave-one-out cross-validation methods.
+#' Regression occurs on d18O and d2H values. 
+#' 
 #' @param ref_data Reference data.frame from which to estimate
 #'        calibration parameters.
 #' @param calibration_half_width Determines the period (in days)
@@ -438,7 +458,6 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 #' @param min_nobs Minimum number of high-frequency observations to
 #'                 define a peak.
 #'
-
 #' @return Returns a data.frame of calibration parameters.
 #'        Output data.frame includes slope, intercept, and r^2 values
 #'        for d13C and CO2 values.
@@ -520,7 +539,7 @@ fit_water_regression <- function(ref_data,
 
     # okay, now run calibrations...
 
-    for (i in 1:length(date_seq)) {
+    for (i in seq_along(date_seq)) {
       start_time[i] <- as.POSIXct(paste(date_seq[i], "00:00:00.0001"),
                                   tz = "UTC", origin = "1970-01-01")
       end_time[i]   <- as.POSIXct(paste(date_seq[i], "23:59:59.0000"),
@@ -539,8 +558,8 @@ fit_water_regression <- function(ref_data,
         stop("No regression data plots for water yet.")
       }
 
-      if (length(unique(cal_subset$verticalPosition)) >= 2 & # >= 2 standards
-            !all(is.na(cal_subset$dlta18OH2o.mean)) & # not all obs missing
+      if (length(unique(cal_subset$verticalPosition)) >= 2 && # >= 2 standards
+            !all(is.na(cal_subset$dlta18OH2o.mean)) && # not all obs missing
             !all(is.na(cal_subset$dlta18OH2oRefe.mean))) { # not all ref missing
 
         tmpmod18o <- stats::lm(dlta18OH2oRefe.mean ~ dlta18OH2o.mean,
@@ -592,7 +611,7 @@ fit_water_regression <- function(ref_data,
     }
 
     #subset out data frame.
-    out <- out[1:length(start_time), ]
+    out <- out[seq_along(start_time), ]
 
     # output dataframe giving valid time range, slopes, intercepts, rsquared.
     out$timeBgn <- as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01")

@@ -1,7 +1,5 @@
 #' calibrate_ambient_water_isotopes
 #'
-#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
-#'
 #' Function called by `calibrate_ambient_water_linreg` to apply
 #' slope and intercept parameters to the ambient datasets (000_0x0_09m and
 #' 000_0x0_30m) to correct to the VSMOW scale.
@@ -9,6 +7,8 @@
 #' but should be used with `calibrate_ambient_water_linreg`.
 #' Note that in this version *NO CORRECTION FOR HUMIDITY* is performed.
 #' Use with caution.
+#' 
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param amb_data_list List containing ambient d18O/d2H datasets.
 #'             Will include all variables in 000_0x0_xxm. (character)
@@ -77,8 +77,8 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   oxydf$max_cal  <- oxydf$max
   oxydf$min_cal  <- oxydf$min
 
-  for (i in 1:length(var_inds_in_calperiod)) {
-    if (!is.na(caldf$r2_18O[i]) & caldf$r2_18O[i] > r2_thres) {
+  for (i in seq_along(var_inds_in_calperiod)) {
+    if (!is.na(caldf$r2_18O[i]) && caldf$r2_18O[i] > r2_thres) {
 
       oxydf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$intercept18O[i] +
         oxydf$mean[var_inds_in_calperiod[[i]]] * caldf$slope18O[i]
@@ -129,7 +129,7 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   # determine which cal period each ambient data belongs to.
   var_inds_in_calperiod <- list()
 
-  for (i in 1:nrow(caldf)) {
+  for (i in seq_len(nrow(caldf))) {
     int <- lubridate::interval(caldf$timeBgn[i], caldf$timeEnd[i])
     var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
   }
@@ -138,9 +138,9 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   hyddf$max_cal  <- hyddf$max
   hyddf$min_cal  <- hyddf$min
 
-  for (i in 1:length(var_inds_in_calperiod)) {
+  for (i in seq_along(var_inds_in_calperiod)) {
 
-    if (!is.na(caldf$r2_2H[i]) & caldf$r2_2H[i] > r2_thres) {
+    if (!is.na(caldf$r2_2H[i]) && caldf$r2_2H[i] > r2_thres) {
 
       hyddf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$intercept2H[i] +
         hyddf$mean[var_inds_in_calperiod[[i]]] * caldf$slope2H[i]

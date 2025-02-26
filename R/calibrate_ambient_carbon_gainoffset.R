@@ -1,12 +1,18 @@
-#' calibrate_ambient_carbon_Bowling2003
-#'
-#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
+calibrate_ambient_carbon_Bowling2003 <- function(...) {
+  lifecycle::deprecate_soft("0.7.1", "calibrate_ambient_carbon_Bowling2003()",
+                            "calibrate_ambient_carbon_gainoffset()")
+  calibrate_ambient_carbon_gainoffset(...)
+}
+
+#' Calibrate ambient carbon isotope data using gain-and-offset method
 #'
 #' Function called by `calibrate_carbon_bymonth()` to apply
 #' gain and offset parameters to the ambient datasets (000_0x0_09m and
 #' 000_0x0_30m). This function should generally not be used independently,
 #' but should be used in coordination with
 #' `calibrate_carbon_bymonth()`.
+#' 
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param amb_data_list List containing an ambient d13C dataset.
 #'                      Will include all variables in 000_0x0_xxm. (character)
@@ -14,12 +20,11 @@
 #'              12C and 13C isotopologues.
 #' @param site Four-letter NEON code corresponding to site being processed.
 #' @param filter_data Apply median absolute deviation filter from Brock 86 to
-#'             remove impulse spikes? Inherited from
-#'             `calibrate_ambient_carbon_Bowling2003()`
+#'             remove impulse spikes?
 #' @param force_to_end In given month, calibrate ambient data later than last
 #'             calibration, using the last calibration? (default true)
 #' @param force_to_beginning In given month, calibrate ambient data before than
-#'              first calibration, using the first calibration? (default true)
+#'              first calibration, using the firs t calibration? (default true)
 #' @param r2_thres Minimum r2 value for calibration to be considered "good" and
 #'             applied to ambient data.
 #' @param gap_fill_parameters Should function attempt to 'gap-fill' across a
@@ -38,14 +43,14 @@
 #' @importFrom magrittr %>%
 #' @importFrom lubridate %within%
 #'
-calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
-                                                 caldf,
-                                                 site,
-                                                 filter_data = TRUE,
-                                                 force_to_end = TRUE,
-                                                 force_to_beginning = TRUE,
-                                                 gap_fill_parameters = FALSE,
-                                                 r2_thres = 0.9) {
+calibrate_ambient_carbon_gainoffset <- function(amb_data_list,
+                                                caldf,
+                                                site,
+                                                filter_data = TRUE,
+                                                force_to_end = TRUE,
+                                                force_to_beginning = TRUE,
+                                                gap_fill_parameters = FALSE,
+                                                r2_thres = 0.9) {
 
   #-----------------------------------------------------------
   # should be able to get a calGainsOffsets object from the H5 file.
@@ -103,7 +108,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
       # print notice that we're gap filling
       print("Gap filling calibrations...")
       # 12CO2 calibration parameters.
-      if (!is.na(caldf$r2_12C[i]) & caldf$r2_12C[i] < r2_thres) {
+      if (!is.na(caldf$r2_12C[i]) && caldf$r2_12C[i] < r2_thres) {
         # if we're in calibration period 2 or later, carry previous
         # calibration period forward. else if the first calibration period
         # is bad, find the first good calibration period at index n,
@@ -121,7 +126,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(amb_data_list,
       }
 
       # 13CO2 calibration parameters - equivalent logic to 12Co2.
-      if (!is.na(caldf$r2_13C[i]) & caldf$r2_13C[i] < r2_thres) {
+      if (!is.na(caldf$r2_13C[i]) && caldf$r2_13C[i] < r2_thres) {
         if (i > 1) {
           caldf$gain13C[i] <- caldf$gain13C[i - 1]
           caldf$offset13C[i] <- caldf$offset13C[i - 1]

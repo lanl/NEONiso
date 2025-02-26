@@ -1,4 +1,4 @@
-#' calibrate_water
+#' Calibrate NEON water isotope ratios using validation data sets.
 #'
 #' `r lifecycle::badge("experimental")`
 #' This function uses NEON validation data to apply drift corrections to

@@ -2,7 +2,7 @@
 % Please edit documentation in R/restructure_data.R
 \name{ingest_data}
 \alias{ingest_data}
-\title{ingest_data}
+\title{Ingest and stack variables needed in calibration.}
 \usage{
 ingest_data(inname, analyte, name_fix = TRUE, amb_avg, ref_avg)
 }
@@ -24,7 +24,10 @@ functions are removed.}
 List of data frames, taken from files specified in \code{inname}
 }
 \description{
-ingest_data
+Opens and stacks isotope ratio and water/carbon dioxide mole fraction
+variables from monthly HDF5 files. If a new enough version of \code{neonUtilities}
+is available, this function will try to use \code{fasttime} in order to accelerate
+data stacking.
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

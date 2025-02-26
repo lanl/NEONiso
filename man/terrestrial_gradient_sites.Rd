@@ -2,7 +2,7 @@
 % Please edit documentation in R/utility_functions.R
 \name{terrestrial_gradient_sites}
 \alias{terrestrial_gradient_sites}
-\title{terrestrial_gradient_sites}
+\title{List terrestrial gradient sites}
 \usage{
 terrestrial_gradient_sites()
 }
@@ -10,7 +10,8 @@ terrestrial_gradient_sites()
 A vector listing NEON gradient terrestrial sites.
 }
 \description{
-terrestrial_gradient_sites
+Returns a vector of four-letter NEON site codes for the
+gradient terrestrial sites that have TIS instrumentation.
 }
 \examples{
 terrestrial_gradient_sites()

@@ -2,7 +2,7 @@
 % Please edit documentation in R/reference_data_extraction.R
 \name{extract_carbon_cal_data}
 \alias{extract_carbon_cal_data}
-\title{extract_carbon_calibration_data.R}
+\title{Extract only the data corresponding to validation/calibration time periods.}
 \usage{
 extract_carbon_cal_data(
   data_list,
@@ -21,7 +21,9 @@ to this argument as well.}
 Returns data frame of required variables.
 }
 \description{
-extract_carbon_calibration_data.R
+Extracts data matching a value of "co2Low," "co2Med," or "co2High" which
+correspond to the validation gases of known CO2, d13C that are fed to the
+analyzer daily.
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

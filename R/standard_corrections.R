@@ -132,6 +132,9 @@ correct_carbon_ref_cval <- function(std_frame,
 
 #' Correct carbon ref output
 #'
+#' Corrects known mismatches in the database where standard values do not
+#' actually match what they should in data files per calVal measurements.
+#'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param std_list List containing reference/validation gas measurements.
@@ -167,7 +170,7 @@ correct_carbon_ref_output <- function(std_list,
   if (omit_already_corrected) {
     carb_red <- subset(carb,
                        carb$co2_repairedRaw == FALSE |
-                         carb$d13C_repairedRaw == FALSE)
+                       carb$d13C_repairedRaw == FALSE)
   } else {
     carb_red <- carb
   }
@@ -179,7 +182,7 @@ correct_carbon_ref_output <- function(std_list,
                                                     nchar(ref_gas) - 4), ]
 
   # check to see if site is in carb$site, otherwise, we can skip.
-  if (nrow(carb_red) > 0 & (site %in% unique(carb$site))) {
+  if (nrow(carb_red) > 0 && (site %in% unique(carb$site))) {
 
     # check name of list to see if any corrections are needed for this standard
     for (z in 1:nrow(carb_red)) {

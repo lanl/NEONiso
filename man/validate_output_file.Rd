@@ -2,7 +2,7 @@
 % Please edit documentation in R/quality_control.R
 \name{validate_output_file}
 \alias{validate_output_file}
-\title{validate_output_file}
+\title{Validate output file.}
 \usage{
 validate_output_file(inname, outname, site, analyte)
 }
@@ -20,7 +20,9 @@ Nothing to environment, simply checks to make sure expected groups
 are in output.
 }
 \description{
-validate_output_file
+Function ensures that the output file has the correct
+groups in it, as a check to ensure proper file structure at the
+end of the calibration routines.
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

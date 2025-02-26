@@ -2,7 +2,7 @@
 % Please edit documentation in R/utility_functions.R
 \name{manage_local_EC_archive}
 \alias{manage_local_EC_archive}
-\title{manage_local_EC_archive}
+\title{Manage a local eddy covariance (EC) data archive.}
 \usage{
 manage_local_EC_archive(
   file_dir,
@@ -11,7 +11,7 @@ manage_local_EC_archive(
   trim = FALSE,
   dry_run = TRUE,
   sites = "all",
-  release = "RELEASE-2023"
+  release = "RELEASE-2024"
 )
 }
 \arguments{
@@ -33,7 +33,7 @@ with available data, but can specify a single site or a vector
 here.}
 
 \item{release}{Download data corresponding to a specific release? Defaults
-to "RELEASE-2023." To download all data, including provisional
+to "RELEASE-2024." To download all data, including provisional
 data, set to NULL.}
 }
 \value{

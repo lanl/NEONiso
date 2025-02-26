@@ -2,7 +2,7 @@
 % Please edit documentation in R/time_functions.R
 \name{convert_POSIXct_to_NEONhdf5_time}
 \alias{convert_POSIXct_to_NEONhdf5_time}
-\title{convert_POSIXct_to_NEONhdf5_time}
+\title{Convert a POSIXct object to the format used in NEON HDF5 files}
 \usage{
 convert_POSIXct_to_NEONhdf5_time(intime)
 }
@@ -15,7 +15,7 @@ matching NEON time variable format.
 }
 \description{
 Converts a POSIXct object back to the character format used by NEON in their
-HDF eddy covariance files. Output format,  using strptime syntax,  is
+HDF eddy covariance files. Output format, using strptime syntax, is
 \%Y-\%m-\%dT\%H:\%M:\%OSZ.
 }
 \examples{

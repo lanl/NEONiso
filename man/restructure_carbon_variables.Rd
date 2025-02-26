@@ -2,7 +2,7 @@
 % Please edit documentation in R/restructure_data.R
 \name{restructure_carbon_variables}
 \alias{restructure_carbon_variables}
-\title{restructure_carbon_variables}
+\title{Restructure ingested variables for the carbon isotope system.}
 \usage{
 restructure_carbon_variables(dataframe, varname, mode, group)
 }
@@ -20,5 +20,6 @@ a list of ~10 common ones to write to the hdf5 file.}
 data.frame formatted for output to hdf5 file.
 }
 \description{
-restructure_carbon_variables
+Restructures carbon isotope measurement system variables and shortens names
+to simplify referencing variables elsewhere in calibration code.
 }

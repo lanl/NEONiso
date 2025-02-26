@@ -1,5 +1,11 @@
-# restructure_data
-#' ingest_data
+# restructure_data script:
+#==============================
+#' Ingest and stack variables needed in calibration.
+#'
+#' Opens and stacks isotope ratio and water/carbon dioxide mole fraction
+#' variables from monthly HDF5 files. If a new enough version of `neonUtilities`
+#' is available, this function will try to use `fasttime` in order to accelerate
+#' data stacking.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -32,9 +38,7 @@ ingest_data <- function(inname,
 
   analyte <- validate_analyte(analyte)
   backupMethod <- FALSE
-  print(paste("Amb avg is:", amb_avg, "minutes"))
-  print(paste("Ref avg is:", ref_avg, "minutes"))
-  
+
   # read attributes from (first file in) inname
   site <- rhdf5::h5ls(inname[1], recursive = 1)[1, 2]
   attrs <- rhdf5::h5readAttributes(inname[1], name = paste0("/", site))
@@ -57,7 +61,7 @@ ingest_data <- function(inname,
                                              var = "isoCo2",
                                              useFasttime = TRUE)[[1]]
         backupMethod <- TRUE
-        
+
       }
     } else if (packageVersion("neonUtilities") >= "2.1.1" && # nocov start
                  packageVersion("neonUtilities") < "2.3.0") {
@@ -287,7 +291,7 @@ ingest_data <- function(inname,
   if (nrow(ambient) > 0) {
     heights <- unique(ambient$verticalPosition) # not that efficient, but needed
     names_vector <- vector()
-    for (i in 1:length(heights)) {
+    for (i in seq_along(heights)) {
       names_vector[i] <- paste0("000_0", i, "0_", avg_char)
     }
     names(ambi_out) <- names_vector
@@ -308,9 +312,10 @@ ingest_data <- function(inname,
 }
 
 #-----------------------------------------
-# restructure_variables
+# Restructure stacked data.frames to essential variables.
 #'
-#' Wrapper function around restructure_carbon_variables
+#' Restructures data.frames imported by ingest_data to shorten variable names
+#' and  Wrapper function around restructure_carbon_variables
 #' and restructure_water_variables.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
@@ -350,7 +355,10 @@ restructure_variables <- function(dataframe,
 }
 
 #-----------------------------------------
-#' restructure_carbon_variables
+#' Restructure ingested variables for the carbon isotope system.
+#'
+#' Restructures carbon isotope measurement system variables and shortens names 
+#' to simplify referencing variables elsewhere in calibration code.
 #'
 #' @param varname Which variable are we applying this function to? There's
 #'                a list of ~10 common ones to write to the hdf5 file.
@@ -458,8 +466,11 @@ restructure_carbon_variables <- function(dataframe,
 }
 
 #-----------------------------------------
-#' restructure_water_variables
+#' Restructure ingested variables for the water isotope system.
 #'
+#' Restructures water isotope measurement system variables and shortens names 
+#' to simplify referencing variables elsewhere in calibration code.
+#' 
 #' @param varname Which variable are we applying this function to? There's
 #'                a list of ~10 common ones to write to the hdf5 file.
 #' @param dataframe Input data.frame, from `neonUtilities::stackEddy`

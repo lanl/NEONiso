@@ -2,7 +2,7 @@
 % Please edit documentation in R/utility_functions.R
 \name{water_isotope_sites}
 \alias{water_isotope_sites}
-\title{water_isotope_sites}
+\title{List sites with water vapor isotope ratios.}
 \usage{
 water_isotope_sites()
 }
@@ -10,7 +10,8 @@ water_isotope_sites()
 A vector listing NEON sites measuring water vapor isotope ratios.
 }
 \description{
-water_isotope_sites
+Returns a vector of four-letter NEON site codes for the
+terrestrial sites that have water vapor isotope ratio instrumentation.
 }
 \examples{
 water_isotope_sites()

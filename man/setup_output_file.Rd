@@ -2,7 +2,7 @@
 % Please edit documentation in R/output_functions.R
 \name{setup_output_file}
 \alias{setup_output_file}
-\title{setup_output_file}
+\title{Structure a new HDF5 file}
 \usage{
 setup_output_file(inname, outname, site, analyte)
 }
@@ -21,7 +21,9 @@ with the most basic output HDF5 structure consistent with
 NEON's data files.
 }
 \description{
-Creates a skeleton hdf5 file for the calibrated data.
+Creates a skeleton HDF5 file for the calibrated data,
+essentially setting up the HDF5 groups at the /site/dp01/\{data,ucrt,qfqm\}
+level.
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

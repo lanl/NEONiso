@@ -3,9 +3,11 @@
 #################################################
 ### FUNCTIONS THAT WORK FOR BOTH H2O AND CO2 ####
 #################################################
-#' setup_output_file
+#' Structure a new HDF5 file
 #'
-#' Creates a skeleton hdf5 file for the calibrated data.
+#' Creates a skeleton HDF5 file for the calibrated data,
+#' essentially setting up the HDF5 groups at the /site/dp01/\{data,ucrt,qfqm\}
+#' level.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -40,7 +42,7 @@ setup_output_file <- function(inname, outname, site, analyte) {
 
   attrloc <- rhdf5::H5Gopen(fid, paste0("/", site))
 
-  for (i in 1:length(tmp)) {
+  for (i in seq_along(tmp)) {
     # probably a more rapid way to do this in the future...lapply?
     rhdf5::h5writeAttribute(h5obj = attrloc,
                             attr = tmp[[i]],
@@ -56,7 +58,11 @@ setup_output_file <- function(inname, outname, site, analyte) {
 #######################################
 ### FUNCTIONS THAT WORK ON ONLY CO2 ###
 #######################################
-#' write_carbon_calibration_data
+#' Write carbon calibrations to file
+#'
+#' Write a `data.frame` with slope, intercepts, and error estimates of 
+#' calibrations for carbon isotope system. If `gainoffset` method was used
+#' the slopes/intercepts are called gain/offsets for each isotopologue.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -109,7 +115,7 @@ write_carbon_calibration_data <- function(outname,
 
 }
 
-#' write_carbon_ambient_data
+#' Write calibrated carbon ambient data to file
 #'
 #' Write out ambient observations from the NEON EC
 #' towers where the isotope data (either H2O or CO2)
@@ -136,7 +142,7 @@ write_carbon_ambient_data <- function(outname,
   fid <- rhdf5::H5Fopen(outname)
 
   if (length(amb_data_list) > 0) {
-    for (i in 1:length(amb_data_list)) {
+    for (i in seq_along(amb_data_list)) {
       amb_data_subset <- amb_data_list[i]
 
       co2_data_outloc <- rhdf5::H5Gcreate(fid,
@@ -169,8 +175,11 @@ write_carbon_ambient_data <- function(outname,
 #######################################
 ### FUNCTIONS THAT WORK ON ONLY H2O ###
 #######################################
-#' write_water_calibration_data
+#' Write water calibration parameters to file
 #'
+#' Write a `data.frame` with slope, intercepts, and error estimates of 
+#' calibrations for water isotope system.
+#' 
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param outname Output file name.
@@ -211,7 +220,7 @@ write_water_calibration_data <- function(outname, site, cal_df) {
 
 }
 
-#' write_water_ambient_data
+#' Write calibrated ambient water isotope ratio observations to file.
 #'
 #' Write out ambient observations from the NEON EC
 #' towers where the isotope data
@@ -233,7 +242,7 @@ write_water_ambient_data <- function(outname, site, amb_data_list) {
   fid <- rhdf5::H5Fopen(outname)
 
   if (length(amb_data_list) > 0) {
-    for (i in 1:length(amb_data_list)) {
+    for (i in seq_along(amb_data_list)) {
       amb_data_subset <- amb_data_list[i]
 
       h2o_data_outloc <- rhdf5::H5Gcreate(fid,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/quality_control.R
 \name{validate_analyte}
 \alias{validate_analyte}
-\title{validate_analyte}
+\title{Standardize analyte names}
 \usage{
 validate_analyte(analyte)
 }
@@ -15,7 +15,8 @@ carbon ('Co2') systems to make sure strings
 are standardized across package functions.
 }
 \description{
-validate_analyte
+Enforces standard capitalization and formatting of H2o and Co2
+analyte names across calibration functions.
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

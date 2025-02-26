@@ -2,7 +2,7 @@
 % Please edit documentation in R/reference_data_regression.R
 \name{fit_carbon_regression}
 \alias{fit_carbon_regression}
-\title{fit_carbon_regression}
+\title{Estimate slope/intercept of carbon isotope calibration regression}
 \usage{
 fit_carbon_regression(
   ref_data,
@@ -18,8 +18,9 @@ fit_carbon_regression(
 \item{ref_data}{Reference data.frame from which to estimate
 calibration parameters.}
 
-\item{method}{Are we using the Bowling et al. 2003 method
-("Bowling_2003") or direct linear regression of
+\item{method}{Are we using the gain-and-offset method
+("gainoffset"), formerly called the Bowling et al. 2003 method
+in this package, or direct linear regression of
 d13C and CO2 mole fractions ("linreg")?}
 
 \item{calibration_half_width}{Determines the period (in days)
@@ -39,14 +40,18 @@ to define a peak.}
 }
 \value{
 Returns a data.frame of calibration parameters. If
-\code{method == "Bowling_2003"}, then data.frame includes
+\code{method == "gainoffset"}, then data.frame includes
 gain and offset parameters for 12CO2 and 13CO2, and r^2
 values for each regression. If \code{method == "linreg"},
 then data.frame includes slope, intercept, and r^2 values
 for d13C and CO2 values.
 }
 \description{
-fit_carbon_regression
+Performs regression between measured and known carbon isotope and mole
+fractions to generate a transfer function and associated uncertainty
+estimates using both 5-fold and leave-one-out cross-validation methods.
+Regression occurs either on 12CO2/13CO2 mole fractions (gainoffset method)
+or on the CO2 and d13C values (linreg).
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

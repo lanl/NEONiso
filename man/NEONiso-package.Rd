@@ -4,9 +4,12 @@
 \name{NEONiso-package}
 \alias{NEONiso}
 \alias{NEONiso-package}
-\title{NEONiso: Tools to Calibrate and Work with NEON Atmospheric Isotope Data}
+\title{NEONiso}
 \description{
-Functions for downloading, calibrating, and analyzing atmospheric isotope data bundled into the eddy covariance data products of the National Ecological Observatory Network (NEON) \url{https://www.neonscience.org}. Calibration tools are provided for carbon and water isotope products. Carbon isotope calibration details are found in Fiorella et al. (2021) \doi{10.1029/2020JG005862}, and the readme file at \url{https://github.com/lanl/NEONiso}. Tools for calibrating water isotope products have been added as of 0.6.0, but have known deficiencies and should be considered very experimental currently.
+Functions for downloading,
+calibrating, and analyzing atmospheric isotope data bundled
+into the eddy covariance data products of the National Ecological
+Observatory Network (NEON)
 }
 \seealso{
 Useful links:

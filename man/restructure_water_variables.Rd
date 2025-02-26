@@ -2,7 +2,7 @@
 % Please edit documentation in R/restructure_data.R
 \name{restructure_water_variables}
 \alias{restructure_water_variables}
-\title{restructure_water_variables}
+\title{Restructure ingested variables for the water isotope system.}
 \usage{
 restructure_water_variables(dataframe, varname, mode, group)
 }
@@ -20,5 +20,6 @@ a list of ~10 common ones to write to the hdf5 file.}
 data.frame formatted for output to hdf5 file.
 }
 \description{
-restructure_water_variables
+Restructures water isotope measurement system variables and shortens names
+to simplify referencing variables elsewhere in calibration code.
 }

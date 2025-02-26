@@ -38,7 +38,8 @@ period identified as having incorrect reference values.}
 A version of std_list with corrected reference values.
 }
 \description{
-Correct carbon ref output
+Corrects known mismatches in the database where standard values do not
+actually match what they should in data files per calVal measurements.
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

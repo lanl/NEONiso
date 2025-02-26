@@ -16,3 +16,4 @@
 ^workflows$
 ^codecov\.yml$
 ^CRAN-SUBMISSION$
+^revdep$

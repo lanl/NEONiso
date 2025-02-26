@@ -2,7 +2,7 @@
 % Please edit documentation in R/time_functions.R
 \name{convert_NEONhdf5_to_POSIXct_time}
 \alias{convert_NEONhdf5_to_POSIXct_time}
-\title{convert_NEONhdf5_to_POSIXct_time}
+\title{Convert NEON HDF5 file time to POSIXct}
 \usage{
 convert_NEONhdf5_to_POSIXct_time(intime)
 }
@@ -14,7 +14,8 @@ to convert to POSIXct class}
 Vector of datetimes from NEON data file now in POSIXct format.
 }
 \description{
-convert_NEONhdf5_to_POSIXct_time
+Converts the date time string in NEON HDF5 files to a POSIXct object
+for use in R.
 }
 \examples{
 convert_NEONhdf5_to_POSIXct_time("2019-06-01T12:00:00.000Z")

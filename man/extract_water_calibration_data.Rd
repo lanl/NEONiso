@@ -2,7 +2,7 @@
 % Please edit documentation in R/reference_data_extraction.R
 \name{extract_water_calibration_data}
 \alias{extract_water_calibration_data}
-\title{extract_water_calibration_data}
+\title{Extract only the data corresponding to validation/calibration time periods.}
 \usage{
 extract_water_calibration_data(data_list)
 }
@@ -14,7 +14,9 @@ group in NEON HDF5 file.}
 Returns data frame of required variables.
 }
 \description{
-extract_water_calibration_data
+Extracts data matching a value of "h2oLow," "h2oMed," or "h2oHigh" which
+correspond to the validation gases of known d18O, d2H that are fed to the
+analyzer daily.
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

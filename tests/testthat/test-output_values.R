@@ -24,13 +24,13 @@ ciso_subset <- co2test$ambient
 
 ciso_subset_cal <- lapply(names(ciso_subset),
                           function(x) {
-                            calibrate_ambient_carbon_Bowling2003(amb_data_list = ciso_subset[[x]],
-                                                                 caldf = caldf_b03,
-                                                                 site = "YELL",
-                                                                 filter_data = TRUE,
-                                                                 force_to_end = TRUE,
-                                                                 force_to_beginning = TRUE,
-                                                                 r2_thres = 0.9)
+                            calibrate_ambient_carbon_gainoffset(amb_data_list = ciso_subset[[x]],
+                                                                caldf = caldf_b03,
+                                                                site = "YELL",
+                                                                filter_data = TRUE,
+                                                                force_to_end = TRUE,
+                                                                force_to_beginning = TRUE,
+                                                                r2_thres = 0.9)
                           })
 
 names(ciso_subset_cal) <- names(ciso_subset)

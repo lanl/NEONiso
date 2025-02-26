@@ -1,11 +1,14 @@
 # general utility functions in this file.
-# this file is intended to keep short utilitie functions
+# this file is intended to keep short utility functions
 # that do *not* need to be exported,  to help keep down on
 # number of files present in the repo/package. -rpf 200214.
 # 200219 - added a water isotope function.
 #-----------------------------------------------
 
-#' terrestrial_core_sites
+#' List terrestrial core sites
+#'
+#' Returns a vector of four-letter NEON site codes for the
+#' core terrestrial sites that have TIS instrumentation.
 #'
 #' @return A vector listing NEON core terrestrial sites.
 #'
@@ -26,7 +29,10 @@ terrestrial_core_sites <- function() {
   return(core_sites)
 }
 
-#' terrestrial_gradient_sites
+#' List terrestrial gradient sites
+#'
+#' Returns a vector of four-letter NEON site codes for the
+#' gradient terrestrial sites that have TIS instrumentation.
 #'
 #' @return A vector listing NEON gradient terrestrial sites.
 #'
@@ -51,7 +57,10 @@ terrestrial_gradient_sites <- function() {
 
 }
 
-#' water_isotope_sites
+#' List sites with water vapor isotope ratios.
+#'
+#' Returns a vector of four-letter NEON site codes for the
+#' terrestrial sites that have water vapor isotope ratio instrumentation.
 #'
 #' @return A vector listing NEON sites measuring water vapor isotope ratios.
 #'
@@ -74,7 +83,7 @@ water_isotope_sites <- function() {
 
 }
 
-#' manage_local_EC_archive
+#' Manage a local eddy covariance (EC) data archive.
 #'
 #' Utility function to help retrieve new EC data and/or prune duplicates,
 #' as NEON provisions new data or re-provisions data for an existing site
@@ -94,7 +103,7 @@ water_isotope_sites <- function() {
 #'              with available data, but can specify a single site or a vector
 #'              here.
 #' @param release Download data corresponding to a specific release? Defaults
-#'              to "RELEASE-2023." To download all data, including provisional
+#'              to "RELEASE-2024." To download all data, including provisional
 #'              data, set to NULL.
 #' @export
 #'
@@ -109,7 +118,7 @@ manage_local_EC_archive <- function(file_dir,
                                     trim = FALSE,
                                     dry_run = TRUE,
                                     sites = "all",
-                                    release = "RELEASE-2023") {
+                                    release = "RELEASE-2024") {
   if (!is.null(release)) {
     file_dir2 <- paste(file_dir, release, sep = "/")
   } else {
@@ -171,7 +180,7 @@ manage_local_EC_archive <- function(file_dir,
       # okay - now loop through months and get the data files.
       if (!is.null(length(site_months))) {
 
-        for (j in 1:length(site_months)) {
+        for (j in seq_along(site_months)) {
 
           # re-query api w/ given site code and month.
           sitemonth_urls_json <- httr::GET(
@@ -184,16 +193,17 @@ manage_local_EC_archive <- function(file_dir,
           # extract just file names and URLs
           fnames <- sapply(sitemonth_urls_parsed$data$files, "[[", "name")
           furls  <- sapply(sitemonth_urls_parsed$data$files, "[[", "url")
-
+          
           # get basic zipfile for now, but should kick out to a
           # function argument later on.
-          fnames_basic <- (grepl("basic", fnames) & grepl("h5.gz", fnames))
+          fnames_basic <- (grepl("basic", fnames) & (grepl("h5.gz", fnames) |
+                                                       grepl("h5", fnames)))
 
           # check to see if files already exist, and download if missing.
           dl_names <- fnames[fnames_basic]
           dl_urls  <- furls[fnames_basic]
 
-          for (k in 1:length(dl_names)) {
+          for (k in seq_along(dl_names)) {
             if (!length(dl_names[k]) == 0) {
               if (!is.na(dl_names[k])) {
                 # check to see if file exists in folder
@@ -300,7 +310,7 @@ manage_local_EC_archive <- function(file_dir,
             file.remove(dup_candidates[h5files]) # remove files.
           }
         } else { # none are simply h5, so need to determine most recent file.
-          for (i in 1:length(unique(dup_yrmn))) {
+          for (i in seq_along(unique(dup_yrmn))) {
             # get times associated w/ particular duplicate.
             h5_times <- as.POSIXct(dup_fdiff[dup_yrmn == unique(dup_yrmn)[i]],
                                    format = "%Y%m%dT%H%M%SZ")

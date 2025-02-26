@@ -2,7 +2,7 @@
 % Please edit documentation in R/calibrate_water.R
 \name{calibrate_water}
 \alias{calibrate_water}
-\title{calibrate_water}
+\title{Calibrate NEON water isotope ratios using validation data sets.}
 \usage{
 calibrate_water(
   inname,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/output_functions.R
 \name{write_water_calibration_data}
 \alias{write_water_calibration_data}
-\title{write_water_calibration_data}
+\title{Write water calibration parameters to file}
 \usage{
 write_water_calibration_data(outname, site, cal_df)
 }
@@ -21,7 +21,8 @@ regression slopes and intercepts) to the output
 hdf5 file.
 }
 \description{
-write_water_calibration_data
+Write a \code{data.frame} with slope, intercepts, and error estimates of
+calibrations for water isotope system.
 }
 \author{
 Rich Fiorella \email{rfiorella@lanl.gov}

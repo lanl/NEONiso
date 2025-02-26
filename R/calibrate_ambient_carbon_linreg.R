@@ -1,11 +1,11 @@
-#' calibrate_ambient_carbon_linreg
-#'
-#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
+#' Calibrate ambient carbon isotope data using linear regression
 #'
 #' Function called by `calibrate_ambient_carbon_linreg` to apply
 #' gain and offset parameters to the ambient datasets (000_0x0_09m and
 #' 000_0x0_30m). This function should generally not be used independently,
 #' but should be used with `calibrate_ambient_carbon_linreg`.
+#'
+#' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param amb_data_list List containing an ambient d13C dataset.
 #'             Will include all variables in 000_0x0_xxm. (character)
@@ -71,7 +71,7 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
   # determine which cal period each ambient data belongs to.
   var_inds_in_calperiod <- list()
 
-  for (i in 1:nrow(caldf)) {
+  for (i in seq_len(nrow(caldf))) {
     int <- lubridate::interval(caldf$timeBgn[i], caldf$timeEnd[i])
     var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
 
@@ -80,7 +80,7 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
       # print notice that we're gap filling
       print("Gap filling calibrations...")
 
-      if (!is.na(caldf$d13C_r2[i]) & caldf$d13C_r2[i] < r2_thres) {
+      if (!is.na(caldf$d13C_r2[i]) && caldf$d13C_r2[i] < r2_thres) {
         # if we're in calibration period 2 or later, carry previous
         # calibration period forward. else if the first calibration period
         # is bad, find the first good calibration period at index n,
@@ -98,7 +98,7 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
       }
 
       # apply same logic to CO2 calibration.
-      if (!is.na(caldf$co2_r2[i]) & caldf$co2_r2[i] < r2_thres) {
+      if (!is.na(caldf$co2_r2[i]) && caldf$co2_r2[i] < r2_thres) {
         if (i > 1) {
           caldf$co2_slope[i] <- caldf$co2_slope[i - 1]
           caldf$co2_intercept[i] <- caldf$co2_intercept[i - 1]
@@ -128,7 +128,7 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
   co2_ambdf$cv5rmse  <- rep(NA, length(co2_ambdf$mean))
   co2_ambdf$cv5mae   <- rep(NA, length(co2_ambdf$mean))
 
-  for (i in 1:length(var_inds_in_calperiod)) {
+  for (i in seq_along(var_inds_in_calperiod)) {
 
     d13c_ambdf$mean_cal[var_inds_in_calperiod[[i]]] <- caldf$d13C_intercept[i] +
       d13c_ambdf$mean[var_inds_in_calperiod[[i]]] * caldf$d13C_slope[i]
