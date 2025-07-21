@@ -9,7 +9,7 @@
 <!-- badges: end -->
 
 Author: Rich Fiorella
-October 31, 2022.
+Latest release: February 25, 2025.
 
 This repository contains an R package to calibrate NEON atmospheric isotope data. A stable version of the package can be installed from CRAN, and a development version of this package can be installed here using devtools (see below).
 
