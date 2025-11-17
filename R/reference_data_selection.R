@@ -53,11 +53,12 @@ select_daily_reference_data <- function(standard_df,
     standard_df <- standard_df %>%
     # get day of month
       dplyr::mutate(date = lubridate::date(.data$timeBgn)) %>%
-      dplyr::group_by(.data$date) %>%
+      dplyr::group_by(.data$date, .data$verticalPosition) %>%
       dplyr::filter(.data$dlta18OH2o.numSamp > min_nobs | is.na(.data$dlta18OH2o.numSamp)) %>%
       dplyr::slice(tail(dplyr::row_number(), 3)) %>%
       dplyr::ungroup() %>%
-      dplyr::select(-"date")
+      dplyr::select(-"date") %>%
+      dplyr::arrange(.data$timeBgn)
 
   } else {
 
