@@ -1,0 +1,188 @@
+# NEONiso
+
+Author: Rich Fiorella Latest release: February 25, 2025.
+
+This repository contains an R package to calibrate NEON atmospheric
+isotope data. A stable version of the package can be installed from
+CRAN, and a development version of this package can be installed here
+using devtools (see below).
+
+Please report any issues you have, bugs found, or enhancement
+suggestions as issues to this repository.
+
+## Installing the development version:
+
+1.  You will need the rhdf5 package, which is not on CRAN. rhdf5 is
+    available from bioconductor using:
+
+``` r
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("rhdf5")
+```
+
+2.  Install devtools, which is available on CRAN.
+3.  Install NEONiso from GitHub. Development version can be installed
+    using:
+
+``` r
+devtools::install_github("lanl/NEONiso")
+```
+
+Alternatively, you can install a specific version of the package (e.g.,
+v0.1) by specifying the version tag:
+
+``` r
+devtools::install_github("lanl/NEONiso@v0.1")
+```
+
+## Citation information:
+
+Package functionality to calibrate NEON carbon isotope data is described
+in a paper at JGR-Biogeosciences (doi:
+[10.1029/2020JG005862](https://doi.org/10.1029/2020JG005862)). Users of
+this package should also cite the Zenodo DOI above.
+
+Please also check to ensure that you are compliant with NEON’s data
+citation policy for any products derived from this package:
+<https://www.neonscience.org/data/about-data/data-policies>
+
+## Usage:
+
+Two methods are available to calibrate NEON Carbon isotope data and they
+take slightly different approaches: a) the ‘Bowling_2003’ method
+calibrates 12CO2 and 13CO2 mole fractions independently, while b) the
+‘linreg’ method calibrates d13C and CO2 directly without converting to
+isotopologue mole fractions. The method is specified as an argument to
+calibrate_carbon_bymonth(). Both methods yield very similar results, but
+the error and precision estimates are slightly better from the
+calibrate_carbon_Bowling2003() function (Fiorella et al., 2021;
+JGR-Biogeosciences)
+
+This function is meant to be applied to a list or vector of uncalibrated
+data files, and produce output hdf5 files that have (currently) only the
+CO2 and d13C variables instead of the entire data bundle. Development
+was targeted and tested on monthly basic files, but the functions should
+also work on the extended data files.
+
+neonUtilities:::stackEddy *should* work on these output files - please
+file an issue if it does not.
+
+## DATA ALERT:
+
+Several months of data on the NEON data portal have an issue where the
+Picarro time clock has diverged from the valve manifold time. A fix has
+been developed, but has not been propagated to the NEON data portal.
+
+## Copyright notice:
+
+© 2022. Triad National Security, LLC. All rights reserved. This program
+was produced under U.S. Government contract 89233218CNA000001 for Los
+Alamos National Laboratory (LANL), which is operated by Triad National
+Security, LLC for the U.S. Department of Energy/National Nuclear
+Security Administration. All rights in the program are reserved by Triad
+National Security, LLC, and the U.S. Department of Energy/National
+Nuclear Security Administration. The Government is granted for itself
+and others acting on its behalf a nonexclusive, paid-up, irrevocable
+worldwide license in this material to reproduce, prepare derivative
+works, distribute copies to the public, perform publicly and display
+publicly, and to permit others to do so.
+
+# Package index
+
+## All functions
+
+- [`R_to_delta()`](https://lanl.github.io/NEONiso/reference/R_to_delta.md)
+  : Convert heavy-to-light isotope ratio to delta values.
+- [`calculate_12CO2()`](https://lanl.github.io/NEONiso/reference/calculate_12CO2.md)
+  : Calculate 12C-CO2 Mole Fractions
+- [`calculate_13CO2()`](https://lanl.github.io/NEONiso/reference/calculate_13CO2.md)
+  : Calculate 13C-CO2 Mole Fractions
+- [`calibrate_ambient_carbon_gainoffset()`](https://lanl.github.io/NEONiso/reference/calibrate_ambient_carbon_gainoffset.md)
+  : Calibrate ambient carbon isotope data using gain-and-offset method
+- [`calibrate_ambient_carbon_linreg()`](https://lanl.github.io/NEONiso/reference/calibrate_ambient_carbon_linreg.md)
+  : Calibrate ambient carbon isotope data using linear regression
+- [`calibrate_ambient_water_linreg()`](https://lanl.github.io/NEONiso/reference/calibrate_ambient_water_linreg.md)
+  : calibrate_ambient_water_isotopes
+- [`calibrate_carbon()`](https://lanl.github.io/NEONiso/reference/calibrate_carbon.md)
+  **\[experimental\]** : Calibrate NEON carbon isotope data using
+  validation data sets.
+- [`calibrate_water()`](https://lanl.github.io/NEONiso/reference/calibrate_water.md)
+  **\[experimental\]** : Calibrate NEON water isotope ratios using
+  validation data sets.
+- [`carbon_regression_plots()`](https://lanl.github.io/NEONiso/reference/carbon_regression_plots.md)
+  : Make plots of carbon calibration data for debugging
+- [`convert_NEONhdf5_to_POSIXct_time()`](https://lanl.github.io/NEONiso/reference/convert_NEONhdf5_to_POSIXct_time.md)
+  : Convert NEON HDF5 file time to POSIXct
+- [`convert_POSIXct_to_NEONhdf5_time()`](https://lanl.github.io/NEONiso/reference/convert_POSIXct_to_NEONhdf5_time.md)
+  : Convert a POSIXct object to the format used in NEON HDF5 files
+- [`correct_carbon_ref_cval()`](https://lanl.github.io/NEONiso/reference/correct_carbon_ref_cval.md)
+  : correct_carbon_ref_cval
+- [`correct_carbon_ref_output()`](https://lanl.github.io/NEONiso/reference/correct_carbon_ref_output.md)
+  : Correct carbon ref output
+- [`delta_to_R()`](https://lanl.github.io/NEONiso/reference/delta_to_R.md)
+  : Converts delta value to heavy-to-light isotope ratio
+- [`estimate_calibration_error()`](https://lanl.github.io/NEONiso/reference/estimate_calibration_error.md)
+  : Produce estimates of the calibration error.
+- [`extract_carbon_cal_data()`](https://lanl.github.io/NEONiso/reference/extract_carbon_cal_data.md)
+  : Extract only the data corresponding to validation/calibration time
+  periods.
+- [`extract_water_calibration_data()`](https://lanl.github.io/NEONiso/reference/extract_water_calibration_data.md)
+  : Extract only the data corresponding to validation/calibration time
+  periods.
+- [`filter_median_brock86()`](https://lanl.github.io/NEONiso/reference/filter_median_brock86.md)
+  : Apply a median absolute deviation filter
+- [`fit_carbon_regression()`](https://lanl.github.io/NEONiso/reference/fit_carbon_regression.md)
+  : Estimate slope/intercept of carbon isotope calibration regression
+- [`fit_water_regression()`](https://lanl.github.io/NEONiso/reference/fit_water_regression.md)
+  : Estimate slope/intercept of water isotope calibration regression
+- [`get_Rstd()`](https://lanl.github.io/NEONiso/reference/get_Rstd.md) :
+  Return heavy-to-light isotope ratio of primary standard.
+- [`ingest_data()`](https://lanl.github.io/NEONiso/reference/ingest_data.md)
+  : Ingest and stack variables needed in calibration.
+- [`loocv()`](https://lanl.github.io/NEONiso/reference/loocv.md) :
+  Leave-one-out cross validation
+- [`manage_local_EC_archive()`](https://lanl.github.io/NEONiso/reference/manage_local_EC_archive.md)
+  : Manage a local eddy covariance (EC) data archive.
+- [`restructure_carbon_variables()`](https://lanl.github.io/NEONiso/reference/restructure_carbon_variables.md)
+  : Restructure ingested variables for the carbon isotope system.
+- [`restructure_variables()`](https://lanl.github.io/NEONiso/reference/restructure_variables.md)
+  : Restructures data.frames imported by ingest_data to shorten variable
+  names and Wrapper function around restructure_carbon_variables and
+  restructure_water_variables.
+- [`restructure_water_variables()`](https://lanl.github.io/NEONiso/reference/restructure_water_variables.md)
+  : Restructure ingested variables for the water isotope system.
+- [`select_daily_reference_data()`](https://lanl.github.io/NEONiso/reference/select_daily_reference_data.md)
+  : Select validation data corresponding to a particular day
+- [`setup_output_file()`](https://lanl.github.io/NEONiso/reference/setup_output_file.md)
+  : Structure a new HDF5 file
+- [`swap_standard_isotoperatios()`](https://lanl.github.io/NEONiso/reference/swap_standard_isotoperatios.md)
+  : swap_standard_isotoperatios
+- [`terrestrial_core_sites()`](https://lanl.github.io/NEONiso/reference/terrestrial_core_sites.md)
+  : List terrestrial core sites
+- [`terrestrial_gradient_sites()`](https://lanl.github.io/NEONiso/reference/terrestrial_gradient_sites.md)
+  : List terrestrial gradient sites
+- [`validate_analyte()`](https://lanl.github.io/NEONiso/reference/validate_analyte.md)
+  : Standardize analyte names
+- [`validate_output_file()`](https://lanl.github.io/NEONiso/reference/validate_output_file.md)
+  : Validate output file.
+- [`water_isotope_sites()`](https://lanl.github.io/NEONiso/reference/water_isotope_sites.md)
+  : List sites with water vapor isotope ratios.
+- [`write_carbon_ambient_data()`](https://lanl.github.io/NEONiso/reference/write_carbon_ambient_data.md)
+  : Write calibrated carbon ambient data to file
+- [`write_carbon_calibration_data()`](https://lanl.github.io/NEONiso/reference/write_carbon_calibration_data.md)
+  : Write carbon calibrations to file
+- [`write_water_ambient_data()`](https://lanl.github.io/NEONiso/reference/write_water_ambient_data.md)
+  : Write calibrated ambient water isotope ratio observations to file.
+- [`write_water_calibration_data()`](https://lanl.github.io/NEONiso/reference/write_water_calibration_data.md)
+  : Write water calibration parameters to file
+
+# Articles
+
+### All vignettes
+
+- [Getting Started with
+  NEONiso](https://lanl.github.io/NEONiso/articles/example_workflow.md):
+- [Reference
+  Corrections](https://lanl.github.io/NEONiso/articles/reference_corrections.md):
