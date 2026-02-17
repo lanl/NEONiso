@@ -18,9 +18,6 @@ fout2 <- tempfile()
 fout3 <- tempfile()
 
 test_that("calibrate_carbon returns no error", {
-
-  skip_on_cran()
-  # these tests could probably be made more useful!!
   
   expect_no_error(calibrate_carbon(fin, fout1, "ONAQ",
                                   method = "gainoffset",
@@ -44,7 +41,7 @@ test_that("calibrate_carbon returns no error", {
                                    correct_ref_data = TRUE,
                                    write_to_file = TRUE))
 
-  # these tests could probably be made more useful!!
+
   expect_no_error(calibrate_carbon(fin, "/dev/null", "ONAQ",
                                    method = "gainoffset",
                                    calibration_half_width = 0.5,
@@ -72,9 +69,6 @@ test_that("calibrate_carbon returns no error", {
 fout3 <- tempfile()
 
 test_that("calibrate_water returns no error", {
-
-  skip_on_cran()
-  # these tests could probably be made more useful!!
   expect_no_error(calibrate_water(fin, "/dev/null", "ONAQ",
                                   correct_ref_data = TRUE,
                                   write_to_file = FALSE))

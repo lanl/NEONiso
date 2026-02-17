@@ -14,7 +14,7 @@
 # 8) calibrate_water_linreg_bysite works
 
 # where does uncalibrated data live?
-data.dir <- '/Volumes/Elements/airflow/data/001-DP4_00200_001/'
+data.dir <- '/Volumes/T7 Shield/airflow/data/001-DP4_00200_001/RELEASE-2025/'
 
 # set test_date
 #test_date <- "2022-01-01"
@@ -30,15 +30,15 @@ dir.create(paste0('~/NEONcal/',test_date,"_tests"))
 run_test1 <- FALSE
 run_test2 <- FALSE
 run_test3 <- FALSE
-run_test4 <- TRUE
+run_test4 <- FALSE
 run_test5 <- FALSE
-run_test6 <- TRUE  
+run_test6 <- FALSE  
 run_test7 <- FALSE
-run_test8 <- FALSE
+run_test8 <- TRUE
 rapid_test <- FALSE # if rapid, only run ~5% of possible site months.
    
 # load required packages: 
-library(rhdf5)
+library(hdf5r)
 library(dplyr)
 library(lubridate)
 
@@ -107,8 +107,8 @@ if (run_test7) {
 }
 
 if (run_test8) {
- # wsites <- NEONiso:::water_isotope_sites()
- wsites <- "ONAQ"
+ wsites <- NEONiso:::water_isotope_sites()
+ #wsites <- "ONAQ"
 }
 
 # if we're doing rapid testing!
@@ -257,10 +257,11 @@ if (run_test7) {
 if (run_test8) {
   dir.create(paste0('~/NEONcal/',test_date,"_tests/08"))
   
+
   for (i in 1:length(wsites)) {
-    NEONiso:::calibrate_water(paste0(data.dir,wsites[i],'/'),
+    try(NEONiso:::calibrate_water(paste0(data.dir,wsites[i],'/'),
                                   paste0('~/NEONcal/',test_date,'_tests/08/'),
                                   site=wsites[i], r2_thres = 0.95,
-                                 calibration_half_width = 100000)
+                                 calibration_half_width = 100000))
   }  
 }
