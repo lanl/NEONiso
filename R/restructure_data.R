@@ -40,8 +40,8 @@ ingest_data <- function(inname,
   backupMethod <- FALSE
 
   # read attributes from (first file in) inname
-  site <- rhdf5::h5ls(inname[1], recursive = 1)[1, 2]
-  attrs <- rhdf5::h5readAttributes(inname[1], name = paste0("/", site))
+  site <- h5_ls(inname[1])$name[1]
+  attrs <- h5_read_attrs(inname[1], site)
 
   nheights <- attrs$LvlMeasTow
 

@@ -127,8 +127,6 @@ calibrate_water       <- function(inname,
 
     validate_output_file(inname, outname, site, "h2o")
 
-    rhdf5::h5closeAll()
-
   } else {
     out_data <- list()
     #convert time to NEON HDF5 time

@@ -241,9 +241,6 @@ calibrate_carbon         <- function(inname,
     write_carbon_ambient_data(outname, site, ciso_subset_cal)
 
     validate_output_file(inname, outname, site, "co2")
-
-    # one last invocation of hdf5 close all, for good luck
-    rhdf5::h5closeAll()
   } else { #export output directly
     out_data <- list()
     #convert time to NEON HDF5 time
