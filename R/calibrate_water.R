@@ -66,7 +66,6 @@
 #' @import dplyr
 #' @import neonUtilities
 #' @importFrom data.table rleidv
-#' @importFrom utils packageVersion
 calibrate_water       <- function(inname,
                                   outname,
                                   site,

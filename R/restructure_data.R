@@ -22,7 +22,6 @@
 #' @export
 #'
 #' @importFrom stats setNames
-#' @importFrom utils packageVersion
 #' @importFrom magrittr %>%
 ingest_data <- function(inname,
                         analyte,
@@ -47,38 +46,21 @@ ingest_data <- function(inname,
 
   if (analyte == "Co2") {
 
-    if (packageVersion("neonUtilities") >= "2.3.0") {
-      print(amb_avg)
-      data <- try(neonUtilities::stackEddy(inname,
-                                       avg = amb_avg,
-                                       level = "dp01",
-                                       var = "isoCo2",
-                                       useFasttime = TRUE)[[1]], silent = FALSE)
-      if ("try-error" %in% class(data)) {
-        data <- neonUtilities::stackEddy(inname,
-                                             avg = 9,
-                                             level = "dp01",
-                                             var = "isoCo2",
-                                             useFasttime = TRUE)[[1]]
-        backupMethod <- TRUE
-
-      }
-    } else if (packageVersion("neonUtilities") >= "2.1.1" && # nocov start
-                 packageVersion("neonUtilities") < "2.3.0") {
-      data <- try(neonUtilities::stackEddy(inname,
-                                       avg = amb_avg,
-                                       level = "dp01",
-                                       var = "isoCo2")[[1]], silent = TRUE)
-      if ("try-error" %in% class(data)) {
-        data <- neonUtilities::stackEddy(inname,
-                                         avg = 9,
-                                         level = "dp01",
-                                         var = "isoCo2")[[1]]
-        backupMethod <- TRUE
-      }
-    } else {
-      stop("NEONiso >= 0.7.0 requires neonUtilities >= 2.1.1")
-    } # nocov end
+    data <- try(neonUtilities::stackEddy(inname,
+                                     avg = amb_avg,
+                                     level = "dp01",
+                                     var = "isoCo2",
+                                     useFasttime = TRUE,
+                                     runLocal = TRUE)[[1]], silent = FALSE)
+    if ("try-error" %in% class(data)) {
+      data <- neonUtilities::stackEddy(inname,
+                                           avg = 9,
+                                           level = "dp01",
+                                           var = "isoCo2",
+                                           useFasttime = TRUE,
+                                           runLocal = TRUE)[[1]]
+      backupMethod <- TRUE
+    }
 
     # filter data and remove rows that are all NaNs:
     data <- data %>%
@@ -128,30 +110,18 @@ ingest_data <- function(inname,
   } else if (analyte == "H2o") {
 
     # stack data available for a given site into a single timeseries.
-    if (packageVersion("neonUtilities") >= "2.3.0") {
-      data9 <- neonUtilities::stackEddy(inname,
-                                        level = "dp01",
-                                        var = "isoH2o",
-                                        avg = amb_avg,
-                                        useFasttime = TRUE)[[1]]
-      data3 <- neonUtilities::stackEddy(inname,
-                                        level = "dp01",
-                                        var = "isoH2o",
-                                        avg = ref_avg,
-                                        useFasttime = TRUE)[[1]]
-    } else if (packageVersion("neonUtilities") >= "2.1.1" && # nocov start
-                 packageVersion("neonUtilities") < "2.3.0") {
-      data9 <- neonUtilities::stackEddy(inname,
-                                        level = "dp01",
-                                        var = "isoH2o",
-                                        avg = amb_avg)[[1]]
-      data3 <- neonUtilities::stackEddy(inname,
-                                        level = "dp01",
-                                        var = "isoH2o",
-                                        avg = ref_avg)[[1]]
-    } else {
-      stop("NEONiso >= 0.7.0 requires neonUtilities >= 2.1.1")
-    } # nocov end
+    data9 <- neonUtilities::stackEddy(inname,
+                                      level = "dp01",
+                                      var = "isoH2o",
+                                      avg = amb_avg,
+                                      useFasttime = TRUE,
+                                      runLocal = TRUE)[[1]]
+    data3 <- neonUtilities::stackEddy(inname,
+                                      level = "dp01",
+                                      var = "isoH2o",
+                                      avg = ref_avg,
+                                      useFasttime = TRUE,
+                                      runLocal = TRUE)[[1]]
 
     # filter data and remove rows that are all NaNs:
     data9 <- data9 %>%

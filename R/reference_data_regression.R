@@ -18,29 +18,47 @@ loocv <- function(mod) {
 #' cross-validation was chosen as each calibration window should have
 #' at least 6 data points (e.g., if only daily validation data are used for the
 #' calibration) and therefore this ensures that the cross-validation should
-#' always run. Model is fit using \code{lm} and the \code{caret} package, with
-#' root-mean-square error (RMSE), the R-squared value, and mean-absolute
-#' error (MAE) extracted from the cross-validation.
+#' always run. Model is fit using \code{lm}, with root-mean-square error
+#' (RMSE) and mean-absolute error (MAE) extracted from the cross-validation.
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param data Data frame to perform cross-validation on.
-#' @param formula Formula to pass to caret::train to perform cross validation.
+#' @param formula Formula to pass to lm for cross validation.
 #'
 estimate_calibration_error <- function(formula, data) {
 
-  # force data to be a dataframe, as caret chokes on tibbles evidently.
-  data2 <- as.data.frame(data)
+  data <- as.data.frame(data)
 
-  ctrl <- caret::trainControl(method = "cv", number = 5)
+  # remove incomplete cases for the formula variables
+  vars <- all.vars(formula)
+  complete <- stats::complete.cases(data[vars])
+  data <- data[complete, ]
 
-  model <- suppressWarnings(caret::train(form = formula,
-                                         data = data2,
-                                         method = "lm",
-                                         trControl = ctrl,
-                                         na.action = stats::na.omit))
+  n <- nrow(data)
+  if (n < 5) {
+    return(data.frame(RMSE = NA_real_, MAE = NA_real_))
+  }
 
-  output <- model$results[c("RMSE", "Rsquared", "MAE")]
+  # assign folds
+  fold_ids <- rep(seq_len(5), length.out = n)
+  fold_ids <- fold_ids[sample(n)]
+
+  resp_var <- vars[1]
+  errors <- numeric(n)
+
+  for (k in seq_len(5)) {
+    test_idx <- which(fold_ids == k)
+    train_idx <- which(fold_ids != k)
+    mod <- stats::lm(formula, data = data[train_idx, ])
+    pred <- stats::predict(mod, newdata = data[test_idx, ])
+    errors[test_idx] <- data[[resp_var]][test_idx] - pred
+  }
+
+  output <- data.frame(
+    RMSE = sqrt(mean(errors^2)),
+    MAE = mean(abs(errors))
+  )
 
   return(output)
 
@@ -139,41 +157,42 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                         cv5rmse_13C = as.numeric(NA))
     } else {
 
-      out <- data.frame(gain12C   = numeric(length = 2e5),
-                        gain13C   = numeric(length = 2e5),
-                        offset12C = numeric(length = 2e5),
-                        offset13C = numeric(length = 2e5),
-                        r2_12C    = numeric(length = 2e5),
-                        r2_13C    = numeric(length = 2e5),
-                        cvloo_12C = numeric(length = 2e5),
-                        cvloo_13C = numeric(length = 2e5),
-                        cv5mae_12C = numeric(length = 2e5),
-                        cv5mae_13C = numeric(length = 2e5),
-                        cv5rmse_12C = numeric(length = 2e5),
-                        cv5rmse_13C = numeric(length = 2e5))
-
       # get start and end days.
       start_date <- as.Date(min(ref_data$timeBgn))
       end_date   <- as.Date(max(ref_data$timeEnd))
 
       # generate date sequence
       date_seq <- base::seq.Date(start_date, end_date, by = "1 day")
+      n_days <- length(date_seq)
 
-      # initialize vectors to hold times.
-      start_time <- end_time <- vector()
+      # pre-allocate output with correct size
+      out <- data.frame(gain12C     = numeric(length = n_days),
+                        gain13C     = numeric(length = n_days),
+                        offset12C   = numeric(length = n_days),
+                        offset13C   = numeric(length = n_days),
+                        r2_12C      = numeric(length = n_days),
+                        r2_13C      = numeric(length = n_days),
+                        cvloo_12C   = numeric(length = n_days),
+                        cvloo_13C   = numeric(length = n_days),
+                        cv5mae_12C  = numeric(length = n_days),
+                        cv5mae_13C  = numeric(length = n_days),
+                        cv5rmse_12C = numeric(length = n_days),
+                        cv5rmse_13C = numeric(length = n_days))
+
+      # vectorize time construction
+      start_time <- as.POSIXct(paste(date_seq, "00:00:00.0001"),
+                               tz = "UTC", origin = "1970-01-01")
+      end_time   <- as.POSIXct(paste(date_seq, "23:59:59.0000"),
+                               tz = "UTC", origin = "1970-01-01")
+
+      # hoist constant out of loop
+      delta <- lubridate::ddays(calibration_half_width)
 
       # okay, now run calibrations...
 
       for (i in seq_along(date_seq)) {
-        start_time[i] <- as.POSIXct(paste(date_seq[i], "00:00:00.0001"),
-                                    tz = "UTC",
-                                    origin = "1970-01-01")
-        end_time[i]   <- as.POSIXct(paste(date_seq[i], "23:59:59.0000"),
-                                    tz = "UTC",
-                                    origin = "1970-01-01")
 
         # define calibration interval
-        delta <- lubridate::ddays(calibration_half_width)
         cal_period <- lubridate::interval(date_seq[i] - delta,
                                           date_seq[i] + delta)
 
@@ -252,12 +271,9 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
         }
       }
 
-      #subset out data frame.
-      out <- out[seq_along(start_time), ]
-
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
-      out$timeBgn <- as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01")
-      out$timeEnd <- as.POSIXct(end_time, tz = "UTC", origin = "1970-01-01")
+      out$timeBgn <- start_time
+      out$timeEnd <- end_time
 
       # re-order columns to ensure that they are consistent across methods
       out <- out[, c("timeBgn", "timeEnd",
@@ -293,40 +309,41 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                         co2_cv5rmse    = as.numeric(NA))
     } else {
 
-      # output dataframe giving valid time range, slopes, intercepts, rsquared.
-      out <- data.frame(d13C_slope     = numeric(length = 2e5),
-                        d13C_intercept = numeric(length = 2e5),
-                        d13C_r2        = numeric(length = 2e5),
-                        d13C_cvloo     = numeric(length = 2e5),
-                        d13C_cv5mae    = numeric(length = 2e5),
-                        d13C_cv5rmse   = numeric(length = 2e5),
-                        co2_slope      = numeric(length = 2e5),
-                        co2_intercept  = numeric(length = 2e5),
-                        co2_r2         = numeric(length = 2e5),
-                        co2_cvloo      = numeric(length = 2e5),
-                        co2_cv5mae     = numeric(length = 2e5),
-                        co2_cv5rmse    = numeric(length = 2e5))
-
       # get start and end days.
       start_date <- as.Date(min(ref_data$timeBgn))
       end_date   <- as.Date(max(ref_data$timeEnd))
 
       # generate date sequence
       date_seq <- base::seq.Date(start_date, end_date, by = "1 day")
+      n_days <- length(date_seq)
 
-      # initialize vectors to hold times.
-      start_time <- end_time <- vector()
+      # pre-allocate output with correct size
+      out <- data.frame(d13C_slope     = numeric(length = n_days),
+                        d13C_intercept = numeric(length = n_days),
+                        d13C_r2        = numeric(length = n_days),
+                        d13C_cvloo     = numeric(length = n_days),
+                        d13C_cv5mae    = numeric(length = n_days),
+                        d13C_cv5rmse   = numeric(length = n_days),
+                        co2_slope      = numeric(length = n_days),
+                        co2_intercept  = numeric(length = n_days),
+                        co2_r2         = numeric(length = n_days),
+                        co2_cvloo      = numeric(length = n_days),
+                        co2_cv5mae     = numeric(length = n_days),
+                        co2_cv5rmse    = numeric(length = n_days))
+
+      # vectorize time construction
+      start_time <- as.POSIXct(paste(date_seq, "00:00:00.0001"),
+                               tz = "UTC", origin = "1970-01-01")
+      end_time   <- as.POSIXct(paste(date_seq, "23:59:59.0000"),
+                               tz = "UTC", origin = "1970-01-01")
+
+      # hoist constant out of loop
+      delta <- lubridate::ddays(calibration_half_width)
 
       # okay, now run calibrations...
       for (i in seq_along(date_seq)) {
 
-        start_time[i] <- as.POSIXct(paste(date_seq[i], "00:00:00.0001"),
-                                    tz = "UTC", origin = "1970-01-01")
-        end_time[i]   <- as.POSIXct(paste(date_seq[i], "23:59:59.0000"),
-                                    tz = "UTC", origin = "1970-01-01")
-
         # define calibration interval
-        delta <- lubridate::ddays(calibration_half_width)
         cal_period <- lubridate::interval(date_seq[i] - delta,
                                           date_seq[i] + delta)
 
@@ -399,12 +416,9 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
         }
       }
 
-      #subset out data frame.
-      out <- out[seq_along(start_time), ]
-
       # output dataframe giving valid time range, slopes, intercepts, rsquared.
-      out$timeBgn <- as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01")
-      out$timeEnd <- as.POSIXct(end_time, tz = "UTC", origin = "1970-01-01")
+      out$timeBgn <- start_time
+      out$timeEnd <- end_time
 
       # re-order columns to ensure that they are consistent across methods
       out <- out[, c("timeBgn", "timeEnd",
@@ -514,39 +528,42 @@ fit_water_regression <- function(ref_data,
                       cv5rmse_2H = as.numeric(NA))
   } else {
 
-    out <- data.frame(slope18O = numeric(length = 2e5),
-                      slope2H  = numeric(length = 2e5),
-                      intercept18O = numeric(length = 2e5),
-                      intercept2H = numeric(length = 2e5),
-                      r2_18O = numeric(length = 2e5),
-                      r2_2H = numeric(length = 2e5),
-                      cvloo_18O = numeric(length = 2e5),
-                      cvloo_2H = numeric(length = 2e5),
-                      cv5mae_18O = numeric(length = 2e5),
-                      cv5mae_2H = numeric(length = 2e5),
-                      cv5rmse_18O = numeric(length = 2e5),
-                      cv5rmse_2H = numeric(length = 2e5))
-
     # get start and end days.
     start_date <- as.Date(min(ref_data$timeBgn))
     end_date   <- as.Date(max(ref_data$timeEnd))
 
     # generate date sequence
     date_seq <- base::seq.Date(start_date, end_date, by = "1 day")
+    n_days <- length(date_seq)
 
-    # initialize vectors to hold times.
-    start_time <- end_time <- vector()
+    # pre-allocate output with correct size
+    out <- data.frame(slope18O     = numeric(length = n_days),
+                      slope2H      = numeric(length = n_days),
+                      intercept18O = numeric(length = n_days),
+                      intercept2H  = numeric(length = n_days),
+                      r2_18O       = numeric(length = n_days),
+                      r2_2H        = numeric(length = n_days),
+                      cvloo_18O    = numeric(length = n_days),
+                      cvloo_2H     = numeric(length = n_days),
+                      cv5mae_18O   = numeric(length = n_days),
+                      cv5mae_2H    = numeric(length = n_days),
+                      cv5rmse_18O  = numeric(length = n_days),
+                      cv5rmse_2H   = numeric(length = n_days))
+
+    # vectorize time construction
+    start_time <- as.POSIXct(paste(date_seq, "00:00:00.0001"),
+                             tz = "UTC", origin = "1970-01-01")
+    end_time   <- as.POSIXct(paste(date_seq, "23:59:59.0000"),
+                             tz = "UTC", origin = "1970-01-01")
+
+    # hoist constant out of loop
+    delta <- lubridate::ddays(calibration_half_width)
 
     # okay, now run calibrations...
 
     for (i in seq_along(date_seq)) {
-      start_time[i] <- as.POSIXct(paste(date_seq[i], "00:00:00.0001"),
-                                  tz = "UTC", origin = "1970-01-01")
-      end_time[i]   <- as.POSIXct(paste(date_seq[i], "23:59:59.0000"),
-                                  tz = "UTC", origin = "1970-01-01")
 
       # define calibration interval
-      delta <- lubridate::ddays(calibration_half_width)
       cal_period <- lubridate::interval(date_seq[i] - delta,
                                         date_seq[i] + delta)
 
@@ -610,12 +627,9 @@ fit_water_regression <- function(ref_data,
       }
     }
 
-    #subset out data frame.
-    out <- out[seq_along(start_time), ]
-
     # output dataframe giving valid time range, slopes, intercepts, rsquared.
-    out$timeBgn <- as.POSIXct(start_time, tz = "UTC", origin = "1970-01-01")
-    out$timeEnd <- as.POSIXct(end_time, tz = "UTC", origin = "1970-01-01")
+    out$timeBgn <- start_time
+    out$timeEnd <- end_time
 
     # re-order columns to ensure that they are consistent across methods
     out <- out[, c("timeBgn", "timeEnd",
