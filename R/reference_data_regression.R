@@ -185,8 +185,10 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       end_time   <- as.POSIXct(paste(date_seq, "23:59:59.0000"),
                                tz = "UTC", origin = "1970-01-01")
 
-      # hoist constant out of loop
+      # hoist constants out of loop
       delta <- lubridate::ddays(calibration_half_width)
+      fmla_12c <- stats::formula(conc12CCO2_ref ~ conc12CCO2_obs)
+      fmla_13c <- stats::formula(conc13CCO2_ref ~ conc13CCO2_obs)
 
       # okay, now run calibrations...
 
@@ -223,10 +225,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
               !all(is.na(cal_subset$dlta13CCo2.mean)) &&
               !all(is.na(cal_subset$dlta13CCo2Refe.mean))) {
 
-          tmpmod12c <- stats::lm(conc12CCO2_ref ~ conc12CCO2_obs,
-                                 data = cal_subset)
-          tmpmod13c <- stats::lm(conc13CCO2_ref ~ conc13CCO2_obs,
-                                 data = cal_subset)
+          tmpmod12c <- stats::lm(fmla_12c, data = cal_subset)
+          tmpmod13c <- stats::lm(fmla_13c, data = cal_subset)
 
           # calculate gain and offset values.
           out$gain12C[i]   <- stats::coef(tmpmod12c)[[2]]
@@ -234,19 +234,19 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
           out$offset12C[i] <- stats::coef(tmpmod12c)[[1]]
           out$offset13C[i] <- stats::coef(tmpmod13c)[[1]]
 
-          # extract r2
-          out$r2_12C[i] <- summary(tmpmod12c)$r.squared
-          out$r2_13C[i] <- summary(tmpmod13c)$r.squared
+          # extract r2 (cache summary to avoid recomputation)
+          sum12c <- summary(tmpmod12c)
+          sum13c <- summary(tmpmod13c)
+          out$r2_12C[i] <- sum12c$r.squared
+          out$r2_13C[i] <- sum13c$r.squared
 
           # extract leave-one-out CV value
           out$cvloo_12C[i] <- loocv(tmpmod12c)
           out$cvloo_13C[i] <- loocv(tmpmod13c)
 
           # get cv5 values
-          tmp <- stats::formula(conc12CCO2_ref ~ conc12CCO2_obs)
-          cv12c <- estimate_calibration_error(tmp, cal_subset)
-          tmp <- stats::formula(conc13CCO2_ref ~ conc13CCO2_obs)
-          cv13c <- estimate_calibration_error(tmp, cal_subset)
+          cv12c <- estimate_calibration_error(fmla_12c, cal_subset)
+          cv13c <- estimate_calibration_error(fmla_13c, cal_subset)
 
           # assign cv values:
           out$cv5mae_12C[i] <- cv12c$MAE
@@ -337,8 +337,10 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
       end_time   <- as.POSIXct(paste(date_seq, "23:59:59.0000"),
                                tz = "UTC", origin = "1970-01-01")
 
-      # hoist constant out of loop
+      # hoist constants out of loop
       delta <- lubridate::ddays(calibration_half_width)
+      fmla_d13c <- stats::formula(dlta13CCo2Refe.mean ~ dlta13CCo2.mean)
+      fmla_co2 <- stats::formula(rtioMoleDryCo2Refe.mean ~ rtioMoleDryCo2.mean)
 
       # okay, now run calibrations...
       for (i in seq_along(date_seq)) {
@@ -365,18 +367,18 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
               !all(is.na(cal_subset$dlta13CCo2Refe.mean))) {
 
           # model to calibrate delta 13C values.
-          tmpmod_d13c <- stats::lm(dlta13CCo2Refe.mean ~ dlta13CCo2.mean,
-                                   data = cal_subset)
-          tmpmod_co2 <- stats::lm(rtioMoleDryCo2Refe.mean ~ rtioMoleDryCo2.mean,
-                                  data = cal_subset)
+          tmpmod_d13c <- stats::lm(fmla_d13c, data = cal_subset)
+          tmpmod_co2 <- stats::lm(fmla_co2, data = cal_subset)
 
           out$d13C_slope[i]     <- coef(tmpmod_d13c)[[2]]
           out$d13C_intercept[i] <- coef(tmpmod_d13c)[[1]]
-          out$d13C_r2[i]        <- summary(tmpmod_d13c)$r.squared
+          sum_d13c <- summary(tmpmod_d13c)
+          out$d13C_r2[i]        <- sum_d13c$r.squared
 
           out$co2_slope[i]      <- coef(tmpmod_co2)[[2]]
           out$co2_intercept[i]  <- coef(tmpmod_co2)[[1]]
-          out$co2_r2[i]         <- summary(tmpmod_co2)$r.squared
+          sum_co2 <- summary(tmpmod_co2)
+          out$co2_r2[i]         <- sum_co2$r.squared
 
           # extract uncertainties:
           # extract leave-one-out CV value
@@ -384,10 +386,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
           out$co2_cvloo[i]  <- loocv(tmpmod_co2)
 
           # get cv5 values
-          tmp <- stats::formula(dlta13CCo2Refe.mean ~ dlta13CCo2.mean)
-          cv_d13c <- estimate_calibration_error(tmp, cal_subset)
-          tmp <- stats::formula(rtioMoleDryCo2Refe.mean ~ rtioMoleDryCo2.mean)
-          cv_co2 <- estimate_calibration_error(tmp, cal_subset)
+          cv_d13c <- estimate_calibration_error(fmla_d13c, cal_subset)
+          cv_co2 <- estimate_calibration_error(fmla_co2, cal_subset)
 
           # assign cv values:
           out$d13C_cv5mae[i]  <- cv_d13c$MAE
@@ -556,8 +556,10 @@ fit_water_regression <- function(ref_data,
     end_time   <- as.POSIXct(paste(date_seq, "23:59:59.0000"),
                              tz = "UTC", origin = "1970-01-01")
 
-    # hoist constant out of loop
+    # hoist constants out of loop
     delta <- lubridate::ddays(calibration_half_width)
+    fmla_18o <- stats::formula(dlta18OH2oRefe.mean ~ dlta18OH2o.mean)
+    fmla_2h <- stats::formula(dlta2HH2oRefe.mean ~ dlta2HH2o.mean)
 
     # okay, now run calibrations...
 
@@ -579,10 +581,8 @@ fit_water_regression <- function(ref_data,
             !all(is.na(cal_subset$dlta18OH2o.mean)) && # not all obs missing
             !all(is.na(cal_subset$dlta18OH2oRefe.mean))) { # not all ref missing
 
-        tmpmod18o <- stats::lm(dlta18OH2oRefe.mean ~ dlta18OH2o.mean,
-                               data = cal_subset)
-        tmpmod2h <- stats::lm(dlta2HH2oRefe.mean ~ dlta2HH2o.mean,
-                              data = cal_subset)
+        tmpmod18o <- stats::lm(fmla_18o, data = cal_subset)
+        tmpmod2h <- stats::lm(fmla_2h, data = cal_subset)
 
         # calculate gain and offset values.
         out$slope18O[i]     <- stats::coef(tmpmod18o)[[2]]
@@ -590,19 +590,19 @@ fit_water_regression <- function(ref_data,
         out$intercept18O[i] <- stats::coef(tmpmod18o)[[1]]
         out$intercept2H[i]  <- stats::coef(tmpmod2h)[[1]]
 
-        # extract r2
-        out$r2_18O[i] <- summary(tmpmod18o)$r.squared
-        out$r2_2H[i] <- summary(tmpmod2h)$r.squared
+        # extract r2 (cache summary to avoid recomputation)
+        sum18o <- summary(tmpmod18o)
+        sum2h <- summary(tmpmod2h)
+        out$r2_18O[i] <- sum18o$r.squared
+        out$r2_2H[i] <- sum2h$r.squared
 
         # extract leave-one-out CV value
         out$cvloo_18O[i] <- loocv(tmpmod18o)
         out$cvloo_2H[i] <- loocv(tmpmod2h)
 
         # get cv5 values
-        tmp <- stats::formula(dlta18OH2oRefe.mean ~ dlta18OH2o.mean)
-        cv18o <- estimate_calibration_error(tmp, cal_subset)
-        tmp <- stats::formula(dlta2HH2oRefe.mean ~ dlta2HH2o.mean)
-        cv2h <- estimate_calibration_error(tmp, cal_subset)
+        cv18o <- estimate_calibration_error(fmla_18o, cal_subset)
+        cv2h <- estimate_calibration_error(fmla_2h, cal_subset)
 
         # assign cv values:
         out$cv5mae_18O[i] <- cv18o$MAE

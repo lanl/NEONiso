@@ -38,9 +38,11 @@ ingest_data <- function(inname,
   analyte <- validate_analyte(analyte)
   backupMethod <- FALSE
 
-  # read attributes from (first file in) inname
+  # read site name and attributes from (first file in) inname
+  # combined into sequential calls to avoid redundant file opens
   site <- h5_ls(inname[1])$name[1]
   attrs <- h5_read_attrs(inname[1], site)
+  # attrs are also returned in the output list to avoid re-reading later
 
   nheights <- attrs$LvlMeasTow
 
@@ -51,7 +53,7 @@ ingest_data <- function(inname,
                                      level = "dp01",
                                      var = "isoCo2",
                                      useFasttime = TRUE,
-                                     runLocal = TRUE)[[1]], silent = FALSE)
+                                     runLocal = TRUE)[[1]], silent = TRUE)
     if ("try-error" %in% class(data)) {
       data <- neonUtilities::stackEddy(inname,
                                            avg = 9,
@@ -275,8 +277,8 @@ ingest_data <- function(inname,
     names(refe_out) <- paste0(names(refe_out), "_", avg_char)
   }
 
-  output <- list(ambi_out, refe_out, reference)
-  names(output) <- c("ambient", "reference", "refe_stacked")
+  output <- list(ambi_out, refe_out, reference, attrs)
+  names(output) <- c("ambient", "reference", "refe_stacked", "attrs")
 
   return(output)
 }

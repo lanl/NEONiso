@@ -236,9 +236,12 @@ calibrate_carbon         <- function(inname,
   if (write_to_file) {
     cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
     cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
-    setup_output_file(inname, outname, site, "co2")
-    write_carbon_calibration_data(outname, site, cal_df, method = method)
-    write_carbon_ambient_data(outname, site, ciso_subset_cal)
+    fid <- setup_output_file(inname, outname, site, "co2",
+                              attrs = ciso$attrs, keep_open = TRUE)
+    write_carbon_calibration_data(outname, site, cal_df, method = method,
+                                  fid = fid)
+    write_carbon_ambient_data(outname, site, ciso_subset_cal, fid = fid)
+    h5_close(fid)
 
     validate_output_file(inname, outname, site, "co2")
   } else { #export output directly

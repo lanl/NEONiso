@@ -120,9 +120,11 @@ calibrate_water       <- function(inname,
   if (write_to_file) {
     cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
     cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
-    setup_output_file(inname, outname, site, analyte = "h2o")
-    write_water_calibration_data(outname, site, cal_df)
-    write_water_ambient_data(outname, site, wiso_subset_cal)
+    fid <- setup_output_file(inname, outname, site, analyte = "h2o",
+                              attrs = wiso$attrs, keep_open = TRUE)
+    write_water_calibration_data(outname, site, cal_df, fid = fid)
+    write_water_ambient_data(outname, site, wiso_subset_cal, fid = fid)
+    h5_close(fid)
 
     validate_output_file(inname, outname, site, "h2o")
 

@@ -2,19 +2,27 @@
 # Internal HDF5 abstraction layer.
 # Supports hdf5r (CRAN, preferred) and rhdf5 (Bioconductor) backends.
 
-#' Detect available HDF5 backend
+# Package-level cache for the detected HDF5 backend.
+# Avoids repeated requireNamespace() calls on every HDF5 operation.
+.hdf5_cache <- new.env(parent = emptyenv())
+
+#' Detect available HDF5 backend (cached)
 #' @return Character string: "hdf5r" or "rhdf5"
 #' @noRd
 .hdf5_backend <- function() {
+  if (!is.null(.hdf5_cache$backend)) {
+    return(.hdf5_cache$backend)
+  }
   if (requireNamespace("hdf5r", quietly = TRUE)) {
-    return("hdf5r")
+    .hdf5_cache$backend <- "hdf5r"
   } else if (requireNamespace("rhdf5", quietly = TRUE)) {
-    return("rhdf5")
+    .hdf5_cache$backend <- "rhdf5"
   } else {
     stop("An HDF5 package is required. Install one with:\n",
          "  install.packages('hdf5r')       # recommended (CRAN)\n",
          "  BiocManager::install('rhdf5')    # alternative (Bioconductor)")
   }
+  .hdf5_cache$backend
 }
 
 #' Create a new HDF5 file
