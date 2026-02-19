@@ -4,7 +4,13 @@
 \alias{write_carbon_ambient_data}
 \title{Write calibrated carbon ambient data to file}
 \usage{
-write_carbon_ambient_data(outname, site, amb_data_list, to_file = TRUE)
+write_carbon_ambient_data(
+  outname,
+  site,
+  amb_data_list,
+  to_file = TRUE,
+  fid = NULL
+)
 }
 \arguments{
 \item{outname}{Output file name.}
@@ -15,6 +21,9 @@ write_carbon_ambient_data(outname, site, amb_data_list, to_file = TRUE)
 this is the output from one of the calibrate_ambient_carbon* functions.}
 
 \item{to_file}{Write to file (TRUE) or to environment (FALSE).}
+
+\item{fid}{Optional open HDF5 file handle. If NULL, the file is
+opened and closed internally.}
 }
 \value{
 Nothing to the environment, but writes data in amb_data_list to file.
