@@ -117,7 +117,7 @@ h5_read_attrs <- function(file_path, group_path) {
   backend <- .hdf5_backend()
   if (backend == "hdf5r") {
     fid <- hdf5r::H5File$new(file_path, "r")
-    on.exit(fid$close_all())
+    on.exit(fid$close())
     grp <- fid[[group_path]]
     attr_names <- hdf5r::h5attr_names(grp)
     attrs <- lapply(attr_names, function(nm) hdf5r::h5attr(grp, nm))
@@ -165,7 +165,7 @@ h5_ls <- function(file_path) {
   backend <- .hdf5_backend()
   if (backend == "hdf5r") {
     fid <- hdf5r::H5File$new(file_path, "r")
-    on.exit(fid$close_all())
+    on.exit(fid$close())
     fid$ls()
   } else {
     tmp <- rhdf5::h5ls(file_path, recursive = 1)
@@ -182,7 +182,7 @@ h5_ls_group <- function(file_path, group_path) {
   backend <- .hdf5_backend()
   if (backend == "hdf5r") {
     fid <- hdf5r::H5File$new(file_path, "r")
-    on.exit(fid$close_all())
+    on.exit(fid$close())
     grp <- fid[[group_path]]
     grp$ls()$name
   } else {
