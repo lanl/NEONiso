@@ -2,19 +2,27 @@
 # Internal HDF5 abstraction layer.
 # Supports hdf5r (CRAN, preferred) and rhdf5 (Bioconductor) backends.
 
-#' Detect available HDF5 backend
+# Package-level cache for the detected HDF5 backend.
+# Avoids repeated requireNamespace() calls on every HDF5 operation.
+.hdf5_cache <- new.env(parent = emptyenv())
+
+#' Detect available HDF5 backend (cached)
 #' @return Character string: "hdf5r" or "rhdf5"
 #' @noRd
 .hdf5_backend <- function() {
+  if (!is.null(.hdf5_cache$backend)) {
+    return(.hdf5_cache$backend)
+  }
   if (requireNamespace("hdf5r", quietly = TRUE)) {
-    return("hdf5r")
+    .hdf5_cache$backend <- "hdf5r"
   } else if (requireNamespace("rhdf5", quietly = TRUE)) {
-    return("rhdf5")
+    .hdf5_cache$backend <- "rhdf5"
   } else {
     stop("An HDF5 package is required. Install one with:\n",
          "  install.packages('hdf5r')       # recommended (CRAN)\n",
          "  BiocManager::install('rhdf5')    # alternative (Bioconductor)")
   }
+  .hdf5_cache$backend
 }
 
 #' Create a new HDF5 file
@@ -109,7 +117,7 @@ h5_read_attrs <- function(file_path, group_path) {
   backend <- .hdf5_backend()
   if (backend == "hdf5r") {
     fid <- hdf5r::H5File$new(file_path, "r")
-    on.exit(fid$close_all())
+    on.exit(fid$close())
     grp <- fid[[group_path]]
     attr_names <- hdf5r::h5attr_names(grp)
     attrs <- lapply(attr_names, function(nm) hdf5r::h5attr(grp, nm))
@@ -157,7 +165,7 @@ h5_ls <- function(file_path) {
   backend <- .hdf5_backend()
   if (backend == "hdf5r") {
     fid <- hdf5r::H5File$new(file_path, "r")
-    on.exit(fid$close_all())
+    on.exit(fid$close())
     fid$ls()
   } else {
     tmp <- rhdf5::h5ls(file_path, recursive = 1)
@@ -174,7 +182,7 @@ h5_ls_group <- function(file_path, group_path) {
   backend <- .hdf5_backend()
   if (backend == "hdf5r") {
     fid <- hdf5r::H5File$new(file_path, "r")
-    on.exit(fid$close_all())
+    on.exit(fid$close())
     grp <- fid[[group_path]]
     grp$ls()$name
   } else {

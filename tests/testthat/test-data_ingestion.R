@@ -33,10 +33,10 @@ test_that("ingest_data returns a list for analyte='H2o'", {
 
 # c) that list contains appropriate list of lists
 test_that("ingest_data returns list with correct sublist names - co2", {
-  expect_equal(names(co2test), c("ambient", "reference", "refe_stacked"))
+  expect_equal(names(co2test), c("ambient", "reference", "refe_stacked", "attrs"))
 })
 test_that("ingest_data returns list with correct sublist names - h2o", {
-  expect_equal(names(h2otest), c("ambient", "reference", "refe_stacked"))
+  expect_equal(names(h2otest), c("ambient", "reference", "refe_stacked", "attrs"))
 })
 
 #-----------------------------------------------------------------------
@@ -115,4 +115,65 @@ test_that("stackEddy/ingest data works on multiple daily files", {
   # would expect number of rows to be larger in test2 than test 1:
   expect_gt(nrow(test2$ambient$`000_010_09m`$dlta13CCo2),
             nrow(test1$ambient$`000_010_09m`$dlta13CCo2))
+})
+
+#--------------------------------------------------
+# test restructure_carbon_variables with qfqm and ucrt groups
+
+#--------------------------------------------------
+# test restructure_water_variables with data group
+
+rest_h2o <- neonUtilities::stackEddy(fin, avg = 3, level = "dp01")[[1]] %>%
+  dplyr::select("verticalPosition", "timeBgn",
+                "timeEnd", tidyselect::contains("isoH2o"))
+rest_h2o <- rest_h2o[rowSums(is.na(rest_h2o)) < 145, ]
+
+test_that("restructure_water_variables works for reference data group", {
+  result <- restructure_water_variables(rest_h2o,
+                                         "dlta18OH2o",
+                                         mode = "reference",
+                                         group = "data")
+  expect_true(is.data.frame(result))
+  expect_true("mean" %in% names(result))
+  expect_true("varname" %in% names(result))
+  expect_type(result$timeBgn, "character")
+})
+
+test_that("restructure_water_variables works for d2H reference data group", {
+  result <- restructure_water_variables(rest_h2o,
+                                         "dlta2HH2o",
+                                         mode = "reference",
+                                         group = "data")
+  expect_true(is.data.frame(result))
+  expect_true("mean" %in% names(result))
+  expect_equal(unique(result$varname), "dlta2HH2o")
+})
+
+test_that("restructure_water_variables works for ambient mode", {
+  result <- restructure_water_variables(rest_h2o,
+                                         "dlta18OH2o",
+                                         mode = "ambient",
+                                         group = "data")
+  expect_true(is.data.frame(result))
+  expect_true("mean" %in% names(result))
+  expect_true("varname" %in% names(result))
+  expect_type(result$timeBgn, "character")
+})
+
+test_that("restructure_water_variables errors with invalid mode", {
+  expect_error(restructure_water_variables(rest_h2o,
+                                            "dlta18OH2o",
+                                            mode = "cheese",
+                                            group = "data"))
+})
+
+test_that("restructure_water_variables errors with wrong input type", {
+  expect_error(restructure_water_variables(list(),
+                                            "dlta18OH2o",
+                                            mode = "reference",
+                                            group = "data"))
+  expect_error(restructure_water_variables(data.frame(),
+                                            "dlta18OH2o",
+                                            mode = "ambient",
+                                            group = "data"))
 })

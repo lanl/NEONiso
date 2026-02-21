@@ -4,7 +4,7 @@
 \alias{write_water_calibration_data}
 \title{Write water calibration parameters to file}
 \usage{
-write_water_calibration_data(outname, site, cal_df)
+write_water_calibration_data(outname, site, cal_df, fid = NULL)
 }
 \arguments{
 \item{outname}{Output file name.}
@@ -13,6 +13,9 @@ write_water_calibration_data(outname, site, cal_df)
 
 \item{cal_df}{Calibration data frame -
 this is the output from fit_water_regression}
+
+\item{fid}{Optional open HDF5 file handle. If NULL, the file is
+opened and closed internally.}
 }
 \value{
 Nothing to the environment, but writes out the

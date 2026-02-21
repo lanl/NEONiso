@@ -29,13 +29,12 @@ Imports:
     zoo,
     httr,
     lubridate,
-    neonUtilities (>= 2.1.1),
+    neonUtilities (>= 2.3.0),
     magrittr,
     R.utils,
     tidyselect,
     data.table,
     rlang,
-    caret,
     ggplot2,
     gridExtra
 Suggests:

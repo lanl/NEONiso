@@ -15,12 +15,17 @@
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
 #' @param analyte Carbon ('Co2') or water ('H2o') system?
+#' @param attrs Pre-read attributes list from the input file. If NULL
+#'        (default), attributes are read from `inname`.
+#' @param keep_open If TRUE, return the open file handle instead of
+#'        closing it. The caller is responsible for closing via `h5_close()`.
 #'
-#' @return Nothing to the environment, but creates a new data file
-#'         with the most basic output HDF5 structure consistent with
-#'         NEON's data files.
+#' @return If `keep_open = TRUE`, returns the open HDF5 file handle.
+#'         Otherwise nothing (creates a new data file with basic HDF5
+#'         structure consistent with NEON's data files).
 #'
-setup_output_file <- function(inname, outname, site, analyte) {
+setup_output_file <- function(inname, outname, site, analyte,
+                              attrs = NULL, keep_open = FALSE) {
 
   analyte <- validate_analyte(analyte)
 
@@ -35,16 +40,22 @@ setup_output_file <- function(inname, outname, site, analyte) {
   h5_create_group(fid, paste0(site, "/dp01/ucrt/iso", analyte))
 
   # copy attributes from source file and write to output file.
-  tmp <- h5_read_attrs(inname[1], site)
+  # use pre-read attrs if provided, otherwise read from file.
+  if (is.null(attrs)) {
+    attrs <- h5_read_attrs(inname[1], site)
+  }
 
   attrloc <- h5_open_group(fid, site)
 
-  for (i in seq_along(tmp)) {
-    # probably a more rapid way to do this in the future...lapply?
-    h5_write_attr(attrloc, names(tmp)[i], tmp[[i]])
+  for (i in seq_along(attrs)) {
+    h5_write_attr(attrloc, names(attrs)[i], attrs[[i]])
   }
 
   h5_close_group(attrloc)
+
+  if (keep_open) {
+    return(fid)
+  }
   h5_close(fid)
 
 }
@@ -68,6 +79,8 @@ setup_output_file <- function(inname, outname, site, analyte) {
 #' @param method Was the Bowling et al. 2003 or the linear regression
 #'          method used in fit_carbon_regression?
 #' @param to_file Write to file (TRUE) or to environment (FALSE).
+#' @param fid Optional open HDF5 file handle. If NULL, the file is
+#'        opened and closed internally.
 #'
 #' @return Nothing to the environment, but writes out the
 #'         calibration parameters (e.g., gain and offset or
@@ -78,11 +91,14 @@ write_carbon_calibration_data <- function(outname,
                                           site,
                                           cal_df,
                                           method,
-                                          to_file = TRUE) {
+                                          to_file = TRUE,
+                                          fid = NULL) {
 
   print("Writing calibration parameters...")
 
-  fid <- h5_open(outname)
+  own_fid <- is.null(fid)
+  if (own_fid) fid <- h5_open(outname)
+
   co2_cal_outloc <- h5_create_group(fid,
                                     paste0(site,
                                            "/dp01/data/isoCo2/calData"))
@@ -94,7 +110,7 @@ write_carbon_calibration_data <- function(outname,
   }
 
   h5_close_group(co2_cal_outloc)
-  h5_close(fid)
+  if (own_fid) h5_close(fid)
 
 }
 
@@ -110,19 +126,22 @@ write_carbon_calibration_data <- function(outname,
 #' @param site NEON 4-letter site code.
 #' @param amb_data_list Calibrated list of ambient data -
 #'   this is the output from one of the calibrate_ambient_carbon* functions.
-#'
 #' @param to_file Write to file (TRUE) or to environment (FALSE).
+#' @param fid Optional open HDF5 file handle. If NULL, the file is
+#'        opened and closed internally.
 #'
 #' @return Nothing to the environment, but writes data in amb_data_list to file.
 #'
 write_carbon_ambient_data <- function(outname,
                                       site,
                                       amb_data_list,
-                                      to_file = TRUE) {
+                                      to_file = TRUE,
+                                      fid = NULL) {
 
   print("Writing calibrated ambient data...")
 
-  fid <- h5_open(outname)
+  own_fid <- is.null(fid)
+  if (own_fid) fid <- h5_open(outname)
 
   if (length(amb_data_list) > 0) {
     for (i in seq_along(amb_data_list)) {
@@ -145,8 +164,7 @@ write_carbon_ambient_data <- function(outname,
 
   }
 
-  # close all open handles.
-  h5_close(fid)
+  if (own_fid) h5_close(fid)
 
 }
 
@@ -165,16 +183,22 @@ write_carbon_ambient_data <- function(outname,
 #' @param cal_df Calibration data frame -
 #'              this is the output from fit_water_regression
 #'
+#' @param fid Optional open HDF5 file handle. If NULL, the file is
+#'        opened and closed internally.
+#'
 #' @return Nothing to the environment, but writes out the
 #'         calibration parameters (e.g.,
 #'         regression slopes and intercepts) to the output
 #'         hdf5 file.
 #'
-write_water_calibration_data <- function(outname, site, cal_df) {
+write_water_calibration_data <- function(outname, site, cal_df,
+                                         fid = NULL) {
 
   print("Writing calibration parameters...")
 
-  fid <- h5_open(outname)
+  own_fid <- is.null(fid)
+  if (own_fid) fid <- h5_open(outname)
+
   h2o_cal_outloc <- h5_create_group(fid,
                                     paste0(site,
                                            "/dp01/data/isoH2o/calData"))
@@ -184,7 +208,7 @@ write_water_calibration_data <- function(outname, site, cal_df) {
 
   # close the group and the file
   h5_close_group(h2o_cal_outloc)
-  h5_close(fid)
+  if (own_fid) h5_close(fid)
 
 }
 
@@ -200,14 +224,18 @@ write_water_calibration_data <- function(outname, site, cal_df) {
 #' @param site NEON 4-letter site code.
 #' @param amb_data_list Calibrated list of ambient data -
 #'   this is the output from one of the calibrate_ambient_water* functions.
+#' @param fid Optional open HDF5 file handle. If NULL, the file is
+#'        opened and closed internally.
 #'
 #' @return Nothing to the environment, but writes data in amb_data_list to file.
 #'
-write_water_ambient_data <- function(outname, site, amb_data_list) {
+write_water_ambient_data <- function(outname, site, amb_data_list,
+                                     fid = NULL) {
 
   print("Writing calibrated ambient data...")
 
-  fid <- h5_open(outname)
+  own_fid <- is.null(fid)
+  if (own_fid) fid <- h5_open(outname)
 
   if (length(amb_data_list) > 0) {
     for (i in seq_along(amb_data_list)) {
@@ -230,6 +258,5 @@ write_water_ambient_data <- function(outname, site, amb_data_list) {
 
   }
 
-  # close all open handles.
-  h5_close(fid)
+  if (own_fid) h5_close(fid)
 }

@@ -4,7 +4,7 @@
 \alias{write_water_ambient_data}
 \title{Write calibrated ambient water isotope ratio observations to file.}
 \usage{
-write_water_ambient_data(outname, site, amb_data_list)
+write_water_ambient_data(outname, site, amb_data_list, fid = NULL)
 }
 \arguments{
 \item{outname}{Output file name.}
@@ -13,6 +13,9 @@ write_water_ambient_data(outname, site, amb_data_list)
 
 \item{amb_data_list}{Calibrated list of ambient data -
 this is the output from one of the calibrate_ambient_water* functions.}
+
+\item{fid}{Optional open HDF5 file handle. If NULL, the file is
+opened and closed internally.}
 }
 \value{
 Nothing to the environment, but writes data in amb_data_list to file.
