@@ -15,42 +15,48 @@
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
 #' @param analyte Carbon ('Co2') or water ('H2o') system?
+#' @param attrs Pre-read attributes list from the input file. If NULL
+#'        (default), attributes are read from `inname`.
+#' @param keep_open If TRUE, return the open file handle instead of
+#'        closing it. The caller is responsible for closing via `h5_close()`.
 #'
-#' @return Nothing to the environment, but creates a new data file
-#'         with the most basic output HDF5 structure consistent with
-#'         NEON's data files.
+#' @return If `keep_open = TRUE`, returns the open HDF5 file handle.
+#'         Otherwise nothing (creates a new data file with basic HDF5
+#'         structure consistent with NEON's data files).
 #'
-setup_output_file <- function(inname, outname, site, analyte) {
+setup_output_file <- function(inname, outname, site, analyte,
+                              attrs = NULL, keep_open = FALSE) {
 
   analyte <- validate_analyte(analyte)
 
-  rhdf5::h5createFile(outname)
-  rhdf5::h5createGroup(outname, paste0("/", site))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/iso", analyte))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/qfqm/iso", analyte))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt"))
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/ucrt/iso", analyte))
-
-  rhdf5::h5closeAll()
+  fid <- h5_create_file(outname)
+  h5_create_group(fid, site)
+  h5_create_group(fid, paste0(site, "/dp01"))
+  h5_create_group(fid, paste0(site, "/dp01/data"))
+  h5_create_group(fid, paste0(site, "/dp01/data/iso", analyte))
+  h5_create_group(fid, paste0(site, "/dp01/qfqm"))
+  h5_create_group(fid, paste0(site, "/dp01/qfqm/iso", analyte))
+  h5_create_group(fid, paste0(site, "/dp01/ucrt"))
+  h5_create_group(fid, paste0(site, "/dp01/ucrt/iso", analyte))
 
   # copy attributes from source file and write to output file.
-  fid <- rhdf5::H5Fopen(outname)
-  tmp <- rhdf5::h5readAttributes(inname[1], paste0("/", site))
-
-  attrloc <- rhdf5::H5Gopen(fid, paste0("/", site))
-
-  for (i in seq_along(tmp)) {
-    # probably a more rapid way to do this in the future...lapply?
-    rhdf5::h5writeAttribute(h5obj = attrloc,
-                            attr = tmp[[i]],
-                            name = names(tmp)[i])
+  # use pre-read attrs if provided, otherwise read from file.
+  if (is.null(attrs)) {
+    attrs <- h5_read_attrs(inname[1], site)
   }
 
-  rhdf5::H5Gclose(attrloc)
-  rhdf5::h5closeAll()
+  attrloc <- h5_open_group(fid, site)
+
+  for (i in seq_along(attrs)) {
+    h5_write_attr(attrloc, names(attrs)[i], attrs[[i]])
+  }
+
+  h5_close_group(attrloc)
+
+  if (keep_open) {
+    return(fid)
+  }
+  h5_close(fid)
 
 }
 
@@ -60,7 +66,7 @@ setup_output_file <- function(inname, outname, site, analyte) {
 #######################################
 #' Write carbon calibrations to file
 #'
-#' Write a `data.frame` with slope, intercepts, and error estimates of 
+#' Write a `data.frame` with slope, intercepts, and error estimates of
 #' calibrations for carbon isotope system. If `gainoffset` method was used
 #' the slopes/intercepts are called gain/offsets for each isotopologue.
 #'
@@ -73,6 +79,8 @@ setup_output_file <- function(inname, outname, site, analyte) {
 #' @param method Was the Bowling et al. 2003 or the linear regression
 #'          method used in fit_carbon_regression?
 #' @param to_file Write to file (TRUE) or to environment (FALSE).
+#' @param fid Optional open HDF5 file handle. If NULL, the file is
+#'        opened and closed internally.
 #'
 #' @return Nothing to the environment, but writes out the
 #'         calibration parameters (e.g., gain and offset or
@@ -83,35 +91,26 @@ write_carbon_calibration_data <- function(outname,
                                           site,
                                           cal_df,
                                           method,
-                                          to_file = TRUE) {
+                                          to_file = TRUE,
+                                          fid = NULL) {
 
   print("Writing calibration parameters...")
-  rhdf5::h5createGroup(outname,
-                       paste0("/", site, "/dp01/data/isoCo2/calData"))
 
-  fid <- rhdf5::H5Fopen(outname)
-  co2_cal_outloc <- rhdf5::H5Gopen(fid,
-                                   paste0("/",
-                                          site,
-                                          "/dp01/data/isoCo2/calData"))
+  own_fid <- is.null(fid)
+  if (own_fid) fid <- h5_open(outname)
+
+  co2_cal_outloc <- h5_create_group(fid,
+                                    paste0(site,
+                                           "/dp01/data/isoCo2/calData"))
 
   if (method == "Bowling_2003") {
-    rhdf5::h5writeDataset(obj = cal_df,
-                          h5loc = co2_cal_outloc,
-                          name = "calGainsOffsets",
-                          DataFrameAsCompound = TRUE)
+    h5_write_dataset(co2_cal_outloc, "calGainsOffsets", cal_df)
   } else if (method == "linreg") {
-    rhdf5::h5writeDataset(obj = cal_df,
-                          h5loc = co2_cal_outloc,
-                          name = "calRegressions",
-                          DataFrameAsCompound = TRUE)
+    h5_write_dataset(co2_cal_outloc, "calRegressions", cal_df)
   }
 
-  rhdf5::H5Gclose(co2_cal_outloc)
-
-  # close the group and the file
-  rhdf5::H5Fclose(fid)
-  rhdf5::h5closeAll()
+  h5_close_group(co2_cal_outloc)
+  if (own_fid) h5_close(fid)
 
 }
 
@@ -127,48 +126,45 @@ write_carbon_calibration_data <- function(outname,
 #' @param site NEON 4-letter site code.
 #' @param amb_data_list Calibrated list of ambient data -
 #'   this is the output from one of the calibrate_ambient_carbon* functions.
-#'
 #' @param to_file Write to file (TRUE) or to environment (FALSE).
+#' @param fid Optional open HDF5 file handle. If NULL, the file is
+#'        opened and closed internally.
 #'
 #' @return Nothing to the environment, but writes data in amb_data_list to file.
 #'
 write_carbon_ambient_data <- function(outname,
                                       site,
                                       amb_data_list,
-                                      to_file = TRUE) {
+                                      to_file = TRUE,
+                                      fid = NULL) {
 
   print("Writing calibrated ambient data...")
 
-  fid <- rhdf5::H5Fopen(outname)
+  own_fid <- is.null(fid)
+  if (own_fid) fid <- h5_open(outname)
 
   if (length(amb_data_list) > 0) {
     for (i in seq_along(amb_data_list)) {
       amb_data_subset <- amb_data_list[i]
 
-      co2_data_outloc <- rhdf5::H5Gcreate(fid,
-                                          paste0("/",
-                                                 site,
-                                                 "/dp01/data/isoCo2/",
-                                                 names(amb_data_subset)))
+      co2_data_outloc <- h5_create_group(fid,
+                                         paste0(site,
+                                                "/dp01/data/isoCo2/",
+                                                names(amb_data_subset)))
 
       amb_data_subset <- amb_data_subset[[1]] # list hack
 
       # loop through variables in amb_data_list and write as a dataframe.
       lapply(names(amb_data_subset),
              function(x) {
-               rhdf5::h5writeDataset(obj = amb_data_subset[[x]],
-                                     h5loc = co2_data_outloc,
-                                     name = x,
-                                     DataFrameAsCompound = TRUE)
+               h5_write_dataset(co2_data_outloc, x, amb_data_subset[[x]])
              })
-      rhdf5::H5Gclose(co2_data_outloc)
+      h5_close_group(co2_data_outloc)
     }
 
   }
 
-  # close all open handles.
-  rhdf5::H5Fclose(fid)
-  rhdf5::h5closeAll()
+  if (own_fid) h5_close(fid)
 
 }
 
@@ -177,9 +173,9 @@ write_carbon_ambient_data <- function(outname,
 #######################################
 #' Write water calibration parameters to file
 #'
-#' Write a `data.frame` with slope, intercepts, and error estimates of 
+#' Write a `data.frame` with slope, intercepts, and error estimates of
 #' calibrations for water isotope system.
-#' 
+#'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param outname Output file name.
@@ -187,36 +183,32 @@ write_carbon_ambient_data <- function(outname,
 #' @param cal_df Calibration data frame -
 #'              this is the output from fit_water_regression
 #'
+#' @param fid Optional open HDF5 file handle. If NULL, the file is
+#'        opened and closed internally.
+#'
 #' @return Nothing to the environment, but writes out the
 #'         calibration parameters (e.g.,
 #'         regression slopes and intercepts) to the output
 #'         hdf5 file.
 #'
-write_water_calibration_data <- function(outname, site, cal_df) {
+write_water_calibration_data <- function(outname, site, cal_df,
+                                         fid = NULL) {
 
   print("Writing calibration parameters...")
 
-  rhdf5::h5createGroup(outname, paste0("/", site, "/dp01/data/isoH2o/calData"))
+  own_fid <- is.null(fid)
+  if (own_fid) fid <- h5_open(outname)
 
-  fid <- rhdf5::H5Fopen(outname)
-
-  h2o_cal_outloc <- rhdf5::H5Gopen(fid,
-                                   paste0("/",
-                                          site,
-                                          "/dp01/data/isoH2o/calData"))
+  h2o_cal_outloc <- h5_create_group(fid,
+                                    paste0(site,
+                                           "/dp01/data/isoH2o/calData"))
 
   # write out dataset.
-  rhdf5::h5writeDataset(obj = cal_df,
-                        h5loc = h2o_cal_outloc,
-                        name = "calRegressions",
-                        DataFrameAsCompound = TRUE)
+  h5_write_dataset(h2o_cal_outloc, "calRegressions", cal_df)
 
   # close the group and the file
-  rhdf5::H5Gclose(h2o_cal_outloc)
-
-  # close the group and the file
-  rhdf5::H5Fclose(fid)
-  rhdf5::h5closeAll()
+  h5_close_group(h2o_cal_outloc)
+  if (own_fid) h5_close(fid)
 
 }
 
@@ -232,41 +224,39 @@ write_water_calibration_data <- function(outname, site, cal_df) {
 #' @param site NEON 4-letter site code.
 #' @param amb_data_list Calibrated list of ambient data -
 #'   this is the output from one of the calibrate_ambient_water* functions.
+#' @param fid Optional open HDF5 file handle. If NULL, the file is
+#'        opened and closed internally.
 #'
 #' @return Nothing to the environment, but writes data in amb_data_list to file.
 #'
-write_water_ambient_data <- function(outname, site, amb_data_list) {
+write_water_ambient_data <- function(outname, site, amb_data_list,
+                                     fid = NULL) {
 
   print("Writing calibrated ambient data...")
 
-  fid <- rhdf5::H5Fopen(outname)
+  own_fid <- is.null(fid)
+  if (own_fid) fid <- h5_open(outname)
 
   if (length(amb_data_list) > 0) {
     for (i in seq_along(amb_data_list)) {
       amb_data_subset <- amb_data_list[i]
 
-      h2o_data_outloc <- rhdf5::H5Gcreate(fid,
-                                          paste0("/",
-                                                 site,
-                                                 "/dp01/data/isoH2o/",
-                                                 names(amb_data_subset)))
+      h2o_data_outloc <- h5_create_group(fid,
+                                         paste0(site,
+                                                "/dp01/data/isoH2o/",
+                                                names(amb_data_subset)))
 
       amb_data_subset <- amb_data_subset[[1]] # list hack
 
       # loop through variables in amb_data_list and write as a dataframe.
       lapply(names(amb_data_subset),
              function(x) {
-               rhdf5::h5writeDataset(obj = amb_data_subset[[x]],
-                                     h5loc = h2o_data_outloc,
-                                     name = x,
-                                     DataFrameAsCompound = TRUE)
+               h5_write_dataset(h2o_data_outloc, x, amb_data_subset[[x]])
              })
-      rhdf5::H5Gclose(h2o_data_outloc)
+      h5_close_group(h2o_data_outloc)
     }
 
   }
 
-  # close all open handles.
-  rhdf5::H5Fclose(fid)
-  rhdf5::h5closeAll()
+  if (own_fid) h5_close(fid)
 }

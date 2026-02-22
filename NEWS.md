@@ -1,5 +1,35 @@
 # NEONiso (development version)
 
+# NEONiso 0.8.0
+
+* Added an HDF5 abstraction layer (`R/hdf5_utils.R`) that supports both hdf5r
+(CRAN) and rhdf5 (Bioconductor) backends. Both packages are now listed as
+suggested dependencies rather than hard imports, and the backend is selected
+automatically at runtime based on availability.
+* Removed the dependency on the `caret` package. Cross-validation in
+`estimate_calibration_error()` is now performed using base R, which reduces
+the package's dependency footprint. Note that `Rsquared` is no longer
+included in the cross-validation output (R-squared is still reported from the
+model fit itself).
+* Various performance improvements to calibration regression routines:
+  - Data frames in `fit_carbon_regression()` and `fit_water_regression()` are
+    now pre-allocated to the correct size rather than a fixed 200,000 rows.
+  - Time vectors are constructed once outside the calibration loop instead of
+    being grown element-by-element inside it.
+  - Formula objects and the calibration half-width are hoisted out of the loop
+    to avoid repeated construction.
+  - Model summaries are cached to avoid redundant recomputation.
+* Simplified `convert_POSIXct_to_NEONhdf5_time()` to use `format()` instead
+of manual string construction with individual `lubridate` accessor functions.
+* Output file writing functions (`setup_output_file`, `write_carbon_*`,
+`write_water_*`) now accept an open file identifier, reducing redundant file
+open/close operations during calibration output. The `rhdf5::h5closeAll()`
+calls in the main calibration functions have been replaced with targeted
+`h5_close()` calls.
+* Now requires `neonUtilities` >= 2.3.0 (previously >= 2.1.1).
+* Expanded the test suite with new test files for HDF5 utility functions,
+HDF5 round-trip operations, and regression snapshot tests.
+
 # NEONiso 0.7.2
 
 * Fixes a bug that causes the manage_local_ec_archive function

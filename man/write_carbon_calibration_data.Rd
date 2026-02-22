@@ -4,7 +4,14 @@
 \alias{write_carbon_calibration_data}
 \title{Write carbon calibrations to file}
 \usage{
-write_carbon_calibration_data(outname, site, cal_df, method, to_file = TRUE)
+write_carbon_calibration_data(
+  outname,
+  site,
+  cal_df,
+  method,
+  to_file = TRUE,
+  fid = NULL
+)
 }
 \arguments{
 \item{outname}{Output file name.}
@@ -18,6 +25,9 @@ this is the output from fit_carbon_regression}
 method used in fit_carbon_regression?}
 
 \item{to_file}{Write to file (TRUE) or to environment (FALSE).}
+
+\item{fid}{Optional open HDF5 file handle. If NULL, the file is
+opened and closed internally.}
 }
 \value{
 Nothing to the environment, but writes out the

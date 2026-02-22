@@ -17,3 +17,5 @@ docs
 /doc/
 /Meta/
 revdep/
+#any temporary AI plans
+.claude/

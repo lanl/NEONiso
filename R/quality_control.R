@@ -47,36 +47,20 @@ validate_output_file <- function(inname, outname, site, analyte) {
 
   analyte <- validate_analyte(analyte)
 
-  # retrieve groups from input and output files
-  groups_in <- rhdf5::h5ls(inname[[1]], recursive = 5)
-  groups_out <- rhdf5::h5ls(outname, recursive = 5)
+  # retrieve children of the target group from input and output files
+  target_path <- paste0(site, "/dp01/data/iso", analyte)
+  target_in <- h5_ls_group(inname[[1]], target_path)
+  target_out <- h5_ls_group(outname, target_path)
 
   if (analyte == "Co2") {
-    target_in <- groups_in[groups_in$group ==
-                             paste0("/",
-                                    site,
-                                    "/dp01/data/isoCo2"), ]$name
     #only care about the 9m vars!
     target_in <- target_in[grepl("09m", target_in) &
                              !grepl("Arch", target_in)]
-    target_out <- groups_out[groups_out$group ==
-                               paste0("/",
-                                      site,
-                                      "/dp01/data/isoCo2"), ]$name
-
   } else {
-    target_in <- groups_in[groups_in$group ==
-                             paste0("/",
-                                    site,
-                                    "/dp01/data/isoH2o"), ]$name
-    #only care about the 9m vars!
+    #only care about the 3m and 9m vars!
     target_in <- target_in[(grepl("03m", target_in) |
                               grepl("09m", target_in)) &
                              !grepl("Arch", target_in)]
-    target_out <- groups_out[groups_out$group ==
-                               paste0("/",
-                                      site,
-                                      "/dp01/data/isoH2o"), ]$name
   }
 
   # add calData to target_in, since we expect this to be added (and adding to

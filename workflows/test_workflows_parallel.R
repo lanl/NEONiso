@@ -20,10 +20,10 @@
 # 8) calibrate_water_linreg_bysite works
 
 # set up parallel cluster
-# local.cluster <- parallel::makeCluster(4, type = "PSOCK")
+local.cluster <- parallel::makeCluster(4, type = "PSOCK")
 
 # where does uncalibrated data live?
-data.dir <- '~/airflow/data/01-DP4_00200_001/'
+data.dir <- '/Volumes/T7 Shield/airflow/data/001-DP4_00200_001/RELEASE-2025/'
 
 # set test_date
 #test_date <- "2022-01-03"
@@ -33,18 +33,18 @@ test_date <- Sys.Date()
 dir.create(paste0('~/NEONcal/',test_date,"_parallel"))
 
 # which tests to run?
-run_test1 <- TRUE
-run_test2 <- TRUE
-run_test3 <- TRUE
-run_test4 <- TRUE
-run_test5 <- TRUE
-run_test6 <- TRUE
-run_test7 <- TRUE
+run_test1 <- FALSE
+run_test2 <- FALSE
+run_test3 <- FALSE
+run_test4 <- FALSE
+run_test5 <- FALSE
+run_test6 <- FALSE
+run_test7 <- FALSE
 run_test8 <- TRUE
 rapid_test <- FALSE # if rapid, only run ~5% of possible site months.
 
 # load required packages:
-library(rhdf5)
+library(hdf5r)
 library(dplyr)
 library(lubridate)
 library(parallel)
@@ -299,12 +299,12 @@ if (run_test7) {
 if (run_test8) {
   dir.create(paste0('~/NEONcal/',test_date,"_parallel/08"))
   
-  foreach (i = 1:length(wsites)) %dopar% {
+  mclapply(seq_along(wsites), function(i) {
     NEONiso::calibrate_water_linreg_bysite(paste0(data.dir,wsites[i],'/'),
                                   paste0('~/NEONcal/',test_date,'_parallel/08/'),
                                   site=wsites[i], r2_thres = 0.95,
                                  calibration_half_width = 100000)
-  }  
+  })
 }
 
 #stopCluster(local.cluster)
