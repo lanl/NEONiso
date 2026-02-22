@@ -6,7 +6,7 @@ data have been calibrated using this package.
 ## Usage
 
 ``` r
-write_water_ambient_data(outname, site, amb_data_list)
+write_water_ambient_data(outname, site, amb_data_list, fid = NULL)
 ```
 
 ## Arguments
@@ -23,6 +23,11 @@ write_water_ambient_data(outname, site, amb_data_list)
 
   Calibrated list of ambient data - this is the output from one of the
   calibrate_ambient_water\* functions.
+
+- fid:
+
+  Optional open HDF5 file handle. If NULL, the file is opened and closed
+  internally.
 
 ## Value
 

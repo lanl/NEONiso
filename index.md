@@ -12,8 +12,14 @@ suggestions as issues to this repository.
 
 ## Installing the development version:
 
-1.  You will need the rhdf5 package, which is not on CRAN. rhdf5 is
-    available from bioconductor using:
+1.  NEONiso requires an HDF5 package. The recommended option is hdf5r
+    from CRAN:
+
+``` r
+install.packages("hdf5r")
+```
+
+Alternatively, rhdf5 from Bioconductor also works:
 
 ``` r
 if (!requireNamespace("BiocManager", quietly = TRUE))

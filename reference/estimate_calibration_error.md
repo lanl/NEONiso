@@ -4,9 +4,9 @@ Estimate calibration error using a 5-fold cross-validation. A 5-fold
 cross-validation was chosen as each calibration window should have at
 least 6 data points (e.g., if only daily validation data are used for
 the calibration) and therefore this ensures that the cross-validation
-should always run. Model is fit using `lm` and the `caret` package, with
-root-mean-square error (RMSE), the R-squared value, and mean-absolute
-error (MAE) extracted from the cross-validation.
+should always run. Model is fit using `lm`, with root-mean-square error
+(RMSE) and mean-absolute error (MAE) extracted from the
+cross-validation.
 
 ## Usage
 
@@ -18,7 +18,7 @@ estimate_calibration_error(formula, data)
 
 - formula:
 
-  Formula to pass to caret::train to perform cross validation.
+  Formula to pass to lm for cross validation.
 
 - data:
 

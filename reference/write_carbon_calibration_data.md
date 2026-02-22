@@ -7,7 +7,14 @@ the slopes/intercepts are called gain/offsets for each isotopologue.
 ## Usage
 
 ``` r
-write_carbon_calibration_data(outname, site, cal_df, method, to_file = TRUE)
+write_carbon_calibration_data(
+  outname,
+  site,
+  cal_df,
+  method,
+  to_file = TRUE,
+  fid = NULL
+)
 ```
 
 ## Arguments
@@ -32,6 +39,11 @@ write_carbon_calibration_data(outname, site, cal_df, method, to_file = TRUE)
 - to_file:
 
   Write to file (TRUE) or to environment (FALSE).
+
+- fid:
+
+  Optional open HDF5 file handle. If NULL, the file is opened and closed
+  internally.
 
 ## Value
 

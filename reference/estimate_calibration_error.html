@@ -3,15 +3,13 @@
 cross-validation was chosen as each calibration window should have
 at least 6 data points (e.g., if only daily validation data are used for the
 calibration) and therefore this ensures that the cross-validation should
-always run. Model is fit using lm and the caret package, with
-root-mean-square error (RMSE), the R-squared value, and mean-absolute
-error (MAE) extracted from the cross-validation."><meta property="og:description" content="Estimate calibration error using a 5-fold cross-validation. A 5-fold
+always run. Model is fit using lm, with root-mean-square error
+(RMSE) and mean-absolute error (MAE) extracted from the cross-validation."><meta property="og:description" content="Estimate calibration error using a 5-fold cross-validation. A 5-fold
 cross-validation was chosen as each calibration window should have
 at least 6 data points (e.g., if only daily validation data are used for the
 calibration) and therefore this ensures that the cross-validation should
-always run. Model is fit using lm and the caret package, with
-root-mean-square error (RMSE), the R-squared value, and mean-absolute
-error (MAE) extracted from the cross-validation."></head><body>
+always run. Model is fit using lm, with root-mean-square error
+(RMSE) and mean-absolute error (MAE) extracted from the cross-validation."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -19,7 +17,7 @@ error (MAE) extracted from the cross-validation."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">NEONiso</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.3.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,9 +53,8 @@ error (MAE) extracted from the cross-validation."></head><body>
 cross-validation was chosen as each calibration window should have
 at least 6 data points (e.g., if only daily validation data are used for the
 calibration) and therefore this ensures that the cross-validation should
-always run. Model is fit using <code>lm</code> and the <code>caret</code> package, with
-root-mean-square error (RMSE), the R-squared value, and mean-absolute
-error (MAE) extracted from the cross-validation.</p>
+always run. Model is fit using <code>lm</code>, with root-mean-square error
+(RMSE) and mean-absolute error (MAE) extracted from the cross-validation.</p>
     </div>
 
     <div class="section level2">
@@ -70,7 +67,7 @@ error (MAE) extracted from the cross-validation.</p>
 
 
 <dl><dt id="arg-formula">formula<a class="anchor" aria-label="anchor" href="#arg-formula"></a></dt>
-<dd><p>Formula to pass to caret::train to perform cross validation.</p></dd>
+<dd><p>Formula to pass to lm for cross validation.</p></dd>
 
 
 <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>

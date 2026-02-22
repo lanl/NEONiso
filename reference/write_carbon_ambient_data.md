@@ -6,7 +6,13 @@ data (either H2O or CO2) have been calibrated using this package.
 ## Usage
 
 ``` r
-write_carbon_ambient_data(outname, site, amb_data_list, to_file = TRUE)
+write_carbon_ambient_data(
+  outname,
+  site,
+  amb_data_list,
+  to_file = TRUE,
+  fid = NULL
+)
 ```
 
 ## Arguments
@@ -27,6 +33,11 @@ write_carbon_ambient_data(outname, site, amb_data_list, to_file = TRUE)
 - to_file:
 
   Write to file (TRUE) or to environment (FALSE).
+
+- fid:
+
+  Optional open HDF5 file handle. If NULL, the file is opened and closed
+  internally.
 
 ## Value
 

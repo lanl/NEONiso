@@ -6,7 +6,14 @@ setting up the HDF5 groups at the /site/dp01/{data,ucrt,qfqm} level.
 ## Usage
 
 ``` r
-setup_output_file(inname, outname, site, analyte)
+setup_output_file(
+  inname,
+  outname,
+  site,
+  analyte,
+  attrs = NULL,
+  keep_open = FALSE
+)
 ```
 
 ## Arguments
@@ -27,10 +34,21 @@ setup_output_file(inname, outname, site, analyte)
 
   Carbon ('Co2') or water ('H2o') system?
 
+- attrs:
+
+  Pre-read attributes list from the input file. If NULL (default),
+  attributes are read from `inname`.
+
+- keep_open:
+
+  If TRUE, return the open file handle instead of closing it. The caller
+  is responsible for closing via `h5_close()`.
+
 ## Value
 
-Nothing to the environment, but creates a new data file with the most
-basic output HDF5 structure consistent with NEON's data files.
+If `keep_open = TRUE`, returns the open HDF5 file handle. Otherwise
+nothing (creates a new data file with basic HDF5 structure consistent
+with NEON's data files).
 
 ## Author
 

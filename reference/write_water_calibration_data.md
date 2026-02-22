@@ -6,7 +6,7 @@ calibrations for water isotope system.
 ## Usage
 
 ``` r
-write_water_calibration_data(outname, site, cal_df)
+write_water_calibration_data(outname, site, cal_df, fid = NULL)
 ```
 
 ## Arguments
@@ -22,6 +22,11 @@ write_water_calibration_data(outname, site, cal_df)
 - cal_df:
 
   Calibration data frame - this is the output from fit_water_regression
+
+- fid:
+
+  Optional open HDF5 file handle. If NULL, the file is opened and closed
+  internally.
 
 ## Value
 

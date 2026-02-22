@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">NEONiso</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.3.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,9 +65,12 @@
 <h2 id="installing-the-development-version">Installing the development version:<a class="anchor" aria-label="anchor" href="#installing-the-development-version"></a>
 </h2>
 <ol style="list-style-type: decimal">
-<li>You will need the rhdf5 package, which is not on CRAN. rhdf5 is available from bioconductor using:</li>
+<li>NEONiso requires an HDF5 package. The recommended option is hdf5r from CRAN:</li>
 </ol>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"hdf5r"</span><span class="op">)</span></span></code></pre></div>
+<p>Alternatively, rhdf5 from Bioconductor also works:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
 <span></span>
@@ -76,10 +79,10 @@
 <li>Install devtools, which is available on CRAN.</li>
 <li>Install NEONiso from GitHub. Development version can be installed using:</li>
 </ol>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"lanl/NEONiso"</span><span class="op">)</span></span></code></pre></div>
 <p>Alternatively, you can install a specific version of the package (e.g., v0.1) by specifying the version tag:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"lanl/NEONiso@v0.1"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
