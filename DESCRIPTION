@@ -36,9 +36,9 @@ Imports:
     data.table,
     rlang,
     ggplot2,
-    gridExtra
+    gridExtra,
+    hdf5r
 Suggests:
-    hdf5r,
     rhdf5,
     knitr,
     rmarkdown,

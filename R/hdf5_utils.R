@@ -1,6 +1,6 @@
 # hdf5_utils.R
 # Internal HDF5 abstraction layer.
-# Supports hdf5r (CRAN, preferred) and rhdf5 (Bioconductor) backends.
+# Supports rhdf5 (Bioconductor, preferred if installed) and hdf5r (CRAN, fallback) backends.
 
 # Package-level cache for the detected HDF5 backend.
 # Avoids repeated requireNamespace() calls on every HDF5 operation.
@@ -13,10 +13,10 @@
   if (!is.null(.hdf5_cache$backend)) {
     return(.hdf5_cache$backend)
   }
-  if (requireNamespace("hdf5r", quietly = TRUE)) {
-    .hdf5_cache$backend <- "hdf5r"
-  } else if (requireNamespace("rhdf5", quietly = TRUE)) {
+  if (requireNamespace("rhdf5", quietly = TRUE)) {
     .hdf5_cache$backend <- "rhdf5"
+  } else if (requireNamespace("hdf5r", quietly = TRUE)) {
+    .hdf5_cache$backend <- "hdf5r"
   } else {
     stop("An HDF5 package is required. Install one with:\n",
          "  install.packages('hdf5r')       # recommended (CRAN)\n",
