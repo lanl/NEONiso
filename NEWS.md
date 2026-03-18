@@ -1,5 +1,10 @@
 # NEONiso (development version)
 
+# NEONiso 0.8.1
+
+* Fix HDF5 package backend preference that was preventing tests from 
+passing on CRAN.
+
 # NEONiso 0.8.0
 
 * Added an HDF5 abstraction layer (`R/hdf5_utils.R`) that supports both hdf5r
