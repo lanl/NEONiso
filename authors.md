@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/lanl/NEONiso/blob/main/inst/CITATION)
+[`inst/CITATION`](https://github.com/lanl/NEONiso/blob/v0.8.0/inst/CITATION)
 
 Fiorella, R. P., Good, S. P., Allen, S. T., Guo, J. S., Still, C. J.,
 Noone, D. C., et al. (2021). Calibration Strategies for Detecting

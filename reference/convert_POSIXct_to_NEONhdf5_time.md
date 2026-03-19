@@ -29,5 +29,5 @@ Rich Fiorella <rfiorella@lanl.gov>
 
 ``` r
 convert_POSIXct_to_NEONhdf5_time(Sys.time())
-#> [1] "2026-02-22T21:20:44.000Z"
+#> [1] "2026-03-19T16:15:16.000Z"
 ```
