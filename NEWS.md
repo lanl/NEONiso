@@ -4,6 +4,9 @@
 
 * Fix HDF5 package backend preference that was preventing tests from 
 passing on CRAN.
+* The current release of hdf5r does not compile for newer versions of HDF5,
+and github repository hasn't been updated in some time. Switching the CRAN package
+that interfaces with HDF5 from hdf5r to h5lite.
 
 # NEONiso 0.8.0
 
