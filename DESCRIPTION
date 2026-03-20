@@ -37,7 +37,7 @@ Imports:
     rlang,
     ggplot2,
     gridExtra,
-    hdf5r
+    h5lite
 Suggests:
     rhdf5,
     knitr,
