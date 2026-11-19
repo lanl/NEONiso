@@ -18,3 +18,7 @@
 ^CRAN-SUBMISSION$
 ^revdep$
 ^\.claude$
+^benchmarks$
+^OPTIMIZATION_PLAN\.md$
+^OPTIMIZATION_NOTES\.md$
+^TEST_CHANGE_PROPOSALS\.md$
