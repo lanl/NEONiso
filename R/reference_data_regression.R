@@ -12,6 +12,29 @@ loocv <- function(mod) {
   return(base::mean((stats::residuals(mod) / (1 - h)) ^ 2))
 }
 
+#' Daily calibration windows as plain start times and lengths
+#'
+#' Returns the start time (numeric seconds) and length (seconds) of
+#' `lubridate::interval(date_seq - delta, date_seq + delta)`, standardized the
+#' way `%within%` does it (negative spans flipped). With these, the per-day
+#' subsets in `fit_*_regression` apply `%within%`'s own test,
+#' `(t - start) >= 0 & (t - start) <= span`, on numeric vectors instead of
+#' building an Interval and dispatching `%within%` once per day.
+#'
+#' @param date_seq Date vector of calibration days.
+#' @param delta lubridate Duration, the calibration half-width.
+#'
+#' @noRd
+calibration_windows <- function(date_seq, delta) {
+  int <- lubridate::interval(date_seq - delta, date_seq + delta)
+  start <- as.numeric(lubridate::int_start(int))
+  span <- lubridate::int_length(int)
+  neg <- !is.na(span) & span < 0
+  start[neg] <- start[neg] + span[neg]
+  span[neg] <- -span[neg]
+  list(start = start, span = span)
+}
+
 #' Produce estimates of the calibration error.
 #'
 #' Estimate calibration error using a 5-fold cross-validation. A 5-fold
@@ -187,6 +210,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 
       # hoist constants out of loop
       delta <- lubridate::ddays(calibration_half_width)
+      windows <- calibration_windows(date_seq, delta)
+      t_bgn <- as.numeric(ref_data$timeBgn)
       fmla_12c <- stats::formula(conc12CCO2_ref ~ conc12CCO2_obs)
       fmla_13c <- stats::formula(conc13CCO2_ref ~ conc13CCO2_obs)
 
@@ -194,13 +219,11 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 
       for (i in seq_along(date_seq)) {
 
-        # define calibration interval
-        cal_period <- lubridate::interval(date_seq[i] - delta,
-                                          date_seq[i] + delta)
-
-        # select data subset using the interval
-        cal_subset <- ref_data %>%
-          dplyr::filter(.data$timeBgn %within% cal_period)
+        # select data subset in the calibration window
+        # (same test as timeBgn %within% interval; see calibration_windows)
+        t_off <- t_bgn - windows$start[i]
+        cal_subset <- ref_data[which(t_off <= windows$span[i] &
+                                       t_off >= 0), ]
 
         if (plot_regression_data) {
           print("Plotting regression data...this step will take some time...")
@@ -214,12 +237,12 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
         }
         #---------------------------------------------
         # do some light validation of these points.
-        cal_subset <- cal_subset %>%
-          dplyr::filter(.data$dlta13CCo2.vari < 5 &
-                          abs(.data$rtioMoleDryCo2.mean -
-                                .data$rtioMoleDryCo2Refe.mean) < 10 &
-                          abs(.data$dlta13CCo2.mean -
-                                .data$dlta13CCo2Refe.mean) < 5)
+        valid <- cal_subset$dlta13CCo2.vari < 5 &
+          abs(cal_subset$rtioMoleDryCo2.mean -
+                cal_subset$rtioMoleDryCo2Refe.mean) < 10 &
+          abs(cal_subset$dlta13CCo2.mean -
+                cal_subset$dlta13CCo2Refe.mean) < 5
+        cal_subset <- cal_subset[which(valid), ]
 
         if (length(unique(cal_subset$verticalPosition)) >= 2 &&
               !all(is.na(cal_subset$dlta13CCo2.mean)) &&
@@ -339,28 +362,28 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 
       # hoist constants out of loop
       delta <- lubridate::ddays(calibration_half_width)
+      windows <- calibration_windows(date_seq, delta)
+      t_bgn <- as.numeric(ref_data$timeBgn)
       fmla_d13c <- stats::formula(dlta13CCo2Refe.mean ~ dlta13CCo2.mean)
       fmla_co2 <- stats::formula(rtioMoleDryCo2Refe.mean ~ rtioMoleDryCo2.mean)
 
       # okay, now run calibrations...
       for (i in seq_along(date_seq)) {
 
-        # define calibration interval
-        cal_period <- lubridate::interval(date_seq[i] - delta,
-                                          date_seq[i] + delta)
-
-        # select data subset using the interval
-        cal_subset <- ref_data %>%
-          dplyr::filter(.data$timeBgn %within% cal_period)
+        # select data subset in the calibration window
+        # (same test as timeBgn %within% interval; see calibration_windows)
+        t_off <- t_bgn - windows$start[i]
+        cal_subset <- ref_data[which(t_off <= windows$span[i] &
+                                       t_off >= 0), ]
 
         #---------------------------------------------
         # do some light validation of these points.
-        cal_subset <- cal_subset %>%
-          dplyr::filter(.data$dlta13CCo2.vari < 5 &
-                          abs(.data$rtioMoleDryCo2.mean -
-                                .data$rtioMoleDryCo2Refe.mean) < 10 &
-                          abs(.data$dlta13CCo2.mean -
-                                .data$dlta13CCo2Refe.mean) < 5)
+        valid <- cal_subset$dlta13CCo2.vari < 5 &
+          abs(cal_subset$rtioMoleDryCo2.mean -
+                cal_subset$rtioMoleDryCo2Refe.mean) < 10 &
+          abs(cal_subset$dlta13CCo2.mean -
+                cal_subset$dlta13CCo2Refe.mean) < 5
+        cal_subset <- cal_subset[which(valid), ]
 
         if (length(unique(cal_subset$verticalPosition)) >= 2 &&
               !all(is.na(cal_subset$dlta13CCo2.mean)) &&
@@ -558,6 +581,8 @@ fit_water_regression <- function(ref_data,
 
     # hoist constants out of loop
     delta <- lubridate::ddays(calibration_half_width)
+    windows <- calibration_windows(date_seq, delta)
+    t_bgn <- as.numeric(ref_data$timeBgn)
     fmla_18o <- stats::formula(dlta18OH2oRefe.mean ~ dlta18OH2o.mean)
     fmla_2h <- stats::formula(dlta2HH2oRefe.mean ~ dlta2HH2o.mean)
 
@@ -565,13 +590,11 @@ fit_water_regression <- function(ref_data,
 
     for (i in seq_along(date_seq)) {
 
-      # define calibration interval
-      cal_period <- lubridate::interval(date_seq[i] - delta,
-                                        date_seq[i] + delta)
-
-      # select data subset using the interval
-      cal_subset <- ref_data %>%
-        dplyr::filter(.data$timeBgn %within% cal_period)
+      # select data subset in the calibration window
+      # (same test as timeBgn %within% interval; see calibration_windows)
+      t_off <- t_bgn - windows$start[i]
+      cal_subset <- ref_data[which(t_off <= windows$span[i] &
+                                     t_off >= 0), ]
 
       if (plot_regression_data) {
         stop("No regression data plots for water yet.")
