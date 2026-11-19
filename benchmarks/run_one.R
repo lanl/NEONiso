@@ -36,7 +36,18 @@ quietly <- function(expr) {
 h5_out <- tempfile(fileext = ".h5")
 set.seed(1)
 t0 <- proc.time()[["elapsed"]]
-quietly(run_workload(files, method, write_to_file = TRUE, outname = h5_out))
+# Known bug B7 (OPTIMIZATION_NOTES.md): validate_output_file() only accepts
+# 09m CO2 groups, so calibrate_carbon(write_to_file = TRUE) stops at the very
+# end on current (06m) NEON files, after the output file is fully written.
+# Tolerate exactly that error so the full workload can still be timed and its
+# HDF5 output compared; any other error still fails.
+tryCatch(
+  quietly(run_workload(files, method, write_to_file = TRUE, outname = h5_out)),
+  error = function(e) {
+    if (!grepl("Output file structure has diverged", conditionMessage(e)))
+      stop(e)
+    cat("NOTE validate_output_file error tolerated (bug B7)\n")
+  })
 elapsed <- proc.time()[["elapsed"]] - t0
 cat(sprintf("ELAPSED %.4f\n", elapsed))
 

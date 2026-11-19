@@ -45,6 +45,21 @@ Rare with NEON's irregular end times, but possible.
 **B6. `calibrate_carbon(gap_fill_parameters = ...)` is accepted but never
 passed** to `calibrate_ambient_carbon_*()`, so it has no effect.
 
+**B7. `calibrate_carbon(write_to_file = TRUE)` fails on current NEON files.**
+`validate_output_file()` keeps only `09m` CO2 groups from the input file
+(`grepl("09m", ...)`). NEON moved isoCo2 to 6-minute averaging (see NEWS
+0.7.0), so real files have `000_0x0_06m` / `co2*_06m` (plus `30m`) groups.
+The input list then has only `calData`, the output has the `06m` groups, and
+the function stops with "Output file structure has diverged from input
+file!". The output file has already been fully written at that point.
+Confirmed on ONAQ 2019-05 (RELEASE-2026) at baseline `80d75a0`. Only the
+old 09m test fixture passes. `benchmarks/run_one.R` tolerates exactly this
+error so W1/W2 can be timed with HDF5 output included.
+
+**B8 (not this package): `neonUtilities::zipsByProduct()` 4.1.0** crashes
+with "subscript out of bounds" in `checkUrlExp()` when a download hits R's
+default 60 s `timeout`. `options(timeout = 3600)` avoids it.
+
 ## Change log
 
 (Phase 2: one entry per kept/reverted optimization.)
