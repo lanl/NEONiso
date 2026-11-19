@@ -18,6 +18,24 @@
 
 convert_POSIXct_to_NEONhdf5_time <- function(intime) {
 
+  # Fast path: lubridate::ymd_hms() spends most of its time guessing the
+  # format of as.character(intime). For unnamed UTC/GMT POSIXct input with
+  # whole-second values between 1970 and 2100, none exactly at midnight, the
+  # round trip through ymd_hms() is an identity, so format directly.
+  # Every other input (character, other time zones, sub-second or midnight
+  # values, which ymd_hms() can turn into NA with a warning) takes the
+  # original path below so its behavior is unchanged.
+  if (inherits(intime, "POSIXct") && is.null(names(intime)) &&
+        isTRUE(attr(intime, "tzone") %in% c("UTC", "GMT"))) {
+    secs <- unclass(intime)
+    secs <- secs[!is.na(secs)]
+    if (length(secs) > 0 &&
+          all(secs >= 0 & secs < 4102444800 &
+                secs == floor(secs) & secs %% 86400 != 0)) {
+      return(format(intime, format = "%Y-%m-%dT%H:%M:%S.000Z", tz = "UTC"))
+    }
+  }
+
   intime <- lubridate::ymd_hms(intime)
 
   outtime <- format(intime, format = "%Y-%m-%dT%H:%M:%S.000Z", tz = "UTC")
