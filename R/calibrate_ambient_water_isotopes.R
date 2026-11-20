@@ -75,9 +75,11 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
                                              caldf$timeBgn, caldf$timeEnd)
 
   # calibrate data at this height.
-  oxydf$mean_cal <- oxydf$mean
-  oxydf$max_cal  <- oxydf$max
-  oxydf$min_cal  <- oxydf$min
+  # calibrated values start as NA: rows outside every calibration period
+  # stay uncalibrated rather than carrying raw values.
+  oxydf$mean_cal <- rep(NA_real_, length(oxydf$mean))
+  oxydf$max_cal  <- rep(NA_real_, length(oxydf$max))
+  oxydf$min_cal  <- rep(NA_real_, length(oxydf$min))
 
   for (i in seq_along(var_inds_in_calperiod)) {
     if (!is.na(caldf$r2_18O[i]) && caldf$r2_18O[i] > r2_thres) {
@@ -138,9 +140,11 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   var_inds_in_calperiod <- calperiod_indices(amb_end_times,
                                              caldf$timeBgn, caldf$timeEnd)
 
-  hyddf$mean_cal <- hyddf$mean
-  hyddf$max_cal  <- hyddf$max
-  hyddf$min_cal  <- hyddf$min
+  # calibrated values start as NA: rows outside every calibration period
+  # stay uncalibrated rather than carrying raw values.
+  hyddf$mean_cal <- rep(NA_real_, length(hyddf$mean))
+  hyddf$max_cal  <- rep(NA_real_, length(hyddf$max))
+  hyddf$min_cal  <- rep(NA_real_, length(hyddf$min))
 
   for (i in seq_along(var_inds_in_calperiod)) {
 

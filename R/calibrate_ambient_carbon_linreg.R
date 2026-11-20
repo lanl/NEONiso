@@ -120,9 +120,11 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
 
   # calibrate data at this height.
   #-------------------------------------
-  # extract d13C and CO2 concentrations from the ambient data
-  d13c_ambdf$mean_cal <- d13c_ambdf$mean
-  co2_ambdf$mean_cal  <- co2_ambdf$mean
+  # calibrated values start as NA: rows outside every calibration period
+  # stay uncalibrated (NA) rather than carrying raw values. min and max are
+  # calibrated in place, so they are cleared for those rows after the loop.
+  d13c_ambdf$mean_cal <- rep(NA_real_, length(d13c_ambdf$mean))
+  co2_ambdf$mean_cal  <- rep(NA_real_, length(co2_ambdf$mean))
 
   # add columns to d13C_ambdf and co2_ambdf for uncertainty calculation
   d13c_ambdf$cvloo   <- rep(NA, length(d13c_ambdf$mean))
@@ -159,6 +161,12 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
     co2_ambdf$cvloo[var_inds_in_calperiod[[i]]] <- caldf$co2_cvloo[i]
     co2_ambdf$cv5rmse[var_inds_in_calperiod[[i]]] <- caldf$co2_cv5rmse[i]
   }
+
+  uncal <- setdiff(seq_along(d13c_ambdf$mean), unlist(var_inds_in_calperiod))
+  d13c_ambdf$min[uncal] <- NA
+  d13c_ambdf$max[uncal] <- NA
+  co2_ambdf$min[uncal]  <- NA
+  co2_ambdf$max[uncal]  <- NA
 
   # round variance down to 2 digits
   d13c_ambdf$vari <- round(d13c_ambdf$vari, digits = 2)
