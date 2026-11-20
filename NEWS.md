@@ -17,6 +17,40 @@ sort instead of `zoo::rollapply()` (about 15x faster); `zoo` is still used
 for unusual inputs.
 * Added a benchmark harness (`benchmarks/`, not part of the built package).
 
+## Bug fixes
+
+* `calibrate_carbon(write_to_file = TRUE)` works again on current
+DP4.00200.001 files. Output validation expected only 9-minute groups and
+counted the input file's own `isoCo2/calData` group twice, so it failed on
+every 6-minute file after the output had been written (#97).
+`validate_output_file()` gains an `avg_suffix` argument.
+* Averaging intervals of 10 minutes or more (e.g. `avg = 30`) produced group
+names such as `000_010_030m`; they are now zero-padded to two digits
+(`30m`), matching NEON's names.
+* `force_cal_to_beginning` and `force_cal_to_end` now take effect. They
+previously assigned to non-existent columns. With the carbon defaults
+(`TRUE`), ambient data after the last (before the first) calibration day are
+now calibrated with that day's parameters.
+* Ambient rows outside every calibration period are now `NA` in
+`calibrate_water()` and `calibrate_carbon(method = "linreg")`. Previously
+they carried raw, uncalibrated values in the calibrated columns. **This
+changes water output at the default settings** (`force_cal_to_* = FALSE`):
+data before the first or after the last calibration period are now `NA`.
+Set `force_cal_to_beginning`/`force_cal_to_end` to `TRUE` to extend the
+nearest calibration instead. Better handling is tracked in #105.
+* `method = "gainoffset"` now writes its calibration parameters
+(`calData/calGainsOffsets`) to the output file; only the deprecated
+`"Bowling_2003"` name did before.
+* `convert_POSIXct_to_NEONhdf5_time()` no longer returns `NA` (with a parse
+warning) for times exactly at midnight, and converts non-UTC times to UTC
+instead of relabelling them (#66).
+* Daily calibration windows now cover `[00:00:00, 23:59:59.999]`, closing a
+one-second gap at each day boundary in which ambient data were left
+uncalibrated.
+* `calibrate_carbon()` now passes `gap_fill_parameters` to the ambient
+calibration functions; it previously had no effect.
+* `calculate_13CO2()` now uses its `f` argument when computing 12CO2.
+
 # NEONiso 0.8.0
 
 * Added an HDF5 abstraction layer (`R/hdf5_utils.R`) that supports both hdf5r
