@@ -7,8 +7,9 @@ ONAQ months, all three methods), with bit-identical output, and peak memory
 is lower in most cases. Most of the remaining time is spent in
 `neonUtilities::stackEddy()`.
 
-* `convert_POSIXct_to_NEONhdf5_time()` formats UTC POSIXct input directly
-instead of re-parsing it with `lubridate::ymd_hms()` (about 3.5x faster).
+* `convert_POSIXct_to_NEONhdf5_time()` formats POSIXct input directly
+instead of re-parsing it with `lubridate::ymd_hms()` (about 3.5x faster; see
+also the midnight/time-zone fix below).
 * Ambient observations are assigned to calibration periods with
 `findInterval()` instead of one `%within%` scan per period, which made this
 step O(rows x days).
@@ -50,6 +51,15 @@ uncalibrated.
 * `calibrate_carbon()` now passes `gap_fill_parameters` to the ambient
 calibration functions; it previously had no effect.
 * `calculate_13CO2()` now uses its `f` argument when computing 12CO2.
+
+## Testing
+
+* Added regression tests for each of the bug fixes above
+(`test-calibration_edge_cases.R`) and direct tests of
+`filter_median_brock86()` against `zoo::rollapply()`. The gold-file and
+stable-value snapshots were updated for the intended output changes
+(`force_cal_to_end` in carbon, `NA` outside calibration periods in water).
+* Now requires `testthat` >= 3.1.7 (for `local_mocked_bindings()`).
 
 # NEONiso 0.8.0
 
