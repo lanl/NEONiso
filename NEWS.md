@@ -1,4 +1,21 @@
-# NEONiso (development version)
+# NEONiso 0.9.0
+
+## Performance
+
+Calibration is 21-25% faster on monthly and site-year runs (one to twelve
+ONAQ months, all three methods), with bit-identical output, and peak memory
+is lower in most cases. Most of the remaining time is spent in
+`neonUtilities::stackEddy()`.
+
+* `convert_POSIXct_to_NEONhdf5_time()` formats UTC POSIXct input directly
+instead of re-parsing it with `lubridate::ymd_hms()` (about 3.5x faster).
+* Ambient observations are assigned to calibration periods with
+`findInterval()` instead of one `%within%` scan per period, which made this
+step O(rows x days).
+* `filter_median_brock86()` computes its rolling median with one vectorized
+sort instead of `zoo::rollapply()` (about 15x faster); `zoo` is still used
+for unusual inputs.
+* Added a benchmark harness (`benchmarks/`, not part of the built package).
 
 # NEONiso 0.8.0
 
