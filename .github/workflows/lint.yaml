@@ -4,9 +4,10 @@ on:
   push:
     branches: [main, master]
   pull_request:
-    branches: [main, master]
 
 name: lint
+
+permissions: read-all
 
 jobs:
   lint:
@@ -17,8 +18,6 @@ jobs:
       - uses: actions/checkout@v7
 
       - uses: r-lib/actions/setup-r@v2
-        with:
-          use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
