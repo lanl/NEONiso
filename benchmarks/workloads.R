@@ -1,5 +1,5 @@
 # workloads.R
-# Reference workloads for NEONiso performance work (see OPTIMIZATION_PLAN.md).
+# Reference workloads for NEONiso performance work.
 #
 #   W0: bundled ONAQ 2019-05 test fixture (inst/extdata), small/smoke test.
 #   W1: one full real monthly DP4.00200.001 basic file, ONAQ 2019-05.
