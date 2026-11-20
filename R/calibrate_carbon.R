@@ -211,6 +211,7 @@ calibrate_carbon         <- function(inname,
                                                    filter_data = filter_ambient,
                                                    force_to_end = force_cal_to_end,
                                                    force_to_beginning = force_cal_to_beginning,
+                                                   gap_fill_parameters = gap_fill_parameters,
                                                    r2_thres = r2_thres)
              })
 
@@ -225,6 +226,7 @@ calibrate_carbon         <- function(inname,
                                                filter_data = filter_ambient,
                                                force_to_end = force_cal_to_end,
                                                force_to_beginning = force_cal_to_beginning,
+                                               gap_fill_parameters = gap_fill_parameters,
                                                r2_thres = r2_thres)
              })
   }
