@@ -162,16 +162,11 @@ temp <- calibrate_ambient_water_linreg(h2otest$ambient$`000_010_09m`,
                                        caldf,
                                        site = "ONAQ")
 # no gapfilling in the water functions yet!
-#temp_gf <- calibrate_ambient_water_linreg(h2otest$ambient$`000_010_09m`,
-#                                               calDf,
-#                                               site = "ONAQ",
-#                                               gap_fill_parameters = TRUE)
 
 test_that("calibrate_ambient_water_linreg returns a list", {
 
   str(temp)
   expect_equal(class(temp), "list")
-  #expect_equal(class(temp_gf), "list")
 })
 
 test_that("calibrate_ambient_water_linreg returns correct variables", {
@@ -180,7 +175,6 @@ test_that("calibrate_ambient_water_linreg returns correct variables", {
             "rtioMoleDryH2o", "rtioMoleWetH2o",
             "rtioMoleWetH2oEnvHut", "temp", "tempEnvHut")
   expect_equal(names(temp), vars)
-  #expect_equal(names(temp_gf), vars)
 })
 
 test_that("calibrate_ambient_water_linreg output has calibrated isotopes", {

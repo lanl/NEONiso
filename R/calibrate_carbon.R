@@ -203,7 +203,7 @@ calibrate_carbon         <- function(inname,
 
   ciso_subset <- c(ciso$ambient, ciso$reference)
 
-  if (method == "gainoffset" | method == "Bowling_2003") {
+  if (method == "gainoffset" || method == "Bowling_2003") {
 
     ciso_subset_cal <-
       lapply(names(ciso_subset),

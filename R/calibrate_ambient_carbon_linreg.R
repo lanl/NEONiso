@@ -54,7 +54,6 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
   }
 
   # ensure that time variables are in POSIXct.
-  amb_start_times <- convert_NEONhdf5_to_POSIXct_time(d13c_ambdf$timeBgn)
   amb_end_times   <- convert_NEONhdf5_to_POSIXct_time(d13c_ambdf$timeEnd)
 
   # if force.to.end and/or force.to.beginning are true,

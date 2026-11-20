@@ -148,11 +148,11 @@ manage_local_EC_archive <- function(file_dir,
       site_name <- available$data$siteCodes[[i]]$siteCode
 
       # check to see if site [i] is a core/gradient site
-      if (!(site_name %in% csites | site_name %in% gsites)) {
+      if (!(site_name %in% csites || site_name %in% gsites)) {
         print(paste("Site name", site_name,
                     "is not a core or gradient site...skipping..."))
         next
-      } else if (sites == "all" | site_name %in% sites) {
+      } else if ("all" %in% sites || site_name %in% sites) {
         print(paste("Checking site:", site_name))
       } else {
         print(paste("Site", site_name, "has not been requested...skipping..."))
@@ -209,7 +209,7 @@ manage_local_EC_archive <- function(file_dir,
                 if (file.exists(paste0(file_dir2, "/",
                                        site_name,
                                        "/",
-                                       dl_names[k])) |
+                                       dl_names[k])) ||
                       file.exists(paste0(file_dir2,
                                          "/",
                                          site_name,
@@ -241,7 +241,7 @@ manage_local_EC_archive <- function(file_dir,
   } # get branch.
 
   # unzip files if requested.
-  if (get == TRUE & unzip_files == TRUE) {
+  if (get == TRUE && unzip_files == TRUE) {
     # list the files in file_dir
     files <- list.files(path = paste0(file_dir2, "/"),
                         pattern = "*.gz",
@@ -299,7 +299,7 @@ manage_local_EC_archive <- function(file_dir,
 
         # check to see if one site has an 'h5' fdiff and the duplicates
         # have a date.
-        if (!is.null(dup_candidates) & any(dup_fdiff == "h5")) {
+        if (!is.null(dup_candidates) && any(dup_fdiff == "h5")) {
           h5files <- fdiff_isite[dups] == "h5"
           print(paste("Removing:", dup_candidates[h5files]))
           if (!dry_run) {

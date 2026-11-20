@@ -348,7 +348,7 @@ restructure_carbon_variables <- function(dataframe,
                                          mode,
                                          group) {
 
-  if (mode != "reference" & mode != "ambient") {
+  if (mode != "reference" && mode != "ambient") {
 
     stop("Invalid selection to mode argument.")
 
@@ -460,12 +460,12 @@ restructure_water_variables <- function(dataframe,
   # ensure that varname is a string but standard is a data.frame
   if (!is.character(varname)) {
     stop("varname must be a string")
-  } else if ((!is.data.frame(dataframe) & mode == "reference") |
-               (!is.list(dataframe) & mode == "ambient")) {
+  } else if ((!is.data.frame(dataframe) && mode == "reference") ||
+               (!is.list(dataframe) && mode == "ambient")) {
     stop("dataframe must be data.frame (reference mode) or list (ambient mode)")
   }
 
-  if (mode != "reference" & mode != "ambient") {
+  if (mode != "reference" && mode != "ambient") {
     stop("Invalid selection to mode argument.")
   } else if (mode == "reference") {
 

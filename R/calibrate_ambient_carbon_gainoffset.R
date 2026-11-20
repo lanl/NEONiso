@@ -83,7 +83,6 @@ calibrate_ambient_carbon_gainoffset <- function(amb_data_list,
   amb_13co2$max  <- calculate_13CO2(amb_co2$max, amb_delta$max)
 
   # ensure that time variables are in POSIXct.
-  amb_start_times <- convert_NEONhdf5_to_POSIXct_time(amb_delta$timeBgn)
   amb_end_times   <- convert_NEONhdf5_to_POSIXct_time(amb_delta$timeEnd)
 
   # if force_to_end and/or force_to_beginning are true, match

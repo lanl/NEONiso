@@ -91,7 +91,7 @@ correct_carbon_ref_cval <- function(std_frame,
 
   # check to see if site is in carb$site, otherwise, we can skip.
   # nrow > 0 needed due to omit_already_corrected flag.
-  if (nrow(carb_red) > 0 & (site %in% unique(carb$site))) {
+  if (nrow(carb_red) > 0 && (site %in% unique(carb$site))) {
 
     for (z in seq_len(nrow(carb_red))) {
 
