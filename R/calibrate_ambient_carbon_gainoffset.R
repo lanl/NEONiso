@@ -89,11 +89,17 @@ calibrate_ambient_carbon_gainoffset <- function(amb_data_list,
   # if force_to_end and/or force_to_beginning are true, match
   # out$start[1] to min(amb time) and/or out$end[nrow] to max(amb time)
 
-  if (force_to_end == TRUE) {
-    caldf$end[nrow(caldf)] <- amb_end_times[length(amb_end_times)]
+  # Ambient rows are matched to periods by their end time, so widen the
+  # first/last period to cover the earliest/latest ambient end time (never
+  # narrow it). Rows padded in for missing heights have NA times: na.rm.
+  if (force_to_end == TRUE && nrow(caldf) > 0 &&
+        any(!is.na(amb_end_times))) {
+    caldf$timeEnd[nrow(caldf)] <- max(caldf$timeEnd[nrow(caldf)],
+                                      amb_end_times, na.rm = TRUE)
   }
-  if (force_to_beginning == TRUE) {
-    caldf$start[1] <- amb_start_times[1]
+  if (force_to_beginning == TRUE && nrow(caldf) > 0 &&
+        any(!is.na(amb_end_times))) {
+    caldf$timeBgn[1] <- min(caldf$timeBgn[1], amb_end_times, na.rm = TRUE)
   }
 
   # determine which cal period each ambient data belongs to.
