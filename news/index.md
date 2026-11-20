@@ -65,6 +65,15 @@ in
   it previously had no effect.
 - [`calculate_13CO2()`](https://lanl.github.io/NEONiso/reference/calculate_13CO2.md)
   now uses its `f` argument when computing 12CO2.
+- [`manage_local_EC_archive()`](https://lanl.github.io/NEONiso/reference/manage_local_EC_archive.md)
+  no longer errors when `sites` lists more than one site
+  (`sites == "all"` gave a length \> 1 `if()` condition, an error since
+  R 4.2).
+
+### Dependencies
+
+- Now requires R \>= 4.1.0: the package uses the native `|>` pipe and no
+  longer imports `magrittr`.
 
 ### Testing
 

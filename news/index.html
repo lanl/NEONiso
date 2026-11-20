@@ -66,6 +66,12 @@
 <code><a href="../reference/calibrate_carbon.html">calibrate_carbon()</a></code> now passes <code>gap_fill_parameters</code> to the ambient calibration functions; it previously had no effect.</li>
 <li>
 <code><a href="../reference/calculate_13CO2.html">calculate_13CO2()</a></code> now uses its <code>f</code> argument when computing 12CO2.</li>
+<li>
+<code><a href="../reference/manage_local_EC_archive.html">manage_local_EC_archive()</a></code> no longer errors when <code>sites</code> lists more than one site (<code>sites == "all"</code> gave a length &gt; 1 <code>if()</code> condition, an error since R 4.2).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="dependencies-0-9-0">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies-0-9-0"></a></h3>
+<ul><li>Now requires R &gt;= 4.1.0: the package uses the native <code>|&gt;</code> pipe and no longer imports <code>magrittr</code>.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="testing-0-9-0">Testing<a class="anchor" aria-label="anchor" href="#testing-0-9-0"></a></h3>
