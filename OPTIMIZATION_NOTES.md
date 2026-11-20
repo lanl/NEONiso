@@ -2,7 +2,26 @@
 
 Baseline commit: `80d75a0`. Final commit: see `git log perf-c1-c4`.
 
-## Bugs found (logged, behavior left as-is)
+## Bugs found
+
+Found during the optimization and left as-is there. B1–B7 and B10 were
+then fixed, with approval, on branch `fix-b1-b7` (one commit each, on top
+of `perf-c1-c4`); B8 is upstream and B9 is logged only. Details of each
+fix are in its commit message and in "Bug fixes" below.
+
+| Bug | Status | Commit |
+|---|---|---|
+| B1 midnight / time-zone conversion | fixed | `eea9dec` |
+| B2 `force_to_*` no effect | fixed (changes 3 carbon snapshots, see P2) | `22ecdf1` |
+| B3 gainoffset writes no calData | fixed | `3d7da4e` |
+| B4 `calculate_13CO2` ignores `f` | fixed | `f52c98a` |
+| B5 1 s gap at day boundary | fixed | `555b802` |
+| B6 `gap_fill_parameters` not forwarded | fixed | `0a7a5a4` |
+| B7 carbon validation fails on 06m files | fixed | `3f13527` |
+| B8 neonUtilities timeout | upstream, not ours | – |
+| B9 unmatched ambient rows keep raw values (water, linreg) | logged only | – |
+| B10 `avg >= 10` gives `030m` group names | fixed | `18763cf` |
+
 
 **B1. `convert_POSIXct_to_NEONhdf5_time()` mishandles some POSIXct inputs.**
 It calls `lubridate::ymd_hms()` on POSIXct input, which goes through
@@ -59,6 +78,56 @@ error so W1/W2 can be timed with HDF5 output included.
 **B8 (not this package): `neonUtilities::zipsByProduct()` 4.1.0** crashes
 with "subscript out of bounds" in `checkUrlExp()` when a download hits R's
 default 60 s `timeout`. `options(timeout = 3600)` avoids it.
+
+**B9. Uncalibrated ambient rows keep their raw values (water, carbon
+linreg).** `calibrate_ambient_water_linreg()` and
+`calibrate_ambient_carbon_linreg()` start `mean_cal` (and min/max) as a copy
+of the raw values and overwrite only the rows matched to a calibration
+period. Rows outside every period (e.g. with `force_cal_to_end = FALSE`, the
+water default) are written as "calibrated" but hold raw values. The
+gainoffset path starts from NA instead. Not fixed: needs a decision on the
+intended output (NA is the obvious candidate) and would change water
+output at default settings.
+
+**B10. Averaging suffix is not zero-padded correctly.** `ingest_data()`
+built group names as `paste0("0", avg, "m")`, so `avg = 30` gave
+`000_010_030m`, which matches no NEON group, and
+`calibrate_carbon(avg = 30, write_to_file = TRUE)` failed validation. Found
+while checking the B7 write route. Fixed with `sprintf("%02dm")`.
+
+## Bug fixes (branch `fix-b1-b7`)
+
+Each fix: full suite run, and W0/W1 outputs (W2 at the end) compared with
+the pre-fix outputs, row by row where they differ.
+
+| Fix | Output change on the workloads |
+|---|---|
+| B1 | W0/W1 none. W2 water: one `h2oMed_03m` row starting exactly at 2019-03-17 00:00:00 had `timeBgn` written as NA; now correct. |
+| B2 | W0 carbon: the last ambient row (2019-05-31 00:01, after the last calibration day) is now calibrated (was NA for gainoffset, raw for linreg). W0 water, W1, W2: none. |
+| B3 | gainoffset files gain `calData/calGainsOffsets`; nothing else changes. |
+| B4, B6 | None at defaults (B6: no W0/W1 day is below `r2_thres`; passthrough checked with a trace). |
+| B5 | None on W0/W1/W2 (no ambient end time falls in the old gap). |
+| B7, B10 | None at defaults. Carbon `write_to_file = TRUE` now succeeds on W1/W2, and with `avg = 30`. |
+
+**B7 write route, end to end.** Validation only compares group names, so
+`benchmarks/check_write_roundtrip.R` checks the whole route: every data
+frame returned with `write_to_file = FALSE`, plus `cal_df`, must be in the
+written file with identical values, with no extra groups or variables.
+Passes for W0 (exercising `ingest_data()`'s 9-minute fallback) and W1 (06m)
+for all three methods. Two extra causes turned up along the way: current
+files carry their own `isoCo2/calData` group, which was counted twice, and
+B10. The `qfqm`/`ucrt` groups in the output are created empty, as before.
+
+**Tests.** 103 tests (100 + P1). After B2, three carbon ambient snapshot
+tests fail because of the intended B2 change; P2 proposes the update. P3
+proposes regression tests for B1–B7. Neither is applied.
+
+**Speed.** B1 replaces the C1 fast path with a direct `format()` for all
+POSIXct input: 15.6 vs 16.3 ms on 30k timestamps, 3.2 vs 5.2 MB allocated
+(identical output). The other fixes add O(1) work per call. A full W1/W2
+re-benchmark is pending (machine was on battery; `bench.sh` refuses).
+`benchmarks/check_c1_time_conversion.R` checked C1 against the old
+`ymd_hms()` behavior, so it now reports the intended B1 differences.
 
 ## Results (final, branch `perf-c1-c4`)
 
@@ -179,8 +248,8 @@ version; p = Wilcoxon rank-sum.
    10–17% less memory); or (b) restore C4, which in combination brings it to
    about 560 MB (−11%) but has no measurable time gain.
 2. **TEST_CHANGE_PROPOSALS.md P1** (direct tests for the median filter).
-3. Bugs B1–B7 above, behavior unchanged. B7 (carbon output validation fails
-   on every current 06m file) is probably the most urgent for users.
+3. ~~Bugs B1–B7~~: fixed on `fix-b1-b7` (plus B10). Still open: the P2/P3
+   test changes, and B9 (raw values in unmatched rows).
 
 ## Confirmation
 
