@@ -60,14 +60,19 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   # Ambient rows are matched to periods by their end time, so widen the
   # first/last period to cover the earliest/latest ambient end time (never
   # narrow it). Rows padded in for missing heights have NA times: na.rm.
-  if (force_to_end == TRUE && nrow(caldf) > 0 &&
-        any(!is.na(amb_end_times))) {
-    caldf$timeEnd[nrow(caldf)] <- max(caldf$timeEnd[nrow(caldf)],
-                                      amb_end_times, na.rm = TRUE)
-  }
-  if (force_to_beginning == TRUE && nrow(caldf) > 0 &&
-        any(!is.na(amb_end_times))) {
-    caldf$timeBgn[1] <- min(caldf$timeBgn[1], amb_end_times, na.rm = TRUE)
+  # (Compared as numbers: the ambient times are GMT and caldf's are UTC, and
+  # combining the two in max()/min() warns about inconsistent tzone.)
+  if (nrow(caldf) > 0 && any(!is.na(amb_end_times))) {
+    last_amb  <- max(amb_end_times, na.rm = TRUE)
+    first_amb <- min(amb_end_times, na.rm = TRUE)
+    if (force_to_end == TRUE &&
+          as.numeric(last_amb) > as.numeric(caldf$timeEnd[nrow(caldf)])) {
+      caldf$timeEnd[nrow(caldf)] <- last_amb
+    }
+    if (force_to_beginning == TRUE &&
+          as.numeric(first_amb) < as.numeric(caldf$timeBgn[1])) {
+      caldf$timeBgn[1] <- first_amb
+    }
   }
 
   # determine which cal period each ambient data belongs to.
@@ -126,14 +131,19 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   # Ambient rows are matched to periods by their end time, so widen the
   # first/last period to cover the earliest/latest ambient end time (never
   # narrow it). Rows padded in for missing heights have NA times: na.rm.
-  if (force_to_end == TRUE && nrow(caldf) > 0 &&
-        any(!is.na(amb_end_times))) {
-    caldf$timeEnd[nrow(caldf)] <- max(caldf$timeEnd[nrow(caldf)],
-                                      amb_end_times, na.rm = TRUE)
-  }
-  if (force_to_beginning == TRUE && nrow(caldf) > 0 &&
-        any(!is.na(amb_end_times))) {
-    caldf$timeBgn[1] <- min(caldf$timeBgn[1], amb_end_times, na.rm = TRUE)
+  # (Compared as numbers: the ambient times are GMT and caldf's are UTC, and
+  # combining the two in max()/min() warns about inconsistent tzone.)
+  if (nrow(caldf) > 0 && any(!is.na(amb_end_times))) {
+    last_amb  <- max(amb_end_times, na.rm = TRUE)
+    first_amb <- min(amb_end_times, na.rm = TRUE)
+    if (force_to_end == TRUE &&
+          as.numeric(last_amb) > as.numeric(caldf$timeEnd[nrow(caldf)])) {
+      caldf$timeEnd[nrow(caldf)] <- last_amb
+    }
+    if (force_to_beginning == TRUE &&
+          as.numeric(first_amb) < as.numeric(caldf$timeBgn[1])) {
+      caldf$timeBgn[1] <- first_amb
+    }
   }
 
   # determine which cal period each ambient data belongs to.
