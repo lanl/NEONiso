@@ -16,7 +16,8 @@ matching NEON time variable format.
 \description{
 Converts a POSIXct object back to the character format used by NEON in their
 HDF eddy covariance files. Output format, using strptime syntax, is
-\%Y-\%m-\%dT\%H:\%M:\%OSZ.
+\%Y-\%m-\%dT\%H:\%M:\%OSZ. POSIXct input in any time zone is converted to UTC;
+fractional seconds are truncated.
 }
 \examples{
 convert_POSIXct_to_NEONhdf5_time(Sys.time())
