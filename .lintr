@@ -1,0 +1,13 @@
+linters: linters_with_defaults(
+    object_length_linter(length = 40L),
+    object_name_linter(
+      styles = c("snake_case", "symbols"),
+      regexes = c(legacy_name = paste0(
+        "^(calibrate_ambient_carbon_Bowling2003|get_Rstd|R_to_delta|",
+        "delta_to_R|calculate_12CO2|calculate_13CO2|",
+        "convert_POSIXct_to_NEONhdf5_time|convert_NEONhdf5_to_POSIXct_time|",
+        "manage_local_EC_archive|R_values|Rstd|R|backupMethod)$"
+      ))
+    )
+  )
+encoding: "UTF-8"
