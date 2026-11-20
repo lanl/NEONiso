@@ -12,7 +12,7 @@ fix are in its commit message and in "Bug fixes" below.
 | Bug | Status | Commit |
 |---|---|---|
 | B1 midnight / time-zone conversion | fixed | `cda57b6` |
-| B2 `force_to_*` no effect | fixed (changes 3 carbon snapshots, see P2) | `2512d3c` |
+| B2 `force_to_*` no effect | fixed (P2 updates 3 carbon snapshots) | `2512d3c` |
 | B3 gainoffset writes no calData | fixed | `0ae29ff` |
 | B4 `calculate_13CO2` ignores `f` | fixed | `af64c81` |
 | B5 1 s gap at day boundary | fixed | `be2f59e` |
@@ -119,10 +119,11 @@ for all three methods. Two extra causes turned up along the way: current
 files carry their own `isoCo2/calData` group, which was counted twice, and
 B10. The `qfqm`/`ucrt` groups in the output are created empty, as before.
 
-**Tests.** 103 tests (100 + P1). B2 changed three carbon ambient snapshot
-tests; P2 (approved, applied) updates them. B9 changes two water tests; P4
-proposes the update and is not yet applied, so those 2 tests fail on
-`fix-b1-b7`. P3 (regression tests for B1–B7) is proposed, not applied.
+**Tests.** 114 tests (100 + P1 + P3), 0 failures, 0 warnings. B2 changed
+three carbon ambient snapshot tests (P2) and B9 two water tests (P4); both
+updates were approved and applied. P3 adds
+`test-calibration_edge_cases.R`. A first version of the B2 fix produced
+"'tzone' attributes are inconsistent" warnings; fixed in `6d298fb`.
 
 **Speed.** B1 replaces the C1 fast path with a direct `format()` for all
 POSIXct input: 15.6 vs 16.3 ms on 30k timestamps, 3.2 vs 5.2 MB allocated
@@ -250,8 +251,8 @@ version; p = Wilcoxon rank-sum.
    10–17% less memory); or (b) restore C4, which in combination brings it to
    about 560 MB (−11%) but has no measurable time gain.
 2. **TEST_CHANGE_PROPOSALS.md P1** (direct tests for the median filter).
-3. ~~Bugs B1–B7, B9~~: fixed on `fix-b1-b7` (plus B10). Still open: the
-   P3/P4 test changes, and #105 (filling rows outside calibration periods).
+3. ~~Bugs B1–B7, B9~~: fixed on `fix-b1-b7` (plus B10), with P2–P4
+   applied. Still open: #105 (filling rows outside calibration periods).
 
 ## Confirmation
 
