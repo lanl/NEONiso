@@ -21,7 +21,6 @@
 #' per day.
 #'
 #' @importFrom utils tail
-#' @importFrom magrittr %>%
 #' @import dplyr
 #'
 select_daily_reference_data <- function(standard_df,
@@ -36,29 +35,29 @@ select_daily_reference_data <- function(standard_df,
 
   if (analyte == "co2") {
 
-    standard_df <- standard_df %>%
+    standard_df <- standard_df |>
       # get day of month
-      dplyr::mutate(date = lubridate::date(.data$timeBgn)) %>%
-      dplyr::group_by(.data$date, .data$verticalPosition) %>%
+      dplyr::mutate(date = lubridate::date(.data$timeBgn)) |>
+      dplyr::group_by(.data$date, .data$verticalPosition) |>
       # check to make sure peak sufficiently long, then slice off single.
       dplyr::filter(.data$dlta13CCo2.numSamp > min_nobs |
-                      is.na(.data$dlta13CCo2.numSamp)) %>%
-      dplyr::slice(1) %>%
-      dplyr::ungroup() %>%
-      dplyr::select(-"date") %>%
+                      is.na(.data$dlta13CCo2.numSamp)) |>
+      dplyr::slice(1) |>
+      dplyr::ungroup() |>
+      dplyr::select(-"date") |>
       dplyr::arrange(.data$timeBgn)
 
   } else if (analyte == "h2o") {
 
-    standard_df <- standard_df %>%
+    standard_df <- standard_df |>
       # get day of month
-      dplyr::mutate(date = lubridate::date(.data$timeBgn)) %>%
-      dplyr::group_by(.data$date, .data$verticalPosition) %>%
+      dplyr::mutate(date = lubridate::date(.data$timeBgn)) |>
+      dplyr::group_by(.data$date, .data$verticalPosition) |>
       dplyr::filter(.data$dlta18OH2o.numSamp > min_nobs |
-                      is.na(.data$dlta18OH2o.numSamp)) %>%
-      dplyr::slice(tail(dplyr::row_number(), 3)) %>%
-      dplyr::ungroup() %>%
-      dplyr::select(-"date") %>%
+                      is.na(.data$dlta18OH2o.numSamp)) |>
+      dplyr::slice(tail(dplyr::row_number(), 3)) |>
+      dplyr::ungroup() |>
+      dplyr::select(-"date") |>
       dplyr::arrange(.data$timeBgn)
 
   } else {

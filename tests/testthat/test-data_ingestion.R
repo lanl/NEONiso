@@ -43,7 +43,7 @@ test_that("ingest_data returns list with correct sublist names - h2o", {
 
 #-----------------------------------------------------------------------
 # test restructure_carbon_variables function
-rest_raw <- neonUtilities::stackEddy(fin, avg = 9, level = "dp01")[[1]] %>%
+rest_raw <- neonUtilities::stackEddy(fin, avg = 9, level = "dp01")[[1]] |>
   dplyr::select("verticalPosition", "timeBgn",
                 "timeEnd", tidyselect::contains("isoCo2"))
 
@@ -131,7 +131,7 @@ test_that("stackEddy/ingest data works on multiple daily files", {
 #--------------------------------------------------
 # test restructure_water_variables with data group
 
-rest_h2o <- neonUtilities::stackEddy(fin, avg = 3, level = "dp01")[[1]] %>%
+rest_h2o <- neonUtilities::stackEddy(fin, avg = 3, level = "dp01")[[1]] |>
   dplyr::select("verticalPosition", "timeBgn",
                 "timeEnd", tidyselect::contains("isoH2o"))
 rest_h2o <- rest_h2o[rowSums(is.na(rest_h2o)) < 145, ]

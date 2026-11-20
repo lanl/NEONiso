@@ -60,7 +60,6 @@
 #' @return nothing to the workspace, but creates a new output file of
 #'         calibrated water isotope data.
 #'
-#' @importFrom magrittr %>%
 #' @importFrom lubridate %within%
 #' @importFrom utils tail
 #' @import dplyr

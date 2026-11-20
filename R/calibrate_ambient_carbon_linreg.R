@@ -32,7 +32,6 @@
 #'     This function is not designed to be called on its own,
 #'     and is not exported to the namespace.
 #'
-#' @importFrom magrittr %>%
 #'
 calibrate_ambient_carbon_linreg <- function(amb_data_list,
                                             caldf,

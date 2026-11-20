@@ -99,7 +99,6 @@ estimate_calibration_error <- function(formula, data) {
 #'        for d13C and CO2 values.
 #'
 #' @importFrom stats coef lm
-#' @importFrom magrittr %>%
 
 fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                                   plot_regression_data = FALSE,
@@ -201,7 +200,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                                           date_seq[i] + delta)
 
         # select data subset using the interval
-        cal_subset <- ref_data %>%
+        cal_subset <- ref_data |>
           dplyr::filter(.data$timeBgn %within% cal_period)
 
         if (plot_regression_data) {
@@ -216,7 +215,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
         }
         #---------------------------------------------
         # do some light validation of these points.
-        cal_subset <- cal_subset %>%
+        cal_subset <- cal_subset |>
           dplyr::filter(.data$dlta13CCo2.vari < 5 &
                           abs(.data$rtioMoleDryCo2.mean -
                                 .data$rtioMoleDryCo2Refe.mean) < 10 &
@@ -354,12 +353,12 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                                           date_seq[i] + delta)
 
         # select data subset using the interval
-        cal_subset <- ref_data %>%
+        cal_subset <- ref_data |>
           dplyr::filter(.data$timeBgn %within% cal_period)
 
         #---------------------------------------------
         # do some light validation of these points.
-        cal_subset <- cal_subset %>%
+        cal_subset <- cal_subset |>
           dplyr::filter(.data$dlta13CCo2.vari < 5 &
                           abs(.data$rtioMoleDryCo2.mean -
                                 .data$rtioMoleDryCo2Refe.mean) < 10 &
@@ -481,7 +480,6 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 #'        for d13C and CO2 values.
 #'
 #' @importFrom stats coef lm
-#' @importFrom magrittr %>%
 #'
 fit_water_regression <- function(ref_data,
                                  calibration_half_width,
@@ -576,7 +574,7 @@ fit_water_regression <- function(ref_data,
                                         date_seq[i] + delta)
 
       # select data subset using the interval
-      cal_subset <- ref_data %>%
+      cal_subset <- ref_data |>
         dplyr::filter(.data$timeBgn %within% cal_period)
 
       if (plot_regression_data) {

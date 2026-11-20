@@ -40,7 +40,6 @@ calibrate_ambient_carbon_Bowling2003 <- function(...) {
 #'    calibrated ambient data.
 #'
 #'
-#' @importFrom magrittr %>%
 #' @importFrom lubridate %within%
 #'
 calibrate_ambient_carbon_gainoffset <- function(amb_data_list,

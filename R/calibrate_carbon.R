@@ -105,7 +105,6 @@
 #'         file containing calibrated carbon isotope values.
 #' @export
 #'
-#' @importFrom magrittr %>%
 #' @importFrom utils str
 #' @examples
 #' \dontrun{fin <- system.file('extdata',
