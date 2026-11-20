@@ -217,5 +217,5 @@ calibrate_ambient_carbon_gainoffset <- function(amb_data_list,
 
   amb_data_list$rtioMoleDryCo2 <- amb_co2
 
-  return(amb_data_list)
+  amb_data_list
 }

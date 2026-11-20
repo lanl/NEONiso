@@ -35,7 +35,7 @@ swap_standard_isotoperatios <- function(std_frame, dxs_thres = 500) {
   }
 
   # return fixed dataframe
-  return(std_frame)
+  std_frame
 }
 
 #' correct_carbon_ref_cval
@@ -127,7 +127,7 @@ correct_carbon_ref_cval <- function(std_frame,
       }
     }
   }
-  return(std_frame)
+  std_frame
 }
 
 #' Correct carbon ref output
@@ -219,6 +219,6 @@ correct_carbon_ref_output <- function(std_list,
       }
     }
   }
-  return(std_list)
+  std_list
 
 }

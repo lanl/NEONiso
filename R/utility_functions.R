@@ -26,7 +26,7 @@ terrestrial_core_sites <- function() {
                   "SJER", "SRER", "TALL", "TOOL", "UNDE", "WOOD",
                   "WREF", "YELL")
 
-  return(core_sites)
+  core_sites
 }
 
 #' List terrestrial gradient sites
@@ -53,7 +53,7 @@ terrestrial_gradient_sites <- function() {
                   "OAES", "RMNP", "SERC", "SOAP", "STEI", "STER",
                   "TEAK", "TREE", "UKFS")
 
-  return(grad_sites)
+  grad_sites
 
 }
 
@@ -79,7 +79,7 @@ water_isotope_sites <- function() {
                   "SJER", "SRER", "TALL", "TOOL", "UNDE", "WOOD",
                   "WREF", "YELL", "BARR")
 
-  return(wiso_sites)
+  wiso_sites
 
 }
 

@@ -28,7 +28,7 @@ filter_median_brock86 <- function(data, width = 7, threshold = 5) {
   data[spikes == TRUE] <- NA
 
   # return data vector back
-  return(data)
+  data
 
 }
 

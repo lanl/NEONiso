@@ -264,7 +264,7 @@ calibrate_carbon         <- function(inname,
     out_data$ciso_subset_cal <- ciso_subset_cal
     out_data$cal_df <- cal_df
 
-    return(out_data)
+    out_data
 
   }
 

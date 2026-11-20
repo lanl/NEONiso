@@ -280,7 +280,7 @@ ingest_data <- function(inname,
   output <- list(ambi_out, refe_out, reference, attrs)
   names(output) <- c("ambient", "reference", "refe_stacked", "attrs")
 
-  return(output)
+  output
 }
 
 #-----------------------------------------
@@ -321,7 +321,7 @@ restructure_variables <- function(dataframe,
                                           mode,
                                           group)
   }
-  return(output)
+  output
 
 }
 
@@ -432,7 +432,7 @@ restructure_carbon_variables <- function(dataframe,
   output$timeBgn <- convert_POSIXct_to_NEONhdf5_time(output$timeBgn)
   output$timeEnd <- convert_POSIXct_to_NEONhdf5_time(output$timeEnd)
 
-  return(output)
+  output
 }
 
 #-----------------------------------------
@@ -542,5 +542,5 @@ restructure_water_variables <- function(dataframe,
   output$timeBgn <- convert_POSIXct_to_NEONhdf5_time(output$timeBgn)
   output$timeEnd <- convert_POSIXct_to_NEONhdf5_time(output$timeEnd)
 
-  return(output)
+  output
 }

@@ -187,5 +187,5 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   amb_data_list$dlta2HH2o <- hyddf
 
   # return list
-  return(amb_data_list)
+  amb_data_list
 }

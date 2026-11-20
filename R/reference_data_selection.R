@@ -67,6 +67,6 @@ select_daily_reference_data <- function(standard_df,
 
   }
 
-  return(standard_df)
+  standard_df
 
 }

@@ -41,7 +41,7 @@ extract_carbon_cal_data <- function(data_list,
   data$timeEnd <- convert_NEONhdf5_to_POSIXct_time(data$timeEnd)
 
   # return standard data frame.
-  return(data)
+  data
 }
 
 #' Extract only the data corresponding to validation/calibration time periods.
@@ -79,5 +79,5 @@ extract_water_calibration_data <- function(data_list) {
   data$timeEnd <- convert_NEONhdf5_to_POSIXct_time(data$timeEnd)
 
   # return standard data frame.
-  return(data)
+  data
 }

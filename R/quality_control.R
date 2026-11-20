@@ -23,7 +23,7 @@ validate_analyte <- function(analyte) {
     stop("Invalid analyte selected in setup output file.")
   }
 
-  return(analyte)
+  analyte
 }
 
 

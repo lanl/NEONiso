@@ -9,7 +9,7 @@
 loocv <- function(mod) {
   h <- stats::lm.influence(mod)$hat
   # might need to add na.rm
-  return(base::mean((stats::residuals(mod) / (1 - h)) ^ 2))
+  base::mean((stats::residuals(mod) / (1 - h)) ^ 2)
 }
 
 #' Produce estimates of the calibration error.
@@ -60,7 +60,7 @@ estimate_calibration_error <- function(formula, data) {
     MAE = mean(abs(errors))
   )
 
-  return(output)
+  output
 
 }
 
@@ -447,7 +447,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
     stop("NA in calibration data frame time - how did I get here?")
   }
 
-  return(out)
+  out
 
 }
 
@@ -642,6 +642,6 @@ fit_water_regression <- function(ref_data,
                    "slope2H", "intercept2H", "r2_2H",
                    "cvloo_2H", "cv5mae_2H", "cv5rmse_2H")]
   }
-  return(out)
+  out
 
 }

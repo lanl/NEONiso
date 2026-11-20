@@ -192,6 +192,6 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
   amb_data_list$dlta13CCo2 <- d13c_ambdf
   amb_data_list$rtioMoleDryCo2 <- co2_ambdf
 
-  return(amb_data_list)
+  amb_data_list
 
 }

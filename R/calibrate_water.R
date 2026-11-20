@@ -138,6 +138,6 @@ calibrate_water       <- function(inname,
     out_data$wiso_subset_cal <- wiso_subset_cal
     out_data$cal_df <- cal_df
 
-    return(out_data)
+    out_data
   }
 }
