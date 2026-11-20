@@ -11,9 +11,9 @@ in
 [`neonUtilities::stackEddy()`](https://rdrr.io/pkg/neonUtilities/man/stackEddy.html).
 
 - [`convert_POSIXct_to_NEONhdf5_time()`](https://lanl.github.io/NEONiso/reference/convert_POSIXct_to_NEONhdf5_time.md)
-  formats UTC POSIXct input directly instead of re-parsing it with
+  formats POSIXct input directly instead of re-parsing it with
   [`lubridate::ymd_hms()`](https://lubridate.tidyverse.org/reference/ymd_hms.html)
-  (about 3.5x faster).
+  (about 3.5x faster; see also the midnight/time-zone fix below).
 - Ambient observations are assigned to calibration periods with
   [`findInterval()`](https://rdrr.io/r/base/findInterval.html) instead
   of one `%within%` scan per period, which made this step O(rows x
@@ -24,6 +24,59 @@ in
   (about 15x faster); `zoo` is still used for unusual inputs.
 - Added a benchmark harness (`benchmarks/`, not part of the built
   package).
+
+### Bug fixes
+
+- `calibrate_carbon(write_to_file = TRUE)` works again on current
+  DP4.00200.001 files. Output validation expected only 9-minute groups
+  and counted the input file’s own `isoCo2/calData` group twice, so it
+  failed on every 6-minute file after the output had been written
+  ([\#97](https://github.com/lanl/NEONiso/issues/97)).
+  [`validate_output_file()`](https://lanl.github.io/NEONiso/reference/validate_output_file.md)
+  gains an `avg_suffix` argument.
+- Averaging intervals of 10 minutes or more (e.g. `avg = 30`) produced
+  group names such as `000_010_030m`; they are now zero-padded to two
+  digits (`30m`), matching NEON’s names.
+- `force_cal_to_beginning` and `force_cal_to_end` now take effect. They
+  previously assigned to non-existent columns. With the carbon defaults
+  (`TRUE`), ambient data after the last (before the first) calibration
+  day are now calibrated with that day’s parameters.
+- Ambient rows outside every calibration period are now `NA` in
+  [`calibrate_water()`](https://lanl.github.io/NEONiso/reference/calibrate_water.md)
+  and `calibrate_carbon(method = "linreg")`. Previously they carried
+  raw, uncalibrated values in the calibrated columns. **This changes
+  water output at the default settings** (`force_cal_to_* = FALSE`):
+  data before the first or after the last calibration period are now
+  `NA`. Set `force_cal_to_beginning`/`force_cal_to_end` to `TRUE` to
+  extend the nearest calibration instead. Better handling is tracked in
+  [\#105](https://github.com/lanl/NEONiso/issues/105).
+- `method = "gainoffset"` now writes its calibration parameters
+  (`calData/calGainsOffsets`) to the output file; only the deprecated
+  `"Bowling_2003"` name did before.
+- [`convert_POSIXct_to_NEONhdf5_time()`](https://lanl.github.io/NEONiso/reference/convert_POSIXct_to_NEONhdf5_time.md)
+  no longer returns `NA` (with a parse warning) for times exactly at
+  midnight, and converts non-UTC times to UTC instead of relabelling
+  them ([\#66](https://github.com/lanl/NEONiso/issues/66)).
+- Daily calibration windows now cover `[00:00:00, 23:59:59.999]`,
+  closing a one-second gap at each day boundary in which ambient data
+  were left uncalibrated.
+- [`calibrate_carbon()`](https://lanl.github.io/NEONiso/reference/calibrate_carbon.md)
+  now passes `gap_fill_parameters` to the ambient calibration functions;
+  it previously had no effect.
+- [`calculate_13CO2()`](https://lanl.github.io/NEONiso/reference/calculate_13CO2.md)
+  now uses its `f` argument when computing 12CO2.
+
+### Testing
+
+- Added regression tests for each of the bug fixes above
+  (`test-calibration_edge_cases.R`) and direct tests of
+  [`filter_median_brock86()`](https://lanl.github.io/NEONiso/reference/filter_median_brock86.md)
+  against
+  [`zoo::rollapply()`](https://rdrr.io/pkg/zoo/man/rollapply.html). The
+  gold-file and stable-value snapshots were updated for the intended
+  output changes (`force_cal_to_end` in carbon, `NA` outside calibration
+  periods in water).
+- Now requires `testthat` \>= 3.1.7 (for `local_mocked_bindings()`).
 
 ## NEONiso 0.8.0
 

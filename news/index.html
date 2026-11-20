@@ -43,11 +43,34 @@
 <h3 id="performance-0-9-0">Performance<a class="anchor" aria-label="anchor" href="#performance-0-9-0"></a></h3>
 <p>Calibration is 21-25% faster on monthly and site-year runs (one to twelve ONAQ months, all three methods), with bit-identical output, and peak memory is lower in most cases. Most of the remaining time is spent in <code><a href="https://rdrr.io/pkg/neonUtilities/man/stackEddy.html" class="external-link">neonUtilities::stackEddy()</a></code>.</p>
 <ul><li>
-<code><a href="../reference/convert_POSIXct_to_NEONhdf5_time.html">convert_POSIXct_to_NEONhdf5_time()</a></code> formats UTC POSIXct input directly instead of re-parsing it with <code><a href="https://lubridate.tidyverse.org/reference/ymd_hms.html" class="external-link">lubridate::ymd_hms()</a></code> (about 3.5x faster).</li>
+<code><a href="../reference/convert_POSIXct_to_NEONhdf5_time.html">convert_POSIXct_to_NEONhdf5_time()</a></code> formats POSIXct input directly instead of re-parsing it with <code><a href="https://lubridate.tidyverse.org/reference/ymd_hms.html" class="external-link">lubridate::ymd_hms()</a></code> (about 3.5x faster; see also the midnight/time-zone fix below).</li>
 <li>Ambient observations are assigned to calibration periods with <code><a href="https://rdrr.io/r/base/findInterval.html" class="external-link">findInterval()</a></code> instead of one <code>%within%</code> scan per period, which made this step O(rows x days).</li>
 <li>
 <code><a href="../reference/filter_median_brock86.html">filter_median_brock86()</a></code> computes its rolling median with one vectorized sort instead of <code><a href="https://rdrr.io/pkg/zoo/man/rollapply.html" class="external-link">zoo::rollapply()</a></code> (about 15x faster); <code>zoo</code> is still used for unusual inputs.</li>
 <li>Added a benchmark harness (<code>benchmarks/</code>, not part of the built package).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-9-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-9-0"></a></h3>
+<ul><li>
+<code>calibrate_carbon(write_to_file = TRUE)</code> works again on current DP4.00200.001 files. Output validation expected only 9-minute groups and counted the input file’s own <code>isoCo2/calData</code> group twice, so it failed on every 6-minute file after the output had been written (<a href="https://github.com/lanl/NEONiso/issues/97" class="external-link">#97</a>). <code><a href="../reference/validate_output_file.html">validate_output_file()</a></code> gains an <code>avg_suffix</code> argument.</li>
+<li>Averaging intervals of 10 minutes or more (e.g. <code>avg = 30</code>) produced group names such as <code>000_010_030m</code>; they are now zero-padded to two digits (<code>30m</code>), matching NEON’s names.</li>
+<li>
+<code>force_cal_to_beginning</code> and <code>force_cal_to_end</code> now take effect. They previously assigned to non-existent columns. With the carbon defaults (<code>TRUE</code>), ambient data after the last (before the first) calibration day are now calibrated with that day’s parameters.</li>
+<li>Ambient rows outside every calibration period are now <code>NA</code> in <code><a href="../reference/calibrate_water.html">calibrate_water()</a></code> and <code>calibrate_carbon(method = "linreg")</code>. Previously they carried raw, uncalibrated values in the calibrated columns. <strong>This changes water output at the default settings</strong> (<code>force_cal_to_* = FALSE</code>): data before the first or after the last calibration period are now <code>NA</code>. Set <code>force_cal_to_beginning</code>/<code>force_cal_to_end</code> to <code>TRUE</code> to extend the nearest calibration instead. Better handling is tracked in <a href="https://github.com/lanl/NEONiso/issues/105" class="external-link">#105</a>.</li>
+<li>
+<code>method = "gainoffset"</code> now writes its calibration parameters (<code>calData/calGainsOffsets</code>) to the output file; only the deprecated <code>"Bowling_2003"</code> name did before.</li>
+<li>
+<code><a href="../reference/convert_POSIXct_to_NEONhdf5_time.html">convert_POSIXct_to_NEONhdf5_time()</a></code> no longer returns <code>NA</code> (with a parse warning) for times exactly at midnight, and converts non-UTC times to UTC instead of relabelling them (<a href="https://github.com/lanl/NEONiso/issues/66" class="external-link">#66</a>).</li>
+<li>Daily calibration windows now cover <code>[00:00:00, 23:59:59.999]</code>, closing a one-second gap at each day boundary in which ambient data were left uncalibrated.</li>
+<li>
+<code><a href="../reference/calibrate_carbon.html">calibrate_carbon()</a></code> now passes <code>gap_fill_parameters</code> to the ambient calibration functions; it previously had no effect.</li>
+<li>
+<code><a href="../reference/calculate_13CO2.html">calculate_13CO2()</a></code> now uses its <code>f</code> argument when computing 12CO2.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="testing-0-9-0">Testing<a class="anchor" aria-label="anchor" href="#testing-0-9-0"></a></h3>
+<ul><li>Added regression tests for each of the bug fixes above (<code>test-calibration_edge_cases.R</code>) and direct tests of <code><a href="../reference/filter_median_brock86.html">filter_median_brock86()</a></code> against <code><a href="https://rdrr.io/pkg/zoo/man/rollapply.html" class="external-link">zoo::rollapply()</a></code>. The gold-file and stable-value snapshots were updated for the intended output changes (<code>force_cal_to_end</code> in carbon, <code>NA</code> outside calibration periods in water).</li>
+<li>Now requires <code>testthat</code> &gt;= 3.1.7 (for <code>local_mocked_bindings()</code>).</li>
 </ul></div>
 </div>
     <div class="section level2">

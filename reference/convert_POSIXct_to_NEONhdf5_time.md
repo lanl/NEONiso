@@ -2,7 +2,8 @@
 
 Converts a POSIXct object back to the character format used by NEON in
 their HDF eddy covariance files. Output format, using strptime syntax,
-is %Y-%m-%dT%H:%M:%OSZ.
+is %Y-%m-%dT%H:%M:%OSZ. POSIXct input in any time zone is converted to
+UTC; fractional seconds are truncated.
 
 ## Usage
 
@@ -29,5 +30,5 @@ Rich Fiorella <rfiorella@lanl.gov>
 
 ``` r
 convert_POSIXct_to_NEONhdf5_time(Sys.time())
-#> [1] "2026-11-20T20:20:49.000Z"
+#> [1] "2026-11-20T20:25:37.000Z"
 ```

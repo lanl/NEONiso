@@ -50,7 +50,7 @@ end of the calibration routines.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">validate_output_file</span><span class="op">(</span><span class="va">inname</span>, <span class="va">outname</span>, <span class="va">site</span>, <span class="va">analyte</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">validate_output_file</span><span class="op">(</span><span class="va">inname</span>, <span class="va">outname</span>, <span class="va">site</span>, <span class="va">analyte</span>, avg_suffix <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -71,6 +71,13 @@ end of the calibration routines.</p>
 
 <dt id="arg-analyte">analyte<a class="anchor" aria-label="anchor" href="#arg-analyte"></a></dt>
 <dd><p>Carbon ('Co2') or water ('H2o') system?</p></dd>
+
+
+<dt id="arg-avg-suffix">avg_suffix<a class="anchor" aria-label="anchor" href="#arg-avg-suffix"></a></dt>
+<dd><p>Averaging-interval suffix(es) of the input groups that
+were calibrated, e.g. "06m". Input groups with other suffixes are
+not expected in the output. If NULL, "09m" for carbon and
+c("03m", "09m") for water.</p></dd>
 
 </dl></div>
     <div class="section level2">

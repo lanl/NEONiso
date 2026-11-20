@@ -7,7 +7,7 @@ routines.
 ## Usage
 
 ``` r
-validate_output_file(inname, outname, site, analyte)
+validate_output_file(inname, outname, site, analyte, avg_suffix = NULL)
 ```
 
 ## Arguments
@@ -27,6 +27,13 @@ validate_output_file(inname, outname, site, analyte)
 - analyte:
 
   Carbon ('Co2') or water ('H2o') system?
+
+- avg_suffix:
+
+  Averaging-interval suffix(es) of the input groups that were
+  calibrated, e.g. "06m". Input groups with other suffixes are not
+  expected in the output. If NULL, "09m" for carbon and c("03m", "09m")
+  for water.
 
 ## Value
 
