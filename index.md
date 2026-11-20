@@ -16,12 +16,14 @@ suggestions as issues to this repository.
     from CRAN:
 
 ``` r
+
 install.packages("hdf5r")
 ```
 
 Alternatively, rhdf5 from Bioconductor also works:
 
 ``` r
+
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
@@ -33,6 +35,7 @@ BiocManager::install("rhdf5")
     using:
 
 ``` r
+
 devtools::install_github("lanl/NEONiso")
 ```
 
@@ -40,6 +43,7 @@ Alternatively, you can install a specific version of the package (e.g.,
 v0.1) by specifying the version tag:
 
 ``` r
+
 devtools::install_github("lanl/NEONiso@v0.1")
 ```
 

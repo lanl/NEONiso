@@ -1,6 +1,29 @@
 # Changelog
 
-## NEONiso (development version)
+## NEONiso 0.9.0
+
+### Performance
+
+Calibration is 21-25% faster on monthly and site-year runs (one to
+twelve ONAQ months, all three methods), with bit-identical output, and
+peak memory is lower in most cases. Most of the remaining time is spent
+in
+[`neonUtilities::stackEddy()`](https://rdrr.io/pkg/neonUtilities/man/stackEddy.html).
+
+- [`convert_POSIXct_to_NEONhdf5_time()`](https://lanl.github.io/NEONiso/reference/convert_POSIXct_to_NEONhdf5_time.md)
+  formats UTC POSIXct input directly instead of re-parsing it with
+  [`lubridate::ymd_hms()`](https://lubridate.tidyverse.org/reference/ymd_hms.html)
+  (about 3.5x faster).
+- Ambient observations are assigned to calibration periods with
+  [`findInterval()`](https://rdrr.io/r/base/findInterval.html) instead
+  of one `%within%` scan per period, which made this step O(rows x
+  days).
+- [`filter_median_brock86()`](https://lanl.github.io/NEONiso/reference/filter_median_brock86.md)
+  computes its rolling median with one vectorized sort instead of
+  [`zoo::rollapply()`](https://rdrr.io/pkg/zoo/man/rollapply.html)
+  (about 15x faster); `zoo` is still used for unusual inputs.
+- Added a benchmark harness (`benchmarks/`, not part of the built
+  package).
 
 ## NEONiso 0.8.0
 
@@ -36,7 +59,7 @@ CRAN release: 2026-02-22
 - Output file writing functions (`setup_output_file`, `write_carbon_*`,
   `write_water_*`) now accept an open file identifier, reducing
   redundant file open/close operations during calibration output. The
-  [`rhdf5::h5closeAll()`](https://rdrr.io/pkg/rhdf5/man/h5closeAll.html)
+  [`rhdf5::h5closeAll()`](https://huber-group-embl.github.io/rhdf5/reference/h5closeAll.html)
   calls in the main calibration functions have been replaced with
   targeted `h5_close()` calls.
 - Now requires `neonUtilities` \>= 2.3.0 (previously \>= 2.1.1).

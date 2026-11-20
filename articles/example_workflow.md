@@ -3,6 +3,7 @@
 Rich Fiorella; updated: February 26, 2021
 
 ``` r
+
 library(NEONiso)
 ```
 
@@ -29,6 +30,7 @@ covariance bundles: manage_local_EC_archive. For example, the following
 command will download all of the data for the ONAQ site:
 
 ``` r
+
 manage_local_EC_archive(file_dir = "~/Desktop",
                         get = TRUE,
                         unzip_files = TRUE,
@@ -58,6 +60,7 @@ of a for loop (or an apply statement), and call them for each file you
 would like to calibrate:
 
 ``` r
+
 for (i in seq_along(fnames_out)) {
   calibrate_carbon_bymonth(fnames[i],
                            fnames_out[i],
@@ -77,6 +80,7 @@ to each entry in input file names (fnames). An example of code to
 generate these three vectors is provided below:
 
 ``` r
+
 data_dir <- "/your/path/here/DP4_00200_001/"
 
 fnames <- list.files(path = data_dir,
