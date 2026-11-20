@@ -4,7 +4,7 @@ Each proposal needs approval before anything under `tests/` changes.
 
 | # | What | Status |
 |---|---|---|
-| P1 | Direct tests for `filter_median_brock86()` | **Applied** (`3b5f4bc`, approved) |
+| P1 | Direct tests for `filter_median_brock86()` | **Applied** (`42eae01`, approved) |
 | P2 | Update 3 carbon ambient snapshots/expectations for the B2 fix | **Applied** (approved) |
 | P3 | New `test-bug_fixes.R`: regression tests for B1–B7 | Proposed |
 | P4 | Update water ambient snapshot/expectations for the B9 fix | Proposed |
@@ -77,7 +77,7 @@ output, and it fails 3 tests on branch `fix-b1-b7`:
 
 **Why:** each fix (B1-B7) has no test that would catch it regressing. All
 of these pass on `fix-b1-b7` and fail (or, for B6, error) on the pre-fix
-commit `54ed293`, checked by running the file from outside `tests/`. B10
+commit `d7e0e36`, checked by running the file from outside `tests/`. B10
 (`avg >= 10`) is not covered: it needs a 30-minute fixture.
 
 **Proposed new file** `tests/testthat/test-bug_fixes.R`:

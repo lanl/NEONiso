@@ -11,16 +11,16 @@ fix are in its commit message and in "Bug fixes" below.
 
 | Bug | Status | Commit |
 |---|---|---|
-| B1 midnight / time-zone conversion | fixed | `eea9dec` |
-| B2 `force_to_*` no effect | fixed (changes 3 carbon snapshots, see P2) | `22ecdf1` |
-| B3 gainoffset writes no calData | fixed | `3d7da4e` |
-| B4 `calculate_13CO2` ignores `f` | fixed | `f52c98a` |
-| B5 1 s gap at day boundary | fixed | `555b802` |
-| B6 `gap_fill_parameters` not forwarded | fixed | `0a7a5a4` |
-| B7 carbon validation fails on 06m files | fixed | `3f13527` |
+| B1 midnight / time-zone conversion | fixed | `cda57b6` |
+| B2 `force_to_*` no effect | fixed (changes 3 carbon snapshots, see P2) | `2512d3c` |
+| B3 gainoffset writes no calData | fixed | `0ae29ff` |
+| B4 `calculate_13CO2` ignores `f` | fixed | `af64c81` |
+| B5 1 s gap at day boundary | fixed | `be2f59e` |
+| B6 `gap_fill_parameters` not forwarded | fixed | `c6e50c6` |
+| B7 carbon validation fails on 06m files | fixed | `a06ba62` |
 | B8 neonUtilities timeout | upstream, not ours | – |
-| B9 unmatched ambient rows keep raw values (water, linreg) | fixed: now NA; filling them tracked in #105 (changes water snapshot, see P4) | `6e5d426` |
-| B10 `avg >= 10` gives `030m` group names | fixed | `18763cf` |
+| B9 unmatched ambient rows keep raw values (water, linreg) | fixed: now NA; filling them tracked in #105 (changes water snapshot, see P4) | `20a6573` |
+| B10 `avg >= 10` gives `030m` group names | fixed | `b17417c` |
 
 
 **B1. `convert_POSIXct_to_NEONhdf5_time()` mishandles some POSIXct inputs.**
