@@ -24,18 +24,20 @@ ciso_subset <- co2test$ambient
 
 ciso_subset_cal <- lapply(names(ciso_subset),
                           function(x) {
-                            calibrate_ambient_carbon_gainoffset(amb_data_list = ciso_subset[[x]],
-                                                                caldf = caldf_b03,
-                                                                site = "YELL",
-                                                                filter_data = TRUE,
-                                                                force_to_end = TRUE,
-                                                                force_to_beginning = TRUE,
-                                                                r2_thres = 0.9)
+                            calibrate_ambient_carbon_gainoffset(
+                              amb_data_list = ciso_subset[[x]],
+                              caldf = caldf_b03,
+                              site = "YELL",
+                              filter_data = TRUE,
+                              force_to_end = TRUE,
+                              force_to_beginning = TRUE,
+                              r2_thres = 0.9
+                            )
                           })
 
 names(ciso_subset_cal) <- names(ciso_subset)
 
-test_that("calibrated ambient co2 delta values in B03 are within a plausible range", {
+test_that("calibrated ambient co2 delta values in B03 are plausible", {
   expect_lt(max(ciso_subset_cal$`000_010_09m`$dlta13CCo2$mean_cal,
                 na.rm = TRUE),
             10)
@@ -44,7 +46,7 @@ test_that("calibrated ambient co2 delta values in B03 are within a plausible ran
             -50)
 })
 
-test_that("calibrated ambient co2 mixing ratios in B03 are within a plausible range", {
+test_that("calibrated ambient co2 mixing ratios in B03 are plausible", {
   expect_lt(max(ciso_subset_cal$`000_010_09m`$rtioMoleDryCo2$mean_cal,
                 na.rm = TRUE),
             1500)
@@ -55,13 +57,15 @@ test_that("calibrated ambient co2 mixing ratios in B03 are within a plausible ra
 
 ciso_subset_cal <- lapply(names(ciso_subset),
                           function(x) {
-                            calibrate_ambient_carbon_linreg(amb_data_list = ciso_subset[[x]],
-                                                            caldf = caldf_lr,
-                                                            site = "YELL",
-                                                            filter_data = TRUE,
-                                                            force_to_end = TRUE,
-                                                            force_to_beginning = TRUE,
-                                                            r2_thres = 0.9)
+                            calibrate_ambient_carbon_linreg(
+                              amb_data_list = ciso_subset[[x]],
+                              caldf = caldf_lr,
+                              site = "YELL",
+                              filter_data = TRUE,
+                              force_to_end = TRUE,
+                              force_to_beginning = TRUE,
+                              r2_thres = 0.9
+                            )
                           })
 
 names(ciso_subset_cal) <- names(ciso_subset)
@@ -75,7 +79,7 @@ test_that("calibrated carbon values linreg are within a plausible range", {
             -50)
 })
 
-test_that("calibrated ambient co2 mixing ratios linreg are within a plausible range", {
+test_that("calibrated ambient co2 mixing ratios linreg are plausible", {
   expect_lt(max(ciso_subset_cal$`000_010_09m`$rtioMoleDryCo2$mean_cal,
                 na.rm = TRUE),
             1500)

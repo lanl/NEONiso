@@ -8,7 +8,7 @@ fin <- system.file("extdata",
 # 1) for CO2:
 co2test <- ingest_data(fin, analyte = "Co2", amb_avg = 9, ref_avg = 9)
 
-test_that("extract_carbon_calibration_data fails if incorrect list provided to function", {
+test_that("extract_carbon_calibration_data fails if given an incorrect list", {
   expect_error(extract_carbon_cal_data(co2test$reference))
   expect_error(extract_carbon_cal_data(fin))
   expect_silent(extract_carbon_cal_data(co2test$refe_stacked))
@@ -40,7 +40,7 @@ test_that("extract_carbon_calibration_data removes standards correctly", {
 # 2) for H2O:
 h2otest <- ingest_data(fin, analyte = "H2o", amb_avg = 9, ref_avg = 3)
 
-test_that("extract_carbon_calibration_data fails if incorrect list provided to function", {
+test_that("extract_water_calibration_data fails if given an incorrect list", {
   expect_error(extract_water_calibration_data(h2otest$reference))
   expect_error(extract_water_calibration_data(fin))
   expect_silent(extract_water_calibration_data(h2otest$refe_stacked))

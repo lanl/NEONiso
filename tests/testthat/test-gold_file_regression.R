@@ -12,9 +12,11 @@
 #
 # To update snapshots after intentional changes: testthat::snapshot_accept()
 
-fin <- system.file("extdata",
+fin <- system.file(
+  "extdata",
   "NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.packed.h5",
-  package = "NEONiso", mustWork = TRUE)
+  package = "NEONiso", mustWork = TRUE
+)
 
 # Columns to exclude: 5-fold cross-validation metrics use random fold
 # assignment so they are not reproducible across runs. Leave-one-out CV
@@ -46,9 +48,11 @@ remove_cols_ambient <- function(ambient_list, skip_cols) {
 test_that("carbon gainoffset cal_df matches baseline", {
 
   suppressWarnings({
-    co2_go <- calibrate_carbon(fin, tempfile(), "ONAQ",
+    co2_go <- calibrate_carbon(
+      fin, tempfile(), "ONAQ",
       method = "gainoffset", calibration_half_width = 0.5,
-      write_to_file = FALSE)
+      write_to_file = FALSE
+    )
   })
 
   # Remove non-deterministic CV columns before snapshotting
@@ -59,9 +63,11 @@ test_that("carbon gainoffset cal_df matches baseline", {
 test_that("carbon gainoffset ambient matches baseline", {
 
   suppressWarnings({
-    co2_go <- calibrate_carbon(fin, tempfile(), "ONAQ",
+    co2_go <- calibrate_carbon(
+      fin, tempfile(), "ONAQ",
       method = "gainoffset", calibration_half_width = 0.5,
-      write_to_file = FALSE)
+      write_to_file = FALSE
+    )
   })
 
   # Remove non-deterministic CV columns before snapshotting
@@ -76,9 +82,11 @@ test_that("carbon gainoffset ambient matches baseline", {
 
 test_that("carbon linreg cal_df matches baseline", {
 
-  co2_lr <- calibrate_carbon(fin, tempfile(), "ONAQ",
+  co2_lr <- calibrate_carbon(
+    fin, tempfile(), "ONAQ",
     method = "linreg", calibration_half_width = 0.5,
-    write_to_file = FALSE)
+    write_to_file = FALSE
+  )
 
   # Remove non-deterministic CV columns before snapshotting
   stable_cal_df <- remove_cols(co2_lr$cal_df, carbon_cv_cols)
@@ -87,9 +95,11 @@ test_that("carbon linreg cal_df matches baseline", {
 
 test_that("carbon linreg ambient matches baseline", {
 
-  co2_lr <- calibrate_carbon(fin, tempfile(), "ONAQ",
+  co2_lr <- calibrate_carbon(
+    fin, tempfile(), "ONAQ",
     method = "linreg", calibration_half_width = 0.5,
-    write_to_file = FALSE)
+    write_to_file = FALSE
+  )
 
   # Remove non-deterministic CV columns before snapshotting
   stable_ambient <- remove_cols_ambient(

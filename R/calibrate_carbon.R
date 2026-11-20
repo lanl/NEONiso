@@ -180,19 +180,22 @@ calibrate_carbon         <- function(inname,
     ciso$reference <- lapply(names(ciso$reference),
                              function(x) {
                                ciso$reference[[x]] <- correct_carbon_ref_output(
-                                ciso$reference[[x]], site = site, ref_gas = x)
+                                 ciso$reference[[x]], site = site, ref_gas = x
+                               )
                              })
 
     names(ciso$reference) <- tmp_names
   }
 
   # get calibration parameters data.frame.
-  cal_df <- fit_carbon_regression(ref_data = refe, method = method,
-                                  calibration_half_width = calibration_half_width,
-                                  plot_regression_data = plot_regression_data,
-                                  plot_dir = plot_directory,
-                                  site = site,
-                                  min_nobs = min_nobs)
+  cal_df <- fit_carbon_regression(
+    ref_data = refe, method = method,
+    calibration_half_width = calibration_half_width,
+    plot_regression_data = plot_regression_data,
+    plot_dir = plot_directory,
+    site = site,
+    min_nobs = min_nobs
+  )
 
   #----------------------------------------------------------------------------
   #  calibrate ambient data.
@@ -205,14 +208,16 @@ calibrate_carbon         <- function(inname,
     ciso_subset_cal <-
       lapply(names(ciso_subset),
              function(x) {
-               calibrate_ambient_carbon_gainoffset(amb_data_list = ciso_subset[[x]],
-                                                   caldf = cal_df,
-                                                   site = site,
-                                                   filter_data = filter_ambient,
-                                                   force_to_end = force_cal_to_end,
-                                                   force_to_beginning = force_cal_to_beginning,
-                                                   gap_fill_parameters = gap_fill_parameters,
-                                                   r2_thres = r2_thres)
+               calibrate_ambient_carbon_gainoffset(
+                 amb_data_list = ciso_subset[[x]],
+                 caldf = cal_df,
+                 site = site,
+                 filter_data = filter_ambient,
+                 force_to_end = force_cal_to_end,
+                 force_to_beginning = force_cal_to_beginning,
+                 gap_fill_parameters = gap_fill_parameters,
+                 r2_thres = r2_thres
+               )
              })
 
   } else if (method == "linreg") {
@@ -220,14 +225,16 @@ calibrate_carbon         <- function(inname,
     ciso_subset_cal <-
       lapply(names(ciso_subset),
              function(x) {
-               calibrate_ambient_carbon_linreg(amb_data_list = ciso_subset[[x]],
-                                               caldf = cal_df,
-                                               site = site,
-                                               filter_data = filter_ambient,
-                                               force_to_end = force_cal_to_end,
-                                               force_to_beginning = force_cal_to_beginning,
-                                               gap_fill_parameters = gap_fill_parameters,
-                                               r2_thres = r2_thres)
+               calibrate_ambient_carbon_linreg(
+                 amb_data_list = ciso_subset[[x]],
+                 caldf = cal_df,
+                 site = site,
+                 filter_data = filter_ambient,
+                 force_to_end = force_cal_to_end,
+                 force_to_beginning = force_cal_to_beginning,
+                 gap_fill_parameters = gap_fill_parameters,
+                 r2_thres = r2_thres
+               )
              })
   }
 
@@ -239,7 +246,7 @@ calibrate_carbon         <- function(inname,
     cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
     cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
     fid <- setup_output_file(inname, outname, site, "co2",
-                              attrs = ciso$attrs, keep_open = TRUE)
+                             attrs = ciso$attrs, keep_open = TRUE)
     write_carbon_calibration_data(outname, site, cal_df, method = method,
                                   fid = fid)
     write_carbon_ambient_data(outname, site, ciso_subset_cal, fid = fid)

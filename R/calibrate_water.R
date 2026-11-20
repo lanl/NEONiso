@@ -88,11 +88,13 @@ calibrate_water       <- function(inname,
     refe <- swap_standard_isotoperatios(refe)
   }
 
-  cal_df <- fit_water_regression(ref_data = refe,
-                                 calibration_half_width = calibration_half_width,
-                                 slope_tolerance = slope_tolerance,
-                                 r2_thres = r2_thres,
-                                 site = site)
+  cal_df <- fit_water_regression(
+    ref_data = refe,
+    calibration_half_width = calibration_half_width,
+    slope_tolerance = slope_tolerance,
+    r2_thres = r2_thres,
+    site = site
+  )
 
   #=======================================================================
   # apply calibration routines
@@ -109,7 +111,8 @@ calibrate_water       <- function(inname,
                                 force_to_end = force_cal_to_end,
                                 force_to_beginning = force_cal_to_beginning,
                                 filter_data = filter_data,
-                                r2_thres = r2_thres)
+                                r2_thres = r2_thres
+                              )
                             })
 
   names(wiso_subset_cal) <- names(wiso_subset)
@@ -121,7 +124,7 @@ calibrate_water       <- function(inname,
     cal_df$timeBgn <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeBgn)
     cal_df$timeEnd <- convert_POSIXct_to_NEONhdf5_time(cal_df$timeEnd)
     fid <- setup_output_file(inname, outname, site, analyte = "h2o",
-                              attrs = wiso$attrs, keep_open = TRUE)
+                             attrs = wiso$attrs, keep_open = TRUE)
     write_water_calibration_data(outname, site, cal_df, fid = fid)
     write_water_ambient_data(outname, site, wiso_subset_cal, fid = fid)
     h5_close(fid)

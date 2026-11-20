@@ -49,18 +49,18 @@ ingest_data <- function(inname,
   if (analyte == "Co2") {
 
     data <- try(neonUtilities::stackEddy(inname,
-                                     avg = amb_avg,
-                                     level = "dp01",
-                                     var = "isoCo2",
-                                     useFasttime = TRUE,
-                                     runLocal = TRUE)[[1]], silent = TRUE)
+                                         avg = amb_avg,
+                                         level = "dp01",
+                                         var = "isoCo2",
+                                         useFasttime = TRUE,
+                                         runLocal = TRUE)[[1]], silent = TRUE)
     if ("try-error" %in% class(data)) {
       data <- neonUtilities::stackEddy(inname,
-                                           avg = 9,
-                                           level = "dp01",
-                                           var = "isoCo2",
-                                           useFasttime = TRUE,
-                                           runLocal = TRUE)[[1]]
+                                       avg = 9,
+                                       level = "dp01",
+                                       var = "isoCo2",
+                                       useFasttime = TRUE,
+                                       runLocal = TRUE)[[1]]
       backupMethod <- TRUE
     }
 
@@ -330,7 +330,7 @@ restructure_variables <- function(dataframe,
 #-----------------------------------------
 #' Restructure ingested variables for the carbon isotope system.
 #'
-#' Restructures carbon isotope measurement system variables and shortens names 
+#' Restructures carbon isotope measurement system variables and shortens names
 #' to simplify referencing variables elsewhere in calibration code.
 #'
 #' @param varname Which variable are we applying this function to? There's
@@ -441,9 +441,9 @@ restructure_carbon_variables <- function(dataframe,
 #-----------------------------------------
 #' Restructure ingested variables for the water isotope system.
 #'
-#' Restructures water isotope measurement system variables and shortens names 
+#' Restructures water isotope measurement system variables and shortens names
 #' to simplify referencing variables elsewhere in calibration code.
-#' 
+#'
 #' @param varname Which variable are we applying this function to? There's
 #'                a list of ~10 common ones to write to the hdf5 file.
 #' @param dataframe Input data.frame, from `neonUtilities::stackEddy`

@@ -70,7 +70,7 @@ estimate_calibration_error <- function(formula, data) {
 #' fractions to generate a transfer function and associated uncertainty
 #' estimates using both 5-fold and leave-one-out cross-validation methods.
 #' Regression occurs either on 12CO2/13CO2 mole fractions (gainoffset method)
-#' or on the CO2 and d13C values (linreg). 
+#' or on the CO2 and d13C values (linreg).
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -457,8 +457,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 #' Performs regression between measured and known carbon isotope and mole
 #' fractions to generate a transfer function and associated uncertainty
 #' estimates using both 5-fold and leave-one-out cross-validation methods.
-#' Regression occurs on d18O and d2H values. 
-#' 
+#' Regression occurs on d18O and d2H values.
+#'
 #' @param ref_data Reference data.frame from which to estimate
 #'        calibration parameters.
 #' @param calibration_half_width Determines the period (in days)

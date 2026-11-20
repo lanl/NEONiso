@@ -60,14 +60,14 @@ test_that("carbon calibration data frames correct even when no input data", {
 
 # test carbon - bowling ambient calibration
 temp <- calibrate_ambient_carbon_gainoffset(co2test$ambient$`000_010_09m`,
-                                           caldf_b03,
-                                           site = "ONAQ")
+                                            caldf_b03,
+                                            site = "ONAQ")
 temp_gf <- calibrate_ambient_carbon_gainoffset(co2test$ambient$`000_010_09m`,
                                                caldf_b03,
                                                site = "ONAQ",
                                                gap_fill_parameters = TRUE)
 
-test_that("calibrate_ambient_carbon_Bowling2003 returns a list",{
+test_that("calibrate_ambient_carbon_Bowling2003 returns a list", {
 
   expect_equal(class(temp), "list")
   expect_equal(class(temp_gf), "list")
@@ -84,7 +84,7 @@ test_that("calibrate_ambient_carbon_Bowling2003 returns correct variables", {
   expect_equal(names(temp_gf), vars)
 })
 
-test_that("calibrated d13C values have been added to calibrate_ambient_cabron_Bowling2003 output", {
+test_that("calibrate_ambient_carbon_Bowling2003 output has calibrated d13C", {
 
   expect_gt(ncol(temp$dlta13CCo2),
             ncol(co2test$ambient$`000_010_09m`$dlta13CCo2))
@@ -118,7 +118,7 @@ test_that("calibrate_ambient_carbon_linreg returns correct variables", {
   expect_equal(names(temp_gf), vars)
 })
 
-test_that("calibrated d13C values have been added to calibrate_ambient_cabron_linreg output", {
+test_that("calibrate_ambient_carbon_linreg output has calibrated d13C", {
 
   expect_gt(ncol(temp$dlta13CCo2),
             ncol(co2test$ambient$`000_010_09m`$dlta13CCo2))
@@ -131,7 +131,8 @@ test_that("calibrated d13C values have been added to calibrate_ambient_cabron_li
 # WATER FUNCTIONS
 #----------------------
 
-# test to make sure that the I/O structures across regression functions are correct.
+# test to make sure that the I/O structures across regression functions are
+# correct.
 fin <- system.file("extdata",
                    "NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.packed.h5",
                    package = "NEONiso", mustWork = TRUE)
@@ -179,10 +180,10 @@ test_that("calibrate_ambient_water_linreg returns correct variables", {
             "rtioMoleDryH2o", "rtioMoleWetH2o",
             "rtioMoleWetH2oEnvHut", "temp", "tempEnvHut")
   expect_equal(names(temp), vars)
- #expect_equal(names(temp_gf), vars)
+  #expect_equal(names(temp_gf), vars)
 })
 
-test_that("calibrated water isotope values have been added to calibrate_ambient_water_linreg output", {
+test_that("calibrate_ambient_water_linreg output has calibrated isotopes", {
 
   expect_gt(ncol(temp$dlta18OH2o),
             ncol(h2otest$ambient$`000_010_09m`$dlta18OH2o))
@@ -207,9 +208,9 @@ test_that("gap-fill carries forward good calibration parameters (gainoffset)", {
   }
 
   result <- calibrate_ambient_carbon_gainoffset(co2test$ambient$`000_010_09m`,
-                                                 caldf_bad,
-                                                 site = "ONAQ",
-                                                 gap_fill_parameters = TRUE)
+                                                caldf_bad,
+                                                site = "ONAQ",
+                                                gap_fill_parameters = TRUE)
   expect_equal(class(result), "list")
   expect_true("dlta13CCo2" %in% names(result))
 })
@@ -224,9 +225,9 @@ test_that("gap-fill handles bad first calibration period (gainoffset)", {
     caldf_bad$r2_13C[1] <- 0.1
 
     result <- calibrate_ambient_carbon_gainoffset(co2test$ambient$`000_010_09m`,
-                                                   caldf_bad,
-                                                   site = "ONAQ",
-                                                   gap_fill_parameters = TRUE)
+                                                  caldf_bad,
+                                                  site = "ONAQ",
+                                                  gap_fill_parameters = TRUE)
     expect_equal(class(result), "list")
     expect_true("dlta13CCo2" %in% names(result))
   }
@@ -242,9 +243,9 @@ test_that("gap-fill carries forward good calibration parameters (linreg)", {
   }
 
   result <- calibrate_ambient_carbon_linreg(co2test$ambient$`000_010_09m`,
-                                             caldf_bad,
-                                             site = "ONAQ",
-                                             gap_fill_parameters = TRUE)
+                                            caldf_bad,
+                                            site = "ONAQ",
+                                            gap_fill_parameters = TRUE)
   expect_equal(class(result), "list")
   expect_true("dlta13CCo2" %in% names(result))
 })
@@ -258,9 +259,9 @@ test_that("gap-fill handles bad first calibration period (linreg)", {
     caldf_bad$co2_r2[1] <- 0.1
 
     result <- calibrate_ambient_carbon_linreg(co2test$ambient$`000_010_09m`,
-                                               caldf_bad,
-                                               site = "ONAQ",
-                                               gap_fill_parameters = TRUE)
+                                              caldf_bad,
+                                              site = "ONAQ",
+                                              gap_fill_parameters = TRUE)
     expect_equal(class(result), "list")
     expect_true("dlta13CCo2" %in% names(result))
   }
@@ -280,8 +281,8 @@ test_that("gainoffset handles mismatched ambient timestamps", {
   amb_mismatch$dlta13CCo2 <- rbind(amb_mismatch$dlta13CCo2, extra_row)
 
   result <- calibrate_ambient_carbon_gainoffset(amb_mismatch,
-                                                 caldf_b03,
-                                                 site = "ONAQ")
+                                                caldf_b03,
+                                                site = "ONAQ")
   expect_equal(class(result), "list")
   # After alignment, row counts should be consistent
   expect_equal(nrow(result$dlta13CCo2), nrow(result$rtioMoleDryCo2))
@@ -296,8 +297,8 @@ test_that("linreg handles mismatched ambient timestamps", {
   amb_mismatch$dlta13CCo2 <- rbind(amb_mismatch$dlta13CCo2, extra_row)
 
   result <- calibrate_ambient_carbon_linreg(amb_mismatch,
-                                             caldf_lr,
-                                             site = "ONAQ")
+                                            caldf_lr,
+                                            site = "ONAQ")
   expect_equal(class(result), "list")
   expect_equal(nrow(result$dlta13CCo2), nrow(result$rtioMoleDryCo2))
 })
@@ -313,8 +314,8 @@ test_that("water calibration sets NA when r2_2H is below threshold", {
   caldf_bad_h$r2_2H <- 0.1
 
   result <- calibrate_ambient_water_linreg(h2otest$ambient$`000_010_09m`,
-                                            caldf_bad_h,
-                                            site = "ONAQ")
+                                           caldf_bad_h,
+                                           site = "ONAQ")
   # Calibrated hydrogen values in calibration periods should be NA
   expect_true(any(is.na(result$dlta2HH2o$mean_cal)))
   expect_true(any(is.na(result$dlta2HH2o$min_cal)))
@@ -327,8 +328,8 @@ test_that("water calibration sets NA when r2_18O is below threshold", {
   caldf_bad_o$r2_18O <- 0.1
 
   result <- calibrate_ambient_water_linreg(h2otest$ambient$`000_010_09m`,
-                                            caldf_bad_o,
-                                            site = "ONAQ")
+                                           caldf_bad_o,
+                                           site = "ONAQ")
   expect_true(any(is.na(result$dlta18OH2o$mean_cal)))
   expect_true(any(is.na(result$dlta18OH2o$min_cal)))
   expect_true(any(is.na(result$dlta18OH2o$max_cal)))
