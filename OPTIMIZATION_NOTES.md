@@ -1,6 +1,6 @@
 # NEONiso optimization notes
 
-Baseline commit: `80d75a0`. Phase 1 (planning) only; no package code changed.
+Baseline commit: `80d75a0`. Final commit: see `git log perf-c1-c4`.
 
 ## Bugs found (logged, behavior left as-is)
 
@@ -60,49 +60,140 @@ error so W1/W2 can be timed with HDF5 output included.
 with "subscript out of bounds" in `checkUrlExp()` when a download hits R's
 default 60 s `timeout`. `options(timeout = 3600)` avoids it.
 
-## Change log
+## Results (final, branch `perf-c1-c4`)
 
-Status (2026-11-19): C1–C4 are implemented, one commit each, on branch
-`perf-c1-c4`. All outputs are **bit-identical** to baseline `80d75a0` on W0,
-W1 and W2 for gainoffset, linreg and water (R objects via `identical()`, HDF5
-via `h5diff`). The full test suite passes (100 tests, 235 expectations) after
-every commit.
+Kept: **C1, C3, C2**. Tried and reverted: **C4**. All outputs are
+**bit-identical** to baseline `80d75a0` on W0, W1 and W2 for gainoffset,
+linreg and water (18 comparisons: R objects via `identical()`, HDF5 via
+`h5diff`). Full test suite: 100 tests, 235 expectations, 0 failures/skips,
+after every commit.
 
-**Timings are provisional.** The W1/W2 runs happened on battery power with the
-lid closed, and macOS maintenance sleeps landed inside some runs (outliers of
-50–2,700 s). Medians of 5 below are robust to the occasional outlier but are
-not final. Raw data: `benchmarks/results/timings_session1_battery_UNRELIABLE.csv`.
-`bench.sh` now refuses to run on battery and wraps runs in `caffeinate`.
-Re-run on AC power before drawing final conclusions.
+Environment: R 4.6.2, macOS arm64, hdf5r backend, AC power, `caffeinate`.
+Fresh `Rscript` per run, `set.seed(1)`, baseline and final interleaved, 5
+runs each. Time = in-process `calibrate_*()` call (median, IQR); peak memory =
+max RSS of the process (median). Raw data: `benchmarks/results/timings.csv`
+(labels `final_base`, `final`; per-commit labels `baseline`, `c1`, `c3`, `c4`,
+`c2`). In all 9 cases below the baseline and final timing ranges do not
+overlap (Wilcoxon p = 0.012, the minimum for 5 vs 5).
 
-| Workload | Method | Baseline | C1 | +C3 | +C4 | +C2 (HEAD) | Peak RSS base → HEAD |
-|---|---|---|---|---|---|---|---|
-| W1 | gainoffset | 3.93 s | 3.09 | 3.01 | 3.13 | 2.88 (−27%) | 397 → 371 MB |
-| W1 | linreg | 4.21 s | 3.21 | 3.11 | 3.06 | 2.92 (−31%) | 399 → 372 MB |
-| W1 | water | 3.16 s | 2.72 | 2.75 | 2.50 | 2.33 (−26%) | 418 → 405 MB |
-| W2 | gainoffset | 24.07 s | 20.82 | 19.31 | 18.87 | 18.73 (−22%) | 1285 → 1154 MB |
-| W2 | linreg | 25.19 s | 22.88 | 21.09 | 21.15 | 19.69 (−22%) | 1346 → 1210 MB |
-| W2 | water | 17.63 s | 16.64 | 14.58 | 13.98 | 13.51 (−23%) | 631 → 563 MB |
+### W0: bundled ONAQ 2019-05 fixture
 
-Per change (function-level numbers are clean in-process `bench::mark` runs):
+| Method | Baseline | Final | Change | Peak RSS baseline → final |
+|---|---|---|---|---|
+| gainoffset | 1.905 s (IQR 0.080) | 1.482 s (0.085) | **−22.2%** | 335 → 276 MB (−17.5%) |
+| linreg | 1.938 s (0.064) | 1.461 s (0.028) | **−24.6%** | 336 → 277 MB (−17.4%) |
+| water | 1.786 s (0.062) | 1.344 s (0.079) | **−24.7%** | 318 → 274 MB (−13.9%) |
 
-- **C1 `16ca78f`, fast path in `convert_POSIXct_to_NEONhdf5_time`**:
-  52 → 15 ms on 30k timestamps. Clear win on W0 (−12 to −16%, clean data) and
-  W1. Keep.
-- **C3 `56b8009`, `findInterval` assignment to calibration periods**:
-  205 → 0.8 ms (365 periods × 30k rows). Consistent −1.5 to −2.1 s on W2 across
-  all three methods; flat on W1, as expected. Keep (provisional).
-- **C4 `4a965aa`, numeric per-day subset in `fit_*_regression`**: regression
-  functions −51% (carbon) / −19% (water) in-process. At the workload level the
-  regression loop is <1–5% of runtime: W1 water −0.29 s (Wilcoxon p = 0.01 in a
-  10-run A/B), carbon and W2 within noise. **Undecided**: the rule is to keep a
-  change only if it clearly beats noise, and the A/B was sleep-contaminated.
-  Re-test on AC; revert if not clear.
-- **C2 `8bb51d7`, vectorized rolling median**: 510 → 34 ms on 50k rows;
-  0 mismatches vs zoo on 20,000 random vectors. W1 −5 to −8%. Keep
-  (provisional). This is the least obvious code of the four (~35 lines in
-  `rolling_median()`), so it's worth a look in review; it is commented, and
-  falls back to zoo for anything unusual.
+### W1: one real month (ONAQ 2019-05, 127 MB, 4 heights)
 
-Not yet done: final AC-power timings, a final re-profile, remaining hotspots,
-and the `git diff 80d75a0 -- tests/` confirmation (checked below, empty so far).
+| Method | Baseline | Final | Change | Peak RSS baseline → final |
+|---|---|---|---|---|
+| gainoffset | 3.868 s (0.136) | 2.957 s (0.123) | **−23.6%** | 396 → 372 MB (−6.1%) |
+| linreg | 3.930 s (0.301) | 3.097 s (0.080) | **−21.2%** | 397 → 374 MB (−5.9%) |
+| water | 3.174 s (0.080) | 2.498 s (0.112) | **−21.3%** | 419 → 405 MB (−3.4%) |
+
+### W2 / W3: twelve real months (ONAQ 2019, 1.2 GB), time and peak memory
+
+| Method | Baseline | Final | Change | Peak RSS baseline → final (W3) |
+|---|---|---|---|---|
+| gainoffset | 25.219 s (1.293) | 19.198 s (0.300) | **−23.9%** | 1315 → 1152 MB (−12.4%) |
+| linreg | 26.107 s (0.679) | 20.302 s (0.499) | **−22.2%** | 1346 → 1216 MB (−9.6%) |
+| water | 18.235 s (0.316) | 13.626 s (0.415) | **−25.3%** | 632 → 662 MB (**+4.7%**, see below) |
+
+**W2 water peak memory.** This is the one case where peak RSS went up. It is
+consistent (final 660–664 MB vs baseline 626–633 MB over 5 runs each) and
+appears only in the C1+C3+C2 combination: C1+C3 alone peaks at about 580 MB,
+and C1+C3+C4+C2 at about 560 MB. R's own peak accounting (`gc()` max used)
+shows vector data peaking *below* baseline in every version (final 120 MB vs
+baseline 143 MB). The extra is in Ncells, i.e. language-object garbage not yet
+collected when the peak happened. So this is GC timing, not more live data.
+The most likely mechanism (not proven) is that C2's per-window `vapply()` for
+even-count windows adds small garbage, and without C4's removal of dplyr
+garbage the collector runs later. Flagged for your
+decision (see "Open decisions").
+
+## Change log (incremental effect, clean AC-power matrix)
+
+Medians, each version vs the previous one; W1 n = 5–10, W2 n = 5–8 per
+version; p = Wilcoxon rank-sum.
+
+### Kept
+
+- **C1 `16ca78f`: fast path in `convert_POSIXct_to_NEONhdf5_time()`.**
+  `format()` directly when the input is unnamed UTC/GMT POSIXct with whole
+  seconds (1970–2100) and none at exact midnight; otherwise the original
+  `ymd_hms()` path. Function: 52 → 15 ms (30k timestamps), 3.3× less
+  allocation. Workloads: W1 −10 to −18% (p ≈ 0.01), W2 carbon −8 to −11%
+  (p = 0.01), W2 water −3% (p = 0.30). Checked by
+  `benchmarks/check_c1_time_conversion.R` (values *and* warnings across 16
+  input classes, including the fallback ones).
+- **C3 `56b8009`: `calperiod_indices()` assigns ambient rows to calibration
+  periods via `findInterval()`.** Used when the periods are finite,
+  non-negative and disjoint under `%within%`'s own arithmetic; otherwise the
+  original loop. Function: 205 → 0.8 ms and 336 → 3.7 MB allocated (365
+  periods × 30k rows). Workloads: all 6 cases faster, W1 −3 to −8% (water
+  p = 0.03), W2 −3 to −10% (water p = 0.02). Checked by
+  `benchmarks/check_c3_calperiod_indices.R`.
+- **C2 `8bb51d7`: vectorized rolling median (`rolling_median()`) in
+  `filter_median_brock86()`.** One `order()` call sorts every window; the
+  odd-count median is read directly and the even-count one uses `mean()`, as
+  `median()` does; unusual inputs fall back to zoo. Function: 510 → 34 ms
+  (50k rows). Workloads: W2 −9 to −10% (p ≤ 0.03), W1 linreg/water −8%
+  (p < 0.05), W1 gainoffset −2% (p = 0.36). Checked by
+  `benchmarks/check_c2_median_filter.R` (20,000 random vectors with
+  NA/NaN/±Inf/ties, 0 mismatches). **Flag:** this is the least obvious code
+  added (~35 lines). It is commented, but deserves a careful review read.
+
+### Tried and reverted
+
+- **C4 `4a965aa` (reverted in `ddef218`): numeric per-day subset in
+  `fit_*_regression()`.** Bit-identical, and halves `fit_carbon_regression()`
+  in-process (70 → 35 ms per month; water 146 → 118 ms). But the regression
+  loop is under 5% of a whole run at default settings, and the
+  interleaved A/B on AC power (C3 vs C3+C4) showed W1 +1.1/−0.7/−1.8% and W2
+  +2.6/−2.1/−6.5%, none distinguishable from noise (p ≥ 0.13), so it was
+  reverted per the rules. It could matter for runs with a large
+  `calibration_half_width` (e.g. the `100000` used in `workflows/`), which W2
+  does not exercise; see also its memory interaction above.
+
+### Not attempted
+
+- **C5 (leaner 5-fold CV):** not approved for this batch. With C4 reverted,
+  the regression loop is 3% (carbon) and 9% (water) of W2. Not worth the
+  floating-point risk at that share.
+
+## Remaining hotspots (final build, W2 profile)
+
+| Stage | gainoffset | water | What it would take |
+|---|---|---|---|
+| `neonUtilities::stackEddy` | **79%** | **79%** | External. Water calls it twice (9 m and 3 m averaging), reading every file twice. Options: an upstream change, or caching/parallel reads, both of which need your approval (rule 5). |
+| `restructure_variables` (dplyr) | 6.7% | 3.3% | Times are now converted once per *variable* per height (about 15×/height); converting once per height would need a restructure of the exported `restructure_variables()` (an API/design change). |
+| HDF5 ambient writes | 6.6% | 4.9% | hdf5r's per-dataset type inference; changing it means changing on-disk types. |
+| `fit_*_regression` | 3.2% | 8.7% | C4 (reverted) + C5; low share at default half-widths. |
+| `convert_POSIXct_to_NEONhdf5_time` | 4.1% | 1.3% | Residual fast-path cost; small. |
+
+## Open decisions
+
+1. **W2 water peak memory (+4.7% RSS, GC timing).** (a) Accept as is
+   (recommended: live vector data is below baseline, and every other case uses
+   10–17% less memory); or (b) restore C4, which in combination brings it to
+   about 560 MB (−11%) but has no measurable time gain.
+2. **TEST_CHANGE_PROPOSALS.md P1** (direct tests for the median filter).
+3. Bugs B1–B7 above, behavior unchanged. B7 (carbon output validation fails
+   on every current 06m file) is probably the most urgent for users.
+
+## Confirmation
+
+`git diff 80d75a0 -- tests/` is empty (0 lines) at the final commit.
+
+## Rerunning
+
+```sh
+# data: 12 ONAQ 2019 monthly files under $NEONISO_BENCH_DATA
+#       (default ~/NEONiso-benchmark-data); W0 needs no download.
+benchmarks/bench.sh <pkg_tree> <label> 5 W1 gainoffset linreg water
+Rscript benchmarks/summarize.R <reference_label> <label1>,<label2>
+Rscript benchmarks/run_one.R <pkg_tree> W2 water save <out_dir>
+Rscript benchmarks/compare_outputs.R <baseline_out_dir> <candidate_out_dir>
+Rscript benchmarks/profile_workload.R . W2 gainoffset
+```

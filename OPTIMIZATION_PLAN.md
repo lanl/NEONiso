@@ -2,6 +2,10 @@
 
 Baseline commit: `80d75a0` (main, clean). No package code has been changed.
 
+> **Status:** approved and carried out on branch `perf-c1-c4` (C1, C3, C2 kept;
+> C4 reverted). Final results are in `OPTIMIZATION_NOTES.md`. This file is the
+> original Phase 1 plan, kept as written.
+
 ## 0. Status / what's been done
 
 - **Test suite baseline (R 4.6.2, arm64, hdf5r backend):** 100 tests,
