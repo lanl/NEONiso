@@ -57,11 +57,22 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   # if force.to.end and/or force.to.beginning are true, match out$start[1]
   # to min(amb time) and/or out$end[nrow] to max(amb time)
 
-  if (force_to_end == TRUE) {
-    caldf$end[nrow(caldf)] <- amb_end_times[length(amb_end_times)]
-  }
-  if (force_to_beginning == TRUE) {
-    caldf$start[1] <- amb_start_times[1]
+  # Ambient rows are matched to periods by their end time, so widen the
+  # first/last period to cover the earliest/latest ambient end time (never
+  # narrow it). Rows padded in for missing heights have NA times: na.rm.
+  # (Compared as numbers: the ambient times are GMT and caldf's are UTC, and
+  # combining the two in max()/min() warns about inconsistent tzone.)
+  if (nrow(caldf) > 0 && any(!is.na(amb_end_times))) {
+    last_amb  <- max(amb_end_times, na.rm = TRUE)
+    first_amb <- min(amb_end_times, na.rm = TRUE)
+    if (force_to_end == TRUE &&
+          as.numeric(last_amb) > as.numeric(caldf$timeEnd[nrow(caldf)])) {
+      caldf$timeEnd[nrow(caldf)] <- last_amb
+    }
+    if (force_to_beginning == TRUE &&
+          as.numeric(first_amb) < as.numeric(caldf$timeBgn[1])) {
+      caldf$timeBgn[1] <- first_amb
+    }
   }
 
   # determine which cal period each ambient data belongs to.
@@ -69,9 +80,11 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
                                              caldf$timeBgn, caldf$timeEnd)
 
   # calibrate data at this height.
-  oxydf$mean_cal <- oxydf$mean
-  oxydf$max_cal  <- oxydf$max
-  oxydf$min_cal  <- oxydf$min
+  # calibrated values start as NA: rows outside every calibration period
+  # stay uncalibrated rather than carrying raw values.
+  oxydf$mean_cal <- rep(NA_real_, length(oxydf$mean))
+  oxydf$max_cal  <- rep(NA_real_, length(oxydf$max))
+  oxydf$min_cal  <- rep(NA_real_, length(oxydf$min))
 
   for (i in seq_along(var_inds_in_calperiod)) {
     if (!is.na(caldf$r2_18O[i]) && caldf$r2_18O[i] > r2_thres) {
@@ -115,20 +128,33 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   # if force.to.end and/or force.to.beginning are true,
   # match out$start[1] to min(amb time) and/or out$end[nrow] to max(amb time)
 
-  if (force_to_end == TRUE) {
-    caldf$end[nrow(caldf)] <- amb_end_times[length(amb_end_times)]
-  }
-  if (force_to_beginning == TRUE) {
-    caldf$start[1] <- amb_start_times[1]
+  # Ambient rows are matched to periods by their end time, so widen the
+  # first/last period to cover the earliest/latest ambient end time (never
+  # narrow it). Rows padded in for missing heights have NA times: na.rm.
+  # (Compared as numbers: the ambient times are GMT and caldf's are UTC, and
+  # combining the two in max()/min() warns about inconsistent tzone.)
+  if (nrow(caldf) > 0 && any(!is.na(amb_end_times))) {
+    last_amb  <- max(amb_end_times, na.rm = TRUE)
+    first_amb <- min(amb_end_times, na.rm = TRUE)
+    if (force_to_end == TRUE &&
+          as.numeric(last_amb) > as.numeric(caldf$timeEnd[nrow(caldf)])) {
+      caldf$timeEnd[nrow(caldf)] <- last_amb
+    }
+    if (force_to_beginning == TRUE &&
+          as.numeric(first_amb) < as.numeric(caldf$timeBgn[1])) {
+      caldf$timeBgn[1] <- first_amb
+    }
   }
 
   # determine which cal period each ambient data belongs to.
   var_inds_in_calperiod <- calperiod_indices(amb_end_times,
                                              caldf$timeBgn, caldf$timeEnd)
 
-  hyddf$mean_cal <- hyddf$mean
-  hyddf$max_cal  <- hyddf$max
-  hyddf$min_cal  <- hyddf$min
+  # calibrated values start as NA: rows outside every calibration period
+  # stay uncalibrated rather than carrying raw values.
+  hyddf$mean_cal <- rep(NA_real_, length(hyddf$mean))
+  hyddf$max_cal  <- rep(NA_real_, length(hyddf$max))
+  hyddf$min_cal  <- rep(NA_real_, length(hyddf$min))
 
   for (i in seq_along(var_inds_in_calperiod)) {
 

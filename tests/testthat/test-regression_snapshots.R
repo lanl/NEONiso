@@ -49,12 +49,12 @@ test_that("calibrate_carbon gainoffset produces stable ambient d13C values", {
   })
 
   d13c <- co2_go$ciso_subset_cal$`000_010_09m`$dlta13CCo2
-  expect_equal(sum(!is.na(d13c$mean_cal)), 730)
+  expect_equal(sum(!is.na(d13c$mean_cal)), 731)
   expect_equal(mean(d13c$mean_cal, na.rm = TRUE), -9.2746, tolerance = 0.01)
   expect_equal(sd(d13c$mean_cal, na.rm = TRUE), 0.5023, tolerance = 0.01)
 
   co2 <- co2_go$ciso_subset_cal$`000_010_09m`$rtioMoleDryCo2
-  expect_equal(sum(!is.na(co2$mean_cal)), 730)
+  expect_equal(sum(!is.na(co2$mean_cal)), 731)
   expect_equal(mean(co2$mean_cal, na.rm = TRUE), 418.23, tolerance = 0.1)
   expect_equal(sd(co2$mean_cal, na.rm = TRUE), 8.030, tolerance = 0.1)
 })
@@ -133,12 +133,12 @@ test_that("calibrate_water produces stable ambient isotope values", {
   h2o <- calibrate_water(fin, tempfile(), "ONAQ", write_to_file = FALSE)
 
   d18o <- h2o$wiso_subset_cal$`000_010_09m`$dlta18OH2o
-  expect_equal(sum(!is.na(d18o$mean_cal)), 915)
-  expect_equal(mean(d18o$mean_cal, na.rm = TRUE), -22.988, tolerance = 0.05)
-  expect_equal(sd(d18o$mean_cal, na.rm = TRUE), 4.431, tolerance = 0.05)
+  expect_equal(sum(!is.na(d18o$mean_cal)), 696)
+  expect_equal(mean(d18o$mean_cal, na.rm = TRUE), -24.186, tolerance = 0.05)
+  expect_equal(sd(d18o$mean_cal, na.rm = TRUE), 4.283, tolerance = 0.05)
 
   d2h <- h2o$wiso_subset_cal$`000_010_09m`$dlta2HH2o
-  expect_equal(sum(!is.na(d2h$mean_cal)), 848)
-  expect_equal(mean(d2h$mean_cal, na.rm = TRUE), -176.16, tolerance = 0.5)
-  expect_equal(sd(d2h$mean_cal, na.rm = TRUE), 32.72, tolerance = 0.5)
+  expect_equal(sum(!is.na(d2h$mean_cal)), 639)
+  expect_equal(mean(d2h$mean_cal, na.rm = TRUE), -185.48, tolerance = 0.5)
+  expect_equal(sd(d2h$mean_cal, na.rm = TRUE), 31.65, tolerance = 0.5)
 })

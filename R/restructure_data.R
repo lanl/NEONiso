@@ -253,10 +253,11 @@ ingest_data <- function(inname,
   # - could move it back here to validate!
 
   #changing average period in numeric to characters, e.g. 9 to 09m
+  # (zero-padded to two digits, as in NEON group names: 6 -> 06m, 30 -> 30m)
   if (backupMethod) {
     avg_char <- "09m"
   } else {
-    avg_char <- paste0("0", amb_avg, "m")
+    avg_char <- sprintf("%02dm", as.integer(amb_avg))
   }
 
   # get number of heights
@@ -271,7 +272,7 @@ ingest_data <- function(inname,
 
   if (name_fix) {
     if (analyte == "H2o") {
-      avg_char <- paste0("0", ref_avg, "m")
+      avg_char <- sprintf("%02dm", as.integer(ref_avg))
     }
     # append _09m to refe_out....MAY CAUSE PROBLEMS FOR OTHER METHODS!!!!!!
     names(refe_out) <- paste0(names(refe_out), "_", avg_char)

@@ -39,11 +39,16 @@ validate_analyte <- function(analyte) {
 #' @param outname Output file name.
 #' @param site NEON 4-letter site code.
 #' @param analyte Carbon ('Co2') or water ('H2o') system?
+#' @param avg_suffix Averaging-interval suffix(es) of the input groups that
+#'        were calibrated, e.g. "06m". Input groups with other suffixes are
+#'        not expected in the output. If NULL, "09m" for carbon and
+#'        c("03m", "09m") for water.
 #'
 #' @return Nothing to environment, simply checks to make sure expected groups
 #'         are in output.
 #'
-validate_output_file <- function(inname, outname, site, analyte) {
+validate_output_file <- function(inname, outname, site, analyte,
+                                 avg_suffix = NULL) {
 
   analyte <- validate_analyte(analyte)
 
@@ -52,16 +57,16 @@ validate_output_file <- function(inname, outname, site, analyte) {
   target_in <- h5_ls_group(inname[[1]], target_path)
   target_out <- h5_ls_group(outname, target_path)
 
-  if (analyte == "Co2") {
-    #only care about the 9m vars!
-    target_in <- target_in[grepl("09m", target_in) &
-                             !grepl("Arch", target_in)]
-  } else {
-    #only care about the 3m and 9m vars!
-    target_in <- target_in[(grepl("03m", target_in) |
-                              grepl("09m", target_in)) &
-                             !grepl("Arch", target_in)]
+  if (is.null(avg_suffix)) {
+    avg_suffix <- if (analyte == "Co2") "09m" else c("03m", "09m")
   }
+
+  # only the calibrated averaging interval(s) are written, and never the
+  # archive gas. Current NEON files carry their own isoCo2/calData group,
+  # so drop it here and add it back once below.
+  target_in <- target_in[sub(".*_", "", target_in) %in% avg_suffix &
+                           !grepl("Arch", target_in) &
+                           target_in != "calData"]
 
   # add calData to target_in, since we expect this to be added (and adding to
   # target_in confirms that it remains in target_out!)

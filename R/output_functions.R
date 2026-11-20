@@ -103,7 +103,7 @@ write_carbon_calibration_data <- function(outname,
                                     paste0(site,
                                            "/dp01/data/isoCo2/calData"))
 
-  if (method == "Bowling_2003") {
+  if (method %in% c("gainoffset", "Bowling_2003")) {
     h5_write_dataset(co2_cal_outloc, "calGainsOffsets", cal_df)
   } else if (method == "linreg") {
     h5_write_dataset(co2_cal_outloc, "calRegressions", cal_df)

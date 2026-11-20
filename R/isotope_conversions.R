@@ -152,7 +152,7 @@ calculate_13CO2 <- function(total_co2, delta13c, f = 0.00474) {
   # on calibration per Griffis et al. 2004.
 
   # calculate 13CO2 from total CO2 and R
-  light_co2 <- calculate_12CO2(total_co2, delta13c)
+  light_co2 <- calculate_12CO2(total_co2, delta13c, f = f)
 
   heavy_co2 <- total_co2 * (1 - f) - light_co2
 
