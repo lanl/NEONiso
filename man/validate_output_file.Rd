@@ -4,7 +4,7 @@
 \alias{validate_output_file}
 \title{Validate output file.}
 \usage{
-validate_output_file(inname, outname, site, analyte)
+validate_output_file(inname, outname, site, analyte, avg_suffix = NULL)
 }
 \arguments{
 \item{inname}{Input file name.}
@@ -14,6 +14,11 @@ validate_output_file(inname, outname, site, analyte)
 \item{site}{NEON 4-letter site code.}
 
 \item{analyte}{Carbon ('Co2') or water ('H2o') system?}
+
+\item{avg_suffix}{Averaging-interval suffix(es) of the input groups that
+were calibrated, e.g. "06m". Input groups with other suffixes are
+not expected in the output. If NULL, "09m" for carbon and
+c("03m", "09m") for water.}
 }
 \value{
 Nothing to environment, simply checks to make sure expected groups

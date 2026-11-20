@@ -245,7 +245,11 @@ calibrate_carbon         <- function(inname,
     write_carbon_ambient_data(outname, site, ciso_subset_cal, fid = fid)
     h5_close(fid)
 
-    validate_output_file(inname, outname, site, "co2")
+    # check against the averaging interval actually ingested (avg, or 9 if
+    # ingest_data() fell back), taken from the group names written.
+    validate_output_file(inname, outname, site, "co2",
+                         avg_suffix = unique(sub(".*_", "",
+                                                 names(ciso_subset_cal))))
   } else { #export output directly
     out_data <- list()
     #convert time to NEON HDF5 time
