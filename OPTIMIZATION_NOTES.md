@@ -119,7 +119,7 @@ version; p = Wilcoxon rank-sum.
 
 ### Kept
 
-- **C1 `16ca78f`: fast path in `convert_POSIXct_to_NEONhdf5_time()`.**
+- **C1 `7853e0b`: fast path in `convert_POSIXct_to_NEONhdf5_time()`.**
   `format()` directly when the input is unnamed UTC/GMT POSIXct with whole
   seconds (1970–2100) and none at exact midnight; otherwise the original
   `ymd_hms()` path. Function: 52 → 15 ms (30k timestamps), 3.3× less
@@ -127,14 +127,14 @@ version; p = Wilcoxon rank-sum.
   (p = 0.01), W2 water −3% (p = 0.30). Checked by
   `benchmarks/check_c1_time_conversion.R` (values *and* warnings across 16
   input classes, including the fallback ones).
-- **C3 `56b8009`: `calperiod_indices()` assigns ambient rows to calibration
+- **C3 `df71ef9`: `calperiod_indices()` assigns ambient rows to calibration
   periods via `findInterval()`.** Used when the periods are finite,
   non-negative and disjoint under `%within%`'s own arithmetic; otherwise the
   original loop. Function: 205 → 0.8 ms and 336 → 3.7 MB allocated (365
   periods × 30k rows). Workloads: all 6 cases faster, W1 −3 to −8% (water
   p = 0.03), W2 −3 to −10% (water p = 0.02). Checked by
   `benchmarks/check_c3_calperiod_indices.R`.
-- **C2 `8bb51d7`: vectorized rolling median (`rolling_median()`) in
+- **C2 `d68763e`: vectorized rolling median (`rolling_median()`) in
   `filter_median_brock86()`.** One `order()` call sorts every window; the
   odd-count median is read directly and the even-count one uses `mean()`, as
   `median()` does; unusual inputs fall back to zoo. Function: 510 → 34 ms
@@ -146,7 +146,7 @@ version; p = Wilcoxon rank-sum.
 
 ### Tried and reverted
 
-- **C4 `4a965aa` (reverted in `ddef218`): numeric per-day subset in
+- **C4 `18e664e` (reverted in `ab161e1`): numeric per-day subset in
   `fit_*_regression()`.** Bit-identical, and halves `fit_carbon_regression()`
   in-process (70 → 35 ms per month; water 146 → 118 ms). But the regression
   loop is under 5% of a whole run at default settings, and the
