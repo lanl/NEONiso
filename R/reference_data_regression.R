@@ -179,10 +179,12 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                         cv5rmse_12C = numeric(length = n_days),
                         cv5rmse_13C = numeric(length = n_days))
 
-      # vectorize time construction
-      start_time <- as.POSIXct(paste(date_seq, "00:00:00.0001"),
+      # vectorize time construction. Daily windows are [00:00:00, 23:59:59.999]
+      # so that consecutive days leave no gap at millisecond resolution (the
+      # finest in NEON timestamps) and do not overlap.
+      start_time <- as.POSIXct(paste(date_seq, "00:00:00"),
                                tz = "UTC", origin = "1970-01-01")
-      end_time   <- as.POSIXct(paste(date_seq, "23:59:59.0000"),
+      end_time   <- as.POSIXct(paste(date_seq, "23:59:59.999"),
                                tz = "UTC", origin = "1970-01-01")
 
       # hoist constants out of loop
@@ -331,10 +333,12 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                         co2_cv5mae     = numeric(length = n_days),
                         co2_cv5rmse    = numeric(length = n_days))
 
-      # vectorize time construction
-      start_time <- as.POSIXct(paste(date_seq, "00:00:00.0001"),
+      # vectorize time construction. Daily windows are [00:00:00, 23:59:59.999]
+      # so that consecutive days leave no gap at millisecond resolution (the
+      # finest in NEON timestamps) and do not overlap.
+      start_time <- as.POSIXct(paste(date_seq, "00:00:00"),
                                tz = "UTC", origin = "1970-01-01")
-      end_time   <- as.POSIXct(paste(date_seq, "23:59:59.0000"),
+      end_time   <- as.POSIXct(paste(date_seq, "23:59:59.999"),
                                tz = "UTC", origin = "1970-01-01")
 
       # hoist constants out of loop
@@ -550,10 +554,12 @@ fit_water_regression <- function(ref_data,
                       cv5rmse_18O  = numeric(length = n_days),
                       cv5rmse_2H   = numeric(length = n_days))
 
-    # vectorize time construction
-    start_time <- as.POSIXct(paste(date_seq, "00:00:00.0001"),
+    # vectorize time construction. Daily windows are [00:00:00, 23:59:59.999]
+    # so that consecutive days leave no gap at millisecond resolution (the
+    # finest in NEON timestamps) and do not overlap.
+    start_time <- as.POSIXct(paste(date_seq, "00:00:00"),
                              tz = "UTC", origin = "1970-01-01")
-    end_time   <- as.POSIXct(paste(date_seq, "23:59:59.0000"),
+    end_time   <- as.POSIXct(paste(date_seq, "23:59:59.999"),
                              tz = "UTC", origin = "1970-01-01")
 
     # hoist constants out of loop
