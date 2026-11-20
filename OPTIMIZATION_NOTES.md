@@ -62,4 +62,47 @@ default 60 s `timeout`. `options(timeout = 3600)` avoids it.
 
 ## Change log
 
-(Phase 2: one entry per kept/reverted optimization.)
+Status (2026-11-19): C1–C4 are implemented, one commit each, on branch
+`perf-c1-c4`. All outputs are **bit-identical** to baseline `80d75a0` on W0,
+W1 and W2 for gainoffset, linreg and water (R objects via `identical()`, HDF5
+via `h5diff`). The full test suite passes (100 tests, 235 expectations) after
+every commit.
+
+**Timings are provisional.** The W1/W2 runs happened on battery power with the
+lid closed, and macOS maintenance sleeps landed inside some runs (outliers of
+50–2,700 s). Medians of 5 below are robust to the occasional outlier but are
+not final. Raw data: `benchmarks/results/timings_session1_battery_UNRELIABLE.csv`.
+`bench.sh` now refuses to run on battery and wraps runs in `caffeinate`.
+Re-run on AC power before drawing final conclusions.
+
+| Workload | Method | Baseline | C1 | +C3 | +C4 | +C2 (HEAD) | Peak RSS base → HEAD |
+|---|---|---|---|---|---|---|---|
+| W1 | gainoffset | 3.93 s | 3.09 | 3.01 | 3.13 | 2.88 (−27%) | 397 → 371 MB |
+| W1 | linreg | 4.21 s | 3.21 | 3.11 | 3.06 | 2.92 (−31%) | 399 → 372 MB |
+| W1 | water | 3.16 s | 2.72 | 2.75 | 2.50 | 2.33 (−26%) | 418 → 405 MB |
+| W2 | gainoffset | 24.07 s | 20.82 | 19.31 | 18.87 | 18.73 (−22%) | 1285 → 1154 MB |
+| W2 | linreg | 25.19 s | 22.88 | 21.09 | 21.15 | 19.69 (−22%) | 1346 → 1210 MB |
+| W2 | water | 17.63 s | 16.64 | 14.58 | 13.98 | 13.51 (−23%) | 631 → 563 MB |
+
+Per change (function-level numbers are clean in-process `bench::mark` runs):
+
+- **C1 `16ca78f`, fast path in `convert_POSIXct_to_NEONhdf5_time`**:
+  52 → 15 ms on 30k timestamps. Clear win on W0 (−12 to −16%, clean data) and
+  W1. Keep.
+- **C3 `56b8009`, `findInterval` assignment to calibration periods**:
+  205 → 0.8 ms (365 periods × 30k rows). Consistent −1.5 to −2.1 s on W2 across
+  all three methods; flat on W1, as expected. Keep (provisional).
+- **C4 `4a965aa`, numeric per-day subset in `fit_*_regression`**: regression
+  functions −51% (carbon) / −19% (water) in-process. At the workload level the
+  regression loop is <1–5% of runtime: W1 water −0.29 s (Wilcoxon p = 0.01 in a
+  10-run A/B), carbon and W2 within noise. **Undecided**: the rule is to keep a
+  change only if it clearly beats noise, and the A/B was sleep-contaminated.
+  Re-test on AC; revert if not clear.
+- **C2 `8bb51d7`, vectorized rolling median**: 510 → 34 ms on 50k rows;
+  0 mismatches vs zoo on 20,000 random vectors. W1 −5 to −8%. Keep
+  (provisional). This is the least obvious code of the four (~35 lines in
+  `rolling_median()`), so it's worth a look in review; it is commented, and
+  falls back to zoo for anything unusual.
+
+Not yet done: final AC-power timings, a final re-profile, remaining hotspots,
+and the `git diff 80d75a0 -- tests/` confirmation (checked below, empty so far).

@@ -15,6 +15,17 @@
 
 set -euo pipefail
 pkg=$1; label=$2; n=$3; wl=$4; shift 4
+
+# Timings on battery are unreliable (power throttling, and macOS maintenance /
+# lid-closed sleeps land inside runs). Refuse unless explicitly allowed.
+if command -v pmset >/dev/null && ! pmset -g batt | grep -q "AC Power" \
+     && [ "${BENCH_ALLOW_BATTERY:-0}" != "1" ]; then
+  echo "bench.sh: on battery power; plug in (or set BENCH_ALLOW_BATTERY=1)" >&2
+  exit 1
+fi
+# keep the machine awake while a run is in progress (macOS)
+keepawake=""
+command -v caffeinate >/dev/null && keepawake="caffeinate -i -s"
 methods=("${@:-gainoffset linreg water}")
 here="$(cd "$(dirname "$0")" && pwd)"
 mkdir -p "$here/results"
@@ -24,7 +35,7 @@ csv="$here/results/timings.csv"
 for m in ${methods[@]}; do
   for i in $(seq 1 "$n"); do
     log=$(mktemp)
-    /usr/bin/time -l Rscript "$here/run_one.R" "$pkg" "$wl" "$m" time /dev/null \
+    $keepawake /usr/bin/time -l Rscript "$here/run_one.R" "$pkg" "$wl" "$m" time /dev/null \
       > "$log" 2>&1
     el=$(grep '^ELAPSED' "$log" | awk '{print $2}')
     rss=$(grep 'maximum resident set size' "$log" | awk '{printf "%.1f", $1/1048576}')
