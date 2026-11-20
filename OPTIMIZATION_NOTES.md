@@ -4,9 +4,9 @@ Baseline commit: `80d75a0`. Final commit: see `git log perf-c1-c4`.
 
 ## Bugs found
 
-Found during the optimization and left as-is there. B1–B7 and B10 were
-then fixed, with approval, on branch `fix-b1-b7` (one commit each, on top
-of `perf-c1-c4`); B8 is upstream and B9 is logged only. Details of each
+Found during the optimization and left as-is there. B1–B7, B9 and B10
+were then fixed, with approval, on branch `fix-b1-b7` (one commit each, on
+top of `perf-c1-c4`); B8 is upstream. Details of each
 fix are in its commit message and in "Bug fixes" below.
 
 | Bug | Status | Commit |
@@ -19,7 +19,7 @@ fix are in its commit message and in "Bug fixes" below.
 | B6 `gap_fill_parameters` not forwarded | fixed | `0a7a5a4` |
 | B7 carbon validation fails on 06m files | fixed | `3f13527` |
 | B8 neonUtilities timeout | upstream, not ours | – |
-| B9 unmatched ambient rows keep raw values (water, linreg) | logged only | – |
+| B9 unmatched ambient rows keep raw values (water, linreg) | fixed: now NA; filling them tracked in #105 (changes water snapshot, see P4) | `6e5d426` |
 | B10 `avg >= 10` gives `030m` group names | fixed | `18763cf` |
 
 
@@ -85,9 +85,9 @@ linreg).** `calibrate_ambient_water_linreg()` and
 of the raw values and overwrite only the rows matched to a calibration
 period. Rows outside every period (e.g. with `force_cal_to_end = FALSE`, the
 water default) are written as "calibrated" but hold raw values. The
-gainoffset path starts from NA instead. Not fixed: needs a decision on the
-intended output (NA is the obvious candidate) and would change water
-output at default settings.
+gainoffset path starts from NA instead. Fixed: unmatched rows are now NA
+(decision: NA, with the calibration extension options to fill them later;
+issue #105).
 
 **B10. Averaging suffix is not zero-padded correctly.** `ingest_data()`
 built group names as `paste0("0", avg, "m")`, so `avg = 30` gave
@@ -107,6 +107,7 @@ the pre-fix outputs, row by row where they differ.
 | B3 | gainoffset files gain `calData/calGainsOffsets`; nothing else changes. |
 | B4, B6 | None at defaults (B6: no W0/W1 day is below `r2_thres`; passthrough checked with a trace). |
 | B5 | None on W0/W1/W2 (no ambient end time falls in the old gap). |
+| B9 | W0 water: the May 1–6 rows before the first calibration period go from raw values to NA (219 d18O, 209 d2H). W0 linreg, W1, W2: none. |
 | B7, B10 | None at defaults. Carbon `write_to_file = TRUE` now succeeds on W1/W2, and with `avg = 30`. |
 
 **B7 write route, end to end.** Validation only compares group names, so
@@ -118,9 +119,10 @@ for all three methods. Two extra causes turned up along the way: current
 files carry their own `isoCo2/calData` group, which was counted twice, and
 B10. The `qfqm`/`ucrt` groups in the output are created empty, as before.
 
-**Tests.** 103 tests (100 + P1). After B2, three carbon ambient snapshot
-tests fail because of the intended B2 change; P2 proposes the update. P3
-proposes regression tests for B1–B7. Neither is applied.
+**Tests.** 103 tests (100 + P1). B2 changed three carbon ambient snapshot
+tests; P2 (approved, applied) updates them. B9 changes two water tests; P4
+proposes the update and is not yet applied, so those 2 tests fail on
+`fix-b1-b7`. P3 (regression tests for B1–B7) is proposed, not applied.
 
 **Speed.** B1 replaces the C1 fast path with a direct `format()` for all
 POSIXct input: 15.6 vs 16.3 ms on 30k timestamps, 3.2 vs 5.2 MB allocated
@@ -248,8 +250,8 @@ version; p = Wilcoxon rank-sum.
    10–17% less memory); or (b) restore C4, which in combination brings it to
    about 560 MB (−11%) but has no measurable time gain.
 2. **TEST_CHANGE_PROPOSALS.md P1** (direct tests for the median filter).
-3. ~~Bugs B1–B7~~: fixed on `fix-b1-b7` (plus B10). Still open: the P2/P3
-   test changes, and B9 (raw values in unmatched rows).
+3. ~~Bugs B1–B7, B9~~: fixed on `fix-b1-b7` (plus B10). Still open: the
+   P3/P4 test changes, and #105 (filling rows outside calibration periods).
 
 ## Confirmation
 

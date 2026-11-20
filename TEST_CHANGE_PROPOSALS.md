@@ -5,8 +5,9 @@ Each proposal needs approval before anything under `tests/` changes.
 | # | What | Status |
 |---|---|---|
 | P1 | Direct tests for `filter_median_brock86()` | **Applied** (`3b5f4bc`, approved) |
-| P2 | Update 3 carbon ambient snapshots/expectations for the B2 fix | Proposed |
-| P3 | New `test-bug_fixes.R`: regression tests for B1-B7 | Proposed |
+| P2 | Update 3 carbon ambient snapshots/expectations for the B2 fix | **Applied** (approved) |
+| P3 | New `test-bug_fixes.R`: regression tests for B1–B7 | Proposed |
+| P4 | Update water ambient snapshot/expectations for the B9 fix | Proposed |
 
 ## P1. Direct tests for `filter_median_brock86()` (and `rolling_median()`) — applied
 
@@ -55,7 +56,7 @@ test_that("filter_median_brock86 handles short and special inputs", {
 Keeping `zoo` as the reference uses an existing import and needs no new
 dependency.
 
-## P2. Update carbon ambient snapshots for the B2 fix
+## P2. Update carbon ambient snapshots for the B2 fix — applied
 
 **Why:** with `force_cal_to_end = TRUE` (the default) now working, the
 fixture's last ambient row (2019-05-31 00:01, after the last calibration
@@ -204,3 +205,28 @@ test_that("validate_output_file accepts current 06m files", {
                "Output file structure has diverged")
 })
 ```
+
+## P4. Update water ambient snapshot and expectations for the B9 fix
+
+**Why:** with B9 fixed (approved: unmatched rows become NA),
+`calibrate_water()` at its defaults (`force_cal_to_* = FALSE`) leaves the
+fixture's May 1–6 ambient rows, which come before the first calibration
+period (May 7), as NA instead of raw values. That fails 2 tests:
+
+- `test-gold_file_regression.R` "water ambient matches baseline": re-record
+  that snapshot (`testthat::snapshot_accept("gold_file_regression")`); the
+  water cal_df and the carbon snapshots are unchanged.
+- `test-regression_snapshots.R` "calibrate_water produces stable ambient
+  isotope values" (lines 136–143):
+
+| Expectation | Old | New |
+|---|---|---|
+| d18O non-NA `mean_cal` | 915 | 696 |
+| d18O mean | -22.988 | -24.186 |
+| d18O sd | 4.431 | 4.283 |
+| d2H non-NA `mean_cal` | 848 | 639 |
+| d2H mean | -176.16 | -185.48 |
+| d2H sd | 32.72 | 31.65 |
+
+The means move by more than the tolerances because the removed raw values
+were biased relative to the calibrated ones.
