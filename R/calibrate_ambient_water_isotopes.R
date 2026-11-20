@@ -65,12 +65,8 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   }
 
   # determine which cal period each ambient data belongs to.
-  var_inds_in_calperiod <- list()
-
-  for (i in seq_len(nrow(caldf))) {
-    int <- lubridate::interval(caldf$timeBgn[i], caldf$timeEnd[i])
-    var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
-  }
+  var_inds_in_calperiod <- calperiod_indices(amb_end_times,
+                                             caldf$timeBgn, caldf$timeEnd)
 
   # calibrate data at this height.
   oxydf$mean_cal <- oxydf$mean
@@ -127,12 +123,8 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   }
 
   # determine which cal period each ambient data belongs to.
-  var_inds_in_calperiod <- list()
-
-  for (i in seq_len(nrow(caldf))) {
-    int <- lubridate::interval(caldf$timeBgn[i], caldf$timeEnd[i])
-    var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
-  }
+  var_inds_in_calperiod <- calperiod_indices(amb_end_times,
+                                             caldf$timeBgn, caldf$timeEnd)
 
   hyddf$mean_cal <- hyddf$mean
   hyddf$max_cal  <- hyddf$max

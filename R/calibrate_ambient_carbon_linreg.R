@@ -69,11 +69,10 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
   }
 
   # determine which cal period each ambient data belongs to.
-  var_inds_in_calperiod <- list()
+  var_inds_in_calperiod <- calperiod_indices(amb_end_times,
+                                             caldf$timeBgn, caldf$timeEnd)
 
   for (i in seq_len(nrow(caldf))) {
-    int <- lubridate::interval(caldf$timeBgn[i], caldf$timeEnd[i])
-    var_inds_in_calperiod[[i]] <- which(amb_end_times %within% int)
 
     if (gap_fill_parameters) {
 
