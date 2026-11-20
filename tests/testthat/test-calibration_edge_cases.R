@@ -82,10 +82,12 @@ test_that("daily calibration windows are contiguous", {
 # last calibration day, so it is only calibrated when force_cal_to_end works.
 test_that("force_cal_to_end calibrates carbon data after the last cal day", {
   run <- function(force) {
-    suppressWarnings(calibrate_carbon(fin, tempfile(), "ONAQ",
+    suppressWarnings(calibrate_carbon(
+      fin, tempfile(), "ONAQ",
       method = "gainoffset", calibration_half_width = 0.5,
       force_cal_to_end = force, force_cal_to_beginning = force,
-      write_to_file = FALSE))$ciso_subset_cal$`000_010_09m`$dlta13CCo2
+      write_to_file = FALSE
+    ))$ciso_subset_cal$`000_010_09m`$dlta13CCo2
   }
   on <- run(TRUE)
   off <- run(FALSE)
@@ -134,14 +136,17 @@ test_that("calibrate_carbon passes gap_fill_parameters to the ambient step", {
   seen <- NULL
   real <- NEONiso:::calibrate_ambient_carbon_gainoffset
   local_mocked_bindings(
-    calibrate_ambient_carbon_gainoffset = function(...,
-                                                   gap_fill_parameters = FALSE) {
+    calibrate_ambient_carbon_gainoffset = function(
+      ..., gap_fill_parameters = FALSE
+    ) {
       seen <<- c(seen, gap_fill_parameters)
       real(..., gap_fill_parameters = gap_fill_parameters)
     }
   )
-  suppressWarnings(calibrate_carbon(fin, tempfile(), "ONAQ",
-    method = "gainoffset", gap_fill_parameters = TRUE, write_to_file = FALSE))
+  suppressWarnings(calibrate_carbon(
+    fin, tempfile(), "ONAQ",
+    method = "gainoffset", gap_fill_parameters = TRUE, write_to_file = FALSE
+  ))
   expect_gt(length(seen), 0)
   expect_true(all(seen))
 })
@@ -157,7 +162,8 @@ test_that("method = 'gainoffset' writes calGainsOffsets to calData", {
                                     write_to_file = TRUE))
   expect_identical(
     NEONiso:::h5_ls_group(fout, "ONAQ/dp01/data/isoCo2/calData"),
-    "calGainsOffsets")
+    "calGainsOffsets"
+  )
 })
 
 # Build a minimal HDF5 file containing the given isoCo2 data groups.
@@ -168,7 +174,8 @@ make_isoco2_file <- function(path, groups) {
   }
   for (g in groups) {
     NEONiso:::h5_close_group(
-      NEONiso:::h5_create_group(fid, paste0("ONAQ/dp01/data/isoCo2/", g)))
+      NEONiso:::h5_create_group(fid, paste0("ONAQ/dp01/data/isoCo2/", g))
+    )
   }
   NEONiso:::h5_close(fid)
 }

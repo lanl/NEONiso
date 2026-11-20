@@ -26,7 +26,7 @@ terrestrial_core_sites <- function() {
                   "SJER", "SRER", "TALL", "TOOL", "UNDE", "WOOD",
                   "WREF", "YELL")
 
-  return(core_sites)
+  core_sites
 }
 
 #' List terrestrial gradient sites
@@ -53,7 +53,7 @@ terrestrial_gradient_sites <- function() {
                   "OAES", "RMNP", "SERC", "SOAP", "STEI", "STER",
                   "TEAK", "TREE", "UKFS")
 
-  return(grad_sites)
+  grad_sites
 
 }
 
@@ -79,7 +79,7 @@ water_isotope_sites <- function() {
                   "SJER", "SRER", "TALL", "TOOL", "UNDE", "WOOD",
                   "WREF", "YELL", "BARR")
 
-  return(wiso_sites)
+  wiso_sites
 
 }
 
@@ -148,11 +148,11 @@ manage_local_EC_archive <- function(file_dir,
       site_name <- available$data$siteCodes[[i]]$siteCode
 
       # check to see if site [i] is a core/gradient site
-      if (!(site_name %in% csites | site_name %in% gsites)) {
+      if (!(site_name %in% csites || site_name %in% gsites)) {
         print(paste("Site name", site_name,
                     "is not a core or gradient site...skipping..."))
         next
-      } else if (sites == "all" | site_name %in% sites) {
+      } else if ("all" %in% sites || site_name %in% sites) {
         print(paste("Checking site:", site_name))
       } else {
         print(paste("Site", site_name, "has not been requested...skipping..."))
@@ -161,11 +161,9 @@ manage_local_EC_archive <- function(file_dir,
 
       # get a vector of site months available for site i
       if (!is.null(release)) {
-        release_index <- which(sapply(
-                                      available$data$siteCodes[[i]]$availableReleases,
-                                      "[[",
-                                      1) == release)
-        site_months <- unlist(available$data$siteCodes[[i]]$availableReleases[[release_index]]$availableMonths)
+        site_releases <- available$data$siteCodes[[i]]$availableReleases
+        release_index <- which(sapply(site_releases, "[[", 1) == release)
+        site_months <- unlist(site_releases[[release_index]]$availableMonths)
       } else {
         site_months <- unlist(available$data$siteCodes[[i]]$availableMonths)
       }
@@ -184,7 +182,8 @@ manage_local_EC_archive <- function(file_dir,
 
           # re-query api w/ given site code and month.
           sitemonth_urls_json <- httr::GET(
-            unlist(available$data$siteCodes[[i]]$availableDataUrls[j]))
+            unlist(available$data$siteCodes[[i]]$availableDataUrls[j])
+          )
 
           # list files returned.
           sitemonth_urls_parsed <- httr::content(sitemonth_urls_json,
@@ -193,7 +192,7 @@ manage_local_EC_archive <- function(file_dir,
           # extract just file names and URLs
           fnames <- sapply(sitemonth_urls_parsed$data$files, "[[", "name")
           furls  <- sapply(sitemonth_urls_parsed$data$files, "[[", "url")
-          
+
           # get basic zipfile for now, but should kick out to a
           # function argument later on.
           fnames_basic <- (grepl("basic", fnames) & (grepl("h5.gz", fnames) |
@@ -210,17 +209,14 @@ manage_local_EC_archive <- function(file_dir,
                 if (file.exists(paste0(file_dir2, "/",
                                        site_name,
                                        "/",
-                                       dl_names[k])) |
-                    file.exists(paste0(file_dir2,
-                                       "/",
-                                       site_name,
-                                       "/",
-                                       substr(dl_names[k],
-                                              1,
-                                              nchar(dl_names[k]) - 3)
-                               )
-                    )
-                ) {
+                                       dl_names[k])) ||
+                      file.exists(paste0(file_dir2,
+                                         "/",
+                                         site_name,
+                                         "/",
+                                         substr(dl_names[k],
+                                                1,
+                                                nchar(dl_names[k]) - 3)))) {
                   print(paste(dl_names[k], "exists...skipping..."))
                   next
                 } else { #doesn't exist, so download it.
@@ -245,7 +241,7 @@ manage_local_EC_archive <- function(file_dir,
   } # get branch.
 
   # unzip files if requested.
-  if (get == TRUE & unzip_files == TRUE) {
+  if (get == TRUE && unzip_files == TRUE) {
     # list the files in file_dir
     files <- list.files(path = paste0(file_dir2, "/"),
                         pattern = "*.gz",
@@ -303,7 +299,7 @@ manage_local_EC_archive <- function(file_dir,
 
         # check to see if one site has an 'h5' fdiff and the duplicates
         # have a date.
-        if (!is.null(dup_candidates) & any(dup_fdiff == "h5")) {
+        if (!is.null(dup_candidates) && any(dup_fdiff == "h5")) {
           h5files <- fdiff_isite[dups] == "h5"
           print(paste("Removing:", dup_candidates[h5files]))
           if (!dry_run) {

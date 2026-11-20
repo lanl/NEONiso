@@ -22,7 +22,6 @@
 #' @export
 #'
 #' @importFrom stats setNames
-#' @importFrom magrittr %>%
 ingest_data <- function(inname,
                         analyte,
                         name_fix = TRUE,
@@ -49,23 +48,23 @@ ingest_data <- function(inname,
   if (analyte == "Co2") {
 
     data <- try(neonUtilities::stackEddy(inname,
-                                     avg = amb_avg,
-                                     level = "dp01",
-                                     var = "isoCo2",
-                                     useFasttime = TRUE,
-                                     runLocal = TRUE)[[1]], silent = TRUE)
+                                         avg = amb_avg,
+                                         level = "dp01",
+                                         var = "isoCo2",
+                                         useFasttime = TRUE,
+                                         runLocal = TRUE)[[1]], silent = TRUE)
     if ("try-error" %in% class(data)) {
       data <- neonUtilities::stackEddy(inname,
-                                           avg = 9,
-                                           level = "dp01",
-                                           var = "isoCo2",
-                                           useFasttime = TRUE,
-                                           runLocal = TRUE)[[1]]
+                                       avg = 9,
+                                       level = "dp01",
+                                       var = "isoCo2",
+                                       useFasttime = TRUE,
+                                       runLocal = TRUE)[[1]]
       backupMethod <- TRUE
     }
 
     # filter data and remove rows that are all NaNs:
-    data <- data %>%
+    data <- data |>
       dplyr::select("verticalPosition", "timeBgn", "timeEnd",
                     tidyselect::contains("isoCo2"))
 
@@ -81,7 +80,7 @@ ingest_data <- function(inname,
                                            "rtioMoleDryCo2Refe")))
 
     # split data into ambient and reference data frames.
-    ambient <- data %>%
+    ambient <- data |>
       dplyr::filter(.data$verticalPosition %in% c("010", "020", "030", "040",
                                                   "050", "060", "070", "080"))
 
@@ -105,7 +104,7 @@ ingest_data <- function(inname,
       }
     }
 
-    reference <- data %>%
+    reference <- data |>
       dplyr::filter(.data$verticalPosition %in%
                       c("co2Low", "co2Med", "co2High"))
 
@@ -126,7 +125,7 @@ ingest_data <- function(inname,
                                       runLocal = TRUE)[[1]]
 
     # filter data and remove rows that are all NaNs:
-    data9 <- data9 %>%
+    data9 <- data9 |>
       dplyr::select("verticalPosition", "timeBgn", "timeEnd",
                     tidyselect::contains("isoH2o"))
 
@@ -140,7 +139,7 @@ ingest_data <- function(inname,
                                            "dlta2HH2oRefe")))
 
     # split data into ambient and reference data frames.
-    ambient <- data9 %>%
+    ambient <- data9 |>
       dplyr::filter(.data$verticalPosition %in% c("010", "020", "030", "040",
                                                   "050", "060", "070", "080"))
 
@@ -164,7 +163,7 @@ ingest_data <- function(inname,
       }
     }
 
-    reference <- data3 %>%
+    reference <- data3 |>
       dplyr::filter(.data$verticalPosition %in%
                       c("h2oLow", "h2oMed", "h2oHigh"))
 
@@ -281,7 +280,7 @@ ingest_data <- function(inname,
   output <- list(ambi_out, refe_out, reference, attrs)
   names(output) <- c("ambient", "reference", "refe_stacked", "attrs")
 
-  return(output)
+  output
 }
 
 #-----------------------------------------
@@ -303,7 +302,6 @@ ingest_data <- function(inname,
 #' @return data.frame formatted for output to hdf5 file.
 #' @export
 #'
-#' @importFrom magrittr %>%
 #'
 restructure_variables <- function(dataframe,
                                   varname,
@@ -323,14 +321,14 @@ restructure_variables <- function(dataframe,
                                           mode,
                                           group)
   }
-  return(output)
+  output
 
 }
 
 #-----------------------------------------
 #' Restructure ingested variables for the carbon isotope system.
 #'
-#' Restructures carbon isotope measurement system variables and shortens names 
+#' Restructures carbon isotope measurement system variables and shortens names
 #' to simplify referencing variables elsewhere in calibration code.
 #'
 #' @param varname Which variable are we applying this function to? There's
@@ -341,14 +339,13 @@ restructure_variables <- function(dataframe,
 #'
 #' @return data.frame formatted for output to hdf5 file.
 #'
-#' @importFrom magrittr %>%
 
 restructure_carbon_variables <- function(dataframe,
                                          varname,
                                          mode,
                                          group) {
 
-  if (mode != "reference" & mode != "ambient") {
+  if (mode != "reference" && mode != "ambient") {
 
     stop("Invalid selection to mode argument.")
 
@@ -356,40 +353,40 @@ restructure_carbon_variables <- function(dataframe,
 
     if (group == "data") {
 
-      output <- dataframe %>%
+      output <- dataframe |>
         dplyr::select("verticalPosition", "timeBgn", "timeEnd",
                       tidyselect::starts_with(paste0("data.isoCo2.",
                                                      varname,
-                                                     "."))) %>%
+                                                     "."))) |>
         dplyr::filter(!(.data$verticalPosition %in% c("010", "020", "030",
                                                       "040", "050", "060",
-                                                      "070", "080"))) %>%
+                                                      "070", "080"))) |>
         dplyr::rename(mean = paste0("data.isoCo2.", varname, ".mean"),
                       min  = paste0("data.isoCo2.", varname, ".min"),
                       max  = paste0("data.isoCo2.", varname, ".max"),
                       vari = paste0("data.isoCo2.", varname, ".vari"),
-                      numSamp = paste0("data.isoCo2.", varname, ".numSamp")) %>%
+                      numSamp = paste0("data.isoCo2.", varname, ".numSamp")) |>
         dplyr::mutate(dom = lubridate::day(.data$timeBgn),
                       yr  = lubridate::year(.data$timeBgn),
-                      mn  = lubridate::month(.data$timeBgn)) %>%
-        dplyr::group_by(.data$yr, .data$mn, .data$dom) %>%
-        dplyr::filter(.data$numSamp > 30 | is.na(.data$numSamp)) %>%
-        dplyr::ungroup() %>%
+                      mn  = lubridate::month(.data$timeBgn)) |>
+        dplyr::group_by(.data$yr, .data$mn, .data$dom) |>
+        dplyr::filter(.data$numSamp > 30 | is.na(.data$numSamp)) |>
+        dplyr::ungroup() |>
         dplyr::select(-"dom", -"yr", -"mn", -"verticalPosition")
 
     } else if (group == "qfqm") {
 
       if (!grepl("Refe", varname)) {
 
-        output <- dataframe %>%
+        output <- dataframe |>
           dplyr::select("verticalPosition", "timeBgn", "timeEnd",
                         tidyselect::starts_with(paste0("qfqm.isoCo2.",
                                                        varname,
-                                                       "."))) %>%
+                                                       "."))) |>
           dplyr::filter(!(.data$verticalPosition %in% c("010", "020", "030",
                                                         "040", "050", "060",
-                                                        "070", "080"))) %>%
-          dplyr::rename(qfFinl = paste0("qfqm.isoCo2.", varname, ".qfFinl")) %>%
+                                                        "070", "080"))) |>
+          dplyr::rename(qfFinl = paste0("qfqm.isoCo2.", varname, ".qfFinl")) |>
           dplyr::mutate(varname = varname)
 
       }
@@ -398,35 +395,35 @@ restructure_carbon_variables <- function(dataframe,
 
       if (!grepl("Refe", varname)) {
 
-        output <- dataframe %>%
+        output <- dataframe |>
           dplyr::select("verticalPosition", "timeBgn", "timeEnd",
                         tidyselect::starts_with(paste0("ucrt.isoCo2.",
                                                        varname,
-                                                       "."))) %>%
+                                                       "."))) |>
           dplyr::filter(!(.data$verticalPosition %in% c("010", "020", "030",
                                                         "040", "050", "060",
-                                                        "070", "080"))) %>%
+                                                        "070", "080"))) |>
           dplyr::rename(mean = paste0("ucrt.isoCo2.", varname, ".mean"),
                         vari = paste0("ucrt.isoCo2.", varname, ".vari"),
-                        se   = paste0("ucrt.isoCo2.", varname, ".se")) %>%
+                        se   = paste0("ucrt.isoCo2.", varname, ".se")) |>
           dplyr::mutate(varname = varname)
 
       }
     }
 
   } else if (mode == "ambient") {
-    output <- dataframe %>%
+    output <- dataframe |>
       dplyr::select("verticalPosition", "timeBgn", "timeEnd",
                     tidyselect::starts_with(paste0("data.isoCo2.",
                                                    varname,
-                                                   "."))) %>%
+                                                   "."))) |>
       dplyr::filter(!(.data$verticalPosition %in% c("co2Low", "co2Med",
-                                                    "co2High", "co2Arch"))) %>%
+                                                    "co2High", "co2Arch"))) |>
       dplyr::rename(mean = paste0("data.isoCo2.", varname, ".mean"),
                     min  = paste0("data.isoCo2.", varname, ".min"),
                     max  = paste0("data.isoCo2.", varname, ".max"),
                     vari = paste0("data.isoCo2.", varname, ".vari"),
-                    numSamp = paste0("data.isoCo2.", varname, ".numSamp")) %>%
+                    numSamp = paste0("data.isoCo2.", varname, ".numSamp")) |>
       dplyr::select(-"verticalPosition")
 
   }
@@ -435,15 +432,15 @@ restructure_carbon_variables <- function(dataframe,
   output$timeBgn <- convert_POSIXct_to_NEONhdf5_time(output$timeBgn)
   output$timeEnd <- convert_POSIXct_to_NEONhdf5_time(output$timeEnd)
 
-  return(output)
+  output
 }
 
 #-----------------------------------------
 #' Restructure ingested variables for the water isotope system.
 #'
-#' Restructures water isotope measurement system variables and shortens names 
+#' Restructures water isotope measurement system variables and shortens names
 #' to simplify referencing variables elsewhere in calibration code.
-#' 
+#'
 #' @param varname Which variable are we applying this function to? There's
 #'                a list of ~10 common ones to write to the hdf5 file.
 #' @param dataframe Input data.frame, from `neonUtilities::stackEddy`
@@ -460,47 +457,47 @@ restructure_water_variables <- function(dataframe,
   # ensure that varname is a string but standard is a data.frame
   if (!is.character(varname)) {
     stop("varname must be a string")
-  } else if ((!is.data.frame(dataframe) & mode == "reference") |
-               (!is.list(dataframe) & mode == "ambient")) {
+  } else if ((!is.data.frame(dataframe) && mode == "reference") ||
+               (!is.list(dataframe) && mode == "ambient")) {
     stop("dataframe must be data.frame (reference mode) or list (ambient mode)")
   }
 
-  if (mode != "reference" & mode != "ambient") {
+  if (mode != "reference" && mode != "ambient") {
     stop("Invalid selection to mode argument.")
   } else if (mode == "reference") {
 
     if (group == "data") {
 
-      output <- dataframe %>%
+      output <- dataframe |>
         dplyr::select("timeBgn", "timeEnd",
                       tidyselect::starts_with(paste0("data.isoH2o.",
                                                      varname,
-                                                     "."))) %>%
+                                                     "."))) |>
         dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
                       min  = paste0("data.isoH2o.", varname, ".min"),
                       max  = paste0("data.isoH2o.", varname, ".max"),
                       vari = paste0("data.isoH2o.", varname, ".vari"),
-                      numSamp = paste0("data.isoH2o.", varname, ".numSamp")) %>%
-        dplyr::mutate(varname = varname) %>%
+                      numSamp = paste0("data.isoH2o.", varname, ".numSamp")) |>
+        dplyr::mutate(varname = varname) |>
         dplyr::mutate(dom = lubridate::day(.data$timeBgn),
                       yr  = lubridate::year(.data$timeBgn),
-                      mn  = lubridate::month(.data$timeBgn)) %>%
-        dplyr::group_by(.data$yr, .data$mn, .data$dom) %>%
-        dplyr::filter(.data$numSamp > 30 | is.na(.data$numSamp)) %>%
-        dplyr::slice(tail(dplyr::row_number(), 3)) %>%
-        dplyr::ungroup() %>%
+                      mn  = lubridate::month(.data$timeBgn)) |>
+        dplyr::group_by(.data$yr, .data$mn, .data$dom) |>
+        dplyr::filter(.data$numSamp > 30 | is.na(.data$numSamp)) |>
+        dplyr::slice(tail(dplyr::row_number(), 3)) |>
+        dplyr::ungroup() |>
         dplyr::select(-"dom", -"yr", -"mn")
 
     } else if (group == "qfqm") {
 
       if (!grepl("Refe", varname)) {
 
-        output <- dataframe %>%
+        output <- dataframe |>
           dplyr::select("timeBgn", "timeEnd",
                         tidyselect::starts_with(paste0("qfqm.isoH2o.",
-                                                       varname, "."))) %>%
-          dplyr::rename(qfFinl = paste0("qfqm.isoH2o.", varname, ".qfFinl")) %>%
-          dplyr::mutate(varname = varname) %>%
+                                                       varname, "."))) |>
+          dplyr::rename(qfFinl = paste0("qfqm.isoH2o.", varname, ".qfFinl")) |>
+          dplyr::mutate(varname = varname) |>
           dplyr::filter(.data$timeBgn %in% output$timeBgn)
       }
 
@@ -508,15 +505,15 @@ restructure_water_variables <- function(dataframe,
 
       if (!grepl("Refe", varname)) {
 
-        output <- dataframe %>%
+        output <- dataframe |>
           dplyr::select("timeBgn", "timeEnd",
                         tidyselect::starts_with(paste0("ucrt.isoH2o.",
                                                        varname,
-                                                       "."))) %>%
+                                                       "."))) |>
           dplyr::rename(mean = paste0("ucrt.isoH2o.", varname, ".mean"),
                         vari = paste0("ucrt.isoH2o.", varname, ".vari"),
-                        se   = paste0("ucrt.isoH2o.", varname, ".se")) %>%
-          dplyr::mutate(varname = varname) %>%
+                        se   = paste0("ucrt.isoH2o.", varname, ".se")) |>
+          dplyr::mutate(varname = varname) |>
           dplyr::filter(.data$timeBgn %in% output$timeBgn)
 
       }
@@ -524,19 +521,19 @@ restructure_water_variables <- function(dataframe,
 
   } else if (mode == "ambient") {
 
-    output <- dataframe %>%
+    output <- dataframe |>
       dplyr::select("verticalPosition", "timeBgn", "timeEnd",
                     tidyselect::starts_with(paste0("data.isoH2o.",
                                                    varname,
-                                                   "."))) %>%
+                                                   "."))) |>
       dplyr::filter(!(.data$verticalPosition %in% c("h2oLow",
                                                     "h2oMed",
-                                                    "h2oHigh"))) %>%
+                                                    "h2oHigh"))) |>
       dplyr::rename(mean = paste0("data.isoH2o.", varname, ".mean"),
                     min  = paste0("data.isoH2o.", varname, ".min"),
                     max  = paste0("data.isoH2o.", varname, ".max"),
                     vari = paste0("data.isoH2o.", varname, ".vari"),
-                    numSamp = paste0("data.isoH2o.", varname, ".numSamp")) %>%
+                    numSamp = paste0("data.isoH2o.", varname, ".numSamp")) |>
       dplyr::mutate(varname = varname)
 
   }
@@ -545,5 +542,5 @@ restructure_water_variables <- function(dataframe,
   output$timeBgn <- convert_POSIXct_to_NEONhdf5_time(output$timeBgn)
   output$timeEnd <- convert_POSIXct_to_NEONhdf5_time(output$timeEnd)
 
-  return(output)
+  output
 }

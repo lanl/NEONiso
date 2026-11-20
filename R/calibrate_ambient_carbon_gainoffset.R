@@ -11,7 +11,7 @@ calibrate_ambient_carbon_Bowling2003 <- function(...) {
 #' 000_0x0_30m). This function should generally not be used independently,
 #' but should be used in coordination with
 #' `calibrate_carbon_bymonth()`.
-#' 
+#'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param amb_data_list List containing an ambient d13C dataset.
@@ -40,7 +40,6 @@ calibrate_ambient_carbon_Bowling2003 <- function(...) {
 #'    calibrated ambient data.
 #'
 #'
-#' @importFrom magrittr %>%
 #' @importFrom lubridate %within%
 #'
 calibrate_ambient_carbon_gainoffset <- function(amb_data_list,
@@ -83,7 +82,6 @@ calibrate_ambient_carbon_gainoffset <- function(amb_data_list,
   amb_13co2$max  <- calculate_13CO2(amb_co2$max, amb_delta$max)
 
   # ensure that time variables are in POSIXct.
-  amb_start_times <- convert_NEONhdf5_to_POSIXct_time(amb_delta$timeBgn)
   amb_end_times   <- convert_NEONhdf5_to_POSIXct_time(amb_delta$timeEnd)
 
   # if force_to_end and/or force_to_beginning are true, match
@@ -163,7 +161,7 @@ calibrate_ambient_carbon_gainoffset <- function(amb_data_list,
   mean13c <- max13c <- min13c <- rep(NA, length(amb_delta$mean))
   cv5rmse13c <- cvloo13c      <- rep(NA, length(amb_delta$mean))
 
-  for (i in seq_len(length(var_inds_in_calperiod))) {
+  for (i in seq_along(var_inds_in_calperiod)) {
     # calculate calibrated 12CO2 concentrations
     mean12c[var_inds_in_calperiod[[i]]] <- caldf$gain12C[i] *
       amb_12co2$mean[var_inds_in_calperiod[[i]]] + caldf$offset12C[i]
@@ -219,5 +217,5 @@ calibrate_ambient_carbon_gainoffset <- function(amb_data_list,
 
   amb_data_list$rtioMoleDryCo2 <- amb_co2
 
-  return(amb_data_list)
+  amb_data_list
 }

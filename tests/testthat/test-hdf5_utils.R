@@ -167,18 +167,22 @@ test_that("h5_open opens file for read-write", {
 })
 
 test_that("h5_ls on real NEON file returns site code", {
-  fin <- system.file("extdata",
+  fin <- system.file(
+    "extdata",
     "NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.packed.h5",
-    package = "NEONiso", mustWork = TRUE)
+    package = "NEONiso", mustWork = TRUE
+  )
 
   result <- NEONiso:::h5_ls(fin)
   expect_true("ONAQ" %in% result$name)
 })
 
 test_that("h5_read_attrs on real NEON file returns site attributes", {
-  fin <- system.file("extdata",
+  fin <- system.file(
+    "extdata",
     "NEON.D15.ONAQ.DP4.00200.001.nsae.2019-05.basic.packed.h5",
-    package = "NEONiso", mustWork = TRUE)
+    package = "NEONiso", mustWork = TRUE
+  )
 
   attrs <- NEONiso:::h5_read_attrs(fin, "ONAQ")
   expect_type(attrs, "list")

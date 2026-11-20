@@ -32,7 +32,6 @@
 #'     This function is not designed to be called on its own,
 #'     and is not exported to the namespace.
 #'
-#' @importFrom magrittr %>%
 #'
 calibrate_ambient_carbon_linreg <- function(amb_data_list,
                                             caldf,
@@ -54,7 +53,6 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
   }
 
   # ensure that time variables are in POSIXct.
-  amb_start_times <- convert_NEONhdf5_to_POSIXct_time(d13c_ambdf$timeBgn)
   amb_end_times   <- convert_NEONhdf5_to_POSIXct_time(d13c_ambdf$timeEnd)
 
   # if force.to.end and/or force.to.beginning are true,
@@ -194,6 +192,6 @@ calibrate_ambient_carbon_linreg <- function(amb_data_list,
   amb_data_list$dlta13CCo2 <- d13c_ambdf
   amb_data_list$rtioMoleDryCo2 <- co2_ambdf
 
-  return(amb_data_list)
+  amb_data_list
 
 }

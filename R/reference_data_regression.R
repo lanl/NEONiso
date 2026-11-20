@@ -9,7 +9,7 @@
 loocv <- function(mod) {
   h <- stats::lm.influence(mod)$hat
   # might need to add na.rm
-  return(base::mean((stats::residuals(mod) / (1 - h)) ^ 2))
+  base::mean((stats::residuals(mod) / (1 - h)) ^ 2)
 }
 
 #' Produce estimates of the calibration error.
@@ -60,7 +60,7 @@ estimate_calibration_error <- function(formula, data) {
     MAE = mean(abs(errors))
   )
 
-  return(output)
+  output
 
 }
 
@@ -70,7 +70,7 @@ estimate_calibration_error <- function(formula, data) {
 #' fractions to generate a transfer function and associated uncertainty
 #' estimates using both 5-fold and leave-one-out cross-validation methods.
 #' Regression occurs either on 12CO2/13CO2 mole fractions (gainoffset method)
-#' or on the CO2 and d13C values (linreg). 
+#' or on the CO2 and d13C values (linreg).
 #'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
@@ -99,7 +99,6 @@ estimate_calibration_error <- function(formula, data) {
 #'        for d13C and CO2 values.
 #'
 #' @importFrom stats coef lm
-#' @importFrom magrittr %>%
 
 fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                                   plot_regression_data = FALSE,
@@ -201,7 +200,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                                           date_seq[i] + delta)
 
         # select data subset using the interval
-        cal_subset <- ref_data %>%
+        cal_subset <- ref_data |>
           dplyr::filter(.data$timeBgn %within% cal_period)
 
         if (plot_regression_data) {
@@ -216,7 +215,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
         }
         #---------------------------------------------
         # do some light validation of these points.
-        cal_subset <- cal_subset %>%
+        cal_subset <- cal_subset |>
           dplyr::filter(.data$dlta13CCo2.vari < 5 &
                           abs(.data$rtioMoleDryCo2.mean -
                                 .data$rtioMoleDryCo2Refe.mean) < 10 &
@@ -354,12 +353,12 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
                                           date_seq[i] + delta)
 
         # select data subset using the interval
-        cal_subset <- ref_data %>%
+        cal_subset <- ref_data |>
           dplyr::filter(.data$timeBgn %within% cal_period)
 
         #---------------------------------------------
         # do some light validation of these points.
-        cal_subset <- cal_subset %>%
+        cal_subset <- cal_subset |>
           dplyr::filter(.data$dlta13CCo2.vari < 5 &
                           abs(.data$rtioMoleDryCo2.mean -
                                 .data$rtioMoleDryCo2Refe.mean) < 10 &
@@ -448,7 +447,7 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
     stop("NA in calibration data frame time - how did I get here?")
   }
 
-  return(out)
+  out
 
 }
 
@@ -457,8 +456,8 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 #' Performs regression between measured and known carbon isotope and mole
 #' fractions to generate a transfer function and associated uncertainty
 #' estimates using both 5-fold and leave-one-out cross-validation methods.
-#' Regression occurs on d18O and d2H values. 
-#' 
+#' Regression occurs on d18O and d2H values.
+#'
 #' @param ref_data Reference data.frame from which to estimate
 #'        calibration parameters.
 #' @param calibration_half_width Determines the period (in days)
@@ -481,7 +480,6 @@ fit_carbon_regression <- function(ref_data, method, calibration_half_width,
 #'        for d13C and CO2 values.
 #'
 #' @importFrom stats coef lm
-#' @importFrom magrittr %>%
 #'
 fit_water_regression <- function(ref_data,
                                  calibration_half_width,
@@ -576,7 +574,7 @@ fit_water_regression <- function(ref_data,
                                         date_seq[i] + delta)
 
       # select data subset using the interval
-      cal_subset <- ref_data %>%
+      cal_subset <- ref_data |>
         dplyr::filter(.data$timeBgn %within% cal_period)
 
       if (plot_regression_data) {
@@ -644,6 +642,6 @@ fit_water_regression <- function(ref_data,
                    "slope2H", "intercept2H", "r2_2H",
                    "cvloo_2H", "cv5mae_2H", "cv5rmse_2H")]
   }
-  return(out)
+  out
 
 }

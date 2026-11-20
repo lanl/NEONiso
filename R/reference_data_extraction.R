@@ -27,10 +27,10 @@ extract_carbon_cal_data <- function(data_list,
   }
 
   # extract desired data from data list.
-  data <- data_list %>%
+  data <- data_list |>
     dplyr::select("verticalPosition", "timeBgn", "timeEnd",
                   tidyselect::starts_with("data.isoCo2.dlta13CCo2"),
-                  tidyselect::starts_with("data.isoCo2.rtioMoleDryCo2")) %>%
+                  tidyselect::starts_with("data.isoCo2.rtioMoleDryCo2")) |>
     dplyr::filter(.data$verticalPosition %in% standards)
 
   # simplify names
@@ -41,7 +41,7 @@ extract_carbon_cal_data <- function(data_list,
   data$timeEnd <- convert_NEONhdf5_to_POSIXct_time(data$timeEnd)
 
   # return standard data frame.
-  return(data)
+  data
 }
 
 #' Extract only the data corresponding to validation/calibration time periods.
@@ -65,10 +65,10 @@ extract_water_calibration_data <- function(data_list) {
   }
 
   # extract desired data from data list.
-  data <- data_list %>%
+  data <- data_list |>
     dplyr::select("verticalPosition", "timeBgn", "timeEnd",
                   tidyselect::starts_with("data.isoH2o.dlta18OH2o"),
-                  tidyselect::starts_with("data.isoH2o.dlta2HH2o")) %>%
+                  tidyselect::starts_with("data.isoH2o.dlta2HH2o")) |>
     dplyr::filter(.data$verticalPosition %in% c("h2oHigh", "h2oMed", "h2oLow"))
 
   # simplify names
@@ -79,5 +79,5 @@ extract_water_calibration_data <- function(data_list) {
   data$timeEnd <- convert_NEONhdf5_to_POSIXct_time(data$timeEnd)
 
   # return standard data frame.
-  return(data)
+  data
 }

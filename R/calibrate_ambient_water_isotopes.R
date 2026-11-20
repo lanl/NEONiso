@@ -7,7 +7,7 @@
 #' but should be used with `calibrate_ambient_water_linreg`.
 #' Note that in this version *NO CORRECTION FOR HUMIDITY* is performed.
 #' Use with caution.
-#' 
+#'
 #' @author Rich Fiorella \email{rfiorella@@lanl.gov}
 #'
 #' @param amb_data_list List containing ambient d18O/d2H datasets.
@@ -29,7 +29,6 @@
 #'     the output file. This function is not designed to be called on its own.
 #' @export
 #'
-#' @importFrom magrittr %>%
 calibrate_ambient_water_linreg <- function(amb_data_list,
                                            caldf,
                                            outname,
@@ -188,5 +187,5 @@ calibrate_ambient_water_linreg <- function(amb_data_list,
   amb_data_list$dlta2HH2o <- hyddf
 
   # return list
-  return(amb_data_list)
+  amb_data_list
 }

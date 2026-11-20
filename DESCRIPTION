@@ -6,7 +6,7 @@ Authors@R: c(person("Rich", "Fiorella", email = "rfiorella@lanl.gov",
                 role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0824-4777")))
 Maintainer: Rich Fiorella <rfiorella@lanl.gov>
 Depends: 
-    R (>= 4.0.0)
+    R (>= 4.1.0)
 Description: Functions for downloading,
     calibrating, and analyzing atmospheric isotope data bundled
     into the eddy covariance data products of the National Ecological
@@ -30,7 +30,6 @@ Imports:
     httr,
     lubridate,
     neonUtilities (>= 2.3.0),
-    magrittr,
     R.utils,
     tidyselect,
     data.table,

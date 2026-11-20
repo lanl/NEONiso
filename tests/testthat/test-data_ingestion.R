@@ -33,15 +33,17 @@ test_that("ingest_data returns a list for analyte='H2o'", {
 
 # c) that list contains appropriate list of lists
 test_that("ingest_data returns list with correct sublist names - co2", {
-  expect_equal(names(co2test), c("ambient", "reference", "refe_stacked", "attrs"))
+  expect_equal(names(co2test),
+               c("ambient", "reference", "refe_stacked", "attrs"))
 })
 test_that("ingest_data returns list with correct sublist names - h2o", {
-  expect_equal(names(h2otest), c("ambient", "reference", "refe_stacked", "attrs"))
+  expect_equal(names(h2otest),
+               c("ambient", "reference", "refe_stacked", "attrs"))
 })
 
 #-----------------------------------------------------------------------
 # test restructure_carbon_variables function
-rest_raw <- neonUtilities::stackEddy(fin, avg = 9, level = "dp01")[[1]] %>%
+rest_raw <- neonUtilities::stackEddy(fin, avg = 9, level = "dp01")[[1]] |>
   dplyr::select("verticalPosition", "timeBgn",
                 "timeEnd", tidyselect::contains("isoCo2"))
 
@@ -79,7 +81,7 @@ test_that("output structure from restructure_carbon_variables is correct", {
                                                  group = "data")), 7)
 })
 
-test_that("output datetimes from restructure_carbon_variables are characters, not POSIX", {
+test_that("restructure_carbon_variables datetimes are characters, not POSIX", {
   tmp <- restructure_carbon_variables(rest_raw,
                                       "dlta13CCo2",
                                       mode = "ambient",
@@ -95,15 +97,21 @@ test_that("output datetimes from restructure_carbon_variables are characters, no
 })
 
 #--------------------------------------------------
-fin1 <- system.file("extdata",
-                    "NEON.D15.ONAQ.DP4.00200.001.nsae.2020-06-01.basic.packed.h5",
-                    package = "NEONiso", mustWork = TRUE)
-fin2 <- system.file("extdata",
-                    "NEON.D15.ONAQ.DP4.00200.001.nsae.2020-06-02.basic.packed.h5",
-                    package = "NEONiso", mustWork = TRUE)
-fin3 <- system.file("extdata",
-                    "NEON.D15.ONAQ.DP4.00200.001.nsae.2020-06-03.basic.packed.h5",
-                    package = "NEONiso", mustWork = TRUE)
+fin1 <- system.file(
+  "extdata",
+  "NEON.D15.ONAQ.DP4.00200.001.nsae.2020-06-01.basic.packed.h5",
+  package = "NEONiso", mustWork = TRUE
+)
+fin2 <- system.file(
+  "extdata",
+  "NEON.D15.ONAQ.DP4.00200.001.nsae.2020-06-02.basic.packed.h5",
+  package = "NEONiso", mustWork = TRUE
+)
+fin3 <- system.file(
+  "extdata",
+  "NEON.D15.ONAQ.DP4.00200.001.nsae.2020-06-03.basic.packed.h5",
+  package = "NEONiso", mustWork = TRUE
+)
 
 # create list of files
 all_files <- c(fin1, fin2, fin3)
@@ -123,16 +131,16 @@ test_that("stackEddy/ingest data works on multiple daily files", {
 #--------------------------------------------------
 # test restructure_water_variables with data group
 
-rest_h2o <- neonUtilities::stackEddy(fin, avg = 3, level = "dp01")[[1]] %>%
+rest_h2o <- neonUtilities::stackEddy(fin, avg = 3, level = "dp01")[[1]] |>
   dplyr::select("verticalPosition", "timeBgn",
                 "timeEnd", tidyselect::contains("isoH2o"))
 rest_h2o <- rest_h2o[rowSums(is.na(rest_h2o)) < 145, ]
 
 test_that("restructure_water_variables works for reference data group", {
   result <- restructure_water_variables(rest_h2o,
-                                         "dlta18OH2o",
-                                         mode = "reference",
-                                         group = "data")
+                                        "dlta18OH2o",
+                                        mode = "reference",
+                                        group = "data")
   expect_true(is.data.frame(result))
   expect_true("mean" %in% names(result))
   expect_true("varname" %in% names(result))
@@ -141,9 +149,9 @@ test_that("restructure_water_variables works for reference data group", {
 
 test_that("restructure_water_variables works for d2H reference data group", {
   result <- restructure_water_variables(rest_h2o,
-                                         "dlta2HH2o",
-                                         mode = "reference",
-                                         group = "data")
+                                        "dlta2HH2o",
+                                        mode = "reference",
+                                        group = "data")
   expect_true(is.data.frame(result))
   expect_true("mean" %in% names(result))
   expect_equal(unique(result$varname), "dlta2HH2o")
@@ -151,9 +159,9 @@ test_that("restructure_water_variables works for d2H reference data group", {
 
 test_that("restructure_water_variables works for ambient mode", {
   result <- restructure_water_variables(rest_h2o,
-                                         "dlta18OH2o",
-                                         mode = "ambient",
-                                         group = "data")
+                                        "dlta18OH2o",
+                                        mode = "ambient",
+                                        group = "data")
   expect_true(is.data.frame(result))
   expect_true("mean" %in% names(result))
   expect_true("varname" %in% names(result))
@@ -162,18 +170,18 @@ test_that("restructure_water_variables works for ambient mode", {
 
 test_that("restructure_water_variables errors with invalid mode", {
   expect_error(restructure_water_variables(rest_h2o,
-                                            "dlta18OH2o",
-                                            mode = "cheese",
-                                            group = "data"))
+                                           "dlta18OH2o",
+                                           mode = "cheese",
+                                           group = "data"))
 })
 
 test_that("restructure_water_variables errors with wrong input type", {
   expect_error(restructure_water_variables(list(),
-                                            "dlta18OH2o",
-                                            mode = "reference",
-                                            group = "data"))
+                                           "dlta18OH2o",
+                                           mode = "reference",
+                                           group = "data"))
   expect_error(restructure_water_variables(data.frame(),
-                                            "dlta18OH2o",
-                                            mode = "ambient",
-                                            group = "data"))
+                                           "dlta18OH2o",
+                                           mode = "ambient",
+                                           group = "data"))
 })

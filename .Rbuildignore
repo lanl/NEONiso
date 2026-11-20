@@ -19,3 +19,4 @@
 ^revdep$
 ^\.claude$
 ^benchmarks$
+^\.lintr$
