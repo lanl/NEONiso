@@ -63,8 +63,8 @@ convert_NEONhdf5_to_POSIXct_time <- function(intime) {
 #' Find which times fall within each calibration period.
 #'
 #' Returns a list with one element per period: the indices of `times` that
-#' fall within [bgn[i], end[i]], i.e. which(times %within% interval(bgn[i],
-#' end[i])) for every i.
+#' fall within `[bgn[i], end[i]]`, i.e.
+#' `which(times %within% interval(bgn[i], end[i]))` for every `i`.
 #'
 #' The per-period scan costs O(periods x times). When the periods are finite,
 #' non-negative and disjoint under %within%'s own arithmetic (always true for
