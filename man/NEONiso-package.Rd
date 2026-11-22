@@ -23,5 +23,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Rich Fiorella \email{rfiorella@lanl.gov} (\href{https://orcid.org/0000-0002-0824-4777}{ORCID})
 
+Authors:
+\itemize{
+  \item Rich Fiorella \email{rfiorella@lanl.gov} (\href{https://orcid.org/0000-0002-0824-4777}{ORCID})
+}
+
 }
 \keyword{internal}
