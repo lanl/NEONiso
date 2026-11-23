@@ -18,3 +18,8 @@ Useful links:
 
 **Maintainer**: Rich Fiorella <rfiorella@lanl.gov>
 ([ORCID](https://orcid.org/0000-0002-0824-4777))
+
+Authors:
+
+- Rich Fiorella <rfiorella@lanl.gov>
+  ([ORCID](https://orcid.org/0000-0002-0824-4777))
