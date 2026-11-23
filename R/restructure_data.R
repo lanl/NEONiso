@@ -36,6 +36,7 @@ ingest_data <- function(inname,
 
   analyte <- validate_analyte(analyte)
   backupMethod <- FALSE
+  use_fasttime <- requireNamespace("fasttime", quietly = TRUE)
 
   # read site name and attributes from (first file in) inname
   # combined into sequential calls to avoid redundant file opens
@@ -51,14 +52,14 @@ ingest_data <- function(inname,
                                          avg = amb_avg,
                                          level = "dp01",
                                          var = "isoCo2",
-                                         useFasttime = TRUE,
+                                         useFasttime = use_fasttime,
                                          runLocal = TRUE)[[1]], silent = TRUE)
     if ("try-error" %in% class(data)) {
       data <- neonUtilities::stackEddy(inname,
                                        avg = 9,
                                        level = "dp01",
                                        var = "isoCo2",
-                                       useFasttime = TRUE,
+                                       useFasttime = use_fasttime,
                                        runLocal = TRUE)[[1]]
       backupMethod <- TRUE
     }
@@ -115,13 +116,13 @@ ingest_data <- function(inname,
                                       level = "dp01",
                                       var = "isoH2o",
                                       avg = amb_avg,
-                                      useFasttime = TRUE,
+                                      useFasttime = use_fasttime,
                                       runLocal = TRUE)[[1]]
     data3 <- neonUtilities::stackEddy(inname,
                                       level = "dp01",
                                       var = "isoH2o",
                                       avg = ref_avg,
-                                      useFasttime = TRUE,
+                                      useFasttime = use_fasttime,
                                       runLocal = TRUE)[[1]]
 
     # filter data and remove rows that are all NaNs:
